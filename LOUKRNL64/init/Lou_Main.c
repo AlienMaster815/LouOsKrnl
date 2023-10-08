@@ -7,28 +7,22 @@
 #include <kernel/errors.h>
 #include <kernel/acpi.h>
 #include <bootloader/grub/multiboot.h>
-#include <kernel/gdt.h>
+
 /* Tyler Grenier 9/21/23 9:56 PM
 -- Started the file with the main 
 -- functions to get us going along 
 -- with allocation functions
 */
 
-char* KERNEL_VERSION = "0.000000000004 64-BIT";
+
+char* KERNEL_VERSION = "0.000000000005 64-BIT";
 
 
 multiboot_info_t* mbi;
 
-STATUS set_initial_gdt(){
-    
-    init_gdt_64(0x00000000,0xFFFFFFFF,
-                0x00000000,0xFFFFFFFF,
-                0x00000000,0xFFFFFFFF);    
-    LouPrint("gdt is set\n");
-    return GOOD;    
-}
 
-RSDP* Find_RSDP(uint64_t RAMSIZE) {
+
+RSDP* Find_RSDP() {
 	RSDP* pointer;
 	pointer = PROBE_RSDP(0x00000000, 0x0000E000);
 	if (pointer != NULL) return pointer;
@@ -44,8 +38,8 @@ RSDP* Find_RSDP(uint64_t RAMSIZE) {
 
 
 //handle our acpi tasks
-VOID HANDLE_ACPI(uint64_t RAMSIZE) {
-	RSDP* rsdp = Find_RSDP(RAMSIZE);
+VOID HANDLE_ACPI() {
+	RSDP* rsdp = Find_RSDP();
 	STATUS ACPI_VALID = ACPI_PARSE(rsdp);
 	if(ACPI_VALID == BAD)LouPanic("No Valid ACPI Found\n",BAD);
 	//else return;
@@ -62,23 +56,23 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
 	init_terminal();
 	LouPrint("Lou Version %s \n", KERNEL_VERSION);
 	LouPrint("Hello Im Lousine Getting Things Ready\n");
-	uint64_t TotalRAM;
-	if (mbi->flags & MULTIBOOT_INFO_MEM_MAP)TotalRAM = Parse_Mem_Map(mbi);
-	else LouPanic("No Memory Information",BAD);
+
+	if(!(mbi->flags & MULTIBOOT_INFO_MEM_MAP))LouPanic("No Memory Information",BAD);
 	
 
 
-	HANDLE_ACPI(TotalRAM);
+	HANDLE_ACPI();
 	
+
+
 	//TODO LIST
 	//PARSE MEMORY MAP AND ACPI BY
 
-    lou_init_stat = set_initial_gdt();
-    if(!lou_init_stat)LouPanic("Error setting GDT",BAD);
 
 	//TODO FINISH THE PAGING SYSTEM With USERMODE
  		
 	LouPrint("Hello World\n ");
+	//switch_to_user_segment();
 	while(1);
 
 	LouPanic("error kernel has gone too far terminating system\n",BAD);

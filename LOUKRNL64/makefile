@@ -16,10 +16,10 @@ x86_64_asm_object_files := $(patsubst boot/%.asm, build/x86_64/boot/%.o, $(x86_6
 
 
 
-misc_asm_source_files := $(shell find ASM -name *.asm)
-misc_asm_object_files := $(patsubst ASM/%.asm, build/x86_64/ASM/%.o, $(misc_asm_source_files))
+kernel_asm_source_files := $(shell find kernel -name *.asm)
+kernel_asm_object_files := $(patsubst kernel/%.asm, build/x86_64/kernelasm/%.o, $(kernel_asm_source_files))
 
-x86_64_object_files := $(kernel_object_files) $(x86_64_c_object_files) $(x86_64_asm_object_files)
+x86_64_object_files := $(kernel_object_files) $(x86_64_c_object_files) $(x86_64_asm_object_files) $(kernel_asm_object_files)
 
 $(kernel_object_files): build/kernel/%.o : kernel/%.c
 	mkdir -p $(dir $@) && \
@@ -35,9 +35,9 @@ $(x86_64_asm_object_files): build/x86_64/boot/%.o : boot/%.asm
 	mkdir -p $(dir $@) && \
 	nasm -f elf64 $(patsubst build/x86_64/boot/%.o, boot/%.asm, $@) -o $@
 
-$(misc_asm_object_files): build/x86_64/ASM/%.o : ASM/%.asm
+$(kernel_asm_object_files): build/x86_64/kernelasm/%.o : kernel/%.asm
 	mkdir -p $(dir $@) && \
-	nasm -f elf64 $(patsubst build/x86_64/ASM/%.o, ASM/%.asm, $@) -o $@
+	nasm -f elf64 $(patsubst build/x86_64/kernelasm/%.o, kernel/%.asm, $@) -o $@
 
 
 clean:

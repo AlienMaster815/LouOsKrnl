@@ -39,9 +39,7 @@ char* Registry_entry) {
 	
 	Get_Driver_Entry_Point(allocated_driver_addr);
 
-	// later well try and find entry points and such and properly
-	
-	// Driver_Entry(allocated_pdriver_obj_addr, Registry_entry);
+	// we will later switch to c++ to create the driver compatibility
 
 	return LOUSTATUS_GOOD;
 }

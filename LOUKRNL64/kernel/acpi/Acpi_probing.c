@@ -63,8 +63,6 @@ RSDP* PROBE_RSDP(uintptr_t memory_base, uintptr_t memory_limit) {
             if (memcmp(rsdp_ptr->signature, "RSD PTR ", 8) == 0) {
                 // Checksum and version check
                 if (((uintptr_t)rsdp_ptr & 0xF) == 0) {
-                    LouPrint("", rsdp_ptr->signature); // NOBODY TOUCH THIS ITS A COMPILER GLITCH
-                                                       // THAT SCREWS UP MEMORY ACCESS
                     return rsdp_ptr;
                 }
                 
