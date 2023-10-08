@@ -20,14 +20,14 @@
 RAMADD Lou_Alloc_Mem(SIZE size);
 STATUS Lou_Free_Mem(RAMADD Addr, SIZE size);
 
-typedef struct __attribute__((packed)){
+typedef struct {
 	uint64_t entry; //this defines out memory that is mapped down the road
-} PageTableEntry;
+}__attribute__((packed)) PageTableEntry;
 
 
-typedef struct __attribute__((packed)){
+typedef struct {
 	PageTableEntry entries[512]; 
-} PageTable;
+}__attribute__((packed)) PageTable;;
 
 
 
