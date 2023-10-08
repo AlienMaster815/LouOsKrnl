@@ -31,9 +31,13 @@ void update_page_table_entry(PageTableEntry* entry, uint64_t phys_addr, int pres
 	entry->entry |= (writable ? 1ULL : 0ULL) << 1;       // Read/Write bit (bit 1)
 	// Add other attributes as needed (e.g., User/Supervisor, Access, etc.)
 
-	uint64_t* PML4P = (uint64_t*)&PML4;
 
-	// Reload CR3
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Waddress-of-packed-member"
+	uint64_t* PML4P = (uint64_t*)(uintptr_t)&PML4;
+    #pragma GCC diagnostic pop
+	
+    // Reload CR3
 	uint64_t cr3_value = (uint64_t)PML4P;
 	__asm__ volatile("mov %0, %%cr3" : : "r"(cr3_value));
 

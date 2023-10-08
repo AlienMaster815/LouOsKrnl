@@ -23,11 +23,11 @@ x86_64_object_files := $(kernel_object_files) $(x86_64_c_object_files) $(x86_64_
 
 $(kernel_object_files): build/kernel/%.o : kernel/%.c
 	mkdir -p $(dir $@) && \
-	clang -m64 -c -fstack-protector -ffreestanding -Werror -I include $(patsubst build/kernel/%.o, kernel/%.c, $@) -o $@
+    gcc -Ignu-efi-dir/inc -fpic -ffreestanding -fno-stack-protector -fno-stack-check -fshort-wchar -mno-red-zone -maccumulate-outgoing-args -c -fstack-protector -ffreestanding -Werror -I include $(patsubst build/kernel/%.o, kernel/%.c, $@) -o $@
 
 $(x86_64_c_object_files): build/x86_64/init/%.o : init/%.c
 	mkdir -p $(dir $@) && \
-	clang -m64 -c -fstack-protector -ffreestanding -Werror -I include $(patsubst build/x86_64/init/%.o, init/%.c, $@) -o $@
+	gcc -Ignu-efi-dir/inc -fpic -ffreestanding -fno-stack-protector -fno-stack-check -fshort-wchar -mno-red-zone -maccumulate-outgoing-args -c -fstack-protector -ffreestanding -Werror -I include $(patsubst build/x86_64/init/%.o, init/%.c, $@) -o $@
 
 
 
@@ -46,7 +46,7 @@ clean:
 
 lou.exe: $(x86_64_object_files)
 	mkdir -p dist/x86_64 && \
-	ld -n -o dist/x86_64/LOUOSKRNL.elf -T targets/linker.ld $(x86_64_object_files)
+	ld -shared -Bsymbolic -Lgnu-efi-dir/x86_64/lib -Lgnu-efi-dir/x86_64/gnuefi -Tgnu-efi-dir/gnuefi/elf_x86_64_efi.lds gnu-efi-dir/x86_64/gnuefi/crt0-efi-x86_64.o main.o -o main.so -lgnuefi -lefi
 	rm -r build
 
 
@@ -55,12 +55,12 @@ annya.iso: lou.exe
 	mkdir iso
 	mkdir iso/boot
 	mkdir iso/boot/grub
-	cp dist/x86_64/LOUOSKRNL.elf iso/boot/LOUOSKRNL.exe
+	cp dist/x86_64/LOUOSKRNL.bin iso/boot/LOUOSKRNL.exe
 	echo 'set timeout=0'                     >> iso/boot/grub/grub.cfg
 	echo 'set default=0'                     >> iso/boot/grub/grub.cfg
 	echo ''                                  >> iso/boot/grub/grub.cfg
 	echo 'menuentry "Annya/lou" {'			 >> iso/boot/grub/grub.cfg
-	echo 'chainloader /boot/LOUOSKRNL.exe'			 >> iso/boot/grub/grub.cfg
+	echo 'multiboot /boot/LOUOSKRNL.exe'			 >> iso/boot/grub/grub.cfg
 	echo 'boot'								 >> iso/boot/grub/grub.cfg
 	echo '}'							     >> iso/boot/grub/grub.cfg
 	grub-mkrescue --output=annya.iso iso
