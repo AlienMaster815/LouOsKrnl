@@ -80,3 +80,5 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
 	//the whole thing crashes crashes
 }
 
+
+

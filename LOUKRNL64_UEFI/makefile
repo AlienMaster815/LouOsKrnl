@@ -1,3 +1,6 @@
+#sudo apt install gnu-efi
+
+
 kernel_source_files := $(shell find kernel -name *.c)
 kernel_object_files := $(patsubst kernel/%.c, build/kernel/%.o, $(kernel_source_files))
 
@@ -14,7 +17,8 @@ x86_64_cpp_object_files := $(patsubst init/%.cpp, build/x86_64/init/%.o, $(x86_6
 x86_64_asm_source_files := $(shell find boot -name *.asm)
 x86_64_asm_object_files := $(patsubst boot/%.asm, build/x86_64/boot/%.o, $(x86_64_asm_source_files))
 
-
+x86_64_c_bootloader_source_files := $(shell find bootloader -name *.c)
+x86_64_c_bootloader_object_files := $(patsubst bootloader/%.c, build/x86_64/bootloader/%.o, $(x86_64_c_bootloader_source_files))
 
 kernel_asm_source_files := $(shell find kernel -name *.asm)
 kernel_asm_object_files := $(patsubst kernel/%.asm, build/x86_64/kernelasm/%.o, $(kernel_asm_source_files))
@@ -30,19 +34,28 @@ $(x86_64_c_object_files): build/x86_64/init/%.o : init/%.c
 	clang -m64 -c -fstack-protector -ffreestanding -Werror -I include $(patsubst build/x86_64/init/%.o, init/%.c, $@) -o $@
 
 
+$(x86_64_c_bootloader_object_files): build/x86_64/bootloader/%.o : bootloader/%.c
+	mkdir -p $(dir $@) && \
+	gcc -I include -Ignu-efi/inc -fpic -ffreestanding -fno-stack-protector -fno-stack-check -fshort-wchar -mno-red-zone -maccumulate-outgoing-args -Werror -c $(patsubst build/x86_64/bootloader/%.o, bootloader/%.c, $@) -o $@
+
+
 
 $(x86_64_asm_object_files): build/x86_64/boot/%.o : boot/%.asm
 	mkdir -p $(dir $@) && \
-	nasm -f elf64 $(patsubst build/x86_64/boot/%.o, boot/%.asm, $@) -o $@
+	nasm -f elf64 -o $@ $(patsubst build/x86_64/boot/%.o, boot/%.asm, $@)
 
 $(kernel_asm_object_files): build/x86_64/kernelasm/%.o : kernel/%.asm
 	mkdir -p $(dir $@) && \
-	nasm -f elf64 $(patsubst build/x86_64/kernelasm/%.o, kernel/%.asm, $@) -o $@
+	nasm -f elf64 -o $@ $(patsubst build/x86_64/kernelasm/%.o, kernel/%.asm, $@)
 
 
 clean:
 	rm -r build
 
+bootloader.efi: $(x86_64_c_bootloader_object_files)
+	mkdir -p dist/bootloader
+	ld -shared -Bsymbolic -Lgnu-efi/x86_64/lib -Lgnu-efi/x86_64/gnuefi -Tgnu-efi/gnuefi/elf_x86_64_efi.lds gnu-efi/x86_64/gnuefi/crt0-efi-x86_64.o $(x86_64_c_bootloader_object_files) -o dist/bootloader/main.so -lgnuefi -lefi
+	objcopy -j .text -j .sdata -j .data -j .dynamic -j .dynsym  -j .rel -j .rela -j .rel.* -j .rela.* -j .reloc --target efi-app-x86_64 --subsystem=10 dist/bootloader/main.so dist/bootloader/lou.efi
 
 lou.exe: $(x86_64_object_files)
 	mkdir -p dist/x86_64 && \
@@ -50,18 +63,20 @@ lou.exe: $(x86_64_object_files)
 	rm -r build
 
 
-annya.iso: lou.exe
+
+annya.iso: lou.exe bootloader.efi
 	rm -rf iso
 	mkdir iso
 	mkdir iso/boot
 	mkdir iso/boot/grub
+	mkdir iso/boot/efi
+	cp dist/bootloader/lou.efi iso/boot/efi/lou.uefi
 	cp dist/x86_64/LOUOSKRNL.bin iso/boot/LOUOSKRNL.exe
 	echo 'set timeout=0'                     >> iso/boot/grub/grub.cfg
 	echo 'set default=0'                     >> iso/boot/grub/grub.cfg
-	echo ''                                  >> iso/boot/grub/grub.cfg
-	echo 'menuentry "Annya/lou" {'			 >> iso/boot/grub/grub.cfg
-	echo 'multiboot /boot/LOUOSKRNL.exe'			 >> iso/boot/grub/grub.cfg
-	echo 'boot'								 >> iso/boot/grub/grub.cfg
-	echo '}'							     >> iso/boot/grub/grub.cfg
+	echo 'menuentry "Annya/Lou" {'  >> iso/boot/grub/grub.cfg
+	echo 'search --file --set=root /boot/efi/lou.efi'    >> iso/boot/grub/grub.cfg
+	echo 'chainloader /boot/efi/lou.efi' >> iso/boot/grub/grub.cfg
+	echo '}'                              >> iso/boot/grub/grub.cfg
 	grub-mkrescue --output=annya.iso iso
 	rm -rf iso
