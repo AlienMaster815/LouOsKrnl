@@ -47,9 +47,9 @@ VOID HANDLE_ACPI() {
 
 
 
-KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
-    STATUS lou_init_stat;
-	mbi = multiboot_info;
+KERNEL_ENTRY Lou_kernel_start(){
+    
+    /*STATUS lou_init_stat;
 
 	// get vga set for debug
 	Set_Color(PRINT_COLOR_LIGHT_GREEN, PRINT_COLOR_BLACK);
@@ -78,6 +78,7 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
 	LouPanic("error kernel has gone too far terminating system\n",BAD);
 	//IF the Kernel returns from this 
 	//the whole thing crashes crashes
+    */
 }
 
 

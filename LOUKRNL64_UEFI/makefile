@@ -70,7 +70,7 @@ annya.iso: lou.exe bootloader.efi
 	mkdir iso/boot
 	mkdir iso/boot/grub
 	mkdir iso/boot/efi
-	cp dist/bootloader/lou.efi iso/boot/efi/lou.uefi
+	cp dist/bootloader/lou.efi iso/boot/efi/lou.efi
 	cp dist/x86_64/LOUOSKRNL.bin iso/boot/LOUOSKRNL.exe
 	echo 'set timeout=0'                     >> iso/boot/grub/grub.cfg
 	echo 'set default=0'                     >> iso/boot/grub/grub.cfg
