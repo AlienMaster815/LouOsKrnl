@@ -3,23 +3,17 @@ OUTPUT_FORMAT("elf64-x86-64")
 
 SECTIONS
 {
-    . = 1M;
-
-    .boot :
-    {
-        KEEP(*(.multiboot_header))
-    }
-
-    .text :
+    .text : ALIGN(0x1000)
     {
         *(.text)
     }
-     .data : {
-        *(.data)/* Your initialized data sections go here */
+    .rodata : ALIGN(0x1000)
+    {
+        *(.data)
     }
-
-    /* .bss section for uninitialized data */
-    .bss : {
-        *(.bss)/* Your uninitialized data sections go here */
+    .bss : ALIGN(0x1000)
+    {
+        *(COMMON)
+        *(.bss)
     }
 }

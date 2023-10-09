@@ -23,7 +23,7 @@ x86_64_c_bootloader_object_files := $(patsubst bootloader/%.c, build/x86_64/boot
 kernel_asm_source_files := $(shell find kernel -name *.asm)
 kernel_asm_object_files := $(patsubst kernel/%.asm, build/x86_64/kernelasm/%.o, $(kernel_asm_source_files))
 
-x86_64_object_files := $(kernel_object_files) $(x86_64_c_object_files) $(x86_64_asm_object_files) $(kernel_asm_object_files)
+x86_64_object_files := $(kernel_object_files) $(x86_64_c_object_files) $(kernel_asm_object_files) $(x86_64_asm_object_files)
 
 $(kernel_object_files): build/kernel/%.o : kernel/%.c
 	mkdir -p $(dir $@) && \
@@ -52,31 +52,26 @@ $(kernel_asm_object_files): build/x86_64/kernelasm/%.o : kernel/%.asm
 clean:
 	rm -r build
 
-bootloader.efi: $(x86_64_c_bootloader_object_files)
-	mkdir -p dist/bootloader
-	ld -shared -Bsymbolic -Lgnu-efi/x86_64/lib -Lgnu-efi/x86_64/gnuefi -Tgnu-efi/gnuefi/elf_x86_64_efi.lds gnu-efi/x86_64/gnuefi/crt0-efi-x86_64.o $(x86_64_c_bootloader_object_files) -o dist/bootloader/main.so -lgnuefi -lefi
-	objcopy -j .text -j .sdata -j .data -j .dynamic -j .dynsym  -j .rel -j .rela -j .rel.* -j .rela.* -j .reloc --target efi-app-x86_64 --subsystem=10 dist/bootloader/main.so dist/bootloader/lou.efi
 
 lou.exe: $(x86_64_object_files)
+	rm -r dist
 	mkdir -p dist/x86_64 && \
 	ld -n -o dist/x86_64/LOUOSKRNL.bin -T targets/linker.ld $(x86_64_object_files)
 	rm -r build
 
 
 
-annya.iso: lou.exe bootloader.efi
+annya.iso: lou.exe
 	rm -rf iso
 	mkdir iso
 	mkdir iso/boot
 	mkdir iso/boot/grub
-	mkdir iso/boot/efi
-	cp dist/bootloader/lou.efi iso/boot/efi/lou.efi
 	cp dist/x86_64/LOUOSKRNL.bin iso/boot/LOUOSKRNL.exe
 	echo 'set timeout=0'                     >> iso/boot/grub/grub.cfg
 	echo 'set default=0'                     >> iso/boot/grub/grub.cfg
-	echo 'menuentry "Annya/Lou" {'  >> iso/boot/grub/grub.cfg
-	echo 'search --file --set=root /boot/efi/lou.efi'    >> iso/boot/grub/grub.cfg
-	echo 'chainloader /boot/efi/lou.efi' >> iso/boot/grub/grub.cfg
-	echo '}'                              >> iso/boot/grub/grub.cfg
+	echo 'menuentry "Annya/Lou" {'  	 >> iso/boot/grub/grub.cfg
+	echo 'multiboot2 /boot/LOUOSKRNL.exe'    >> iso/boot/grub/grub.cfg
+	echo 'boot' >> iso/boot/grub/grub.cfg
+	echo '}'                               >> iso/boot/grub/grub.cfg
 	grub-mkrescue --output=annya.iso iso
 	rm -rf iso

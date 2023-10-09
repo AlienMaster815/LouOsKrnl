@@ -45,11 +45,11 @@ VOID HANDLE_ACPI() {
 	//else return;
 }
 
-
+//uefi has no printing yet
 
 KERNEL_ENTRY Lou_kernel_start(){
     
-    /*STATUS lou_init_stat;
+    STATUS lou_init_stat;
 
 	// get vga set for debug
 	Set_Color(PRINT_COLOR_LIGHT_GREEN, PRINT_COLOR_BLACK);
@@ -78,7 +78,7 @@ KERNEL_ENTRY Lou_kernel_start(){
 	LouPanic("error kernel has gone too far terminating system\n",BAD);
 	//IF the Kernel returns from this 
 	//the whole thing crashes crashes
-    */
+    
 }
 
 
