@@ -7,6 +7,7 @@
 #include <kernel/errors.h>
 #include <kernel/acpi.h>
 #include <bootloader/grub/multiboot.h>
+#include <drivers/Lou_drivers/hardrivec.h>
 
 /* Tyler Grenier 9/21/23 9:56 PM
 -- Started the file with the main 
@@ -15,7 +16,7 @@
 */
 
 
-char* KERNEL_VERSION = "0.000000000005 64-BIT";
+char* KERNEL_VERSION = "0.000000000008 64-BIT";
 
 
 multiboot_info_t* mbi;
@@ -30,7 +31,7 @@ RSDP* Find_RSDP() {
 	if (pointer != NULL) return pointer;
 	pointer = PROBE_RSDP(0x000A0000, 0x000FFFFF);
 	if (pointer != NULL) return pointer;
-	pointer = PROBE_RSDP(0x000FFFFF, 0xFFFFFFFF);
+	PROBE_RSDP(0x000FFFFF, 0xFFFFFFFF);
 	if (pointer != NULL) return pointer;
 	LouPanic("RSDP NOT FOUND",BAD);
 	return 0;
@@ -63,7 +64,7 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
 
 	HANDLE_ACPI();
 	
-
+	pata_device_scanc();
 
 	//TODO LIST
 	//PARSE MEMORY MAP AND ACPI BY

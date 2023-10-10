@@ -1,11 +1,13 @@
+# G++ Gcc make NASM grub xorriso
+
 kernel_source_files := $(shell find kernel -name *.c)
 kernel_object_files := $(patsubst kernel/%.c, build/kernel/%.o, $(kernel_source_files))
 
 x86_64_c_source_files := $(shell find init -name *.c)
 x86_64_c_object_files := $(patsubst init/%.c, build/x86_64/init/%.o, $(x86_64_c_source_files))
 
-kernel_cpp_source_files := $(shell find kernel -name *.cpp)
-kernel_cpp_object_files := $(patsubst kernel/%.cpp, build/kernel/%.o, $(kernel_cpp_source_files))
+driver_cpp_source_files := $(shell find drivers -name *.cpp)
+driver_cpp_object_files := $(patsubst drivers/%.cpp, build/drivers/%.o, $(driver_cpp_source_files))
 
 x86_64_cpp_source_files := $(shell find init -name *.cpp)
 x86_64_cpp_object_files := $(patsubst init/%.cpp, build/x86_64/init/%.o, $(x86_64_cpp_source_files))
@@ -19,7 +21,7 @@ x86_64_asm_object_files := $(patsubst boot/%.asm, build/x86_64/boot/%.o, $(x86_6
 kernel_asm_source_files := $(shell find kernel -name *.asm)
 kernel_asm_object_files := $(patsubst kernel/%.asm, build/x86_64/kernelasm/%.o, $(kernel_asm_source_files))
 
-x86_64_object_files := $(kernel_object_files) $(x86_64_c_object_files) $(x86_64_asm_object_files) $(kernel_asm_object_files)
+x86_64_object_files := $(kernel_object_files) $(x86_64_c_object_files) $(x86_64_asm_object_files) $(kernel_asm_object_files) $(driver_cpp_object_files)
 
 $(kernel_object_files): build/kernel/%.o : kernel/%.c
 	mkdir -p $(dir $@) && \
@@ -29,7 +31,9 @@ $(x86_64_c_object_files): build/x86_64/init/%.o : init/%.c
 	mkdir -p $(dir $@) && \
 	clang -m64 -c -fstack-protector -ffreestanding -Werror -I include $(patsubst build/x86_64/init/%.o, init/%.c, $@) -o $@
 
-
+$(driver_cpp_object_files): build/drivers/%.o : drivers/%.cpp
+	mkdir -p $(dir $@) && \
+	g++ -m64 -c -ffreestanding -O2 -Wall -fno-exceptions -fno-rtti -fstack-protector -Werror -Wno-write-strings -fno-use-cxa-atexit -I include $(patsubst build/drivers/%.o, drivers/%.cpp, $@) -o $@
 
 $(x86_64_asm_object_files): build/x86_64/boot/%.o : boot/%.asm
 	mkdir -p $(dir $@) && \
