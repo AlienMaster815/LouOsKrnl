@@ -15,7 +15,7 @@
 -- for drivers
 */
 #include <drivers/Lou_drivers/hardrive.h>
-#include <drivers/Lou_drivers/lou_drv_api.h>
+#include <drivers/lou_drv_api.h>
 
 void PATA::pata_device_scan(){
     LouPrint("Hello Driver World \n");
