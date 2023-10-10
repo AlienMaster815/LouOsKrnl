@@ -1,0 +1,28 @@
+macOS install dependencys for annya lou os
+
+first line assuming you dont have xcode installed allready
+xcode-select --install
+
+first line assuming you do
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+
+check if everything went smoothly if not folllow the error messages from the build
+brew --version
+
+if you can restart a terminal and get a version from brew and not a unkown app error you may vontinue
+
+
+brew install gcc make Bison gettext binutils flex pkg-config glibc xorriso nasm automake
+
+when this is said and done 
+./bootstrap
+
+then to configure
+
+./configure
+
+crossfingers now an
+make
+
+hold your breath and
+sudo make install
