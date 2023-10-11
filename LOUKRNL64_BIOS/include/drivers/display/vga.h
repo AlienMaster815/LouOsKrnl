@@ -21,6 +21,9 @@
 #define ARCH_I386_VGA_H
 
 #include <stdint.h>
+#include <kernel/errors.h>
+#include <stat.h>
+#include <kernel/memmory.h>
 
 /*this is the basic vga driver definitions needed for the tty terminal function
  this will be used for early kernel stages until propitiery or better drivers can be found
@@ -58,31 +61,6 @@ static inline uint16_t vga_entry(unsigned char uc, uint8_t color) {
 #endif
 
 
-/*
-; Copyright(C) 2023 Tyler Grenier
-;
-; This program is the property of Tyler Grenier and is protected by copyright law.
-; Unauthorized reproduction or distribution of this program, or any portion of it,
-; is prohibited.Modification of this program is allowed only with explicit
-; written permission from Tyler Grenier.
-;
-; Permission to possess and use this code is granted to You under
-; the condition that You complies with the terms of this copyright
-; notice.Failure to comply may result in legal action.
-;
-; Tyler Grenier makes no warranties, expressed or implied, about the suitability of
-; this software for any purpose.It is provided "as is" without any warranty.
-;
-; For inquiries or permission requests, please contact Tyler Grenier
-; Email tgrenier.815@aol.com Text 860 - 930 - 6436 Call 203 - 263 - 6104.
-*/
-
-/*
- *this file will be responsible for the tty driver for the tty mode for the
- *operating system in 64 bit mode this code is a little jarbled because the
- *operating system orignially ran in protected mode for old hardware support
- */
-
 
 #ifndef _TTY_H
 #define _TTY_H
@@ -112,13 +90,19 @@ enum VGA_COLOR{
 #define NUM_COLS 80
 #define NUM_ROWS 25
 
+#define VGA_MODE_80x25 0
+
 typedef struct{
 	uint8_t character;
 	uint8_t color;
 }Char;
 
+static RAMADD vga_current;
+static RAMADD vga_new;
 
 
+void setup_vga_systems();
+STATUS register_new_mode(RAMADD new_vga,uint8_t mode);
 void print_clear();
 void print_char(char character);
 void print_str(char* string);

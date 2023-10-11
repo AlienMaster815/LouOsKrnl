@@ -16,7 +16,7 @@
 */
 
 
-char* KERNEL_VERSION = "0.000000000008 64-BIT";
+char* KERNEL_VERSION = "0.000000000011 64-BIT";
 
 
 multiboot_info_t* mbi;
@@ -51,10 +51,11 @@ VOID HANDLE_ACPI() {
 KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
     STATUS lou_init_stat;
 	mbi = multiboot_info;
+    
+    setup_vga_systems();
 
 	// get vga set for debug
-	Set_Color(PRINT_COLOR_LIGHT_GREEN, PRINT_COLOR_BLACK);
-	init_terminal();
+	
 	LouPrint("Lou Version %s \n", KERNEL_VERSION);
 	LouPrint("Hello Im Lousine Getting Things Ready\n");
 
