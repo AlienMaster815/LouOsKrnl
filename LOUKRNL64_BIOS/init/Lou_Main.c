@@ -8,7 +8,7 @@
 #include <kernel/acpi.h>
 #include <bootloader/grub/multiboot.h>
 #include <drivers/Lou_drivers/hardrivec.h>
-
+#include <drivers/Lou_drivers/wdf/kmdf/wdf.h>
 /* Tyler Grenier 9/21/23 9:56 PM
 -- Started the file with the main 
 -- functions to get us going along 
