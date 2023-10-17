@@ -1,5 +1,5 @@
-#include <cstdint>
-#include <cstddef>
+#include <cstdint.h>
+
 #ifndef _IDE_
 #define _IDE_
 

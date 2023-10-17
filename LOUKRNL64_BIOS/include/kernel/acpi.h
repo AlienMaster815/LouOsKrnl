@@ -20,72 +20,72 @@
 */
 
 typedef struct __attribute__((packed)) {
-	char signature[8] __attribute__((packed));
-	uint8_t checksum __attribute__((packed));
-	char oem_id[6] __attribute__((packed));
-	uint8_t revision __attribute__((packed));
-	uint32_t rsdt_address __attribute__((packed));
+	char signature[8];
+	uint8_t checksum;
+	char oem_id[6];
+	uint8_t revision;
+	uint32_t rsdt_address;
 	// following data is for ACPI 2.0+
-	uint32_t length __attribute__((packed));
-	uint64_t xsdt_address __attribute__((packed));
-	uint8_t extended_checksum __attribute__((packed));
-	uint8_t reserved[3] __attribute__((packed));
+	uint32_t length;
+	uint64_t xsdt_address;
+	uint8_t extended_checksum;
+	uint8_t reserved[3];
 }ACPITable;
 
 
 typedef struct __attribute__((packed)) {
-	char signature[4] __attribute__((packed));
-	uint32_t length __attribute__((packed));
-	uint8_t revision __attribute__((packed));
-	uint8_t checksum __attribute__((packed));
-	char oem_id[6] __attribute__((packed));
-	char oem_table_id[8] __attribute__((packed));
-	uint32_t oem_revision __attribute__((packed));
-	uint32_t creator_id __attribute__((packed));
-	uint32_t creator_revision __attribute__((packed));
+	char signature[4];
+	uint32_t length;
+	uint8_t revision;
+	uint8_t checksum;
+	char oem_id[6];
+	char oem_table_id[8];
+	uint32_t oem_revision;
+	uint32_t creator_id;
+	uint32_t creator_revision;
 }ACPITableHeader;
 
 
 typedef struct __attribute__((packed)) {
-	char signature[8] __attribute__((packed)); // "RSD PTR " (8 bytes)
-	uint8_t checksum __attribute__((packed));  // Checksum of the first 20 bytes
-	char oem_id[6] __attribute__((packed));    // OEM ID (6 bytes)
-	uint8_t revision __attribute__((packed));  // ACPI version (1 byte)
-	uint32_t rsdt_address __attribute__((packed)); // Physical address of the RSDT
-	uint32_t length __attribute__((packed));   // Total length of the structure (including extended part)
-	uint64_t xsdt_address __attribute__((packed)); // Physical address of the XSDT (extended part)
-	uint8_t extended_checksum __attribute__((packed)); // Checksum of the entire structure (including extended part)
-	uint8_t reserved[3] __attribute__((packed)); // Reserved (3 bytes)
-	uint64_t xchecksum __attribute__((packed)); // Checksum of entire table
+	char signature[8]; // "RSD PTR " (8 bytes)
+	uint8_t checksum;  // Checksum of the first 20 bytes
+	char oem_id[6];    // OEM ID (6 bytes)
+	uint8_t revision;  // ACPI version (1 byte)
+	uint32_t rsdt_address; // Physical address of the RSDT
+	uint32_t length;   // Total length of the structure (including extended part)
+	uint64_t xsdt_address; // Physical address of the XSDT (extended part)
+	uint8_t extended_checksum; // Checksum of the entire structure (including extended part)
+	uint8_t reserved[3]; // Reserved (3 bytes)
+	uint64_t xchecksum; // Checksum of entire table
 } RSDP3;
 
 typedef struct __attribute__((packed)) {
-	char signature[8] __attribute__((packed)); // "RSD PTR " (8 bytes)
-	uint8_t checksum __attribute__((packed));  // Checksum of the first 20 bytes
-	char oem_id[6] __attribute__((packed));    // OEM ID (6 bytes)
-	uint8_t revision __attribute__((packed));  // ACPI version (1 byte)
-	uint32_t rsdt_address __attribute__((packed)); // Physical address of the RSDT
-	uint32_t length __attribute__((packed));   // Total length of the structure (including extended part)
-	uint64_t xsdt_address __attribute__((packed)); // Physical address of the XSDT (extended part)
-	uint8_t extended_checksum __attribute__((packed)); // Checksum of the entire structure (including extended part)
-	uint8_t reserved[3] __attribute__((packed)); // Reserved (3 bytes)
+	char signature[8]; // "RSD PTR " (8 bytes)
+	uint8_t checksum;  // Checksum of the first 20 bytes
+	char oem_id[6];    // OEM ID (6 bytes)
+	uint8_t revision;  // ACPI version (1 byte)
+	uint32_t rsdt_address; // Physical address of the RSDT
+	uint32_t length;   // Total length of the structure (including extended part)
+	uint64_t xsdt_address; // Physical address of the XSDT (extended part)
+	uint8_t extended_checksum; // Checksum of the entire structure (including extended part)
+	uint8_t reserved[3]; // Reserved (3 bytes)
 } RSDP2;
 
 typedef struct __attribute__((packed)){
-	char signature[8] __attribute__((packed)); // "RSD PTR " (8 bytes)
-	uint8_t checksum __attribute__((packed));  // Checksum of the first 20 bytes
-	char oem_id[6] __attribute__((packed));    // OEM ID (6 bytes)
-	uint8_t revision __attribute__((packed));  // ACPI version (1 byte)
-	uint32_t rsdt_address __attribute__((packed)); // Physical address of the RSDT
+	char signature[8]; // "RSD PTR " (8 bytes)
+	uint8_t checksum;  // Checksum of the first 20 bytes
+	char oem_id[6];    // OEM ID (6 bytes)
+	uint8_t revision;  // ACPI version (1 byte)
+	uint32_t rsdt_address; // Physical address of the RSDT
 } RSDP1;
 
 
 typedef struct __attribute__((packed)){
-	char signature[8] __attribute__((packed));   // "RSD PTR "
-	uint8_t checksum __attribute__((packed));
-	char oem_id[6] __attribute__((packed));
-	uint8_t revision __attribute__((packed));
-	uint32_t rsdt_address __attribute__((packed));
+	char signature[8];   // "RSD PTR "
+	uint8_t checksum;
+	char oem_id[6];
+	uint8_t revision ;
+	uint32_t rsdt_address;
 	// Depending on the version (revision), additional fields may be present
 }RSDP;
 

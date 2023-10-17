@@ -25,15 +25,15 @@ x86_64_object_files := $(kernel_object_files) $(x86_64_c_object_files) $(x86_64_
 
 $(kernel_object_files): build/kernel/%.o : kernel/%.c
 	mkdir -p $(dir $@) && \
-	clang -m64 -c -fstack-protector -ffreestanding -Werror -I include $(patsubst build/kernel/%.o, kernel/%.c, $@) -o $@
+	x86_64-elf-gcc -m64 -c -fstack-protector -ffreestanding -Werror -I include $(patsubst build/kernel/%.o, kernel/%.c, $@) -o $@
 
 $(x86_64_c_object_files): build/x86_64/init/%.o : init/%.c
 	mkdir -p $(dir $@) && \
-	clang -m64 -c -fstack-protector -ffreestanding -Werror -I include $(patsubst build/x86_64/init/%.o, init/%.c, $@) -o $@
+	x86_64-elf-gcc -m64 -c -fstack-protector -ffreestanding -Werror -I include $(patsubst build/x86_64/init/%.o, init/%.c, $@) -o $@
 
 $(driver_cpp_object_files): build/drivers/%.o : drivers/%.cpp
 	mkdir -p $(dir $@) && \
-	g++ -m64 -c -ffreestanding -O2 -Wall -fno-exceptions -fno-rtti -fstack-protector -Werror -Wno-write-strings -fno-use-cxa-atexit -I include $(patsubst build/drivers/%.o, drivers/%.cpp, $@) -o $@
+	x86_64-elf-g++ -m64 -c -ffreestanding -O2 -Wall -fno-exceptions -fno-rtti -fstack-protector -Werror -Wno-write-strings -fno-use-cxa-atexit -I include $(patsubst build/drivers/%.o, drivers/%.cpp, $@) -o $@ -lc
 
 $(x86_64_asm_object_files): build/x86_64/boot/%.o : boot/%.asm
 	mkdir -p $(dir $@) && \
@@ -50,8 +50,9 @@ clean:
 
 lou.exe: $(x86_64_object_files)
 	mkdir -p dist/x86_64 && \
-	ld -n -o dist/x86_64/LOUOSKRNL.bin -T targets/linker.ld $(x86_64_object_files)
+	x86_64-elf-ld -n -o dist/x86_64/LOUOSKRNL.bin -T targets/linker.ld $(x86_64_object_files)
 	rm -r build
+
 
 
 annya.iso: lou.exe
