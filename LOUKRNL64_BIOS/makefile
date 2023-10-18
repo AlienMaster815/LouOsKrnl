@@ -55,6 +55,9 @@ lou.exe: $(x86_64_object_files)
 	x86_64-elf-ld -n -o dist/x86_64/LOUOSKRNL.bin -T targets/linker.ld $(x86_64_object_files)
 	rm -r build
 
+release: lou.exe
+	mkdir -p release/x86_64 && \
+	cp dist/x86_64/LOUOSKRNL.bin release/x86_64/LOUOSKRNL.exe
 
 
 #annya.iso: lou.exe

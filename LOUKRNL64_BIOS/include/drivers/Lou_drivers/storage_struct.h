@@ -12,6 +12,13 @@
         uint8_t device_head_register;
         uint8_t status_reg;
         uint8_t command_reg;
-    }register_interface;
+    }pata_register_interface;
+
+    typedef struct{
+        uint8_t primaster;
+        uint8_t prislave;
+        uint8_t secmaster;
+        uint8_t secslave;
+    }device_table;
 
 #endif
