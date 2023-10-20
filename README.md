@@ -1,6 +1,4 @@
 # LOUOSKRNL.EXE
-this is a work in progress dont 
-exspect things to 
-be working for a while this is 
-just me opening this for 
-people to see
+
+Please Go to the read me txt 
+file in bios versions docs folder

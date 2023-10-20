@@ -1,10 +1,11 @@
 bits 32
-
+;=======================================================
+;                 Multiboot Header
 section .boot
     dd 0x1BADB002     ; Magic number
     dd 0x00           ; Flags
     dd - (0x1BADB002 + 0x00)  ; Checksum (magic + flags)
-
+;========================================================
 section .data
 multiboot_info_ptr dd 0
 
