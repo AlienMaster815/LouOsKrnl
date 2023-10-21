@@ -12,4 +12,4 @@
 	echo '}'                                 >> iso/boot/grub/grub.cfg
 	grub-mkrescue --output=annya.iso iso
 	rm -rf iso
-
+read a
