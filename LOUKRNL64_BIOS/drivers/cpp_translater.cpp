@@ -6,7 +6,8 @@
  * the table here in this cpp file will
  * allow our kernel to talk to drivers from
  * the cpp universe without having serious
- * effect on how usermode also in cpp interacts
+ * effect on how usermode and or other drivers
+ * also in cpp interacts
  * with drivers we can either jump from cpp to c
  * and back to cpp or with this design determine
  * the fastest route and if determined just jump
