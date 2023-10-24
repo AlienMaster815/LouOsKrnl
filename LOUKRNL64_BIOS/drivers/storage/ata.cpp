@@ -29,14 +29,7 @@ void PATA::pata_device_scan(){
     
 
 }
-    
-uintptr_t PATA::Read_pata(uint8_t device,pata_register_interface registers){
-    return 0;
-}
 
-void PATA::Write_pata(uint8_t device,pata_register_interface registers, uintptr_t data){
-
-}
 
 PATA::PATA(){
 
@@ -45,50 +38,63 @@ PATA::~PATA(){
 
 }
     
-uintptr_t PATA::read_pata_device(uint8_t device, pata_register_interface registers){
-    
-    return 0;
-}
-void PATA::write_pata_device(uint8_t device, pata_register_interface registers, uintptr_t data){
 
-}
 
-uintptr_t PATA::read_patapi_device(uint8_t device, pata_register_interface registers){
-    return 0;
-}
-void PATA::write_patapi_device(uint8_t device, pata_register_interface registers, uintptr_t data){
-
-}
-    
 void PATA::determine_device_type(uint8_t drive){
-    if(drive == 0)
-        WakeAndIdentifyPata(0x1F0,0xA0);
+    if(drive == 0) //Primary Master
+        pata[drive] = WakeAndIdentifyPata(0x1F0,0xA0);
     
-    else if(drive == 1)
-        WakeAndIdentifyPata(0x1F0,0xB0);
+    else if(drive == 1) //Primary Slave
+        pata[drive] = WakeAndIdentifyPata(0x1F0,0xB0);
     
-    else if(drive == 2)
-        WakeAndIdentifyPata(0x170,0xA0);
+    else if(drive == 2) //Secondary Master
+        pata[drive] = WakeAndIdentifyPata(0x170,0xA0);
     
     else if(drive == 3) //Secondary Slave
-        WakeAndIdentifyPata(0x170,0xB0);
+        pata[drive] = WakeAndIdentifyPata(0x170,0xB0);
+    
 }
 
 void PATA::initialize_pata(uint8_t drive){
 
 }
 
-uint8_t PATA::WakeAndIdentifyPata(uint16_t Device ,uint8_t head){
+uint8_t PATA::WakeAndIdentifyPata(uint16_t Device ,uint8_t head)
+{
+    Port32Bit DataPort(Device);
+    Port8Bit errorPort(Device + 0x1);
+    Port8Bit sectorCountPort(Device + 0x2);
+    Port8Bit lbaLowPort(Device + 0x3);
+    Port8Bit lbaMidPort(Device + 0x4);
+    Port8Bit lbaHiPort(Device + 0x5);
+    Port8Bit devicePort(Device + 0x6);
+    Port8Bit commandPort(Device + 0x7);
+    Port8Bit controlPort(Device + 0x206);
     
-    Port16Bit DataReg;
-    Port8Bit ComandReg;
+    devicePort.Write(head);
+    controlPort.Write(0);
     
-    DataReg.port_number = Device;
-    ComandReg.port_number = device + 1;
+    uint8_t status = commandPort.Read();
+    if(status == 0xFF)
+        return 0;
     
+    while(((status & 0x80) == 0x80)
+       && ((status & 0x01) != 0x01))
+        status = commandPort.Read();
     
+    if(status & 0x01)
+    {
+        LouPrint("ERROR Could Not Determine Device: Error Code: %d\n",status);
+        return 0;
+    }
     
+    LouPrint("Found A Device On: ");
+    if((Device == 0x1F0) && (head == 0xA0))LouPrint("Primary Master\n");
+    if((Device == 0x1F0) && (head == 0xB0))LouPrint("Primary Slave\n");
+    if((Device == 0x170) && (head == 0xA0))LouPrint("Secondary Master\n");
+    if((Device == 0x170) && (head == 0xB0))LouPrint("Secondary Slave\n");
     
+    //TODO: Write Code To Determine What Type Of Device IS Connected
     
     return 0;
 }
