@@ -88,7 +88,7 @@ uint8_t PATA::WakeAndIdentifyPata(uint16_t Device ,uint8_t head){
     
     
     
-    PAT
+    
     
     return 0;
 }
