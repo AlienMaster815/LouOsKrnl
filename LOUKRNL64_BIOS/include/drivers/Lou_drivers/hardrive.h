@@ -10,9 +10,11 @@
 class PATA{
     public:
     
-        
+    void pata_Read28(uint8_t device,uint32_t Sector_Num, int BufferSize = 512);
+    void pata_Write28(uint8_t device, uint32_t Sector_Num ,uint8_t* Data, uint32_t BufferSize);
+    
     void pata_device_scan();
-
+    
     PATA();
     ~PATA();
 
@@ -20,14 +22,17 @@ class PATA{
     
 
     uint8_t pata[4];
-
     
-    void determine_device_type(uint8_t drive);    
+    void Read28PATA(uint8_t drive, uint32_t Sector_Num, int BufferSize);
+    void Read28PATAPI(uint8_t drive, uint32_t Sector_Num, int BufferSize);
+    
+    void Write28PATA(uint8_t device, uint32_t Sector_Num ,uint8_t* Data, uint32_t BufferSize);
+    void Write28PATAPI(uint8_t device, uint32_t Sector_Num ,uint8_t* Data, uint32_t BufferSize);
+    
+    void determine_device_type(uint8_t drive);
     void initialize_pata(uint8_t drive);
     uint8_t WakeAndIdentifyPata(uint16_t Device ,uint8_t head);
     
-    protected:
-  
 };
 #endif
 

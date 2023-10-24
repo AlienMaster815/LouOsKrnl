@@ -37,7 +37,47 @@ PATA::PATA(){
 PATA::~PATA(){
 
 }
+
+
+void PATA::Read28PATA(uint8_t drive, uint32_t Sector_Num, int BufferSize){
     
+    
+    
+}
+
+void PATA::Read28PATAPI(uint8_t drive, uint32_t Sector_Num, int BufferSize){
+    
+    
+    
+}
+
+void PATA::Write28PATA(uint8_t device, uint32_t Sector_Num ,uint8_t* Data, uint32_t BufferSize){
+    
+    
+    
+}
+
+void PATA::Write28PATAPI(uint8_t device, uint32_t Sector_Num ,uint8_t* Data, uint32_t BufferSize){
+    
+    
+    
+}
+    
+
+void PATA::pata_Read28(uint8_t device,uint32_t Sector_Num, int BufferSize){
+    
+    
+    
+}
+
+
+void PATA::pata_Write28(uint8_t device, uint32_t Sector_Num ,uint8_t* Data, uint32_t BufferSize){
+    
+    
+    
+}
+
+
 
 
 void PATA::determine_device_type(uint8_t drive){
@@ -94,7 +134,7 @@ uint8_t PATA::WakeAndIdentifyPata(uint16_t Device ,uint8_t head)
     if((Device == 0x170) && (head == 0xA0))LouPrint("Secondary Master\n");
     if((Device == 0x170) && (head == 0xB0))LouPrint("Secondary Slave\n");
     
-    //TODO: Write Code To Determine What Type Of Device IS Connected
+    //TODO: Write Code To Determine What Type Of Device Is Connected
     
     return 0;
 }
