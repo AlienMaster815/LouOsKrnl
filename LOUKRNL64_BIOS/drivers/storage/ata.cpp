@@ -61,38 +61,34 @@ void PATA::write_patapi_device(uint8_t device, pata_register_interface registers
 }
     
 void PATA::determine_device_type(uint8_t drive){
-    if(drive == 0){
-        //primary master
-        //TODO: write the identify comand then probe certain asspects to find the device type
-        //pata_register_interface primasterwake;
-        //primasterwake.DATA_REG = 0x1f0;
-        //primasterwake.device_head_register = 0xA0;
-    }
-    else if(drive == 1){
-        //primary slave
-        //TODO: write the identify comand then probe certain asspects to find the device type
-        //pata_register_interface prislavewake;
-        //prislavewake.DATA_REG = 0x1f0;
-        //prislavewake.device_head_register = 0xB0;
-    }
-    else if(drive == 2){
-        //secondary master
-        //TODO: write the identify comand then probe certain asspects to find the device type
-        //pata_register_interface secmasterewake;
-        //secmasterwake.DATA_REG = 0x170;
-        //secmasterwake.device_head_register = 0xA0;
-        
-    }
-    else if(drive == 3){
-        //secondary slave
-        //TODO: write the identify comand then probe certain asspects to find the device type
-        //pata_register_interface secslavewake;
-        //secslavewake.DATA_REG = 0x170;
-        //secslavewake.device_head_register = 0xB0;
-    }
+    if(drive == 0)
+        WakeAndIdentifyPata(0x1F0,0xA0);
     
+    else if(drive == 1)
+        WakeAndIdentifyPata(0x1F0,0xB0);
+    
+    else if(drive == 2)
+        WakeAndIdentifyPata(0x170,0xA0);
+    
+    else if(drive == 3) //Secondary Slave
+        WakeAndIdentifyPata(0x170,0xB0);
 }
 
 void PATA::initialize_pata(uint8_t drive){
 
+}
+
+uint8_t PATA::WakeAndIdentifyPata(uint16_t Device ,uint8_t head){
+    
+    Port16Bit DataReg;
+    Port8Bit ComandReg;
+    
+    DataReg.port_number = Device;
+    ComandReg.port_number = device + 1;
+    
+    
+    
+    PAT
+    
+    return 0;
 }

@@ -2,6 +2,8 @@
 #define _STORAGE_STRUCT_H
 #include <stdint.h>
 
+#ifndef _SERIAL_STRUCT
+#define _SERIAL_STRUCT
     typedef struct{
         uint16_t DATA_REG;
         uint8_t ERROR_REG;
@@ -20,5 +22,8 @@
         uint8_t secmaster;
         uint8_t secslave;
     }device_table;
+#endif
+
+
 
 #endif

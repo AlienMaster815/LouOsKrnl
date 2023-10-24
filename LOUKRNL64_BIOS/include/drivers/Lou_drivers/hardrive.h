@@ -32,6 +32,7 @@ class PATA{
     
     void determine_device_type(uint8_t drive);    
     void initialize_pata(uint8_t drive);
+    uint8_t WakeAndIdentifyPata(uint16_t Device ,uint8_t head);
   
 };
 #endif
