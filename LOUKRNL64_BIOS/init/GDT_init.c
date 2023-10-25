@@ -1,6 +1,13 @@
 #include <kernel/gdt.h>
 
-LOUSTATUS Initialize_Gdt(){
+GDT* globalGDT;
 
+LOUSTATUS Initialize_Gdt(){
+    
+    
+    
+}
+
+LOUSTATUS Modify_Gdt_Registers(){
     
 }
