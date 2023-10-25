@@ -39,41 +39,73 @@ PATA::~PATA(){
 }
 
 
-void PATA::Read28PATA(uint8_t drive, uint32_t Sector_Num, int BufferSize){
+void PATA::Read28PATA(uint8_t drive,uint8_t head, uint32_t Sector_Num, int BufferSize){
     
-    
-    
-}
-
-void PATA::Read28PATAPI(uint8_t drive, uint32_t Sector_Num, int BufferSize){
-    
-    
-    
-}
-
-void PATA::Write28PATA(uint8_t device, uint32_t Sector_Num ,uint8_t* Data, uint32_t BufferSize){
-    
-    
+    Port32Bit DataPort(drive);
+    Port8Bit errorPort(drive + 0x1);
+    Port8Bit sectorCountPort(drive + 0x2);
+    Port8Bit lbaLowPort(drive + 0x3);
+    Port8Bit lbaMidPort(drive + 0x4);
+    Port8Bit lbaHiPort(drive + 0x5);
+    Port8Bit devicePort(drive + 0x6);
+    Port8Bit commandPort(drive + 0x7);
+    Port8Bit controlPort(drive + 0x206);
     
 }
 
-void PATA::Write28PATAPI(uint8_t device, uint32_t Sector_Num ,uint8_t* Data, uint32_t BufferSize){
+void PATA::Read28PATAPI(uint8_t drive,uint8_t head, uint32_t Sector_Num, int BufferSize){
     
+    Port32Bit DataPort(drive);
+    Port8Bit errorPort(drive + 0x1);
+    Port8Bit sectorCountPort(drive + 0x2);
+    Port8Bit lbaLowPort(drive + 0x3);
+    Port8Bit lbaMidPort(drive + 0x4);
+    Port8Bit lbaHiPort(drive + 0x5);
+    Port8Bit devicePort(drive + 0x6);
+    Port8Bit commandPort(drive + 0x7);
+    Port8Bit controlPort(drive + 0x206);
     
+}
+
+void PATA::Write28PATA(uint8_t device,uint8_t head, uint32_t Sector_Num ,uint8_t* Data, uint32_t BufferSize){
+    
+    Port32Bit DataPort(device);
+    Port8Bit errorPort(device + 0x1);
+    Port8Bit sectorCountPort(device + 0x2);
+    Port8Bit lbaLowPort(device + 0x3);
+    Port8Bit lbaMidPort(device + 0x4);
+    Port8Bit lbaHiPort(device + 0x5);
+    Port8Bit devicePort(device + 0x6);
+    Port8Bit commandPort(device + 0x7);
+    Port8Bit controlPort(device + 0x206);
+    
+}
+
+void PATA::Write28PATAPI(uint8_t device,uint8_t head, uint32_t Sector_Num ,uint8_t* Data, uint32_t BufferSize){
+    
+    Port32Bit DataPort(device);
+    Port8Bit errorPort(device + 0x1);
+    Port8Bit sectorCountPort(device + 0x2);
+    Port8Bit lbaLowPort(device + 0x3);
+    Port8Bit lbaMidPort(device + 0x4);
+    Port8Bit lbaHiPort(device + 0x5);
+    Port8Bit devicePort(device + 0x6);
+    Port8Bit commandPort(device + 0x7);
+    Port8Bit controlPort(device + 0x206);
     
 }
     
 
 void PATA::pata_Read28(uint8_t device,uint32_t Sector_Num, int BufferSize){
     
-    
+
     
 }
 
 
 void PATA::pata_Write28(uint8_t device, uint32_t Sector_Num ,uint8_t* Data, uint32_t BufferSize){
     
-    
+
     
 }
 
@@ -95,8 +127,9 @@ void PATA::determine_device_type(uint8_t drive){
     
 }
 
-void PATA::initialize_pata(uint8_t drive){
+uint8_t PATA::initialize_pata(uint16_t drive,uint8_t head){
 
+    return 1;
 }
 
 uint8_t PATA::WakeAndIdentifyPata(uint16_t Device ,uint8_t head)
@@ -115,8 +148,14 @@ uint8_t PATA::WakeAndIdentifyPata(uint16_t Device ,uint8_t head)
     controlPort.Write(0);
     
     uint8_t status = commandPort.Read();
-    if(status == 0xFF)
+    if(status == 0xFF){
+        LouPrint("No Device On\n");
+        if((Device == 0x1F0) && (head == 0xA0))LouPrint("Primary Master\n");
+        if((Device == 0x1F0) && (head == 0xB0))LouPrint("Primary Slave\n");
+        if((Device == 0x170) && (head == 0xA0))LouPrint("Secondary Master\n");
+        if((Device == 0x170) && (head == 0xB0))LouPrint("Secondary Slave\n");
         return 0;
+    }
     
     while(((status & 0x80) == 0x80)
        && ((status & 0x01) != 0x01))
@@ -134,7 +173,12 @@ uint8_t PATA::WakeAndIdentifyPata(uint16_t Device ,uint8_t head)
     if((Device == 0x170) && (head == 0xA0))LouPrint("Secondary Master\n");
     if((Device == 0x170) && (head == 0xB0))LouPrint("Secondary Slave\n");
     
-    //TODO: Write Code To Determine What Type Of Device Is Connected
+    return initialize_pata(Device,head);
     
-    return 0;
+}
+
+void PATA::Flush(){
+    
+    
+    
 }
