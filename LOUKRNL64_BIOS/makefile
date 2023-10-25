@@ -70,8 +70,9 @@ annya.iso: lou.exe
 	echo 'set default=0'                     >> iso/boot/grub/grub.cfg
 	echo ''                                  >> iso/boot/grub/grub.cfg
 	echo 'menuentry "Annya/lou" {'			 >> iso/boot/grub/grub.cfg
-	echo 'multiboot /boot/LOUOSKRNL.exe'			 >> iso/boot/grub/grub.cfg
+	echo 'multiboot /boot/LOUOSKRNL.exe'	 >> iso/boot/grub/grub.cfg
 	echo 'boot'								 >> iso/boot/grub/grub.cfg
 	echo '}'							     >> iso/boot/grub/grub.cfg
 	grub-mkrescue --output=annya.iso iso
+
 	rm -rf iso
