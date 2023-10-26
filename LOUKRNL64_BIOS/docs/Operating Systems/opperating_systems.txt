@@ -1,0 +1,60 @@
+=======================================================================================================================================
+--                                                                                                                                   --
+--                                          Tyler Grenier 10/25/23 10:45 PM                                                          --
+--                                                                                                                                   --
+--                                  Subject Of File: Intro To Operating Systems\OS                                                   --
+--                                                                                                                                   --
+=======================================================================================================================================
+
+
+    What is an Operating System?
+An operating system (OS) is system software that serves as an intermediary between computer hardware and user applications. It manages
+and controls the hardware resources of a computer system, provides essential services for software applications, and acts as a bridge
+between the user and the computer's underlying hardware. Here is a more detailed definition of an operating system:
+
+An operating system is a software program or set of programs that:
+
+1. **Manages Hardware Resources:** It abstracts and manages various hardware components, including the central processing unit (CPU),
+memory, storage devices, input/output (I/O) devices, and more. The OS ensures that these resources are used efficiently and provides a
+consistent interface to interact with them.
+
+2. **Provides a User Interface:** It offers a user interface, which can be in the form of a command-line interface (CLI), a graphical
+user interface (GUI), or both, through which users can interact with the computer and its applications.
+
+3. **Schedules Processes:** The OS is responsible for scheduling and managing processes and threads, allowing multiple tasks to run
+concurrently on a single processor or across multiple processors in a multi-core system.
+
+4. **Manages File Systems:** It controls and organizes data storage through file systems, allowing for the creation, reading, writing,
+and deletion of files and directories.
+
+5. **Handles Input and Output:** The OS facilitates communication between software applications and hardware devices, enabling input
+from devices like keyboards and mice and output to displays, printers, and other peripherals.
+
+6. **Provides Security and Access Control:** It enforces security measures, including user authentication, authorization, and access
+control to protect data and resources.
+
+7. **Handles Error Handling and Recovery:** The OS can detect and respond to hardware and software errors, helping to prevent system
+crashes and data loss.
+
+8. **Manages Memory:** It allocates and manages memory resources, ensuring that applications have access to the necessary memory and
+protecting processes from interfering with each other.
+
+9. **Network and Communication Support:** In networked environments, the OS may provide network communication capabilities, enabling
+devices to connect and communicate with each other over local or wide area networks.
+
+
+10. **Supports Peripheral Devices:** It provides drivers and interfaces for hardware peripherals, allowing software applications to
+interact with devices such as printers, scanners, and cameras.
+
+Operating systems are crucial components of modern computing, as they enable the execution of software, provide a user-friendly
+interface, and ensure efficient utilization of hardware resources. Different operating systems exist for various types of devices,
+including personal computers, servers, mobile devices, and embedded systems, each tailored to meet the specific requirements and
+constraints of the target platform.
+
+
+What Are Real World Operating Systems We Use?
+
+    Operating Systems are used and installed on every computer system today The 2 That everyone knows is, 1 Windows, 2 MacOS. In
+addition to these Operating Systems There Will be several more Files within this Folder To Explain Each of these Operating Systems In
+depth and talk about what they are used For includeing, Linux , Unix, BSD, XBOX OS (its basically a striped down version of windows
+again there will be a wholle section teaching about this), PlayStation OS , etc...
