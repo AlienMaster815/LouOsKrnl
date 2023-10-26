@@ -16,7 +16,7 @@
 */
 
 
-char* KERNEL_VERSION = "0.000000000014 64-BIT";
+char* KERNEL_VERSION = "0.000000000015 64-BIT";
 
 
 multiboot_info_t* mbi;
@@ -62,15 +62,13 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
 	if(!(mbi->flags & MULTIBOOT_INFO_MEM_MAP))LouPanic("No Memory Information",BAD);
 	
 
-
-	HANDLE_ACPI();
-	
-	//pata_device_scanc();
+	pata_device_scanc();
 
 	//TODO LIST
 	//PARSE MEMORY MAP AND ACPI BY
 
-
+    HANDLE_ACPI();
+    
 	//TODO FINISH THE PAGING SYSTEM With USERMODE
  		
 	LouPrint("Hello World\n ");

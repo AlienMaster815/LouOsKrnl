@@ -23,15 +23,15 @@ class PATA{
 
     uint8_t pata[4];
     
-    void Read28PATA(uint8_t drive,bool Master, uint32_t Sector_Num, int BufferSize);
-    void Read28PATAPI(uint8_t drive,bool Master, uint32_t Sector_Num, int BufferSize);
+    void Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int BufferSize);
+    void Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, int BufferSize);
     
-    void Write28PATA(uint8_t device,bool Master, uint32_t Sector_Num ,uint8_t* Data, uint32_t BufferSize);
-    void Write28PATAPI(uint8_t device,bool Master, uint32_t Sector_Num ,uint8_t* Data, uint32_t BufferSize);
+    void Write28PATA(uint16_t device,bool Master, uint32_t Sector_Num ,uint8_t* Data, uint32_t BufferSize);
+    void Write28PATAPI(uint16_t device,bool Master, uint32_t Sector_Num ,uint8_t* Data, uint32_t BufferSize);
     
     void determine_device_type(uint8_t drive);
     uint8_t initialize_pata(uint16_t drive,bool Master);
-    uint8_t WakeAndIdentifyPata(uint16_t Device ,uint8_t head);
+    uint8_t WakeAndIdentifyPata(uint16_t Device ,uint8_t Master);
     void Flush(uint8_t Device);
     
 };
