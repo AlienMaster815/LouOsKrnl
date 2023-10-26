@@ -2,7 +2,7 @@
 	mkdir iso
 	mkdir iso/boot
 	mkdir iso/boot/grub
-	cp dist/x86_64/LOUOSKRNL.bin iso/boot/LOUOSKRNL.exe
+	cp release/x86_64/LOUOSKRNL.exe iso/boot/LOUOSKRNL.exe
 	echo 'set timeout=0'                     >> iso/boot/grub/grub.cfg
 	echo 'set default=0'                     >> iso/boot/grub/grub.cfg
 	echo ''                                  >> iso/boot/grub/grub.cfg

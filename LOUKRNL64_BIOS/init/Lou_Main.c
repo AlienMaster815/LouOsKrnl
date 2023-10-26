@@ -16,7 +16,7 @@
 */
 
 
-char* KERNEL_VERSION = "0.000000000012 64-BIT";
+char* KERNEL_VERSION = "0.000000000014 64-BIT";
 
 
 multiboot_info_t* mbi;
