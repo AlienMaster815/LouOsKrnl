@@ -29,13 +29,19 @@
 #include <drivers/lou_drv_api.h>
 #include <drivers/Lou_drivers/hardrive.h>
 
+void Drives::RegisterDeviceFileSystems(char Drive, uint8_t FileSystemType[256],uint8_t NumberOfFileSystem){
+    
+    // TODO: Register FileSystems Of The Drives In Question
+    
+}
+
+
 LOUSTATUS Drives::RegisterStorageDevice(bool SystemDrive, uint8_t DriveType, uint8_t DriveNum){
     if((SystemDrive) && (!SystemSet)){
         
-        //TODO: SetUp A System To Register the System Drive And Then Re Configure the Systems Drives
-        
-        drive[DriveSelect].DriveLet = 'C';
-        drive[DriveSelect].DriveNum = DriveNum;
+        drive[0].DriveLet = 'C';
+        drive[0].DriveNum = DriveNum;
+        drive[0].DriveType = DriveType;
         SystemSet = true;
     }
     else if((SystemDrive) && (SystemSet)) LouPanic("Access Violation System Drive Already Set" ,BAD);
@@ -88,7 +94,7 @@ void Drives::HandleDriveRequests(char Drive, uint8_t Request, uint8_t* Data,uint
     for(i = 0; drive[i].DriveLet == Drive ; i++){
         if (i > 25){
             // No Drive Exists
-            //TODO: Handle No Drive Exists
+            LouPrint("Error Finding Drive Is It Connected\n");
             return;
         }
     }

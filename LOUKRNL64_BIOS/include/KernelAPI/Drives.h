@@ -29,6 +29,8 @@ class Drives{
     void WriteDrive(char Drive, uint8_t* Data,uint32_t Location,uint32_t BufferSize);
     void ReadDrive(char Drive,uint32_t Location,uint32_t BufferSize);
     
+    void RegisterDeviceFileSystems(char Drive,uint8_t FilesystemType[256], uint8_t NumberOfFileSystem);
+    
     Drives();
     ~Drives();
     
@@ -46,11 +48,11 @@ class Drives{
         char DriveLet;
         uint8_t DriveType;
         uint8_t DriveNum;
-        // TODO: Put FileSystem Data Here Like What Filesystem,
-        // TODO: Handler And Number Of FileSystems
+        uint8_t FileSystemType[256];
+        uint8_t FileSystemNum;
     }Drive;
 
-    uint8_t DriveSelect = 0;
+    uint8_t DriveSelect = 1;
     uint8_t DriveTarget = 0;
     Drive drive[23];
 
