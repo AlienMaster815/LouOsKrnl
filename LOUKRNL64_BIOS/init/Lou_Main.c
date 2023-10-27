@@ -9,6 +9,7 @@
 #include <bootloader/grub/multiboot.h>
 #include <drivers/Lou_drivers/hardrivec.h>
 #include <KernelAPI/IOManager.h>
+#include <kernel/gdt.h>
 
 /* Tyler Grenier 9/21/23 9:56 PM
 -- Started the file with the main
@@ -17,7 +18,7 @@
 */
 
 
-char* KERNEL_VERSION = "0.000000000015 64-BIT";
+char* KERNEL_VERSION = "0.000000000016 64-BIT";
 
 
 multiboot_info_t* mbi;
@@ -62,6 +63,9 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
     
 	if(!(mbi->flags & MULTIBOOT_INFO_MEM_MAP))LouPanic("No Memory Information",BAD);
 	
+    Initialize_Gdt();
+    
+    
     HANDLE_ACPI();
     
     // TODO: PARSE MEMORY MAP AND ACPI BY
