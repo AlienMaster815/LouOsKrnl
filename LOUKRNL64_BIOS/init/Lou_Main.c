@@ -8,6 +8,7 @@
 #include <kernel/acpi.h>
 #include <bootloader/grub/multiboot.h>
 #include <drivers/Lou_drivers/hardrivec.h>
+#include <KernelAPI/IOManager.h>
 
 /* Tyler Grenier 9/21/23 9:56 PM
 -- Started the file with the main
@@ -61,6 +62,7 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
 
 	if(!(mbi->flags & MULTIBOOT_INFO_MEM_MAP))LouPanic("No Memory Information",BAD);
 	
+    IO_Manager_Init();
 
 	pata_device_scanc();
 

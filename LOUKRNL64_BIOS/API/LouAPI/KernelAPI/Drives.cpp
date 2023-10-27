@@ -31,6 +31,9 @@
 
 LOUSTATUS Drives::RegisterStorageDevice(bool SystemDrive, uint8_t DriveType, uint8_t DriveNum){
     if((SystemDrive) && (!SystemSet)){
+        
+        //TODO: SetUp A System To Register the System Drive And Then Re Configure the Systems Drives
+        
         drive[DriveSelect].DriveLet = 'C';
         drive[DriveSelect].DriveNum = DriveNum;
         SystemSet = true;

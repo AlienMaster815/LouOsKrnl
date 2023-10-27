@@ -29,6 +29,7 @@
 
 #include <drivers/Lou_drivers/hardrive.h>
 #include <drivers/lou_drv_api.h>
+#include <KernelAPI/IOManager.h>
 
 void PATA::pata_device_scan(){
     
@@ -342,18 +343,22 @@ uint8_t PATA::initialize_pata(uint16_t drive,bool Master){
     
     if((drive == 0x1F0) && (Master)){
         pata[0] = 1;
+        Register_Storage_DeviceA(PATADEV, 1);
         return 0;
     }
     else if((drive == 0x1F0) && (!Master)){
         pata[1] = 1;
+        Register_Storage_DeviceA(PATADEV, 2);
         return 0;
     }
     else if((drive == 0x170) &&  (Master)){
         pata[2] = 1;
+        Register_Storage_DeviceA(PATADEV, 3);
         return 0;
     }
     else if((drive == 0x170) && (!Master)){
         pata[3] = 1;
+        Register_Storage_DeviceA(PATADEV, 4);
         return 0;
     }
     //TODO: Read Information From The Drive To Determine If it Is       \n
