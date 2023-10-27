@@ -12,6 +12,9 @@
 #define BLOCK 4096
 #define SIZE unsigned long long
 
+#define PATADEV 1
+#define PATAPIDEV 2
+
 #define STATUS bool
 
 //define kernel c functions that we translate to the cpp world

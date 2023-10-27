@@ -15,10 +15,12 @@
  * that also takes too long
 */
 
-PATA pata;
-
+#include <drivers/lou_drv_api.h>
+#include <drivers/Lou_drivers/hardrive.h>
 
 extern "C" void pata_device_scanc(){
-    pata.pata_device_scan();
+    PATA* pata = (PATA*)Lou_Alloc_Mem(sizeof(PATA));
+    pata->pata_device_scan();
+    Lou_Free_Mem((RAMADD) pata, sizeof(PATA));
 }
 

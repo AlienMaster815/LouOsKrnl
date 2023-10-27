@@ -30,7 +30,6 @@
 #include <drivers/Lou_drivers/hardrive.h>
 #include <drivers/lou_drv_api.h>
 
-
 void PATA::pata_device_scan(){
     
     

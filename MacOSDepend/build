@@ -11,17 +11,4 @@ brew --version
 if you can restart a terminal and get a version from brew and not a unkown app error you may vontinue
 
 
-brew install gcc make Bison gettext binutils flex pkg-config glibc xorriso nasm automake clang
-
-when this is said and done 
-./bootstrap
-
-then to configure
-
-./configure
-
-crossfingers now an
-make
-
-hold your breath and
-sudo make install
+brew install x86_64-elf-gcc make Bison gettext binutils flex pkg-config glibc xorriso nasm automake clang

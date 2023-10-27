@@ -22,8 +22,12 @@
 */
 
 
+// TODO: Write A Storage Driver Release
+
+
 #include <KernelAPI/Drives.h>
 #include <drivers/lou_drv_api.h>
+#include <drivers/Lou_drivers/hardrive.h>
 
 LOUSTATUS Drives::RegisterStorageDevice(bool SystemDrive, uint8_t DriveType, uint8_t DriveNum){
     if((SystemDrive) && (!SystemSet)){
@@ -49,20 +53,20 @@ LOUSTATUS Drives::RegisterStorageDeviceA(uint8_t DriveType,uint8_t DriveNum){
     return 0;
 }
 
-void Drives::WriteDrive(char Drive, uint8_t* Data, uint32_t Location){
+void Drives::WriteDrive(char Drive, uint8_t* Data, uint32_t Location,uint32_t BufferSize){
     
     ACCESS status = RequestDriveAccess(Drive, WRITE, Data, Location);
     
-    if(status) HandleDriveRequests(Drive, WRITE, Data ,Location);
+    if(status) HandleDriveRequests(Drive, WRITE, Data ,Location, BufferSize);
     
 }
 
 
-void Drives::ReadDrive(char Drive, uint32_t Location){
+void Drives::ReadDrive(char Drive, uint32_t Location , uint32_t BufferSize){
     
     ACCESS status = RequestDriveAccess(Drive, READ, 0, Location);
     
-    if(status) HandleDriveRequests(Drive, READ, 0 ,Location);
+    if(status) HandleDriveRequests(Drive, READ, 0 ,Location, BufferSize);
     
 }
 
@@ -76,10 +80,51 @@ Drives::~Drives(){
     
 }
 
-void Drives::HandleDriveRequests(char Drive, uint8_t Request, uint8_t* Data,uint32_t Location){
+void Drives::HandleDriveRequests(char Drive, uint8_t Request, uint8_t* Data,uint32_t Location, uint32_t BufferSize){
+    uint8_t i;
+    for(i = 0; drive[i].DriveLet == Drive ; i++){
+        if (i > 25){
+            // No Drive Exists
+            //TODO: Handle No Drive Exists
+            return;
+        }
+    }
     
+    switch(Location){
+        default: LouPrint("Error Handling IO Request\n");
     
-    
+        case READ:{
+            switch(drive[i].DriveType){
+                default: LouPrint("Unknown Device\n");
+                case PATADEV:{
+                    PATA* pata = (PATA*) Lou_Alloc_Mem(sizeof(PATA));
+                    pata->pata_Read28(drive[i].DriveNum, Location, BufferSize);
+                    Lou_Free_Mem((RAMADD) pata,sizeof(PATA));
+                }
+                case PATAPIDEV:{
+                    PATA* pata = (PATA*) Lou_Alloc_Mem(sizeof(PATA));
+                    pata->pata_Read28(drive[i].DriveNum, Location, BufferSize);
+                    Lou_Free_Mem((RAMADD) pata,sizeof(PATA));
+                }
+            }
+        }
+        case WRITE:{
+            switch(drive[i].DriveType){
+                default: LouPrint("Unknown Device\n");
+                case PATADEV:{
+                    PATA* pata = (PATA*) Lou_Alloc_Mem(sizeof(PATA));
+                    pata->pata_Write28(drive[i].DriveNum, Location , Data, BufferSize);
+                    Lou_Free_Mem((RAMADD) pata,sizeof(PATA));
+                }
+                case PATAPIDEV:{
+                    PATA* pata = (PATA*) Lou_Alloc_Mem(sizeof(PATA));
+                    pata->pata_Write28(drive[i].DriveNum, Location , Data, BufferSize);
+                    Lou_Free_Mem((RAMADD) pata,sizeof(PATA));
+                }
+            }
+        }
+    }
+
 }
 
 ACCESS Drives::RequestDriveAccess(char Drive, uint8_t Request, uint8_t* Data,uint32_t Location){

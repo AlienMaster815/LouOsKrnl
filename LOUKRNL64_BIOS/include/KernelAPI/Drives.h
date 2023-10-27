@@ -13,8 +13,8 @@
 #define WRITE 2
 #define READ 3
 
-#define ATA 1
-#define ATAPI 2
+#define PATADEV 1
+#define PATAPIDEV 2
 
 
 
@@ -31,8 +31,8 @@ class Drives{
     LOUSTATUS RegisterStorageDevice(bool SystemDrive, uint8_t DriveType,uint8_t DriveNum);
     LOUSTATUS RegisterStorageDeviceA(uint8_t DriveType, uint8_t DriveNum);
 
-    void WriteDrive(char Drive, uint8_t* Data,uint32_t Location);
-    void ReadDrive(char Drive,uint32_t Location);
+    void WriteDrive(char Drive, uint8_t* Data,uint32_t Location,uint32_t BufferSize);
+    void ReadDrive(char Drive,uint32_t Location,uint32_t BufferSize);
     
     Drives();
     ~Drives();
@@ -53,7 +53,7 @@ class Drives{
 
     bool SystemSet = false;
     
-    void HandleDriveRequests(char Drive, uint8_t Request, uint8_t* Data, uint32_t Location);
+    void HandleDriveRequests(char Drive, uint8_t Request, uint8_t* Data, uint32_t Location,uint32_t BufferSize);
     
     ACCESS RequestDriveAccess(char Drive, uint8_t Request, uint8_t* Data,uint32_t Location);
 
