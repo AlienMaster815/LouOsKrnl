@@ -56,6 +56,34 @@ class PATA{
 #define HBA_PORT_IPM_ACTIVE 1
 #define HBA_PORT_DET_PRESENT 3
 
+#define ATA_DEV_BUSY 0x80
+#define ATA_DEV_DRQ 0x08
+
+#define    AHCI_BASE    0x400000    // 4M
+ 
+#define HBA_PxCMD_ST    0x0001
+#define HBA_PxCMD_FRE   0x0010
+#define HBA_PxCMD_FR    0x4000
+#define HBA_PxCMD_CR    0x8000
+
+#define    SATA_SIG_ATA    0x00000101    // SATA drive
+#define    SATA_SIG_ATAPI    0xEB140101    // SATAPI drive
+#define    SATA_SIG_SEMB    0xC33C0101    // Enclosure management bridge
+#define    SATA_SIG_PM    0x96690101    // Port multiplier
+ 
+#define AHCI_DEV_NULL 0
+#define AHCI_DEV_SATA 1
+#define AHCI_DEV_SEMB 2
+#define AHCI_DEV_PM 3
+#define AHCI_DEV_SATAPI 4
+ 
+#define HBA_PORT_IPM_ACTIVE 1
+#define HBA_PORT_DET_PRESENT 3
+
+#define ATA_CMD_READ_DMA_EX 0x25
+#define HBA_PxIS_TFES 0x20
+#define ATA_CMD_WRITE_DMA_EX 0xCA
+
 
 
 class SATA{
@@ -63,7 +91,8 @@ class SATA{
     public:
     
     void initialize_sata();
-
+    void Read_Sata(uint8_t device, uint32_t startl, uint32_t starth, uint32_t count, uint16_t *buf);
+    void Write_Sata(uint8_t device, uint32_t startl, uint32_t starth, uint32_t count, uint16_t *data);
     
     private:
     
@@ -380,6 +409,20 @@ class SATA{
     } HBA_CMD_TBL;
     
     void probe_port(HBA_MEM *abar);
+    
+    void WriteSata(HBA_PORT *port, uint32_t startl, uint32_t starth, uint32_t count, uint16_t *data);
+    
+    void ReadSata(HBA_PORT *port, uint32_t startl, uint32_t starth, uint32_t count, uint16_t *buf);
+    
+    int check_type(HBA_PORT *port);
+    
+    void port_rebase(HBA_PORT *port, int portno);
+    
+    void start_cmd(HBA_PORT *port);
+    
+    void stop_cmd(HBA_PORT *port);
+
+    int find_cmdslot(HBA_PORT *port);
     
     SATA();
     ~SATA();
