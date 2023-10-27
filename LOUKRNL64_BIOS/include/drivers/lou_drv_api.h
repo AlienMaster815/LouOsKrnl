@@ -4,6 +4,7 @@
 
 //define common used cpp functions with drivers
 #include <drivers/Lou_drivers/io.h>
+#include <stat.h>
 
 #define MAXMEM 0xFFFFFFFFFFFFFFFF
 #define RAMADD unsigned char*
@@ -25,4 +26,5 @@ extern "C" void outl(uint16_t port, uint32_t data);
 extern "C" void outbSlow(uint16_t port,uint8_t data);
 extern "C" RAMADD Lou_Alloc_Mem(SIZE size);
 extern "C" STATUS Lou_Free_Mem(RAMADD Addr, SIZE size);
+extern "C" void LouPanic(char*,STATUS);
 #endif
