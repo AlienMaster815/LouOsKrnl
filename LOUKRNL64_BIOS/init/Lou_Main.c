@@ -58,10 +58,12 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
 	//vga set for debug
 	
 	LouPrint("Lou Version %s \n", KERNEL_VERSION);
-	LouPrint("Hello Im Lousine Getting Things Ready\n");
-
+    LouPrint("Hello Im Lousine Getting Things Ready\n");
+    
 	if(!(mbi->flags & MULTIBOOT_INFO_MEM_MAP))LouPanic("No Memory Information",BAD);
 	
+    HANDLE_ACPI();
+    
     IO_Manager_Init();
 
 	pata_device_scanc();
@@ -69,7 +71,7 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
 	//TODO LIST
 	//PARSE MEMORY MAP AND ACPI BY
 
-    HANDLE_ACPI();
+
     
 	//TODO FINISH THE PAGING SYSTEM With USERMODE
  		

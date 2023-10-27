@@ -408,6 +408,13 @@ class SATA{
         HBA_PRDT_ENTRY    prdt_entry[1];    // Physical region descriptor table entries, 0 ~ 65535
     } HBA_CMD_TBL;
     
+    
+    typedef struct{
+        uint8_t DriveNum;
+        uint8_t DriveType;
+        HBA_PORT *port;
+    }SATAEntry;
+    
     void probe_port(HBA_MEM *abar);
     
     void WriteSata(HBA_PORT *port, uint32_t startl, uint32_t starth, uint32_t count, uint16_t *data);

@@ -15,7 +15,7 @@ SATA::~SATA(){
 
 void SATA::initialize_sata(){
     
-    
+    //TODO: Finish Sata Drivers
 }
 
 
