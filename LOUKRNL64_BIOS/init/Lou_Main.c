@@ -67,8 +67,6 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
     // TODO: PARSE MEMORY MAP AND ACPI BY
     
     
-    
-    
     IO_Manager_Init();
 
 	pata_device_scanc();

@@ -318,5 +318,5 @@ LOUSTATUS Set_Stack_Segment(bool Code_Seg, uint64_t Base, uint64_t Limit, GDT* g
 
 
 LOUSTATUS Load_Gdt(GDT* gdt){
-    
+    GDTP gdtp;
 }
