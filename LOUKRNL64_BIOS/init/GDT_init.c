@@ -19,6 +19,7 @@ LOUSTATUS Initialize_Gdt(){
     Set_Kernel_Segment(CODE,Kernel_base,Machine_limit,globalGDT);
     Set_Kernel_Segment(DATA,Kernel_base,Machine_limit,globalGDT);
     
+    Load_Gdt(globalGDT);
 }
 
 LOUSTATUS Modify_Gdt_Registers(){
@@ -26,5 +27,5 @@ LOUSTATUS Modify_Gdt_Registers(){
 }
 
 LOUSTATUS Uninitialize_Gdt(){
-    
+    Lou_Free_Mem((RAMADD)globalGDT, sizeof(GDT));
 }
