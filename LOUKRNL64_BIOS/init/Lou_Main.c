@@ -63,6 +63,7 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
     
 	if(!(mbi->flags & MULTIBOOT_INFO_MEM_MAP))LouPanic("No Memory Information",BAD);
 	
+    
     Initialize_Gdt();
     
     
