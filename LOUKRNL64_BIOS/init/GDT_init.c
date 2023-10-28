@@ -7,7 +7,7 @@
 GDT* globalGDT;
 
 LOUSTATUS Initialize_Gdt(){
-    
+    LOUSTATUS stat;
     LouPrint("Initializing GDT\n");
     globalGDT = 0;
     globalGDT = (GDT*)Lou_Alloc_Mem(sizeof(GDT));
@@ -22,15 +22,20 @@ LOUSTATUS Initialize_Gdt(){
     Set_Kernel_Segment(CODE,Kernel_base,Machine_limit,globalGDT);
     Set_Kernel_Segment(DATA,Kernel_base,Machine_limit,globalGDT);
     
-    Load_Gdt(globalGDT);
+    if(Load_Gdt(globalGDT) != 0)LouPanic("Error Loading GDT\n",BAD);
+    
     
     LouPrint("GDT Initialized\n");
+    
+    return 0;
 }
 
 LOUSTATUS Modify_Gdt_Registers(){
     
+    return 0;
 }
 
 LOUSTATUS Uninitialize_Gdt(){
     Lou_Free_Mem((RAMADD)globalGDT, sizeof(GDT));
+    return 0;
 }
