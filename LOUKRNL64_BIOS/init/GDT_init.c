@@ -7,6 +7,8 @@
 GDT* globalGDT;
 
 LOUSTATUS Initialize_Gdt(){
+    
+    LouPrint("Initializing GDT\n");
     globalGDT = 0;
     globalGDT = (GDT*)Lou_Alloc_Mem(sizeof(GDT));
     
