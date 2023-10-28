@@ -69,7 +69,7 @@ $(kernel_asm_object_files): build/x86_64/kernelasm/%.o : kernel/%.asm
 
 clean:
 	rm -r build
-
+	rm -r release
 
 lou.exe: $(x86_64_object_files)
 	mkdir -p dist/x86_64 && \
