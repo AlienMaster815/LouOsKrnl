@@ -22,7 +22,9 @@ LOUSTATUS Initialize_Gdt(){
     if(Set_Kernel_Segment(CODE,Kernel_base,Machine_limit,globalGDT) != 0) LouPanic("Error Setting Kernel Code Segment",BAD);
     if(Set_Kernel_Segment(DATA,Kernel_base,Machine_limit,globalGDT) != 0) LouPanic("Error Setting Kernel Data Segment",BAD);
     
-    if(Load_Gdt(globalGDT) != 0)LouPanic("Error Loading GDT\n",BAD);
+    
+    
+    if(Load_Gdt(globalGDT) != 0)LouPanic("Error Loading GDT\n",BAD); //BUGBUG:.: Crash Here
     
     
     LouPrint("GDT Initialized\n");
