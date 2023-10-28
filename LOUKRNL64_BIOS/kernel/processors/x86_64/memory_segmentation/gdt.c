@@ -24,6 +24,7 @@ LOUSTATUS Set_Kernel_Segment(bool Code_Seg, uint64_t Base, uint64_t Limit, GDT* 
         gdt->KERNEL_DATA.granularity = 0xCF; // 4 KB granularity, 32-bit protected mode
         gdt->KERNEL_DATA.base_high = (uint8_t)((Base >> 24) & 0xFF); // Upper 8 bits of the base address
     }
+    return 0;
 }
 
 LOUSTATUS Set_User_Segment(bool Code_Seg, uint8_t type, uint64_t Base, uint64_t Limit, GDT* gdt) {
@@ -43,6 +44,7 @@ LOUSTATUS Set_User_Segment(bool Code_Seg, uint8_t type, uint64_t Base, uint64_t 
         gdt->USER_DATA.base_high = (uint8_t)((Base >> 24) & 0xFF); // Upper 8 bits of the base address
     }
     // Return an appropriate status (LOUSTATUS) or error code
+    return 0;
 }
 
 
@@ -53,6 +55,8 @@ LOUSTATUS Set_TSS_Segment(bool Code_Seg,uint64_t Base, uint64_t Limit, GDT* gdt)
     else{ //Data Segment
         
     }
+    
+    return 0;
 }
 
 LOUSTATUS Set_System_Security_Segment(bool Code_Seg, uint64_t Base, uint64_t Limit, GDT* gdt) {
@@ -72,6 +76,7 @@ LOUSTATUS Set_System_Security_Segment(bool Code_Seg, uint64_t Base, uint64_t Lim
         gdt->SYSTEM_SECURITY_DATA.base_high = (uint8_t)((Base >> 24) & 0xFF); // Upper 8 bits of the base address
     }
     // Return an appropriate status (LOUSTATUS) or error code
+    return 0;
 }
 
 
@@ -97,6 +102,7 @@ LOUSTATUS Set_User_Security_Segment(bool Code_Seg, uint64_t Base, uint64_t Limit
         gdt->USER_SECURITY_DATA.base_high = (uint8_t)((Base >> 24) & 0xFF);
     }
     // Return an appropriate status (LOUSTATUS) or error code
+    return 0;
 }
 
 
@@ -123,6 +129,7 @@ LOUSTATUS Set_Interrupt_Descriptor_Table_Seg(bool Code_Seg, uint64_t Base, uint6
         gdt->IDT_DATA.base_high = (uint8_t)((Base >> 24) & 0xFF);
     }
     // Return an appropriate status (LOUSTATUS) or error code
+    return 0;
 }
 
 
@@ -148,6 +155,7 @@ LOUSTATUS Set_Local_Descriptor_Table_Segment(bool Code_Seg, uint64_t Base, uint6
         gdt->LDT_DATA.base_high = (uint8_t)((Base >> 24) & 0xFF);
     }
     // Return an appropriate status (LOUSTATUS) or error code
+    return 0;
 }
 
 
@@ -173,6 +181,7 @@ LOUSTATUS Set_Global_Descriptor_Table_Segment(bool Code_Seg, uint64_t Base, uint
         gdt->GDT_DATA.base_high = (uint8_t)((Base >> 24) & 0xFF);
     }
     // Return an appropriate status (LOUSTATUS) or error code
+    return 0;
 }
 
 
@@ -184,6 +193,7 @@ LOUSTATUS Set_Null_Segment(bool Code_Seg, uint64_t Base, uint64_t Limit, GDT* gd
         gdt->NULL_DATA.granularity = 0;
         gdt->NULL_DATA.base_high = 0;
     
+    return 0;
 }
 
 
@@ -210,6 +220,7 @@ LOUSTATUS Set_Call_Gate_Segment(bool Code_Seg, uint64_t Base, uint64_t Limit, GD
         gdt->CALL_GATE_DATA.base_high = (uint8_t)((Base >> 24) & 0xFF);
     }
     // Return an appropriate status (LOUSTATUS) or error code
+    return 0;
 }
 
 
@@ -236,6 +247,7 @@ LOUSTATUS Set_Task_Gate_Segment(bool Code_Seg, uint64_t Base, uint64_t Limit, GD
         gdt->TASK_GATE_DATA.base_high = (uint8_t)((Base >> 24) & 0xFF);
     }
     // Return an appropriate status (LOUSTATUS) or error code
+    return 0;
 }
 
 
@@ -262,6 +274,7 @@ LOUSTATUS Set_Interrupt_Gate_Segment(bool Code_Seg, uint64_t Base, uint64_t Limi
         gdt->INTERRUPT_GATE_DATA.base_high = (uint8_t)((Base >> 24) & 0xFF);
     }
     // Return an appropriate status (LOUSTATUS) or error code
+    return 0;
 }
 
 
@@ -288,6 +301,7 @@ LOUSTATUS Set_Trap_Gate_Segment(bool Code_Seg, uint64_t Base, uint64_t Limit, GD
         gdt->TRAP_GATE_DATA.base_high = (uint8_t)((Base >> 24) & 0xFF);
     }
     // Return an appropriate status (LOUSTATUS) or error code
+    return 0;
 }
 
 
@@ -314,6 +328,7 @@ LOUSTATUS Set_Stack_Segment(bool Code_Seg, uint64_t Base, uint64_t Limit, GDT* g
         gdt->STACK_DATA.base_high = (uint8_t)((Base >> 24) & 0xFF);
     }
     // Return an appropriate status (LOUSTATUS) or error code
+    return 0;
 }
 
 
@@ -327,4 +342,5 @@ LOUSTATUS Load_Gdt(GDT* gdt){
     gdtp.limit = sizeof(GDT) - 1;
     
     asm volatile ("lgdt %0" : : "m" (gdtp));
+    return 0;
 }
