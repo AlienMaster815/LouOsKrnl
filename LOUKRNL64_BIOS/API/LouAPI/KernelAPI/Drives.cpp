@@ -29,6 +29,15 @@
 #include <drivers/lou_drv_api.h>
 #include <drivers/Lou_drivers/hardrive.h>
 
+
+    char driveLet[23] = {'D', 'E', 'F', 'G', 'H',
+                         'I', 'J', 'K', 'L', 'M',
+                         'N', 'O', 'P', 'Q', 'R',
+                         'S', 'T', 'U', 'V', 'W',
+                         'X', 'Y', 'Z'};
+
+
+
 void Drives::RegisterDeviceFileSystems(char Drive, uint8_t FileSystemType[256],uint8_t NumberOfFileSystem){
     
     // TODO: Register FileSystems Of The Drives In Question
@@ -50,6 +59,10 @@ LOUSTATUS Drives::RegisterStorageDevice(bool SystemDrive, uint8_t DriveType, uin
     else{
         drive[DriveSelect].DriveLet = driveLet[DriveTarget];
         drive[DriveSelect].DriveNum = DriveNum;
+        drive[DriveSelect].DriveType = DriveType;
+        LouPrint("%c: ",drive[DriveSelect].DriveLet);
+        if(DriveType == PATADEV)LouPrint("PATA\n");
+        if(DriveType == PATAPIDEV)LouPrint("PATAPI\n");
         DriveTarget++;
     }
     DriveSelect++;

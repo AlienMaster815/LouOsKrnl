@@ -24,7 +24,7 @@ LOUSTATUS Initialize_Gdt(){
     
     
     
-    //if(Load_Gdt(globalGDT) != 0)LouPanic("Error Loading GDT\n",BAD); //BUGBUG:.: Crash Here
+    if(Load_Gdt(globalGDT) != 0)LouPanic("Error Loading GDT\n",BAD); //BUGBUG:.: Crash Here
     
     
     LouPrint("GDT Initialized\n");

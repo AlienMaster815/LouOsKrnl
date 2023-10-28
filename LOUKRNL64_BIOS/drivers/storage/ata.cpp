@@ -31,15 +31,22 @@
 #include <drivers/lou_drv_api.h>
 #include <KernelAPI/IOManager.h>
 
+
+uint8_t pata[4];
+
+
+
 void PATA::pata_device_scan(){
     
-    
+
     LouPrint("scaning PATA devices\n");
     
+
+
     for(uint8_t i = 0; i < 4; i++)
         determine_device_type(i);
     
-
+    return;
 }
 
 
@@ -325,51 +332,73 @@ void PATA::pata_Write28(uint8_t device, uint32_t Sector_Num ,uint8_t* Data, uint
 
 
 void PATA::determine_device_type(uint8_t drive){
-    if(drive == 0) //Primary Master
-        pata[drive] = WakeAndIdentifyPata(0x1F0,0xA0);
-    
-    else if(drive == 1) //Primary Slave
-        pata[drive] = WakeAndIdentifyPata(0x1F0,0xB0);
-    
-    else if(drive == 2) //Secondary Master
-        pata[drive] = WakeAndIdentifyPata(0x170,0xA0);
-    
-    else if(drive == 3) //Secondary Slave
-        pata[drive] = WakeAndIdentifyPata(0x170,0xB0);
+
+    if(drive == 0){ //Primary Master
+        WakeAndIdentifyPata(0x1F0,0xA0);
+        return;
+    }
+    else if(drive == 1){ //Primary Slave
+
+        WakeAndIdentifyPata(0x1F0,0xB0);
+        return;
+    }
+    else if(drive == 2){ //Secondary Master
+
+        WakeAndIdentifyPata(0x170,0xA0);
+        return;
+    }
+    else if(drive == 3){ //Secondary Slave
+        WakeAndIdentifyPata(0x170,0xB0);
+        return;
+    }
     
 }
 
-uint8_t PATA::initialize_pata(uint16_t drive,bool Master){
-    
+
+void PATA::initialize_pata(uint16_t drive,bool Master){
+
+
+
     if((drive == 0x1F0) && (Master)){
         pata[0] = 1;
+
+        //TODO: READ From The Drive And Deterrminedrive type and if its actualy a device or ghost device
+
         Register_Storage_DeviceA(PATADEV, 1);
-        return 0;
+        return;
     }
     else if((drive == 0x1F0) && (!Master)){
         pata[1] = 1;
+
+        //TODO: READ From The Drive And Deterrminedrive type and if its actualy a device or ghost device
+
         Register_Storage_DeviceA(PATADEV, 2);
-        return 0;
+        return;
     }
     else if((drive == 0x170) &&  (Master)){
         pata[2] = 1;
+
+        //TODO: READ From The Drive And Deterrminedrive type and if its actualy a device or ghost device
+
         Register_Storage_DeviceA(PATADEV, 3);
-        return 0;
+        return;
     }
     else if((drive == 0x170) && (!Master)){
         pata[3] = 1;
         Register_Storage_DeviceA(PATADEV, 4);
-        return 0;
+        return;
     }
-    //TODO: Read Information From The Drive To Determine If it Is       \n
+    
+    //TODO: Read Information From The Drive To Determine If it Is There,  \n
     //TODO: PATA Or PATAPI To See What Features We Can Milk From The Drive
-    
-    
-    return 1;
+
+
+
 }
 
-uint8_t PATA::WakeAndIdentifyPata(uint16_t Device ,uint8_t head)
+void PATA::WakeAndIdentifyPata(uint16_t Device ,uint8_t head)
 {
+
     Port32Bit DataPort(Device);
     Port8Bit errorPort(Device + 0x1);
     Port8Bit sectorCountPort(Device + 0x2);
@@ -379,10 +408,14 @@ uint8_t PATA::WakeAndIdentifyPata(uint16_t Device ,uint8_t head)
     Port8Bit devicePort(Device + 0x6);
     Port8Bit commandPort(Device + 0x7);
     Port8Bit controlPort(Device + 0x206);
+
+    
     
     devicePort.Write(head);
     controlPort.Write(0);
     
+    
+
     uint8_t status = commandPort.Read();
     if(status == 0xFF){
         LouPrint("No Device On\n");
@@ -390,33 +423,46 @@ uint8_t PATA::WakeAndIdentifyPata(uint16_t Device ,uint8_t head)
         else if((Device == 0x1F0) && (head == 0xB0))LouPrint("Primary Slave\n");
         else if((Device == 0x170) && (head == 0xA0))LouPrint("Secondary Master\n");
         else if((Device == 0x170) && (head == 0xB0))LouPrint("Secondary Slave\n");
-        return 0;
+        return;
     }
-    
+
+  
+
     while(((status & 0x80) == 0x80)
        && ((status & 0x01) != 0x01))
         status = commandPort.Read();
     
+        
+
     if(status & 0x01)
     {
         LouPrint("ERROR Could Not Determine Device: Error Code: %d\n",status);
-        return 0;
+        return;
     }
     
+
+
     LouPrint("Found A Device On: ");
     if     ((Device == 0x1F0) && (head == 0xA0))LouPrint("Primary Master\n");
     else if((Device == 0x1F0) && (head == 0xB0))LouPrint("Primary Slave\n");
     else if((Device == 0x170) && (head == 0xA0))LouPrint("Secondary Master\n");
     else if((Device == 0x170) && (head == 0xB0))LouPrint("Secondary Slave\n");
     
-    if(head == 0xA0)
-        return initialize_pata(Device,true);
-    else if(head == 0xB0)
-        return initialize_pata(Device,false);
-    else
+
+
+    if(head == 0xA0){
+
+        initialize_pata(Device,true);
+    }    
+    else if(head == 0xB0){
+
+        initialize_pata(Device,false);
+    }
+    else{
+
         LouPrint("ERROR Selecting Controller\n");
-    
-    return 0;
+    }
+    return;
 }
 
 void PATA::Flush(uint8_t Device){

@@ -35,15 +35,7 @@ class Drives{
     ~Drives();
     
     private:
-    
-    char driveLet[23] = {'D', 'E', 'F', 'G', 'H',
-                         'I', 'J', 'K', 'L', 'M',
-                         'N', 'O', 'P', 'Q', 'R',
-                         'S', 'T', 'U', 'V', 'W',
-                         'X', 'Y', 'Z'};
-
-
-    
+        
     typedef struct{
         char DriveLet;
         uint8_t DriveType;

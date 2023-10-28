@@ -4,7 +4,7 @@
 #define _IDE_
 
 #include <drivers/Lou_drivers/storage_struct.h>
-
+#include <drivers/lou_drv_api.h>
 
 
 class PATA{
@@ -15,13 +15,14 @@ class PATA{
     
     void pata_device_scan();
     
-    PATA();
-    ~PATA();
+
 
     private:
     
+    PATA();
+    ~PATA();
 
-    uint8_t pata[4];
+
     
     void Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int BufferSize);
     void Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, int BufferSize);
@@ -30,11 +31,15 @@ class PATA{
     void Write28PATAPI(uint16_t device,bool Master, uint32_t Sector_Num ,uint8_t* Data, uint32_t BufferSize);
     
     void determine_device_type(uint8_t drive);
-    uint8_t initialize_pata(uint16_t drive,bool Master);
-    uint8_t WakeAndIdentifyPata(uint16_t Device ,uint8_t Master);
+    void initialize_pata(uint16_t drive,bool Master);
+    void WakeAndIdentifyPata(uint16_t Device ,uint8_t Master);
     void Flush(uint8_t Device);
     
 };
+
+
+
+
 #endif
 
 

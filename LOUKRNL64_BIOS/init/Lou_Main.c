@@ -18,7 +18,7 @@
 */
 
 
-char* KERNEL_VERSION = "0.000000000016 64-BIT";
+char* KERNEL_VERSION = "0.000000000017 64-BIT";
 
 
 multiboot_info_t* mbi;
@@ -76,9 +76,9 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
     // TODO: PARSE MEMORY MAP AND ACPI BY
     
     
-    //IO_Manager_Init();
+    if(IO_Manager_Init() != 0)LouPanic("IO Manager Failed To Start",BAD);
 
-	//pata_device_scanc();
+	pata_device_scanc();
 
 	
 	

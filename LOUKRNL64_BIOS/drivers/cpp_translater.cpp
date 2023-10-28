@@ -18,9 +18,14 @@
 #include <drivers/lou_drv_api.h>
 #include <drivers/Lou_drivers/hardrive.h>
 
+PATA* pataobj = (PATA*)Lou_Alloc_Mem(sizeof(PATA));
+
 extern "C" void pata_device_scanc(){
-    PATA* pata = (PATA*)Lou_Alloc_Mem(sizeof(PATA));
-    pata->pata_device_scan();
-    Lou_Free_Mem((RAMADD) pata, sizeof(PATA));
+
+    pataobj->pata_device_scan();
+
 }
 
+PATA* RetrievePATAP(){
+    return pataobj;
+}
