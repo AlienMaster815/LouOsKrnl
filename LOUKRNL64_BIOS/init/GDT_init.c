@@ -33,6 +33,7 @@ LOUSTATUS Initialize_Gdt(){
 LOUSTATUS Modify_Gdt_Registers(){
     
     return 0;
+    
 }
 
 LOUSTATUS Uninitialize_Gdt(){
