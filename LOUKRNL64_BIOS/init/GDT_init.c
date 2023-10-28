@@ -2,6 +2,7 @@
 #include <limits.h>
 #include <kernel/memmory.h>
 #include <kernel/errors.h>
+#include <stdio.h>
 
 GDT* globalGDT;
 
@@ -20,6 +21,8 @@ LOUSTATUS Initialize_Gdt(){
     Set_Kernel_Segment(DATA,Kernel_base,Machine_limit,globalGDT);
     
     Load_Gdt(globalGDT);
+    
+    LouPrint("GDT Initialized\n");
 }
 
 LOUSTATUS Modify_Gdt_Registers(){
