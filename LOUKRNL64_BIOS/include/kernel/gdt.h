@@ -73,6 +73,7 @@ typedef struct __attribute__((packed)){
 
 
 LOUSTATUS Initialize_Gdt();
+
 LOUSTATUS Set_Kernel_Segment(bool Code_Seg, uint64_t Base, uint64_t Limit, GDT* gdt);
 LOUSTATUS Set_User_Segment(bool Code_Seg,uint8_t type, uint64_t Base,uint64_t Limit, GDT* gdt);
 LOUSTATUS Set_TSS_Segment(bool Code_seg,uint64_t Base, uint64_t Limit, GDT* gdt);

@@ -10,7 +10,7 @@ LOUSTATUS Initialize_Gdt(){
     globalGDT = 0;
     globalGDT = (GDT*)Lou_Alloc_Mem(sizeof(GDT));
     
-    if(globalGDT == 0)LouPanic("Could Not Allocate Memory For GDT", BAD);
+    if(globalGDT == 0)LouPanic("Could Not Allocate Memory For GDT\n", BAD);
     
     uint64_t Kernel_base = 0;
     uint64_t Machine_limit = (64 * 64) - 1;
