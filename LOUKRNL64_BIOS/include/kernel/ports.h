@@ -1,3 +1,6 @@
+#ifndef _PORTS_H
+#define _PORTS_H
+
 #include <stdint.h>
 #include <stddef.h>
 
@@ -15,3 +18,5 @@ uint32_t inl(uint16_t port);
 void outl(uint16_t port, uint32_t  data);
 
 void outbSlow(uint16_t port,uint8_t data);
+
+#endif
