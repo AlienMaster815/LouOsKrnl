@@ -1,6 +1,7 @@
 # G++ Gcc make NASM grub xorriso
 
-
+CC = x86_64-elf-gcc
+CP = x86_64-elf-g++
 
 kernel_source_files := $(shell find kernel -name *.c)
 kernel_object_files := $(patsubst kernel/%.c, build/kernel/%.o, $(kernel_source_files))
@@ -54,21 +55,21 @@ x86_64_object_filesX64 := $(kernel_object_filesX64) $(x86_64_c_object_filesX64) 
 
 $(kernel_object_files): build/kernel/%.o : kernel/%.c
 	mkdir -p $(dir $@) && \
-	x86_64-elf-gcc -m64 -c -fstack-protector -ffreestanding -Werror -I include $(patsubst build/kernel/%.o, kernel/%.c, $@) -o $@
+	$(CC) -m64 -c -fstack-protector -ffreestanding -Werror -I include $(patsubst build/kernel/%.o, kernel/%.c, $@) -o $@
 
 $(x86_64_c_object_files): build/x86_64/init/%.o : init/%.c
 	mkdir -p $(dir $@) && \
-	x86_64-elf-gcc -m64 -c -fstack-protector -ffreestanding -Werror -I include $(patsubst build/x86_64/init/%.o, init/%.c, $@) -o $@
+	$(CC) -m64 -c -fstack-protector -ffreestanding -Werror -I include $(patsubst build/x86_64/init/%.o, init/%.c, $@) -o $@
 
 $(driver_cpp_object_files): build/drivers/%.o : drivers/%.cpp
 	mkdir -p $(dir $@) && \
-	x86_64-elf-g++ -m64 -c -ffreestanding -O2 -Wall -fno-exceptions -fno-rtti -fstack-protector -Werror -Wno-write-strings -fno-use-cxa-atexit -I include $(patsubst build/drivers/%.o, drivers/%.cpp, $@) -o $@ -lc
+	$(CP) -m64 -c -ffreestanding -O2 -Wall -fno-exceptions -fno-rtti -fstack-protector -Werror -Wno-write-strings -fno-use-cxa-atexit -I include $(patsubst build/drivers/%.o, drivers/%.cpp, $@) -o $@ -lc
 
 
 
 $(x86_64_API_cpp_object_files): build/x86_64/API/%.o : API/%.cpp
 	mkdir -p $(dir $@) && \
-	x86_64-elf-g++ -m64 -c -ffreestanding -O2 -Wall -fno-exceptions -fno-rtti -fstack-protector -Werror -Wno-write-strings -fno-use-cxa-atexit -I include $(patsubst build/x86_64/API/%.o, API/%.cpp, $@) -o $@ -lc
+	$(CP) -m64 -c -ffreestanding -O2 -Wall -fno-exceptions -fno-rtti -fstack-protector -Werror -Wno-write-strings -fno-use-cxa-atexit -I include $(patsubst build/x86_64/API/%.o, API/%.cpp, $@) -o $@ -lc
 
 $(x86_64_API_asm_object_files): build/x86_64/asm/API/%.o : API/%.asm
 	mkdir -p $(dir $@) && \
@@ -84,21 +85,21 @@ $(x86_64_API_asm_object_files): build/x86_64/asm/API/%.o : API/%.asm
 
 $(kernel_object_filesX64): build/kernel/%.o : kernel/%.c
 	mkdir -p $(dir $@) && \
-	gcc -m64 -c -fstack-protector -ffreestanding -Werror -I include $(patsubst build/kernel/%.o, kernel/%.c, $@) -o $@
+	$(CC) -m64 -c -fstack-protector -ffreestanding -Werror -I include $(patsubst build/kernel/%.o, kernel/%.c, $@) -o $@
 
 $(x86_64_c_object_filesX64): build/x86_64/init/%.o : init/%.c
 	mkdir -p $(dir $@) && \
-	gcc -m64 -c -fstack-protector -ffreestanding -Werror -I include $(patsubst build/x86_64/init/%.o, init/%.c, $@) -o $@
+	$(CC) -m64 -c -fstack-protector -ffreestanding -Werror -I include $(patsubst build/x86_64/init/%.o, init/%.c, $@) -o $@
 
 $(driver_cpp_object_filesX64): build/drivers/%.o : drivers/%.cpp
 	mkdir -p $(dir $@) && \
-	g++ -m64 -c -ffreestanding -O2 -Wall -fno-exceptions -fno-rtti -fstack-protector -Werror -Wno-write-strings -fno-use-cxa-atexit -I include $(patsubst build/drivers/%.o, drivers/%.cpp, $@) -o $@ -lc
+	$(CP) -m64 -c -ffreestanding -O2 -Wall -fno-exceptions -fno-rtti -fstack-protector -Werror -Wno-write-strings -fno-use-cxa-atexit -I include $(patsubst build/drivers/%.o, drivers/%.cpp, $@) -o $@ -lc
 
 
 
 $(x86_64_API_cpp_object_filesX64): build/x86_64/API/%.o : API/%.cpp
 	mkdir -p $(dir $@) && \
-	g++ -m64 -c -ffreestanding -O2 -Wall -fno-exceptions -fno-rtti -fstack-protector -Werror -Wno-write-strings -fno-use-cxa-atexit -I include $(patsubst build/x86_64/API/%.o, API/%.cpp, $@) -o $@ -lc
+	$(CP) -m64 -c -ffreestanding -O2 -Wall -fno-exceptions -fno-rtti -fstack-protector -Werror -Wno-write-strings -fno-use-cxa-atexit -I include $(patsubst build/x86_64/API/%.o, API/%.cpp, $@) -o $@ -lc
 
 $(x86_64_API_asm_object_filesX64): build/x86_64/asm/API/%.o : API/%.asm
 	mkdir -p $(dir $@) && \
