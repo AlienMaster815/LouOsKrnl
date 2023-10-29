@@ -1,10 +1,23 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #ifndef _INTERRUPTS_H
 #define _INTERRUPTS_H
 
+
+#define INTERRUPT_GATE 0x5
+#define TRAP_GATE 0x7
+#define TASK_GATE 0x9
+
+#define HighestPrivledge 0x0
+#define HighPrivledge 0x1
+#define MediumPrivledge 0x2
+#define LowestPrivledge 0x3
+
+#define Present 0x1
+#define NotPresent 0x0
 
 typedef struct __attribute__((packed)){
     uint16_t base_low;      // Lower 16 bits of the handler function's address
@@ -16,17 +29,35 @@ typedef struct __attribute__((packed)){
     uint32_t reserved;      // Reserved for future use
 }Interrupt_Descriptor_Table;
 
+__attribute__((aligned(0x10))) static Interrupt_Descriptor_Table IDT[256];
+
+
 typedef struct __attribute__((packed)){
     uint16_t limit;
     uint64_t base;
 }IDTP;
 
 
-LOUSTATUS EditInterruptDescriptorTable(void* InterruptHandler, uint16_t CodeSegment, uint8_t Attributes);
 
-static bool PageTableDeletion;
+LOUSTATUS set_idt_gate(int num, uint64_t base, uint16_t selector, uint8_t ist, uint8_t type_attr);
+
+static bool PageTableDeletion = false;
 
 void PageFault();
 void DoubleFault();
+void GeneralProtectionFault();
+
+
+void DivideByZero();
+void DebugException();
+void NMI();
+void BreakPoint();
+void OverFlow();
+void BoundCheck();
+void InvalidOpcode();
+void FPUNoDev();
+void CLOCK();
+void Keyboard();
+
 
 #endif
