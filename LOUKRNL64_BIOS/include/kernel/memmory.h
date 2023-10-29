@@ -38,8 +38,10 @@ static PageTable PDT;
 
 
 VOID init_paging();
-STATUS DEL_PAGE_ENTRY(uint64_t entry,char *table);
-STATUS ADD_PAGE_ENTRY(uint64_t entry,char *table);
+
+void unmap_page(void *physaddr, void *virtualaddr);
+void map_page(void *physaddr, void *virtualaddr, unsigned int flags);
+
 void* memset(void* dest, int value, size_t count);
 void setup_page_tables();
 uint64_t Parse_Mem_Map(multiboot_info_t* mbi);

@@ -1,7 +1,13 @@
 # G++ Gcc make NASM grub xorriso
 
+
+# Change These Compiler Values To Your Correct Values if you Are on an x64 machine Use GCC Else You need a cross compiler \n
+# (e.g x86_64-elf-gcc)
+
 CC = x86_64-elf-gcc
 CP = x86_64-elf-g++
+LD = x86_64-elf-ld
+
 
 kernel_source_files := $(shell find kernel -name *.c)
 kernel_object_files := $(patsubst kernel/%.c, build/kernel/%.o, $(kernel_source_files))
@@ -126,7 +132,7 @@ clean:
 
 lou.exe: $(x86_64_object_files)
 	mkdir -p dist/x86_64 && \
-	x86_64-elf-ld -n -o dist/x86_64/LOUOSKRNL.bin -T targets/linker.ld $(x86_64_object_files)
+	$(LD) -n -o dist/x86_64/LOUOSKRNL.bin -T targets/linker.ld $(x86_64_object_files)
 	rm -r build
 
 

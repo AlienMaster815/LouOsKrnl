@@ -1,5 +1,6 @@
 #include <kernel/memmory.h>
 #include <string.h>
+#include <kernel/interrupts.h>
 
 /* Tyler Grenier 9/22/23 8:21
 -- Today we are setting up our 
@@ -14,6 +15,8 @@
 //specific Page Tables
 
 
+
+
 void Reset_All_Pages() {
 	// Set all Pages to 0s
 	memset(&PML4, 0, sizeof(PageTable));
@@ -22,23 +25,59 @@ void Reset_All_Pages() {
 }
 
 
+/*
+Bit 0 (P) is the Present flag.
+Bit 1 (R/W) is the Read/Write flag.
+Bit 2 (U/S) is the User/Supervisor flag.
+Bit 3 (RSVD) indicates whether a reserved bit was set in some page-structure entry
+Bit 4 (I/D) is the Instruction/Data flag (1=instruction fetch, 0=data access)
+Bit 5 (PK) indicates a protection-key violation
+Bit 6 (SS) indicates a shadow-stack access fault
+Bit 15 (SGX) indicates an SGX violaton
+*/
 
 
-void update_page_table_entry(PageTableEntry* entry, uint64_t phys_addr, int present, int writable, uint64_t virtual_address) {
-	//entry->entry = 0;
-	//entry->entry |= (phys_addr & 0x000FFFFFFFFFF000ULL); // Physical address bits
-	//entry->entry |= (present ? 1ULL : 0ULL) << 0;        // Present bit (bit 0)
-	//entry->entry |= (writable ? 1ULL : 0ULL) << 1;       // Read/Write bit (bit 1)
-	// Add other attributes as needed (e.g., User/Supervisor, Access, etc.)
+void map_page(void *physaddr, void *virtualaddr, unsigned int flags) {
 
-	//uint64_t* PML4P = (uint64_t*)&PML4;
-
-	// Reload CR3
-	//uint64_t cr3_value = (uint64_t)PML4P;
-	//__asm__ volatile("mov %0, %%cr3" : : "r"(cr3_value));
+    unsigned long pdindex = (unsigned long)virtualaddr >> 22;
+    unsigned long ptindex = (unsigned long)virtualaddr >> 12 & 0x03FF;
+ 
+    unsigned long *pd = (unsigned long *)0xFFFFF000;
+    // Here you need to check whether the PD entry is present.
+    // When it is not present, you need to create a new empty PT and
+    // adjust the PDE accordingly.
+ 
+    unsigned long *pt = ((unsigned long *)0xFFC00000) + (0x400 * pdindex);
+    // Here you need to check whether the PT entry is present.
+    // When it is, then there is already a mapping present. What do you do now?
+ 
+    pt[ptindex] = ((unsigned long)physaddr) | (flags & 0xFFF) | 0x01; // Present
 
 	// Flush TLB for the specified virtual address
-	//__asm__ volatile("invlpg (%0)" : : "r"(virtual_address));
+	__asm__ volatile("invlpg (%0)" : : "r"(virtualaddr));
 }
 
 
+void unmap_page(void *physaddr, void *virtualaddr) {
+    // Make sure that both addresses are page-aligned.
+ 
+    unsigned long pdindex = (unsigned long)virtualaddr >> 22;
+    unsigned long ptindex = (unsigned long)virtualaddr >> 12 & 0x03FF;
+ 
+    unsigned long *pd = (unsigned long *)0xFFFFF000;
+    // Here you need to check whether the PD entry is present.
+    // When it is not present, you need to create a new empty PT and
+    // adjust the PDE accordingly.
+ 
+    unsigned long *pt = ((unsigned long *)0xFFC00000) + (0x400 * pdindex);
+    // Here you need to check whether the PT entry is present.
+    // When it is, then there is already a mapping present. What do you do now?
+ 
+    pt[ptindex] = 0x00000000;
+ 
+    PageTableDeletion = true;
+    
+    // Now you need to flush the entry in the TLB
+    // or you might not notice the change.
+    __asm__ volatile("invlpg (%0)" : : "r"(virtualaddr));
+}

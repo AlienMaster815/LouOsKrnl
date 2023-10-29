@@ -2,6 +2,10 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+#ifndef _INTERRUPTS_H
+#define _INTERRUPTS_H
+
+
 typedef struct __attribute__((packed)){
     uint16_t base_low;      // Lower 16 bits of the handler function's address
     uint16_t selector;      // Code segment selector
@@ -20,7 +24,9 @@ typedef struct __attribute__((packed)){
 
 LOUSTATUS EditInterruptDescriptorTable(void* InterruptHandler, uint16_t CodeSegment, uint8_t Attributes);
 
-
+static bool PageTableDeletion;
 
 void PageFault();
 void DoubleFault();
+
+#endif
