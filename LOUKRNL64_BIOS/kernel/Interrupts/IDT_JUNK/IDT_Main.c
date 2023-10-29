@@ -30,7 +30,7 @@ LOUSTATUS set_idt_gate(int num, uint64_t base, uint16_t selector, uint8_t ist, u
 
 LOUSTATUS SetBasicInterrupts(){
     
-    set_idt_gate(0x00,(uint64_t)&DivideByZero,KernelCodeSegment,0 , Present + HighestPrivledge + INTERRUPT_GATE);
+    //`set_idt_gate(0x00,(uint64_t)&DivideByZero,KernelCodeSegment,0 , Present + HighestPrivledge + INTERRUPT_GATE);
     
 }
 
