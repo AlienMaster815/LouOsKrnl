@@ -18,7 +18,7 @@
 */
 
 
-char* KERNEL_VERSION = "0.000000000017 64-BIT";
+char* KERNEL_VERSION = "0.000000000018 64-BIT";
 
 
 multiboot_info_t* mbi;
@@ -54,7 +54,6 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
     STATUS lou_init_stat;
 	mbi = multiboot_info;
     
-    LOUSTATUS KStat;
     
     setup_vga_systems();
 
@@ -66,9 +65,9 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
 	if(!(mbi->flags & MULTIBOOT_INFO_MEM_MAP))LouPanic("No Memory Information",BAD);
 	
     
-    KStat = Initialize_Gdt();
+
     
-    if (KStat != 0) LouPanic("Error Setting Gdt",BAD);
+    if (Initialize_Gdt() != 0) LouPanic("Error Setting Gdt",BAD);
     
     
     HANDLE_ACPI();
@@ -81,11 +80,11 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
 	pata_device_scanc();
 
 	
-	
+    //TODO: Contact APIC and Set up Interrupt Hanldeing Stuff Like IST For Interrupts
 
 
     
-	//TODO FINISH THE PAGING SYSTEM With USERMODE
+	//TODO: FINISH THE PAGING SYSTEM With USERMODE
  		
 	LouPrint("Hello World\n ");
 	//switch_to_user_segment();

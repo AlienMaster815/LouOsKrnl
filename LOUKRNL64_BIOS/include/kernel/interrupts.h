@@ -37,7 +37,7 @@ typedef struct __attribute__((packed)){
     uint64_t base;
 }IDTP;
 
-
+LOUSTATUS SetBasicInterrupts();
 
 LOUSTATUS set_idt_gate(int num, uint64_t base, uint16_t selector, uint8_t ist, uint8_t type_attr);
 
