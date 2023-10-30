@@ -70,7 +70,7 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
     if (Initialize_Gdt() != 0) LouPanic("Error Setting Gdt",BAD);
     
     
-    HANDLE_ACPI();
+    //HANDLE_ACPI(); //BUGBUG: ACPI CRASHES REAL HARDWARE
     
     // TODO: PARSE MEMORY MAP AND ACPI BY
     

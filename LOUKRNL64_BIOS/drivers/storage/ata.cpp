@@ -41,10 +41,8 @@ void PATA::pata_device_scan(){
 
     LouPrint("scaning PATA devices\n");
     
-
-
-    for(uint8_t i = 0; i < 4; i++)
-        determine_device_type(i);
+    determine_device_type(0);
+    determine_device_type(2);
     
     return;
 }

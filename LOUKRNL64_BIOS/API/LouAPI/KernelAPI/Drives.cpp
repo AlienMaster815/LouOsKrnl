@@ -60,7 +60,8 @@ LOUSTATUS Drives::RegisterStorageDevice(bool SystemDrive, uint8_t DriveType, uin
         drive[DriveSelect].DriveLet = driveLet[DriveTarget];
         drive[DriveSelect].DriveNum = DriveNum;
         drive[DriveSelect].DriveType = DriveType;
-        LouPrint("%c: ",drive[DriveSelect].DriveLet);
+        LouPrint("%c:",drive[DriveSelect].DriveLet);
+        LouPrint(" ");
         if(DriveType == PATADEV)LouPrint("PATA\n");
         if(DriveType == PATAPIDEV)LouPrint("PATAPI\n");
         DriveTarget++;
