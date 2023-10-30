@@ -33,8 +33,6 @@ RSDP* Find_RSDP() {
 	if (pointer != NULL) return pointer;
 	pointer = PROBE_RSDP(0x000A0000, 0x000FFFFF);
 	if (pointer != NULL) return pointer;
-	pointer = PROBE_RSDP(0x000FFFFF, 0xFFFFFFFF);
-	if (pointer != NULL) return pointer;
 	LouPanic("RSDP NOT FOUND",BAD);
 	return 0;
 }
