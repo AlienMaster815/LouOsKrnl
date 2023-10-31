@@ -29,3 +29,8 @@ extern "C" void pata_device_scanc(){
 PATA* RetrievePATAP(){
     return pataobj;
 }
+
+
+void SetVideoMode(uint64_t Height,uint64_t Widthe, uint8_t  ColorDepth){
+    
+}

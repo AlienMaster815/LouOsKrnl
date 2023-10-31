@@ -68,9 +68,9 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
     if (Initialize_Gdt() != 0) LouPanic("Error Setting Gdt",BAD);
     
     
-    //HANDLE_ACPI(); //BUGBUG: ACPI CRASHES REAL HARDWARE
+    HANDLE_ACPI(); //BUGBUG: ACPI CRASHES REAL HARDWARE WE ARE LOOKING INTO IT
     
-    // TODO: PARSE MEMORY MAP AND ACPI BY
+    // TODO: PARSE MEMORY MAP AND ACPI
     
     
     if(IO_Manager_Init() != 0)LouPanic("IO Manager Failed To Start",BAD);

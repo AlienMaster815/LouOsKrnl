@@ -39,6 +39,7 @@ STATUS ACPI_PARSE(RSDP* rsdp){
 	}
 	return BAD;
 }
+
 //if no valid ACPI is found
 //panic occours because the
 //kernel requires ACPI 

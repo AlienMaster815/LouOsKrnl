@@ -108,7 +108,7 @@ void Drives::HandleDriveRequests(char Drive, uint8_t Request, uint8_t* Data,uint
     for(i = 0; drive[i].DriveLet == Drive ; i++){
         if (i > 25){
             // No Drive Exists
-            LouPrint("Error Finding Drive Is It Connected\n");
+            LouPrint("Error Finding Drive Is It Connected?\n");
             return;
         }
     }
