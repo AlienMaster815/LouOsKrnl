@@ -3,8 +3,21 @@
 #include <kernel/memmory.h>
 #include <stdio.h>
 
-uint64_t Parse_Mem_Map(multiboot_info_t* mbi) {
-		
-	uint32_t total_memory = mbi->mem_upper * 1024 + mbi->mem_lower * 1024;
-	return (uint64_t)total_memory;
+const uintptr_t FindProtectedMemoryLimit(){
+    uintptr_t max_memory_address = 0;
+
+    multiboot_memory_map_t* mmap;
+    uintptr_t mmap_addr = mbi->mmap_addr;  // Store the mmap_addr in an integer
+
+    for (uintptr_t mmap_ptr = mmap_addr;
+         mmap_ptr < mmap_addr + mbi->mmap_length;
+         mmap_ptr += ((multiboot_memory_map_t*)mmap_ptr)->size + sizeof(((multiboot_memory_map_t*)mmap_ptr)->size)) {
+
+        mmap = (multiboot_memory_map_t*)mmap_ptr;
+
+        if (mmap->type == MULTIBOOT_MEMORY_AVAILABLE && mmap->addr + mmap->len > max_memory_address) {
+            max_memory_address = mmap->addr + mmap->len;
+        }
+    }
+
 }

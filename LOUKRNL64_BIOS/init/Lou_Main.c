@@ -10,6 +10,7 @@
 #include <drivers/Lou_drivers/hardrivec.h>
 #include <KernelAPI/IOManager.h>
 #include <kernel/gdt.h>
+#include <kernel/memoryprobing.h>
 
 /* Tyler Grenier 9/21/23 9:56 PM
 -- Started the file with the main
@@ -18,33 +19,7 @@
 */
 
 
-char* KERNEL_VERSION = "0.000000000018 64-BIT";
-
-
-multiboot_info_t* mbi;
-
-
-
-RSDP* Find_RSDP() {
-	RSDP* pointer;
-	pointer = PROBE_RSDP(0x00000000, 0x0000E000);
-	if (pointer != NULL) return pointer;
-	pointer = PROBE_RSDP(0x0000E000, 0x000FFFFF);
-	if (pointer != NULL) return pointer;
-	pointer = PROBE_RSDP(0x000A0000, 0x000FFFFF);
-	if (pointer != NULL) return pointer;
-	LouPanic("RSDP NOT FOUND",BAD);
-	return 0;
-}
-
-
-//handle our acpi tasks
-VOID HANDLE_ACPI() {
-	RSDP* rsdp = Find_RSDP();
-	STATUS ACPI_VALID = ACPI_PARSE(rsdp);
-	if(ACPI_VALID == BAD)LouPanic("No Valid ACPI Found\n",BAD);
-	//else return;
-}
+char* KERNEL_VERSION = "0.000000000019-rc2 64-BIT";
 
 
 
@@ -68,7 +43,7 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
     if (Initialize_Gdt() != 0) LouPanic("Error Setting Gdt",BAD);
     
     
-    HANDLE_ACPI(); //BUGBUG: ACPI CRASHES REAL HARDWARE WE ARE LOOKING INTO IT
+    HANDLE_ACPI(mbi); //BUGBUG: ACPI CRASHES REAL HARDWARE WE ARE LOOKING INTO IT
     
     // TODO: PARSE MEMORY MAP AND ACPI
     
@@ -79,7 +54,7 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
 
 	
     //TODO: Contact APIC and Set up Interrupt Hanldeing Stuff Like IST For Interrupts
-
+    //TODO: Set Up Systems To Register Driver Code With API And Kernel Internals
 
     
 	//TODO: FINISH THE PAGING SYSTEM With USERMODE

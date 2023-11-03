@@ -47,6 +47,9 @@ char flag[8] = "RSD PTR ";
 
 
 RSDP* PROBE_RSDP(uintptr_t memory_base, uintptr_t memory_limit) {
+    
+
+    
     // Ensure memory_limit is at least 16 bytes aligned
     memory_base &= ~0xF;
 
@@ -71,6 +74,7 @@ RSDP* PROBE_RSDP(uintptr_t memory_base, uintptr_t memory_limit) {
     }
 
     // RSDP not found in the specified range
+    // System Will BlueScreen
     return NULL;
 }
 
