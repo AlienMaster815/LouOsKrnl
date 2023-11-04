@@ -59,8 +59,11 @@ RSDP* PROBE_RSDP(uintptr_t memory_base, uintptr_t memory_limit) {
 
     // Search the specified memory range for the RSDP
     for (RSDP* rsdp_ptr = (RSDP*)memory_base; (uintptr_t)rsdp_ptr < memory_limit; rsdp_ptr++) {
-
-        if (((uintptr_t)rsdp_ptr & 0xF) == 0) {
+        // check if the adress is within system memory limits
+        // because the compiler dosent like to compare diferen
+        // types we will have to turn both values to somthing sane
+        if ((uintptr_t)(rsdp_ptr + sizeof(RSDP)) > (uintptr_t)ProtectedModeMemoryMapLimit) return NULL;
+        else if (((uintptr_t)rsdp_ptr & 0xF) == 0) {
 
             // Check the RSDP signature
             if (memcmp(rsdp_ptr->signature, "RSD PTR ", 8) == 0) {

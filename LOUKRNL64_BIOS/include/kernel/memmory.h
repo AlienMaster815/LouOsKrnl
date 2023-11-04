@@ -41,12 +41,12 @@ static multiboot_info_t* mbi;
 static multiboot_memory_map_t* mmap;
 
 
-#define ProtectedModeMemoryMapLimit = FindProtectedMemoryLimit();
-#define LongModeMemoryMapLimit = FindProtectedMemoryLimit(); 
+#define ProtectedModeMemoryMapLimit FindProtectedMemoryLimit()
+#define LongModeMemoryMapLimit FindProtectedMemoryLimit()
 // TODO: Change This Value To Long Mode Limit Whe Interrupts ar Up and we can probe Memory And handle The Page Fault When We acces
 // TODO: Memory That Dosent Exist
 
-static const uintptr_t MachineMemoryBase = 0;
+#define MachineMemoryBase 0
 
 
 VOID init_paging();

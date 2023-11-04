@@ -17,6 +17,7 @@ const uintptr_t FindProtectedMemoryLimit(){
 
         if (mmap->type == MULTIBOOT_MEMORY_AVAILABLE && mmap->addr + mmap->len > max_memory_address) {
             max_memory_address = mmap->addr + mmap->len;
+            return max_memory_address;
         }
     }
 
