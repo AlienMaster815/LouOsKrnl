@@ -11,6 +11,7 @@
 #include <KernelAPI/IOManager.h>
 #include <kernel/gdt.h>
 #include <kernel/memoryprobing.h>
+#include <kernel/interrupts.h>
 
 /* Tyler Grenier 9/21/23 9:56 PM
 -- Started the file with the main
@@ -18,10 +19,11 @@
 -- with allocation functions
 */
 
-// TODO: Tyler Welcome Back From Vacation Go Work On PCI
+//TODO: Contact APIC and Set up Interrupt Hanldeing Stuff Like IST For Interrupts
+//TODO: Set Up Systems To Register Driver Code With API And Kernel Internals
+//TODO: PCI
 
-
-char* KERNEL_VERSION = "0.000000000020 64-BIT";
+char* KERNEL_VERSION = "0.000000000020 RSC-4 Night 1 64-BIT";
 
 
 
@@ -42,25 +44,18 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
 
 
 
-    if (Initialize_Gdt() != 0) LouPanic("Error Setting Gdt",BAD);
+    if (Initialize_Gdt() != LOUSTATUS_GOOD) LouPanic("Error Setting Gdt",BAD);
     
     
 
     
-    // TODO: PARSE MEMORY MAP AND ACPI
-    
-    
-    if(IO_Manager_Init() != 0)LouPanic("IO Manager Failed To Start",BAD);
+    if(IO_Manager_Init() != LOUSTATUS_GOOD)LouPanic("IO Manager Failed To Start",BAD);
 
 	pata_device_scanc();
 
-	
-    //TODO: Contact APIC and Set up Interrupt Hanldeing Stuff Like IST For Interrupts
-    //TODO: Set Up Systems To Register Driver Code With API And Kernel Internals
+    if(InitializeInterruptHandleing() == LOUSTATUS_GOOD) LouPanic("Unable To Start Interrupts", BAD);
 
-    
-	//TODO: FINISH THE PAGING SYSTEM With USERMODE
- 		
+     		
 	LouPrint("Hello World\n ");
 	//switch_to_user_segment();
 	while(1);

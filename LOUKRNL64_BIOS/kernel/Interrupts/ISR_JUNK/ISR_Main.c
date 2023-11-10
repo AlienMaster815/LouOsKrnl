@@ -20,6 +20,7 @@
 void PageFault(){
     
     if(PageTableDeletion) return;
+    if(MemoryProbing) return;
     
     LouPanic("Page Fault Detected",BAD);
 }
@@ -33,6 +34,9 @@ void DoubleFault(){
 
 //0x0D
 void GeneralProtectionFault(){
+    
+    if(PageTableDeletion) return;
+    if(MemoryProbing) return;
     
     LouPanic("General Protection Fault Detected", BAD);
     

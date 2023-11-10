@@ -42,6 +42,7 @@ LOUSTATUS SetBasicInterrupts();
 LOUSTATUS set_idt_gate(int num, uint64_t base, uint16_t selector, uint8_t ist, uint8_t type_attr);
 
 static bool PageTableDeletion = false;
+static bool MemoryProbing = false;
 
 void PageFault();
 void DoubleFault();
@@ -59,5 +60,6 @@ void FPUNoDev();
 void CLOCK();
 void Keyboard();
 
+LOUSTATUS InitializeInterruptHandleing();
 
 #endif
