@@ -29,7 +29,7 @@ typedef struct {
 	PageTableEntry entries[512]; 
 }__attribute__((packed)) PageTable;;
 
-const uintptr_t FindProtectedMemoryLimit();
+uintptr_t FindMemoryLimit();
 
 
 
@@ -38,11 +38,9 @@ static PageTable PDPTT;
 static PageTable PDT;
  
 static multiboot_info_t* mbi;
-static multiboot_memory_map_t* mmap;
+//static multiboot_memory_map_t* mmap;
 
 
-#define ProtectedModeMemoryMapLimit FindProtectedMemoryLimit()
-#define LongModeMemoryMapLimit FindProtectedMemoryLimit()
 // TODO: Change This Value To Long Mode Limit Whe Interrupts ar Up and we can probe Memory And handle The Page Fault When We acces
 // TODO: Memory That Dosent Exist
 
@@ -50,6 +48,8 @@ static multiboot_memory_map_t* mmap;
 
 
 VOID init_paging();
+
+
 
 void unmap_page(void *physaddr, void *virtualaddr);
 void map_page(void *physaddr, void *virtualaddr, unsigned int flags);

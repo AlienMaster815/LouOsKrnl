@@ -1,20 +1,5 @@
 /*
 ; Copyright(C) 2023 Tyler Grenier
-;
-; This program is the property of Tyler Grenier and is protected by copyright law.
-; Unauthorized reproduction or distribution of this program, or any portion of it,
-; is prohibited.Modification of this program is allowed only with explicit
-; written permission from Tyler Grenier.
-;
-; Permission to possess and use this code is granted to You under
-; the condition that You complies with the terms of this copyright
-; notice.Failure to comply may result in legal action.
-;
-; Tyler Grenier makes no warranties, expressed or implied, about the suitability of
-; this software for any purpose.It is provided "as is" without any warranty.
-;
-; For inquiries or permission requests, please contact Tyler Grenier
-; Email tgrenier.815@aol.com Text 860 - 930 - 6436 Call 203 - 263 - 6104.
 */
 #include <limits.h>
 #include <stdbool.h>
@@ -37,9 +22,9 @@ int LouPrint(char* format, ...) {
             // Handle format specifiers
             switch (*format) {
             case 'd': {
-                uint64_t num = va_arg(args, uint64_t);
-                char* str; // Allocate space for the string representation
-                intToString(num, str);
+                int64_t num = va_arg(args, int64_t);  // Use int64_t instead of uint64_t
+                char str[21];  // Space for the largest 64-bit integer in base 10
+                intToString((uint64_t)num, str);  // Convert to uint64_t and then to string
                 LouPrint("%s", str);
                 break;
             }
@@ -82,9 +67,6 @@ int LouPrint(char* format, ...) {
     return 0;
 }
 
-
-
-
 void intToString(uint64_t num, char* str) {
     uint64_t i = 0;
 
@@ -113,3 +95,4 @@ void intToString(uint64_t num, char* str) {
         right--;
     }
 }
+

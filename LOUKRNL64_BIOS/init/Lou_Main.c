@@ -21,7 +21,7 @@
 // TODO: Tyler Welcome Back From Vacation Go Work On PCI
 
 
-char* KERNEL_VERSION = "0.000000000019-rc2 64-BIT";
+char* KERNEL_VERSION = "0.000000000020 64-BIT";
 
 
 
@@ -39,13 +39,13 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
     
 	if(!(mbi->flags & MULTIBOOT_INFO_MEM_MAP))LouPanic("No Memory Information",BAD);
 	
-    
-    LouPrint("System Memory Address Limit: %d", ProtectedModeMemoryMapLimit);
-    
+
+
+
     if (Initialize_Gdt() != 0) LouPanic("Error Setting Gdt",BAD);
     
     
-    HANDLE_ACPI(mbi); //BUGBUG: ACPI CRASHES REAL HARDWARE WE ARE LOOKING INTO IT
+
     
     // TODO: PARSE MEMORY MAP AND ACPI
     
@@ -65,7 +65,7 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
 	//switch_to_user_segment();
 	while(1);
 
-	LouPanic("error kernel has gone too far terminating system\n",BAD);
+	//LouPanic("error kernel has gone too far terminating system\n",BAD);
 	//IF the Kernel returns from this 
 	//the whole thing crashes crashes
 }
