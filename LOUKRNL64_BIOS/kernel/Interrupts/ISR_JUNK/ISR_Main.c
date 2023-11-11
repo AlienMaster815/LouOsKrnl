@@ -9,6 +9,8 @@
 #include <kernel/interrupts.h>
 #include <stdio.h>
 #include <kernel/errors.h>
+#include <CPUInstructionSet/CPURegisters.h>
+
 
 /*
 -- This File Will hold our systems main interrupt Sevice Routines so this should bi interesting We Will Start by defineing
@@ -18,6 +20,7 @@
 
 //0x0E
 void PageFault(){
+    uint64_t RSP = get_rsp();
     
     if(PageTableDeletion) return;
     if(MemoryProbing) return;
@@ -27,14 +30,16 @@ void PageFault(){
 
 //0x08
 void DoubleFault(){
-    
+    uint64_t RSP = get_rsp();
+
     LouPanic("Double Fault Detected",BAD);
     
 }
 
 //0x0D
 void GeneralProtectionFault(){
-    
+    uint64_t RSP = get_rsp();
+
     if(PageTableDeletion) return;
     if(MemoryProbing) return;
     
@@ -44,51 +49,61 @@ void GeneralProtectionFault(){
 
 //0x00
 void DivideByZero(){
-    
+    uint64_t RSP = get_rsp();
+
 }
 //0x01
 void DebugException(){
+    uint64_t RSP = get_rsp();
 
 }
 
 //0x02
 
 void NMI(){
+    uint64_t RSP = get_rsp();
 
 }
 
 //0x03
 void BreakPoint(){
-    
+    uint64_t RSP = get_rsp();
+
 }
 
 //0x04
 void OverFlow(){
-    
+    uint64_t RSP = get_rsp();
+
 }
 
 //0x05
 void BoundCheck(){
-    
+    uint64_t RSP = get_rsp();
+
 }
 
 //0x06
 void InvalidOpcode(){
-    
+    uint64_t RSP = get_rsp();
+
 }
 
 //0x07
 void FPUNoDev(){
-    
+    uint64_t RSP = get_rsp();
+
 }
 
 //0x20
 void CLOCK(){
-    
+    uint64_t RSP = get_rsp();
+
 }
 
 //0x21
 
 void Keyboard(){
-    
+    uint64_t RSP = get_rsp();
+
 }

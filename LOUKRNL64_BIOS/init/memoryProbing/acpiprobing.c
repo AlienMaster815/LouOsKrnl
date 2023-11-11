@@ -23,7 +23,7 @@ RSDP* Find_RSDP() {
     // i say available because some machines are do not have 4GB
     // even though they are 64 bit machines
     
-    pointer = PROBE_RSDP(MachineMemoryBase,FindMemoryLimit());
+    pointer = PROBE_RSDP(MachineMemoryBase,0);
     
     
     // if we are here executing code there is no

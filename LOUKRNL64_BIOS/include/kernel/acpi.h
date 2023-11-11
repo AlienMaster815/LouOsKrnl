@@ -89,6 +89,50 @@ typedef struct __attribute__((packed)){
 	// Depending on the version (revision), additional fields may be present
 }RSDP;
 
+#pragma pack(1)
+
+// MADT Header
+typedef struct {
+    uint32_t signature;     // "APIC"
+    uint32_t length;        // Total table length, including header
+    uint8_t  revision;      // ACPI Specification Revision
+    uint8_t  checksum;      // Entire table must sum to zero
+    char     oem_id[6];     // OEM ID
+    char     oem_table_id[8];// OEM Table ID
+    uint32_t oem_revision;   // OEM Revision Number
+    uint32_t creator_id;     // ASL Compiler Vendor ID
+    uint32_t creator_revision;// ASL Compiler Revision Number
+}acpi_madt_header;
+
+// MADT Subtable Header
+typedef struct  {
+    uint8_t type;    // Subtable type
+    uint8_t length;  // Length of subtable including header
+}acpi_madt_entry_header;
+
+// MADT Entry Types
+#define MADT_TYPE_LOCAL_APIC      0
+#define MADT_TYPE_IO_APIC         1
+
+typedef struct  {
+    acpi_madt_entry_header header;
+    uint8_t acpi_processor_id;   // ACPI Processor ID
+    uint8_t local_apic_id;       // Local APIC ID
+    uint32_t flags;              // Flags
+}acpi_madt_local_apic;
+
+// MADT I/O APIC Structure
+typedef struct  {
+    acpi_madt_entry_header header;
+    uint8_t io_apic_id;          // I/O APIC ID
+    uint8_t reserved;            // Reserved
+    uint32_t io_apic_address;    // I/O APIC Address
+    uint32_t global_system_interrupt_base; // Global System Interrupt Base
+}acpi_madt_io_apic;
+
+
+#pragma pack()
+
 
 RSDP* PROBE_RSDP(uintptr_t memory_base, uintptr_t memory_limit);
 STATUS ACPI_PARSE(RSDP* rsdp);

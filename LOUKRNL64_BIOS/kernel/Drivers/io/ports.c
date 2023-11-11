@@ -36,3 +36,9 @@ void outl(uint16_t port, uint32_t data) {
 void outbSlow(uint16_t port,uint8_t data){
 __asm__ volatile("outb %0, %1\njmp 1f\n1: jmp 1f\n1:" : : "a" (data), "Nd" (port));
 }
+
+uint64_t read_msr(uint32_t msr_id) {
+    uint32_t low, high;
+    asm volatile("rdmsr" : "=a" (low), "=d" (high) : "c" (msr_id));
+    return ((uint64_t)high << 32) | low;
+}
