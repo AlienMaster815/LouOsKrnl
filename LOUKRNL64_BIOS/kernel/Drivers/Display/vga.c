@@ -9,11 +9,11 @@ Char* buffer = (Char*)0xb8000;
 
 uint8_t color;
 
-void Set_Y(uint32_t y) {
+void Set_Y(uint64_t y) {
     if(vga_current == VGA_MODE_80x25)row = y;
 }
 
-void Set_X(uint32_t x) {
+void Set_X(uint64_t x) {
     if(vga_current == VGA_MODE_80x25)col = x;
 }
 void Set_Color(enum VGA_COLOR fg, enum VGA_COLOR bg) {

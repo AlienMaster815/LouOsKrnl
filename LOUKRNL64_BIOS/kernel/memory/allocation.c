@@ -59,9 +59,9 @@ RAMADD Lou_Alloc_Mem(SIZE size) {
 STATUS Lou_Free_Mem(RAMADD Addr, SIZE size) {
     // Calculate the number of bytes needed for deallocation
     SIZE blocks_to_free = size / sizeof(unsigned char);
-    uint32_t Addrint = (uint32_t)Addr;
+    uint64_t Addrint = (uint64_t)Addr;
     for (SIZE i = 0; i < blocks_to_free; ++i) {
-        uint32_t byte_index = (Addrint + i) / 8;
+        uint64_t byte_index = (Addrint + i) / 8;
         unsigned char mask = 1 << ((Addrint + i) % 8);
 
         // Mark blocks as free in the bitmap
