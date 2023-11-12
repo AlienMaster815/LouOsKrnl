@@ -1,5 +1,14 @@
 # LOUOSKRNL.EXE
 
+WHATS NEW THIS WEEK: 32 Bit Version Of The Kernel
+
+TODO THIS WEEK: Find The Systems Memory Map By Probing Memory  
+
+NOTE: Only Releases Folder Will Contain Working kernel/OS images
+If your architecture is not available or behind other architecturs
+I am only one person doing a monumentous task between 3 different 
+kernels and I will be adding arm soon
+ 
 Please Go to the read me txt 
 file in bios versions docs folder
 and please consider staring and 
