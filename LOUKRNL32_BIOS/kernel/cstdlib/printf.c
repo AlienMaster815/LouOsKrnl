@@ -1,13 +1,15 @@
 /*
 ; Copyright(C) 2023 Tyler Grenier
 */
-#include <limits.h>
+
 #include <stdbool.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
 #include <drivers/display/vga.h>
+
+#define MAX_INT_STRING_LENGTH 12
 
 void intToString(uint32_t num, char* str);
 
@@ -23,9 +25,9 @@ int LouPrint(char* format, ...) {
             switch (*format) {
             case 'd': {
                 int32_t num = va_arg(args, int32_t);
-                char str[12];  // Space for the largest 32-bit integer in base 10
+                char str[MAX_INT_STRING_LENGTH]; // Adjust buffer size as needed
                 intToString((uint32_t)num, str);
-                LouPrint("%s", str);
+                LouPrint(str);
                 break;
             }
             case 's': {
@@ -35,12 +37,13 @@ int LouPrint(char* format, ...) {
             }
             case 'x': {
                 uint32_t X = va_arg(args, uint32_t);
-                // Assume Set_X and Set_Y are functions that operate on 32-bit integers
+                // Assume Set_X is a function that operates on a 32-bit integer
                 Set_X(X);
                 break;
             }
             case 'y': {
                 uint32_t Y = va_arg(args, uint32_t);
+                // Assume Set_Y is a function that operates on a 32-bit integer
                 Set_Y(Y);
                 break;
             }
@@ -67,6 +70,7 @@ int LouPrint(char* format, ...) {
     va_end(args);
     return 0;
 }
+
 
 void intToString(uint32_t num, char* str) {
     uint32_t i = 0;

@@ -39,7 +39,7 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
 	LouPrint("Lou Version %s \n", KERNEL_VERSION);
     LouPrint("Hello Im Lousine Getting Things Ready\n");
     
-	if(!(mbi->flags & MULTIBOOT_INFO_MEM_MAP))LouPanic("No Memory Information",BAD);
+	
 	
 
 

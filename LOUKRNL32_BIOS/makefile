@@ -4,9 +4,9 @@
 # Change These Compiler Values To Your Correct Values if you Are on an x64 machine Use GCC Else You need a cross compiler \n
 # (e.g x86_64-elf-gcc)
 
-CC = x86_64-elf-gcc
-CP = x86_64-elf-g++
-LD = x86_64-elf-ld
+CC = gcc
+CP = g++
+LD = ld
 
 
 kernel_source_files := $(shell find kernel -name *.c)

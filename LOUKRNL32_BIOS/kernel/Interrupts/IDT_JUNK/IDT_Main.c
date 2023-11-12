@@ -58,6 +58,20 @@ LOUSTATUS SetBasicInterrupts(bool Init){
     }
     else{
         //TODO: Finish Apic Interrupts when We Get That Far
+        SetPicIDTGate(0x00,DivideByZero);
+        SetPicIDTGate(0x01,DebugException);
+        SetPicIDTGate(0x02,NMI);
+        SetPicIDTGate(0x03,BreakPoint);
+        SetPicIDTGate(0x04,OverFlow);
+        SetPicIDTGate(0x05,BoundCheck);
+        SetPicIDTGate(0x06,InvalidOpcode);
+        SetPicIDTGate(0x07,FPUNoDev);
+        SetPicIDTGate(0x08,DoubleFault);
+        SetPicIDTGate(0x20,CLOCK);
+        SetPicIDTGate(0x21,Keyboard);
+        SetPicIDTGate(0x0E,PageFault);
+        SetPicIDTGate(0x0D,GeneralProtectionFault);
+    
         return 0;
     }
     
