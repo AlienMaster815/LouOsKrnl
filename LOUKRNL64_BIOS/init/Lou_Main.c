@@ -23,7 +23,7 @@
 //TODO: Set Up Systems To Register Driver Code With API And Kernel Internals
 //TODO: PCI
 
-char* KERNEL_VERSION = "0.000000000020 RSC-8 64-BIT";
+char* KERNEL_VERSION = "0.000000000021 RSC-1 64-BIT";
 
 
 
@@ -68,6 +68,7 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
     
     //if(InitializeMainInterruptHandleing() == LOUSTATUS_GOOD) LouPanic("Unable To Start Interrupts", BAD);
 
+    SetInterruptFlags();
      		
 	LouPrint("Hello World\n ");
 	//switch_to_user_segment();

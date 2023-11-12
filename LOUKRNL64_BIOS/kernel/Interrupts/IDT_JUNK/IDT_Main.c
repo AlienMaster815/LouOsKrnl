@@ -77,3 +77,10 @@ LOUSTATUS UpdateIDT(bool Init){
         return 0;
     }
 }
+
+void SetInterruptFlags(){
+    asm volatile("sti");
+}
+void UnSetInterruptFlags(){
+    asm volatile("cli");
+}

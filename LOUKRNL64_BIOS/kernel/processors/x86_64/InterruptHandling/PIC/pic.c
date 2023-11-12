@@ -30,7 +30,7 @@ void PIC_remap(int offset1, int offset2){
     outb(PIC2_DATA, a2);
 }
 
-void IRQ_set_mask(unsigned char IRQline) {
+void IRQ_Pic_set_mask(unsigned char IRQline) {
     uint16_t port;
     uint8_t value;
  
@@ -44,7 +44,7 @@ void IRQ_set_mask(unsigned char IRQline) {
     outb(port, value);
 }
  
-void IRQ_clear_mask(unsigned char IRQline) {
+void IRQ_Pic_clear_mask(unsigned char IRQline) {
     uint16_t port;
     uint8_t value;
  
@@ -75,4 +75,9 @@ uint16_t pic_get_irr(void){
 /* Returns the combined value of the cascaded PICs in-service register */
 uint16_t pic_get_isr(void){
     return __pic_get_irq_reg(PIC_READ_ISR);
+}
+
+void Mask_All_Programable_Interrupts(){
+    for(uint8_t i = 0;i < 0; i++)
+        IRQ_Pic_set_mask(i);
 }
