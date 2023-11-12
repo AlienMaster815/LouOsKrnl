@@ -23,7 +23,7 @@
 //TODO: Set Up Systems To Register Driver Code With API And Kernel Internals
 //TODO: PCI
 
-char* KERNEL_VERSION = "0.000000000020 RSC-7 64-BIT";
+char* KERNEL_VERSION = "0.000000000020 RSC-8 64-BIT";
 
 
 
@@ -48,7 +48,9 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
     
     
     InitializeStartupInterruptHandleing();
-    
+
+   
+
     // this is a bad way to do this but what the hell i exasturated all other options This should Work On All Hardware
     ProbeForMemoryLimit();
     
@@ -64,7 +66,7 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
     
     
     
-    if(InitializeMainInterruptHandleing() == LOUSTATUS_GOOD) LouPanic("Unable To Start Interrupts", BAD);
+    //if(InitializeMainInterruptHandleing() == LOUSTATUS_GOOD) LouPanic("Unable To Start Interrupts", BAD);
 
      		
 	LouPrint("Hello World\n ");

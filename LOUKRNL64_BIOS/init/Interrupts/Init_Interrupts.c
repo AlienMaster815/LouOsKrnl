@@ -17,9 +17,12 @@ LOUSTATUS InitializeMainInterruptHandleing(){
 LOUSTATUS InitializeStartupInterruptHandleing(){
     LOUSTATUS loustat = SetBasicInterrupts(true);
    
+
     PIC_remap(0x20,0x20 + 8);
-    
+
     UpdateIDT(true);
     
+    LouPrint("Interrupts Setup\n");
+
     return loustat;
 }

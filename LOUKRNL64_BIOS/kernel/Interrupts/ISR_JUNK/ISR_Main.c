@@ -19,25 +19,25 @@
 */
 
 //0x0E
-void PageFault(){
+/*void PageFault(){
     uint64_t RSP = get_rsp();
     
     if(PageTableDeletion) return;
     if(MemoryProbing) return;
     
     LouPanic("Page Fault Detected",BAD);
-}
+}*/
 
 //0x08
-void DoubleFault(){
+/*void DoubleFault(){
     uint64_t RSP = get_rsp();
 
     LouPanic("Double Fault Detected",BAD);
     
-}
+}*/
 
 //0x0D
-void GeneralProtectionFault(){
+/*void GeneralProtectionFault(){
     uint64_t RSP = get_rsp();
 
     if(PageTableDeletion) return;
@@ -45,65 +45,65 @@ void GeneralProtectionFault(){
     
     LouPanic("General Protection Fault Detected", BAD);
     
-}
+}*/
 
 //0x00
-void DivideByZero(){
+/*void DivideByZero(){
     uint64_t RSP = get_rsp();
 
-}
+}*/
 //0x01
-void DebugException(){
+/*void DebugException(){
     uint64_t RSP = get_rsp();
 
-}
+}*/
 
 //0x02
 
-void NMI(){
+/*void NMI(){
     uint64_t RSP = get_rsp();
 
-}
+}*/
 
 //0x03
-void BreakPoint(){
+/*void BreakPoint(){
     uint64_t RSP = get_rsp();
 
-}
+}*/
 
 //0x04
-void OverFlow(){
+/*void OverFlow(){
     uint64_t RSP = get_rsp();
 
-}
+}*/
 
 //0x05
-void BoundCheck(){
+/*void BoundCheck(){
     uint64_t RSP = get_rsp();
 
-}
+}*/
 
 //0x06
-void InvalidOpcode(){
+/*void InvalidOpcode(){
     uint64_t RSP = get_rsp();
 
-}
+}*/
 
 //0x07
-void FPUNoDev(){
+/*void FPUNoDev(){
     uint64_t RSP = get_rsp();
 
-}
+}*/
 
 //0x20
-void CLOCK(){
+/*void CLOCK(){
     uint64_t RSP = get_rsp();
 
-}
+}*/
 
 //0x21
 
-void Keyboard(){
+/*void Keyboard(){
     uint64_t RSP = get_rsp();
 
-}
+}*/
