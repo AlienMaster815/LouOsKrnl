@@ -12,6 +12,7 @@
 #include <kernel/gdt.h>
 #include <kernel/memoryprobing.h>
 #include <kernel/interrupts.h>
+#include <drivers/Lou_drivers/FileSystem.h>
 
 /* Tyler Grenier 9/21/23 9:56 PM
 -- Started the file with the main
@@ -23,9 +24,32 @@
 //TODO: Set Up Systems To Register Driver Code With API And Kernel Internals
 //TODO: PCI
 
-char* KERNEL_VERSION = "0.000000000021 RSC-1 64-BIT";
+char* KERNEL_VERSION = "0.000000000021 RSC-2 64-BIT";
 
 
+LOUSTATUS Lou_kernel_early_initialization(){
+    if (Initialize_Gdt() != LOUSTATUS_GOOD) LouPanic("Error Setting Gdt",BAD);
+    
+    
+    InitializeStartupInterruptHandleing();
+
+   
+
+    // this is a bad way to do this but what the hell i exasturated all other options This should Work On All Hardware
+    ProbeForMemoryLimit();
+    
+    return LOUSTATUS_GOOD;
+}
+
+LOUSTATUS Set_Up_Devices(){
+    if(IO_Manager_Init() != LOUSTATUS_GOOD)LouPanic("IO Manager Failed To Start",BAD);
+
+    pata_device_scanc();
+
+    FileSystemScan();
+    
+    return LOUSTATUS_GOOD;
+}
 
 KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
     STATUS lou_init_stat;
@@ -41,31 +65,12 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
     
 	if(!(mbi->flags & MULTIBOOT_INFO_MEM_MAP))LouPanic("No Memory Information",BAD);
 	
+    //INITIALIZE IMPORTANT THINGS FOR US LATER
+    if(Lou_kernel_early_initialization() != LOUSTATUS_GOOD)LouPanic("Early Initialization Failed",BAD);
+    
+    //SETUP DEVICES AND DRIVERS
+    if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);
 
-
-
-    if (Initialize_Gdt() != LOUSTATUS_GOOD) LouPanic("Error Setting Gdt",BAD);
-    
-    
-    InitializeStartupInterruptHandleing();
-
-   
-
-    // this is a bad way to do this but what the hell i exasturated all other options This should Work On All Hardware
-    ProbeForMemoryLimit();
-    
-
-    
-    if(IO_Manager_Init() != LOUSTATUS_GOOD)LouPanic("IO Manager Failed To Start",BAD);
-
-	pata_device_scanc();
-
-    
-    
-    
-    
-    
-    
     //if(InitializeMainInterruptHandleing() == LOUSTATUS_GOOD) LouPanic("Unable To Start Interrupts", BAD);
 
     SetInterruptFlags();

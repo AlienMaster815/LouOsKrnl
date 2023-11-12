@@ -31,6 +31,10 @@ PATA* RetrievePATAP(){
 }
 
 
-void SetVideoMode(uint64_t Height,uint64_t Widthe, uint8_t  ColorDepth){
+extern "C" void SetVideoMode(uint64_t Height,uint64_t Widthe, uint8_t  ColorDepth){
+    
+}
+
+extern "C" void FileSystemScan(){
     
 }

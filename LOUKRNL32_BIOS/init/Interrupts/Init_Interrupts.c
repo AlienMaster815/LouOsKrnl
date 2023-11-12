@@ -21,7 +21,8 @@ LOUSTATUS InitializeStartupInterruptHandleing(){
 
     
     UpdateIDT(true);
-    
-    LouPrint("Interrupts are Set Up\n");
+    Mask_All_Programable_Interrupts();
+    LouPrint("Basic Interrupts Setup\n");
+
     return loustat;
 }
