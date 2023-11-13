@@ -19,18 +19,6 @@
 #define Present 0x1
 #define NotPresent 0x0
 
-typedef struct __attribute__((packed)){
-    uint16_t base_low;      // Lower 16 bits of the handler function's address
-    uint16_t selector;      // Code segment selector
-    uint8_t ist;            // Interrupt Stack Table offset
-    uint8_t type_attr;      // Type and attributes of the interrupt gate
-    uint16_t base_mid;      // Middle 16 bits of the handler function's address
-    uint32_t base_high;     // Higher 32 bits of the handler function's address
-    uint32_t reserved;      // Reserved for future use
-}Interrupt_Descriptor_Table;
-
-__attribute__((aligned(0x10))) static Interrupt_Descriptor_Table IDT[256];
-
 
 
 typedef struct __attribute__((packed)){
@@ -39,9 +27,9 @@ typedef struct __attribute__((packed)){
     uint8_t always0;
     uint8_t flags;
     uint16_t base_high;
-} Interrupt_Descriptor_Table_Pre_Acpi;
+} Interrupt_Descriptor_Table;
 
-static Interrupt_Descriptor_Table_Pre_Acpi idt[256]; // 256 entries for the IDT
+static Interrupt_Descriptor_Table idt[256]; // 256 entries for the IDT
 
 
 typedef struct __attribute__((packed)){
@@ -83,5 +71,9 @@ LOUSTATUS InitializeMainInterruptHandleing();
 LOUSTATUS InitializeStartupInterruptHandleing();
 
 LOUSTATUS UpdateIDT(bool Init);
+
+void SetInterruptFlags();
+void UnSetInterruptFlags();
+
 
 #endif

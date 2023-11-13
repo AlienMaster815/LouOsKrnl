@@ -6,13 +6,13 @@
 
 
 
-#CC = gcc
-#CP = g++
-#LD = ld
+CC = gcc
+CP = g++
+LD = ld
 
-CC = x86_64-elf-gcc
-CP = x86_64-elf-g++
-LD = x86_64-elf-ld
+#CC = x86_64-elf-gcc
+#CP = x86_64-elf-g++
+#LD = x86_64-elf-ld
 
 
 kernel_source_files := $(shell find kernel -name *.c)

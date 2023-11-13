@@ -61,7 +61,7 @@ LOUSTATUS SetBasicInterrupts(bool Init){
         if(result != 0) return 1;
         result = set_idt_gate(0x20,&CLOCK,KernelCodeSegment,0 , Present + HighestPrivledge + INTERRUPT_GATE);
         if(result != 0) return 1;
-        result = set_idt_gate(0x21,&Keyboard,0x08 /*KernelCodeSegment*/,0 , Present + HighestPrivledge + INTERRUPT_GATE);
+        result = set_idt_gate(0x21,&Keyboard,KernelCodeSegment,0 , Present + HighestPrivledge + INTERRUPT_GATE);
         if(result != 0) return 1;
         result = set_idt_gate(0x0E,&PageFault,KernelCodeSegment,0 , Present + HighestPrivledge + INTERRUPT_GATE);
         if(result != 0) return 1;

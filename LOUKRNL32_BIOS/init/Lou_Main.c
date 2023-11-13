@@ -24,13 +24,15 @@
 //TODO: Set Up Systems To Register Driver Code With API And Kernel Internals
 //TODO: PCI
 
-char* KERNEL_VERSION = "0.000000000021 RSC-2 32-BIT";
+char* KERNEL_VERSION = "0.000000000023 RSC-1 32-BIT";
 
 
 LOUSTATUS Lou_kernel_early_initialization(){
     if (Initialize_Gdt() != LOUSTATUS_GOOD) LouPanic("Error Setting Gdt",BAD);
     
+    UnSetInterruptFlags();
     InitializeStartupInterruptHandleing();
+    SetInterruptFlags();
     
     // this is a bad way to do this but what the hell i exasturated all other options This should Work On All Hardware
     ProbeForMemoryLimit();
@@ -67,7 +69,7 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
     if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);
     
     //if(InitializeMainInterruptHandleing() == LOUSTATUS_GOOD) LouPanic("Unable To Start Interrupts", BAD);
-
+	
      		
 	LouPrint("Hello World\n ");
 	//switch_to_user_segment();

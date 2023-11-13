@@ -1,3 +1,4 @@
+#include <stdint.h>
 #ifndef _PIC_H
 #define _PIC_H
 
@@ -52,11 +53,8 @@ uint16_t pic_get_irr(void);
 /* Returns the combined value of the cascaded PICs in-service register */
 uint16_t pic_get_isr(void);
 
-
-void SetInterruptFlags();
-void UnSetInterruptFlags();
-
 void Mask_All_Programable_Interrupts();
 
+void UnMaskKeyboard();
 
 #endif

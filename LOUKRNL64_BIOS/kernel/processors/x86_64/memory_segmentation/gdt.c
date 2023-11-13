@@ -343,5 +343,5 @@ LOUSTATUS Load_Gdt(GDT* gdt){
     
     asm volatile ("lgdt %0" : : "m" (gdtp));
 
-    return 0;
+    asm("retf");
 }
