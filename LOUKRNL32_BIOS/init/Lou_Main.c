@@ -23,8 +23,14 @@
 //TODO: Contact APIC and Set up Interrupt Hanldeing Stuff Like IST For Interrupts
 //TODO: Set Up Systems To Register Driver Code With API And Kernel Internals
 //TODO: PCI
+//TODO: SystemCalls
+//TODO: Program Execution
+//TODO: Libraries and Linker Support
+//TODO: UserMode
 
-char* KERNEL_VERSION = "0.000000000023 RSC-1 32-BIT";
+//TODO: Use Parralelles To Make The User Space Programs
+
+char* KERNEL_VERSION = "0.000023 RSC-2 32-BIT";
 
 
 LOUSTATUS Lou_kernel_early_initialization(){

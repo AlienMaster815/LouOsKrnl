@@ -2,12 +2,22 @@
 #include <stdio.h>
 #include <kernel/errors.h>
 #include <CPUInstructionSet/CPURegisters.h>
+#include <kernel/pic.h>
 
 void PageFault(){
-    //uint64_t RSP = get_rsp();
-
-    if(PageTableDeletion) return;
-    if(MemoryProbing) return;
-
+    UnSetInterruptFlags();
+    
+    if(PageTableDeletion){
+        PageTableDeletion = false;
+        PIC_sendEOI(1);
+        return;
+    }
+    if(MemoryProbing){
+        MemoryProbing = false;
+        PIC_sendEOI(1);
+        return;
+    }
     LouPanic("Page Fault Detected",BAD);
+    PIC_sendEOI(1);
+
 }

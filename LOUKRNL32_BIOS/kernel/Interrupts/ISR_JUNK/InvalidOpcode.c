@@ -2,8 +2,10 @@
 #include <stdio.h>
 #include <kernel/errors.h>
 #include <CPUInstructionSet/CPURegisters.h>
+#include <kernel/pic.h>
 
 void InvalidOpcode(){
-    //uint64_t RSP = get_rsp();
+    UnSetInterruptFlags();
+    PIC_sendEOI(1);
 
 }
