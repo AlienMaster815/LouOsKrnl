@@ -2,8 +2,9 @@
 #include <stdio.h>
 #include <kernel/errors.h>
 #include <CPUInstructionSet/CPURegisters.h>
+#include <kernel/pic.h>
 
 void Keyboard(){
-    uint64_t RSP = get_rsp();
-
+    LouPrint("Keyboard Interrupt!!! \n");
+    PIC_sendEOI(1);
 }

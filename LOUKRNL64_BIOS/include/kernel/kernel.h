@@ -17,7 +17,7 @@
 
 #define KERNEL_ENTRY extern void
 
-#define KernelCodeSegment (sizeof(GDT_ENTRY) * 1)
+#define KernelCodeSegment 0x08//(sizeof(GDT_ENTRY) * 1)
 #define KernelDataSegment (sizeof(GDT_ENTRY) * 2)
 
 #define UserCodeSegment (sizeof(GDT_ENTRY) * 3)

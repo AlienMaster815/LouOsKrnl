@@ -1,12 +1,17 @@
 #include <kernel/ports.h>
 #include <kernel/pic.h>
-
+#include <kernel/interrupts.h>
 
 void PIC_sendEOI(unsigned char irq){
-    if(irq >= 8)
-        outb(PIC2_COMMAND,PIC_EOI);
  
-    outb(PIC1_COMMAND,PIC_EOI);
+    outb(0x20,0x20);
+
+    if(irq >= 8) 
+        outb(0xa0,0x20);
+
+    UnSetInterruptFlags();
+    InitializeStartupInterruptHandleing();
+    SetInterruptFlags();
 }
 
 
@@ -78,6 +83,6 @@ uint16_t pic_get_isr(void){
 }
 
 void Mask_All_Programable_Interrupts(){
-    for(uint8_t i = 0;i < 0; i++)
+    for(uint8_t i = 0;i < 16; i++)
         IRQ_Pic_set_mask(i);
 }

@@ -5,7 +5,7 @@
 
 
 void PageFault(){
-    uint64_t RSP = get_rsp();
+
 
     LouPrint("Page Fault Detected Handleing Now\n");
     
@@ -18,10 +18,10 @@ void PageFault(){
         return;
     }
     
-    if(!SeriousPageFault){
+    //if(!SeriousPageFault){
         
-        return;
-    }
+    //    return;
+    //}
 
     LouPanic("Page Fault Couldent Be Handled",BAD);
 }

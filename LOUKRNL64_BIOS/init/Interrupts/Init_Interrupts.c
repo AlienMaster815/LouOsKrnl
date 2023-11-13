@@ -15,14 +15,17 @@ LOUSTATUS InitializeMainInterruptHandleing(){
 
 
 LOUSTATUS InitializeStartupInterruptHandleing(){
-    LOUSTATUS loustat = SetBasicInterrupts(true);
+    
+    if(SetBasicInterrupts(true) != LOUSTATUS_GOOD)LouPanic("Error Setting Basic Interrupts",BAD);
    
 
     PIC_remap(0x20,0x20 + 8);
 
     UpdateIDT(true);
     Mask_All_Programable_Interrupts();
-    LouPrint("Basic Interrupts Setup\n");
+    //LouPrint("Basic Interrupts Setup\n");
     
-    return loustat;
+    IRQ_Pic_clear_mask(1);
+
+    return 0;
 }

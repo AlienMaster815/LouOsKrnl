@@ -29,7 +29,7 @@ typedef struct __attribute__((packed)){
     uint32_t reserved;      // Reserved for future use
 }Interrupt_Descriptor_Table;
 
-__attribute__((aligned(0x10))) static Interrupt_Descriptor_Table IDT[256];
+static Interrupt_Descriptor_Table IDT[256];
 
 
 
@@ -41,7 +41,7 @@ typedef struct __attribute__((packed)){
 
 LOUSTATUS SetBasicInterrupts(bool init);
 
-LOUSTATUS set_idt_gate(int num, uint64_t base, uint16_t selector, uint8_t ist, uint8_t type_attr);
+LOUSTATUS set_idt_gate(int num,void (*handler)(), uint16_t selector, uint8_t ist, uint8_t type_attr);
 
 static bool PageTableDeletion = false;
 static bool MemoryProbing = false;
