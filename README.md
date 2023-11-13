@@ -1,6 +1,7 @@
 # LOUOSKRNL.EXE
 
 WHATS NEW THIS WEEK: 32 Bit Version Of The Kernel
+WHATS NEW THIS WEEK: The Playstation Experimental LOUSINE Kernel ; Not Wroking State Yet
 
 TODO THIS WEEK: Find The Systems Memory Map By Probing Memory  
 
