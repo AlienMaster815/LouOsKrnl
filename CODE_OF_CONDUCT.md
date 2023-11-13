@@ -1,5 +1,20 @@
 # Contributor Covenant Code of Conduct
 
+#Extended Code Of Conduct MOST IMPORTANT PART
+
+# RULE NUMBER 1: No Talk Of POLITICS, Gender Identity, Sexual Orientation, Religion, Or DRAMA
+## We Respect Your Beliefs, Opinios and We Will Not Discriminate Against Anyone But Leave Everything At The Door. Unless;
+* either you are misgendered you may calmly and politely correct them as long as you do the following the outcome is in your favor
+    *Do Not Be Rude To The Person or you will be banned
+    *Do Not Start A Fight Calmly Report it To Me if the person is being an asshole on perpose or both of you will get banned
+    *Be respectfull to me while reporting or you will be banned
+
+## Remember We Have To Respect Every One Thouse Who Arent Respectfull Are Imediately Banned 
+
+
+#Standard Code Of Conduct
+
+
 ## Our Pledge
 
 We as members, contributors, and leaders pledge to make participation in our
