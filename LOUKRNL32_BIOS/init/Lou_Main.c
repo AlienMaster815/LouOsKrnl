@@ -30,7 +30,7 @@
 
 //TODO: Use Parralelles To Make The User Space Programs
 
-char* KERNEL_VERSION = "0.000023 RSC-2 32-BIT";
+char* KERNEL_VERSION = "0.000024 RSC-1 32-BIT";
 
 
 LOUSTATUS Lou_kernel_early_initialization(){
@@ -56,6 +56,16 @@ LOUSTATUS Set_Up_Devices(){
     return LOUSTATUS_GOOD;
 }
 
+LOUSTATUS Advanced_Kernel_Initialization(){
+    
+    return LOUSTATUS_GOOD;
+}
+
+LOUSTATUS User_Mode_Initialization(){
+    
+    return LOUSTATUS_GOOD;
+}
+
 KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
     STATUS lou_init_stat;
 	mbi = multiboot_info;
@@ -63,7 +73,7 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
     
     setup_vga_systems();
 
-	//vga set for debug
+	// vga set for debug
 	
 	LouPrint("Lou Version %s \n", KERNEL_VERSION);
     LouPrint("Hello Im Lousine Getting Things Ready\n");
@@ -71,18 +81,18 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
     
     if(Lou_kernel_early_initialization() != LOUSTATUS_GOOD)LouPanic("Early Initialization Failed",BAD);
 
-    //SETUP DEVICES AND DRIVERS
+    // SETUP DEVICES AND DRIVERS
     if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);
     
-    //if(InitializeMainInterruptHandleing() == LOUSTATUS_GOOD) LouPanic("Unable To Start Interrupts", BAD);
+    // if(InitializeMainInterruptHandleing() == LOUSTATUS_GOOD) LouPanic("Unable To Start Interrupts", BAD);
 	
      		
 	LouPrint("Hello World\n ");
-	//switch_to_user_segment();
+	// switch_to_user_segment();
 	while(1);
 
 	LouPanic("error kernel has gone too far terminating system\n",BAD);
-	//IF the Kernel returns from this 
-	//the whole thing crashes crashes
+	// IF the Kernel returns from this
+	// the whole thing crashes crashes
 }
 

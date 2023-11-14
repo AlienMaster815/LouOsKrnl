@@ -30,7 +30,7 @@
 
 //TODO: Use Parralelles To Make The User Space Programs
 
-char* KERNEL_VERSION = "0.000023 RSC-2 64-BIT";
+char* KERNEL_VERSION = "0.000024 RSC-1 64-BIT";
 
 
 LOUSTATUS Lou_kernel_early_initialization(){
@@ -57,6 +57,15 @@ LOUSTATUS Set_Up_Devices(){
     return LOUSTATUS_GOOD;
 }
 
+LOUSTATUS Advanced_Kernel_Initialization(){
+    
+    return LOUSTATUS_GOOD;
+}
+
+LOUSTATUS User_Mode_Initialization(){
+    
+    return LOUSTATUS_GOOD;
+}
 
 
 KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
@@ -86,8 +95,8 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
 	//switch_to_user_segment();
 	while(1);
 
-	//LouPanic("error kernel has gone too far terminating system\n",BAD);
-	//IF the Kernel returns from this 
-	//the whole thing crashes crashes
+	LouPanic("error kernel has gone too far terminating system\n",BAD);
+	// IF the Kernel returns from this
+	// the whole thing crashes crashes
 }
 
