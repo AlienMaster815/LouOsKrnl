@@ -9,6 +9,8 @@
 #include <stdint.h>
 #include <drivers/display/vga.h>
 
+void intToHexString(int number, char *hexString);
+
 void intToString(uint64_t num, char* str);
 
 int LouPrint(char* format, ...) {
@@ -47,6 +49,12 @@ int LouPrint(char* format, ...) {
                 char c = va_arg(args, int);
                 putchar(c);
                 break;
+            }
+            case 'h':{
+                int64_t num = va_arg(args, int64_t); // get the Number in integer Form
+                char hexString[21]; //Define A string To Print
+                intToHexString(num,hexString); // Change The Integer To A Hex String
+                LouPrint("%s", hexString); // Print Hex String;
             }
             default: {
                 putchar('%');
@@ -96,3 +104,13 @@ void intToString(uint64_t num, char* str) {
     }
 }
 
+void intToHexString(int number, char *hexString) {
+    int i = 0;
+    do {
+        int digit = number % 16;
+        hexString[i++] = (digit < 10) ? (digit + '0') : (digit - 10 + 'a');
+        number /= 16;
+    } while (number != 0);
+
+    hexString[i] = '\0';  // Null-terminate the string
+}

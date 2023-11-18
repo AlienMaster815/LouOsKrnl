@@ -17,7 +17,6 @@
 #define PATAPIDEV 2
 
 
-
 #define STATUS bool
 
 //define kernel c functions that we translate to the cpp world

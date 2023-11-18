@@ -46,6 +46,7 @@ LOUSTATUS set_idt_gate(int num,void (*handler)(), uint16_t selector, uint8_t ist
 static bool PageTableDeletion = false;
 static bool MemoryProbing = false;
 static bool SeriousPageFault = false;
+static bool USBKeyboardInterrupt = false;
 
 void PageFault();
 void DoubleFault();
