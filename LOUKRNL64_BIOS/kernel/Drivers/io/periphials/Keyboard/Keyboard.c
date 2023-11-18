@@ -30,7 +30,7 @@ void WaitForKeyboardReadiness(uint8_t devtype){
             break;
         }
         case USB:{
-        
+            break;
         }
     }
 }
@@ -44,12 +44,15 @@ char GetPS2CharecterData(uint8_t KBL,uint8_t keyData){
             switch(keyData){
              
                 default:{
-                    LouPrint("QWERTY Keyboard Hex: %h", keyData);
+                    LouPrint("QWERTY Keyboard Hex: %h \n", keyData);
+                    break;
                 }
             }
+            break;
         }
         default:{
             LouPrint("UnKnown PS2 Keyboard Language Format\n", keyData);
+            break;
         }
     }
     

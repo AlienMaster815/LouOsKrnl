@@ -53,8 +53,9 @@ int LouPrint(char* format, ...) {
             case 'h':{
                 int64_t num = va_arg(args, int64_t); // get the Number in integer Form
                 char hexString[21]; //Define A string To Print
-                intToHexString(num,hexString); // Change The Integer To A Hex String
+                intToHexString((int)num,hexString); // Change The Integer To A Hex String
                 LouPrint("%s", hexString); // Print Hex String;
+                break;
             }
             default: {
                 putchar('%');
