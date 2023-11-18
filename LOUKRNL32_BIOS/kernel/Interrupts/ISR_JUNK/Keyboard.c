@@ -3,9 +3,11 @@
 #include <kernel/errors.h>
 #include <CPUInstructionSet/CPURegisters.h>
 #include <kernel/pic.h>
+#include <drivers/Lou_drivers/keyboards.h>
 
 void Keyboard(){
     UnSetInterruptFlags();
-    LouPrint("Keyboard Interrupt!!! \n");
+    if(!USBKeyboardInterrupt)PS2KeyboardHandler();
+    if(USBKeyboardInterrupt)USBKeyboardHandler();
     PIC_sendEOI(1);
 }

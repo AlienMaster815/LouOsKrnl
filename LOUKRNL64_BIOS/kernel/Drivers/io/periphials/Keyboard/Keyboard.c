@@ -19,6 +19,8 @@
 #include <kernel/ports.h>
 #include <USRSPC/USRSPC.h>
 #include <stdio.h>
+#include <stdbool.h>
+
 
 void WaitForKeyboardReadiness(uint8_t devtype){
     uint8_t readyornot;
@@ -35,30 +37,117 @@ void WaitForKeyboardReadiness(uint8_t devtype){
     }
 }
 
+static bool CAPSLOCK = false;
+static bool SHIFT = false;
+
 char GetPS2CharecterData(uint8_t KBL,uint8_t keyData){
     
     switch (KBL){
         
-        case QWERTY:{
-         
+        case QWERTY:
+            
             switch(keyData){
-             
-                default:{
-                    LouPrint("QWERTY Keyboard Hex: %h \n", keyData);
+                
+                //SHIFT
+                case 42:
+                SHIFT = true;
+                return -1;
+                break;
+                
+                case 170:
+                SHIFT = false;
+                return -1;
+                break;                
+                
+                // CapsLock
+                case 58:
+                if(CAPSLOCK)CAPSLOCK = false;
+                if(!CAPSLOCK)CAPSLOCK = true;
+                return -1;
+                break;
+                case 186:
+                    return -1;
                     break;
-                }
-            }
+                //First Row
+
+                case 16:
+                    return 'q';
+                    break;
+                case 17:
+                    return 'w';
+                    break;
+                case 18:
+                    return 'e';
+                    break;
+                case 19:
+                    return 'r';
+                    break;
+                case 20:
+                    return 't';
+                    break;
+                case 21:
+                    return 'y';
+                    break;
+                case 22:
+                    return 'u';
+                    break;
+                case 23:
+                    return 'i';
+                    break;
+                case 24:
+                    return 'o';
+                    break;
+                case 25:
+                    return 'p';
+                    break;
+
+
+                case 144:
+                    return -1;
+                    break;
+                case 145:
+                    return -1; 
+                    break;
+                case 146:
+                    return -1;
+                    break;
+                case 147:
+                    return -1;
+                    break;
+                case 148: 
+                    return -1;
+                    break;
+                case 149:
+                    return -1;
+                    break;
+                case 150:
+                    return -1;
+                    break;
+                case 151:
+                    return -1;
+                    break;
+                case 152:
+                    return -1;
+                    break;
+                case 153:
+                    return -1;
+                    break;
+
+                //Second Row
+
+                default:
+                    LouPrint("QWERTY Keyboard Decimal: %d\n", keyData);
+                    break;
+            }   
             break;
-        }
-        default:{
+        
+        default:
             LouPrint("UnKnown PS2 Keyboard Language Format\n", keyData);
+            return -1;                
             break;
-        }
+        
     }
     
-    
-    
-    return 'a';
 }
 
 void PS2KeyboardHandler(){
@@ -66,8 +155,7 @@ void PS2KeyboardHandler(){
     uint8_t keyData = inb(0x60);
     
     char Charecter = GetPS2CharecterData(KBDLNG,keyData);
-    
-    SendCharecterToUserSpace(Charecter);
+    if(Charecter != -1)SendCharecterToUserSpace(Charecter);
 }
 
 void USBKeyboardHandler(){
