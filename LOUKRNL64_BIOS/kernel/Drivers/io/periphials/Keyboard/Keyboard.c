@@ -134,11 +134,135 @@ char GetPS2CharecterData(uint8_t KBL,uint8_t keyData){
                     break;
 
                 //Second Row
+                case 30:
+                    return 'a';
+                    break;
+                case 31:
+                    return 's';
+                    break;
+                case 32:
+                    return 'd';
+                    break;
+                case 33:
+                    return 'f';
+                    break;
+                case 34:
+                    return 'g';
+                    break;
+                case 35:
+                    return 'h';
+                    break;
+                case 36:
+                    return 'j';
+                    break;
+                case 37:
+                    return 'k';
+                    break;
+                case 38:
+                    return 'l';
+
+
+
+
+                case 158:                
+                    return -1;
+                    break;
+                case 159:
+                    return -1;
+                    break;
+                case 160:
+                    return -1;
+                    break;
+                case 161:
+                    return -1;
+                    break;
+                case 162:
+                    return -1;
+                    break;
+                case 163:
+                    return -1;
+                    break;
+                case 164:
+                    return -1;
+                    break;
+                case 165:
+                    return -1;
+                    break;
+                case 166:
+                    return -1;
+                    break;
+
+                //Third Row
+                case 44:
+                    return 'z';
+                    break;
+                case 45:
+                    return 'x';
+                    break;
+                case 46:
+                    return 'c';
+                    break;
+                case 47:
+                    return 'v';
+                    break;
+                case 48:
+                    return 'b';
+                    break;
+                case 49:
+                    return 'n';
+                    break;
+                case 50:
+                    return 'm';
+                    break;
+
+
+
+
+                case 172:
+                    return -1;
+                    break;
+                case 173:
+                    return -1;
+                    break;
+                case 174:
+                    return -1;
+                    break;
+                case 175:
+                    return -1;
+                    break;
+                case 176:
+                    return -1;
+                    break;
+                case 177:
+                    return -1;
+                    break;
+                case 178:
+                    return -1;
+                    break;
+                case 179:
+                    return -1;
+                    break;
+
+                // ENTER
+                case 28:
+                    return '\n';
+                    break;
+                case 156:
+                    return -1;
+                    break;
+
+                //SPACE
+                case 57:
+                    return ' ';
+                    break;
+                case 185:
+                    return -1;
+                    break;
 
                 default:
                     LouPrint("QWERTY Keyboard Decimal: %d\n", keyData);
                     break;
-            }   
+            }
             break;
         
         default:
@@ -155,7 +279,7 @@ void PS2KeyboardHandler(){
     uint8_t keyData = inb(0x60);
     
     char Charecter = GetPS2CharecterData(KBDLNG,keyData);
-    if(Charecter != -1)SendCharecterToUserSpace(Charecter);
+    if(Charecter >= 0)SendCharecterToUserSpace(Charecter);
 }
 
 void USBKeyboardHandler(){
