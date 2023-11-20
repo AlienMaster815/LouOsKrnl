@@ -10,7 +10,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
-
+#include "../Types/SALTypes.h"
 
 //extern "C" uint64_t DbgPrint(_In_z_ _Printf_format_string_ PCSTR Format, ...);
 
