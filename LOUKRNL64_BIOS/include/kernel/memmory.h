@@ -11,7 +11,7 @@
 #include <bootloader/grub/multiboot.h>
 
 // Section 1:1 RAM ADDRESS
-#define MAXMEM 0xFFFFFFFFFFFFFFFF
+#define MAXMEM 0xFFFFFFFFFFFFFFFFULL
 #define RAMADD unsigned char*
 #define RAMADDDATA unsigned char *
 #define BLOCK 4096

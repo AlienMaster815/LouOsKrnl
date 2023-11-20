@@ -16,6 +16,7 @@
 #define PATADEV 1
 #define PATAPIDEV 2
 
+#define LOUINTERNAL extern "C"
 
 #define STATUS bool
 
