@@ -1,6 +1,6 @@
-#include <WDKSubsystem/Debuging/Debuging.h>
+#include <WDKSubsystem/WDKSubsystem.h>
 
-int64_t DbgPrint(){
+//uint64_t DbgPrint(_In_z_ _Printf_format_string_ PCSTR Format, ...){
     
-    return 0;
-}
+//    return 0;
+//}

@@ -12,7 +12,7 @@
 #include <stddef.h>
 
 
-extern "C" int64_t DbgPrint();
+//extern "C" uint64_t DbgPrint(_In_z_ _Printf_format_string_ PCSTR Format, ...);
 
 
 
