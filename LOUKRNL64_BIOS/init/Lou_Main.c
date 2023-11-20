@@ -42,7 +42,6 @@ LOUSTATUS Lou_kernel_early_initialization(){
    
 
     // this is a bad way to do this but what the hell i exasturated all other options This should Work On All Hardware
-    ProbeForMemoryLimit();
     
     return LOUSTATUS_GOOD;
 }

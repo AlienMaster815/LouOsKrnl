@@ -4,30 +4,30 @@
 #include <CPUInstructionSet/CPURegisters.h>
 #include <kernel/pic.h>
 
+bool MemoryProbing;
+bool PageTableDeletion;
+
+
+void RegisterPageTableDeletion(){
+    PageTableDeletion = true;
+}
 
 void PageFault(){
 
     UnSetInterruptFlags();
     
     LouPrint("Page Fault Detected Handleing Now\n");
-    
+       
     if(PageTableDeletion){
         PageTableDeletion = false;
         PIC_sendEOI(1);
         return;
     }
-    if(MemoryProbing){
-        MemoryProbing = false;
-        PIC_sendEOI(1);
-        return;
-    }
-    
-    //if(!SeriousPageFault){
-        
-    //    return;
-    //}
 
     LouPanic("Page Fault Couldent Be Handled",BAD);
     PIC_sendEOI(1);
     
 }
+
+
+

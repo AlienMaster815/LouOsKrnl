@@ -39,19 +39,23 @@ typedef struct __attribute__((packed)){
 }IDTP64;
 
 
+void RegisterMemoryProbe();
+void RegisterPageTableDeletion();
+
+
 LOUSTATUS SetBasicInterrupts(bool init);
 
 LOUSTATUS set_idt_gate(int num,void (*handler)(), uint16_t selector, uint8_t ist, uint8_t type_attr);
 
-static bool PageTableDeletion = false;
-static bool MemoryProbing = false;
-static bool SeriousPageFault = false;
-static bool USBKeyboardInterrupt = false;
+static bool USBKeyboardInterrupt;
+
+void MemoryProbingPageFaultHandler();
 
 void PageFault();
 void DoubleFault();
 void GeneralProtectionFault();
 
+bool GetProbeStatus();
 
 void DivideByZero();
 void DebugException();

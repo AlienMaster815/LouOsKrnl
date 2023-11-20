@@ -707,9 +707,9 @@ enum __SAL_YesNo {_SAL_notpresent, _SAL_no, _SAL_maybe, _SAL_yes, _SAL_default};
 
 #define _Prepost_z_                      _SAL2_Source_(_Prepost_z_, (), _Pre_z_      _Post_z_)
 
-
+#ifdef _MSC_VER
 #pragma region Input Buffer SAL 1 compatibility macros
-
+#endif
 /*==========================================================================
 
    This section contains definitions for macros defined for VS2010 and earlier.
@@ -1472,8 +1472,9 @@ enum __SAL_YesNo {_SAL_notpresent, _SAL_no, _SAL_maybe, _SAL_yes, _SAL_default};
 #define _Deref_inout_z_bytecap_c_(size)  _SAL1_1_Source_(_Deref_inout_z_bytecap_c_, (size), _Deref_pre_z_bytecap_c_(size) _Deref_post_z_)
 #define _Deref_inout_z_  _SAL1_1_Source_(_Deref_inout_z_, (), _Deref_prepost_z_)
 
+#ifdef _MSC_VER
 #pragma endregion Input Buffer SAL 1 compatibility macros
-
+#endif
 
 //============================================================================
 //   Implementation Layer:
