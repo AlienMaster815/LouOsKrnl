@@ -29,7 +29,7 @@ typedef struct {
 	PageTableEntry entries[512]; 
 }__attribute__((packed)) PageTable;;
 
-uintptr_t FindMemoryLimit();
+static const uintptr_t FindMemoryLimit();
 
 
 
@@ -40,6 +40,7 @@ static PageTable PDT;
 static multiboot_info_t* mbi;
 //static multiboot_memory_map_t* mmap;
 
+static uintptr_t mapped_memory = 1072693248;
 
 uint64_t ProbeForMemoryLimit();
 

@@ -54,6 +54,9 @@ uint64_t DbgPrint(_In_z_ _Printf_format_string_ PCSTR Format, ...){
 
             Format++; // Move to the next character in the format string
         }
+        else if(*Format == '\r'){
+                //Do Nothing In This Case
+        }
         else {
             LouPrint("%c", *Format);
             Format++;

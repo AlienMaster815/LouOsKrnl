@@ -271,7 +271,7 @@ char GetPS2CharecterData(uint8_t KBL,uint8_t keyData){
             break;
         
     }
-    
+    return -1;
 }
 
 void PS2KeyboardHandler(){
