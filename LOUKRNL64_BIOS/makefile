@@ -156,6 +156,8 @@ annya.iso: louX64.exe
 	mkdir iso
 	mkdir iso/boot
 	mkdir iso/boot/grub
+	mkdir iso/Annya
+	mkdir iso/Annya/System64
 	cp dist/x86_64/LOUOSKRNL.bin iso/Annya/System64/LOUOSKRNL.exe
 	echo 'set timeout=0'                     >> iso/boot/grub/grub.cfg
 	echo 'set default=0'                     >> iso/boot/grub/grub.cfg
