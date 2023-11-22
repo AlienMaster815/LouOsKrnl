@@ -3,7 +3,7 @@
 
 #define VOID void
 #define VOIDP void*
-#define PVOID *Void
+
 #define LOUSTATUS unsigned long long
 
 #endif 

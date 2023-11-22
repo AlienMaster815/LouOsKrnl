@@ -39,7 +39,7 @@ uint8_t pata[4];
 void PATA::pata_device_scan(){
     
 
-    LouPrint("scaning PATA devices\n");
+    LouPrint("scaning ATA devices\n");
     
     determine_device_type(0);
     determine_device_type(2);
@@ -88,7 +88,7 @@ void PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int Buffe
     }
     
     
-    LouPrint("Reading PATA Drive: ");
+    LouPrint("Reading ATA Drive: ");
     
     
     
@@ -148,7 +148,7 @@ void PATA::Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, int Buf
         return;
     }
     
-    LouPrint("Reading PATAPI Drive: ");
+    LouPrint("Reading ATAPI Drive: ");
     
     
     
@@ -199,7 +199,7 @@ void PATA::Write28PATA(uint16_t device,bool Master, uint32_t Sector_Num ,uint8_t
     lbaLowPort.Write( (Sector_Num & 0x00FF0000) >> 16 );
     commandPort.Write(0x20);
     
-    LouPrint("Writing to PATA Drive: ");
+    LouPrint("Writing to ATA Drive: ");
     
     if     ((device == 0x1F0) && (Master))  LouPrint("Primary Master\n");
     else if((device == 0x1F0) && (!Master)) LouPrint("Primary Slave\n");
@@ -244,7 +244,7 @@ void PATA::Write28PATAPI(uint16_t device,bool Master, uint32_t Sector_Num ,uint8
     lbaLowPort.Write( (Sector_Num & 0x00FF0000) >> 16 );
     commandPort.Write(0x20);
     
-    LouPrint("Writing to PATAPI Drive: ");
+    LouPrint("Writing to ATAPI Drive: ");
 
     for(uint32_t i = 0; i < BufferSize; i += 2)
     {
@@ -500,7 +500,7 @@ void PATA::Flush(uint8_t Device){
     {
         LouPrint("ERROR Could Not Flush Device: ");
         
-        if(Device == 1)     LouPrint("Primary Master\n");
+        if     (Device == 1)LouPrint("Primary Master\n");
         else if(Device == 2)LouPrint("Primary Slave\n");
         else if(Device == 3)LouPrint("Secondary Master\n");
         else if(Device == 4)LouPrint("Secondary Slave\n");
