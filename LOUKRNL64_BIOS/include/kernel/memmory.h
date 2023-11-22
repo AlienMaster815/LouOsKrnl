@@ -42,7 +42,6 @@ static multiboot_info_t* mbi;
 
 static uintptr_t mapped_memory = 1072693248;
 
-uint64_t ProbeForMemoryLimit();
 
 #define MachineMemoryBase 0
 

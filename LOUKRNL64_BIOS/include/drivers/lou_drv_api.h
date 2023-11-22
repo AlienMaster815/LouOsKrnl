@@ -13,6 +13,10 @@
 #define BLOCK 4096
 #define SIZE unsigned long long
 
+#define LOUSTATUS_GOOD 0
+
+#define LOUSTATUS unsigned long long
+
 #define PATADEV 1
 #define PATAPIDEV 2
 

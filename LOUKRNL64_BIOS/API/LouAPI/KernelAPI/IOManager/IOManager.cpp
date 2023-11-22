@@ -69,14 +69,9 @@ extern "C" void SetVideoMode(uint64_t Height,uint64_t Widthe, uint8_t  ColorDept
     
 }
 
-int32_t FatDriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath);
 
 extern "C" void FileSystemScan(){
     
-    PUNICODE_STRING FatRegistryEntry = 0;
-    PDRIVER_OBJECT DriverObj = 0;
-    
-    FatDriverEntry(DriverObj, FatRegistryEntry);
 }
 
 // End Of Redundant File

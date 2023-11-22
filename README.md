@@ -1,10 +1,11 @@
 # LOUOSKRNL.EXE
 
 WHATS NEW THIS WEEK: Windows WDK System Features
-Whats New THIS WEEK: Updated Project Structure And Reorganized Code
+WHATS NEW THIS WEEK: Updated Project Structure And Reorganized Code
 
 TODO THIS MONTH: Get More Features From WDK Working
 TODO THIS MONTH: Create A Page Manager
+TODO THIS MONTH: Create A FileSystemDriver
 
 NOTE: Only Releases Folder Will Contain Working kernel/OS images
 If your architecture is not available or behind other architecturs
