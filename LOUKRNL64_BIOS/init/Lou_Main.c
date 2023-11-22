@@ -30,7 +30,7 @@
 
 //TODO: Use Parralelles To Make The User Space Programs
 
-char* KERNEL_VERSION = "0.000024 RSC-1 64-BIT";
+char* KERNEL_VERSION = "0.000025 RSC-6 64-BIT";
 
 
 LOUSTATUS Lou_kernel_early_initialization(){
