@@ -1,4 +1,4 @@
-#include <KERNELAPI/WDFLDR.h>
+#include <KernelAPI/WDFLDR.h>
 
 int32_t WdfLdrDiagnosticsValueByNameAsULONG(UNICODE_STRING const* arg1, uint32_t* arg2){
     

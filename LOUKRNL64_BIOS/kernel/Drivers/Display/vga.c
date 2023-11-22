@@ -66,7 +66,7 @@ void print_newline() {
             return;
         }
 
-        for (size_t row = 1; row < NUM_ROWS; row++) {
+        for (size_t row = 1; row < NUM_ROWS - 1; row++) {
             for (size_t col = 0; col < NUM_COLS; col++) {
                Char character = buffer[col + NUM_COLS * row];
                buffer[col + NUM_COLS * (row - 1)] = character;
