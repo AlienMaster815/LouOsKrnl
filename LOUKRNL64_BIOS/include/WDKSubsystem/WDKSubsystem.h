@@ -5,5 +5,6 @@
 #include <WDKSubsystem/Types/DebugTypes.h>
 #include <WDKSubsystem/Types/SALTypes.h>
 #include <WinAPI/WinAPITypes/CommonTypes.h>
+#include <WinAPI/WinAPITypes/WDFLDRTypes.h>
 
 #endif
