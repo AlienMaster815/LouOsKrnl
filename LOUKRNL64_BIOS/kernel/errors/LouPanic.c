@@ -22,7 +22,8 @@ _Noreturn void LouPanic(char* error_message,STATUS recoverable) {
 	if (recoverable == GOOD)LouPrint("%x%ySystem Is Recoverable: Recover Y/N", 20, 11);
 	if (recoverable == BAD)LouPrint("%x%ySystem Is NOT Recoverable: System Halted", 17, 11);
 	
-	asm volatile("hlt");
+    asm volatile("cli");
+    asm volatile("hlt");
 	while (1);
 }
 #endif

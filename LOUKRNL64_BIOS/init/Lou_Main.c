@@ -20,12 +20,14 @@
 -- with allocation functions
 */
 
+//TODO: FileSystem Suport And Library Loading
+//TODO: Libraries and Linker Support
+//TODO: ACPI UGH
 //TODO: Contact APIC and Set up Interrupt Hanldeing Stuff Like IST For Interrupts
 //TODO: Set Up Systems To Register Driver Code With API And Kernel Internals
 //TODO: PCI
 //TODO: SystemCalls
 //TODO: Program Execution
-//TODO: Libraries and Linker Support
 //TODO: UserMode
 
 //TODO: Use Parralelles To Make The User Space Programs

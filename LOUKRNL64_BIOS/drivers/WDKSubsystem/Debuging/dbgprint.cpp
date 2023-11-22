@@ -67,3 +67,8 @@ uint64_t DbgPrint(_In_z_ _Printf_format_string_ PCSTR Format, ...){
     va_end(args);
     return 0;
 }
+
+ULONG DbgPrintEx ( _In_ ULONG ComponentId, _In_ ULONG Level, _In_z_ _Printf_format_string_ PCSTR Format, ...){
+ 
+    return 0;
+}
