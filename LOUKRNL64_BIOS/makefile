@@ -156,12 +156,12 @@ annya.iso: louX64.exe
 	mkdir iso
 	mkdir iso/boot
 	mkdir iso/boot/grub
-	cp dist/x86_64/LOUOSKRNL.bin iso/boot/LOUOSKRNL.exe
+	cp dist/x86_64/LOUOSKRNL.bin iso/Annya/System64/LOUOSKRNL.exe
 	echo 'set timeout=0'                     >> iso/boot/grub/grub.cfg
 	echo 'set default=0'                     >> iso/boot/grub/grub.cfg
 	echo ''                                  >> iso/boot/grub/grub.cfg
 	echo 'menuentry "Annya/lou" {'			 >> iso/boot/grub/grub.cfg
-	echo 'multiboot /boot/LOUOSKRNL.exe'	 >> iso/boot/grub/grub.cfg
+	echo 'multiboot /Annya/System64/LOUOSKRNL.exe'	 >> iso/boot/grub/grub.cfg
 	echo 'boot'								 >> iso/boot/grub/grub.cfg
 	echo '}'							     >> iso/boot/grub/grub.cfg
 	grub-mkrescue --output=annya.iso iso
