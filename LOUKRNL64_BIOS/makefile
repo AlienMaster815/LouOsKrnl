@@ -153,19 +153,33 @@ release: lou.exe
 
 annya.iso: louX64.exe
 	rm -rf iso
+	
+	#Make The System Directories
+	
 	mkdir iso
 	mkdir iso/boot
 	mkdir iso/boot/grub
 	mkdir iso/Annya
 	mkdir iso/Annya/System64
+	mkdir iso/Annya/Profiles
+	mkdir iso/Annya/System64/drivers
+	
+	#Copy System Files To The Appropriate Directories
+	
+	cp SYS/KModeDrvRevEng.sys iso/Annya/System64/drivers/KModeDrvRevEng.sys
+	cp Registry/System64/Config iso/Annya/System64/Config
+	cp Registry/Profiles/Username iso/Annya/Profiles/Username
 	cp dist/x86_64/LOUOSKRNL.bin iso/Annya/System64/LOUOSKRNL.exe
-	echo 'set timeout=0'                     >> iso/boot/grub/grub.cfg
-	echo 'set default=0'                     >> iso/boot/grub/grub.cfg
-	echo ''                                  >> iso/boot/grub/grub.cfg
-	echo 'menuentry "Annya/lou" {'			 >> iso/boot/grub/grub.cfg
+	
+	#Create A Grub Boot CFG For The Kernel And Make The Image
+	
+	echo 'set timeout=0'                    		 >> iso/boot/grub/grub.cfg
+	echo 'set default=0'                    		 >> iso/boot/grub/grub.cfg
+	echo ''                                  	     >> iso/boot/grub/grub.cfg
+	echo 'menuentry "Annya/lou" {'					 >> iso/boot/grub/grub.cfg
 	echo 'multiboot /Annya/System64/LOUOSKRNL.exe'	 >> iso/boot/grub/grub.cfg
-	echo 'boot'								 >> iso/boot/grub/grub.cfg
-	echo '}'							     >> iso/boot/grub/grub.cfg
+	echo 'boot'										 >> iso/boot/grub/grub.cfg
+	echo '}'							    		 >> iso/boot/grub/grub.cfg
 	grub-mkrescue --output=annya.iso iso
 
 	rm -rf iso
