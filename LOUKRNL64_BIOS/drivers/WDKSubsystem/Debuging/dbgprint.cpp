@@ -56,6 +56,7 @@ uint64_t DbgPrint(_In_z_ _Printf_format_string_ PCSTR Format, ...){
         }
         else if(*Format == '\r'){
                 //Do Nothing In This Case
+                Format++;
         }
         else {
             LouPrint("%c", *Format);
