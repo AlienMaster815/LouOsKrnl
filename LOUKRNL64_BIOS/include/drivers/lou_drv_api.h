@@ -6,6 +6,7 @@
 #include <drivers/Lou_drivers/io.h>
 #include <stat.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #define MAXMEM 0xFFFFFFFFFFFFFFFF
 #define RAMADD unsigned char*
