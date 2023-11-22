@@ -1,9 +1,10 @@
 # LOUOSKRNL.EXE
 
-WHATS NEW THIS WEEK: 32 Bit Version Of The Kernel
-WHATS NEW THIS WEEK: The Playstation Experimental LOUSINE Kernel ; Not Wroking State Yet
+WHATS NEW THIS WEEK: Windows WDK System Features
+Whats New THIS WEEK: Updated Project Structure And Reorganized Code
 
-TODO THIS WEEK: Find The Systems Memory Map By Probing Memory  
+TODO THIS MONTH: Get More Features From WDK Working
+TODO THIS MONTH: Create A Page Manager
 
 NOTE: Only Releases Folder Will Contain Working kernel/OS images
 If your architecture is not available or behind other architecturs
