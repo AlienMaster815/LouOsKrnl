@@ -43,11 +43,20 @@ PrimaryVolumeDescriptor ISO9660::ReadPrimaryVolumeDescriptor(uint8_t DrvNum,uint
             PATABUFF patabuff = pata.pata_Read28(DrvNum, 0x10, 2048);
             if(patabuff != READ_ERROR){ // Check If The Device Did Not Run Into Errors
                 
+                PVD.Type = (int8)*patabuff;
+                PVD.Identifier = (char *)(patabuff + (sizeof(uint8_t) * 1));
+                PVD.Version = (int8)*(patabuff + (sizeof(uint8_t) * 6));
                 
-                
+                for(int i = 6; i < 2048; i++){
+                    int j = 0;
+                    PVD.Data[j] = (int8)*(patabuff + (sizeof(uint8_t) * i));
+                    j++;
+                }
                 Lou_Free_Mem((RAMADD)patabuff,sizeof(uint8_t) * 2048);
+                return PVD;
             }
             else{
+                LouPrint("Error Reading Drive\n");
                 Lou_Free_Mem((RAMADD)patabuff,sizeof(uint8_t) * 2048);
                 return PVD;
             }

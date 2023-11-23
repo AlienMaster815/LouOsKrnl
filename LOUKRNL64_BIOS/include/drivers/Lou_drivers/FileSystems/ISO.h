@@ -58,8 +58,17 @@ typedef struct _FSStruct{
 } FSStruct, *PFSStruct;
 
 typedef struct _PrimaryVolumeDescriptor{
-        
+    int8 Type;
+    strA Identifier;
+    int8 Version;
+    int8_t Data[2041];
 }PrimaryVolumeDescriptor, *PPrimaryVolumeDescriptor;
+
+#define ISO_BOOTRECORD 0
+#define ISO_PrimaryVolumeDescriptor 1
+#define ISO_SupplementaryVolumeDescriptor 2
+#define ISO_VolumePartitionDescriptor 3
+#define ISO_VolumeDescriptorSetTerminator 255
 
 class ISO9660{
     
