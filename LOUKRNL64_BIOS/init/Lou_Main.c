@@ -1,18 +1,4 @@
-#include <kernel/kernel.h>
-#include <kernel/memmory.h>
-#include <stdint.h>
-#include <stat.h>
-#include <drivers/display/vga.h>
-#include <stdio.h>
-#include <kernel/errors.h>
-#include <kernel/acpi.h>
-#include <bootloader/grub/multiboot.h>
-#include <drivers/Lou_drivers/hardrivec.h>
-#include <KernelAPI/IOManager.h>
-#include <kernel/gdt.h>
-#include <kernel/memoryprobing.h>
-#include <kernel/interrupts.h>
-#include <drivers/Lou_drivers/FileSystem.h>
+#include <LouAPI.h>
 
 /* Tyler Grenier 9/21/23 9:56 PM
 -- Started the file with the main
@@ -32,7 +18,7 @@
 
 //TODO: Use Parralelles To Make The User Space Programs
 
-char* KERNEL_VERSION = "0.000025 RSC-6 64-BIT";
+char* KERNEL_VERSION = "0.000026 RSC-6 64-BIT";
 
 
 LOUSTATUS Lou_kernel_early_initialization(){

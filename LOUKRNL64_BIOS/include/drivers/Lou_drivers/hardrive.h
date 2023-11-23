@@ -1,31 +1,28 @@
-#include <cstdint.h>
+#ifdef __cplusplus
 
 #ifndef _IDE_
 #define _IDE_
 
-#include <drivers/Lou_drivers/storage_struct.h>
 #include <drivers/lou_drv_api.h>
+
+typedef uint16_t* PATABUFF;
 
 
 class PATA{
     public:
     
-    void pata_Read28(uint8_t device,uint32_t Sector_Num, int BufferSize = 512);
+    uint16_t* pata_Read28(uint8_t device,uint32_t Sector_Num, int BufferSize = 512);
     void pata_Write28(uint8_t device, uint32_t Sector_Num ,uint8_t* Data, uint32_t BufferSize);
     
     void pata_device_scan();
     
-
-
-    private:
-    
     PATA();
     ~PATA();
 
-
+    private:
     
-    void Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int BufferSize);
-    void Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, int BufferSize);
+    uint16_t* Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int BufferSize);
+    uint16_t* Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, int BufferSize);
     
     void Write28PATA(uint16_t device,bool Master, uint32_t Sector_Num ,uint8_t* Data, uint32_t BufferSize);
     void Write28PATAPI(uint16_t device,bool Master, uint32_t Sector_Num ,uint8_t* Data, uint32_t BufferSize);
@@ -71,10 +68,10 @@ class PATA{
 #define HBA_PxCMD_FR    0x4000
 #define HBA_PxCMD_CR    0x8000
 
-#define    SATA_SIG_ATA    0x00000101    // SATA drive
-#define    SATA_SIG_ATAPI    0xEB140101    // SATAPI drive
+#define    SATA_SIG_ATA     0x00000101    // SATA drive
+#define    SATA_SIG_ATAPI   0xEB140101    // SATAPI drive
 #define    SATA_SIG_SEMB    0xC33C0101    // Enclosure management bridge
-#define    SATA_SIG_PM    0x96690101    // Port multiplier
+#define    SATA_SIG_PM      0x96690101    // Port multiplier
  
 #define AHCI_DEV_NULL 0
 #define AHCI_DEV_SATA 1
@@ -85,8 +82,8 @@ class PATA{
 #define HBA_PORT_IPM_ACTIVE 1
 #define HBA_PORT_DET_PRESENT 3
 
-#define ATA_CMD_READ_DMA_EX 0x25
-#define HBA_PxIS_TFES 0x20
+#define ATA_CMD_READ_DMA_EX  0x25
+#define HBA_PxIS_TFES        0x20
 #define ATA_CMD_WRITE_DMA_EX 0xCA
 
 
@@ -440,5 +437,20 @@ class SATA{
     ~SATA();
     
 };
+#endif
+
+#else
+
+
+
+#ifndef _HDC_H
+#define _HDC_H
+#include <drivers/Lou_drivers/storage_struct.h>
+
+void pata_device_scanc();
+uintptr_t Read_patac(uint8_t device,pata_register_interface registers);
+void Write_patac(uint8_t device,pata_register_interface registers, uintptr_t data);
+
+#endif
 
 #endif

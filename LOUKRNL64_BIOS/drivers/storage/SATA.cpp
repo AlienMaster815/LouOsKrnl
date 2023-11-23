@@ -1,4 +1,3 @@
-#include <drivers/Lou_drivers/hardrive.h>
 #include <drivers/lou_drv_api.h>
 
 SATA::SATA(){

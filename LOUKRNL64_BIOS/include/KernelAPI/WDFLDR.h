@@ -1,6 +1,8 @@
 #ifndef _WDFLDR_H
 #define _WDFLDR_H
 
+#ifdef __cplusplus
+
 #include <WDKSubsystem/WDKSubsystem.h>
 
 typedef struct _WDF_CLASS_VERSION
@@ -88,5 +90,10 @@ int32_t WdfRegisterLibrary(struct _WDF_LIBRARY_INFO* arg1, struct _UNICODE_STRIN
 
 int32_t WdfRegisterClassLibrary(struct _WDF_CLASS_LIBRARY_INFO* arg1, struct _UNICODE_STRING* arg2,
     struct _UNICODE_STRING const* arg3);
+#else
+// C Code Goes Here
+
+
+#endif
 
 #endif

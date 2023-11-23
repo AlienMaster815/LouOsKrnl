@@ -73,9 +73,9 @@ class ISO9660{
         ~ISO9660();
 
     private:
-    PFSStruct PFSS;
-    FSStruct DetectFileSystems(uint8_t DrvNum,uint8_t DrvType);
-    void WritePrimaryVolumeDescriptor(uint8_t DrvNum,uint8_t DrvType,uintptr_t Base, uintptr_t height, PrimaryVolumeDescriptor PVD);
+        PFSStruct PFSS;
+        FSStruct DetectFileSystems(uint8_t DrvNum,uint8_t DrvType);
+        void WritePrimaryVolumeDescriptor(uint8_t DrvNum,uint8_t DrvType,uintptr_t Base, uintptr_t height, PrimaryVolumeDescriptor PVD);
     
 };
 

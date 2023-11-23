@@ -27,10 +27,7 @@
 -- a Stable Release
 */
 
-#include <drivers/Lou_drivers/hardrive.h>
 #include <drivers/lou_drv_api.h>
-#include <KernelAPI/IOManager.h>
-#include <drivers/Lou_drivers/FileSystems/ISO.h>
 
 uint8_t pata[4];
 
@@ -56,7 +53,7 @@ PATA::~PATA(){
 }
 
 
-void PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int BufferSize){
+uint16_t* PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int BufferSize){
     
     Port32Bit DataPort(drive);
     Port8Bit errorPort(drive + 0x1);
@@ -84,7 +81,7 @@ void PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int Buffe
     if(status & 0x01)
     {
         LouPrint("ERROR Reading From Drive\n");
-        return;
+        return (uint16_t*)0x00;
     }
     
     
@@ -97,11 +94,16 @@ void PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int Buffe
     else if((drive == 0x170) && (Master))  LouPrint("Secondary Master\n");
     else if((drive == 0x170) && (!Master)) LouPrint("Secondary Slave\n");
         
+    uint16_t *ReadBuffer = (uint16_t *)Lou_Alloc_Mem(sizeof(uint8_t) * BufferSize);
     
-    for(int i = 0; i < BufferSize; i += 2)
+    int j = 0;
+    
+    for(int i = 0; i < BufferSize; i += 2 && j++)
     {
         uint16_t wdata = DataPort.Read();
         
+        *(ReadBuffer + (sizeof(uint16_t) * j)) = wdata;
+                
         char *text = "  \0";
         text[0] = wdata & 0xFF;
         
@@ -115,9 +117,14 @@ void PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int Buffe
     
     for(int i = BufferSize + (BufferSize%2); i < 512; i += 2)
         DataPort.Read();
+    
+
+    
+    
+    return ReadBuffer;
 }
 
-void PATA::Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, int BufferSize){
+uint16_t* PATA::Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, int BufferSize){
         
     Port32Bit DataPort(drive);
     Port8Bit errorPort(drive + 0x1);
@@ -145,7 +152,7 @@ void PATA::Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, int Buf
     if(status & 0x01)
     {
         LouPrint("ERROR Reading From Drive\n");
-        return;
+        return (uint16_t*)0x00;
     }
     
     LouPrint("Reading ATAPI Drive: ");
@@ -173,9 +180,9 @@ void PATA::Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, int Buf
         LouPrint(text);
     }
     
-    for(int i = BufferSize + (BufferSize%2); i < 512; i += 2)
+    for(int i = BufferSize + (BufferSize%2); i < BufferSize; i += 2)
         DataPort.Read();
-    
+    return (uint16_t*)0x01;
     //Later We Will Do Some More Work With this To support Advanced ATA Features
 }
 
@@ -266,32 +273,36 @@ void PATA::Write28PATAPI(uint16_t device,bool Master, uint32_t Sector_Num ,uint8
 }
     
 
-void PATA::pata_Read28(uint8_t device,uint32_t Sector_Num, int BufferSize){
+uint16_t* PATA::pata_Read28(uint8_t device,uint32_t Sector_Num, int BufferSize){
     
     if(Sector_Num > 0x0FFFFFFF)
-        return;
+        return 0x00;
+    
+    uint16_t* BuffAdd = 0x00;
     
     if(device == 1){
-        if     (pata[0] == 1) Read28PATA(0x1F0,true,Sector_Num,BufferSize);
-        else if(pata[0] == 2) Read28PATAPI(0x1F0,true, Sector_Num,BufferSize);
+        if     (pata[0] == 1) BuffAdd = Read28PATA(0x1F0,true,Sector_Num,BufferSize);
+        else if(pata[0] == 2) BuffAdd = Read28PATAPI(0x1F0,true, Sector_Num,BufferSize);
         else LouPrint("No Drive Present\n");
     }
     else if(device == 2){
-        if     (pata[1] == 1) Read28PATA(0x1F0,false, Sector_Num, BufferSize);
-        else if(pata[1] == 2) Read28PATAPI(0x1F0,false,Sector_Num, BufferSize);
+        if     (pata[1] == 1) BuffAdd = Read28PATA(0x1F0,false, Sector_Num, BufferSize);
+        else if(pata[1] == 2) BuffAdd = Read28PATAPI(0x1F0,false,Sector_Num, BufferSize);
         else LouPrint("No Drive Present\n");
     }
     else if(device == 3){
-        if     (pata[2] == 1) Read28PATA(0x170,true, Sector_Num, BufferSize);
-        else if(pata[2] == 2) Read28PATAPI(0x170,true, Sector_Num, BufferSize);
+        if     (pata[2] == 1) BuffAdd = Read28PATA(0x170,true, Sector_Num, BufferSize);
+        else if(pata[2] == 2) BuffAdd = Read28PATAPI(0x170,true, Sector_Num, BufferSize);
         else LouPrint("No Drive Present\n");
     }
     else if(device == 4){
-        if     (pata[3] == 1) Read28PATA(0x170,false, Sector_Num, BufferSize);
-        else if(pata[3] == 2) Read28PATAPI(0x170,false, Sector_Num, BufferSize);
+        if     (pata[3] == 1) BuffAdd = Read28PATA(0x170,false, Sector_Num, BufferSize);
+        else if(pata[3] == 2) BuffAdd = Read28PATAPI(0x170,false, Sector_Num, BufferSize);
         else LouPrint("No Drive Present\n");
     }
     else LouPrint("Error Selecting Drive\n");
+    
+    return BuffAdd;
 }
 
 
@@ -356,13 +367,19 @@ void PATA::determine_device_type(uint8_t drive){
 void PATA::initialize_pata(uint16_t drive,bool Master){
 
     ISO9660 iso9660;
-
+    bool FileSystemCD = false;
+    bool WriteAble = false;
+    bool FileSystemExist = false;
+    
     if((drive == 0x1F0) && (Master)){
         pata[0] = 1;
-
+        
         //TODO: READ From The Drive And Deterrminedrive type and if its actualy a device or ghost device
 
-        Register_Storage_DeviceA(PATADEV, 1);
+        
+        
+        //If The Drive Has A FileSystem Or Is Writeable Then Register It As A Device
+        if(((!FileSystemCD) && (FileSystemExist)) || (WriteAble))Register_Storage_DeviceA(PATADEV, 1);
         return;
     }
     else if((drive == 0x1F0) && (!Master)){
@@ -370,7 +387,9 @@ void PATA::initialize_pata(uint16_t drive,bool Master){
 
         //TODO: READ From The Drive And Deterrminedrive type and if its actualy a device or ghost device
 
-        Register_Storage_DeviceA(PATADEV, 2);
+        
+        //If The Drive Has A FileSystem Or Is Writeable Then Register It As A Device
+        if(((!FileSystemCD) && (FileSystemExist)) || (WriteAble))Register_Storage_DeviceA(PATADEV, 2);
         return;
     }
     else if((drive == 0x170) &&  (Master)){
@@ -378,19 +397,21 @@ void PATA::initialize_pata(uint16_t drive,bool Master){
 
         //TODO: READ From The Drive And Deterrminedrive type and if its actualy a device or ghost device
 
-        Register_Storage_DeviceA(PATADEV, 3);
+        //If The Drive Has A FileSystem Or Is Writeable Then Register It As A Device
+        if(((!FileSystemCD) && (FileSystemExist)) || (WriteAble))Register_Storage_DeviceA(PATADEV, 3);
         return;
     }
     else if((drive == 0x170) && (!Master)){
         pata[3] = 1;
-        Register_Storage_DeviceA(PATADEV, 4);
+        
+        
+        //If The Drive Has A FileSystem Or Is Writeable Then Register It As A Device
+        if(((!FileSystemCD) && (FileSystemExist)) || (WriteAble))Register_Storage_DeviceA(PATADEV, 4);
         return;
     }
     
     //TODO: Read Information From The Drive To Determine If it Is There,  \n
     //TODO: PATA Or PATAPI To See What Features We Can Milk From The Drive
-
-
 
 }
 

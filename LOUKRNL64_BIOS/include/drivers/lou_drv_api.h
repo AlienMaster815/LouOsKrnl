@@ -25,6 +25,20 @@
 
 #define STATUS bool
 
+//#include <drivers/Lou_drivers/hardrive.h>
+//#include <drivers/Lou_drivers/FileSystems/ISO.h>
+
+#include <drivers/Lou_drivers/storage_struct.h>
+
+
+#include <KernelAPI/IOManager.h>
+
+
+#include <drivers/Lou_drivers/FileSystems/ISO.h>
+#include <KernelAPI/Drives.h>
+#include <drivers/Lou_drivers/hardrive.h>
+
+
 //define kernel c functions that we translate to the cpp world
 //Printing And Debugging
 extern "C" int LouPrint(char *format, ...);
