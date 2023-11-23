@@ -5,6 +5,10 @@
 
 // Define Data Types For ISO Filesystems
 
+
+
+
+
 //8BitTypes
 typedef uint8_t  int8;
 typedef int8_t   sint8;
@@ -19,6 +23,8 @@ typedef uint32_t int32_MSB;
 typedef int32_t sint32_LSB;
 typedef int32_t sint32_MSB;
 
+typedef char* strA;
+typedef char* strD;
 
 // Pack The Structures For Pointers In memory Tho Later We Might Align It For More Acurate Readings
 
@@ -44,19 +50,33 @@ typedef struct _sint32_LSB_MSB{
 }sint32_LSB_MSB, *psint32_LSB_MSB;
 #pragma pack(0)
 
+typedef struct _FSStruct{
+    char DriveLet;
+    uint8_t FSNum;
+    uintptr_t Base[23];
+    uintptr_t Limit[23];
+} FSStruct, *PFSStruct;
 
+typedef struct _PrimaryVolumeDescriptor{
+        
+}PrimaryVolumeDescriptor, *PPrimaryVolumeDescriptor;
 
 class ISO9660{
     
     public:
-        LOUSTATUS ISODriverInit(char DrvLet,uint8_t FileSystemNum);
-        void ISOReadDirectoryStructure(char DrvLet,uint8_t FileSystemNum);
-        void ISOWriteDirectoryStructure(char DrvLet,uint8_t FileSystemNum);
-    
-    private:
+        PFSStruct ISOFileSystemScan(uint8_t DrvNum,uint8_t DrvType);
+        void ISOReadDirectoryStructure(uint8_t DrvNum,uint8_t DrvType,uint8_t FileSystemNum);
+        void ISOWriteDirectoryStructure(uint8_t DrvNum,uint8_t DrvType,uint8_t FileSystemNum);
+        void ISOFormatDevice(uint8_t DrvNum,uint8_t DrvType,uintptr_t Base, uintptr_t height);
+        PrimaryVolumeDescriptor ReadPrimaryVolumeDescriptor(uint8_t DrvNum,uint8_t DrvType,uintptr_t Base, uintptr_t height);
         ISO9660();
         ~ISO9660();
 
+    private:
+    PFSStruct PFSS;
+    FSStruct DetectFileSystems(uint8_t DrvNum,uint8_t DrvType);
+    void WritePrimaryVolumeDescriptor(uint8_t DrvNum,uint8_t DrvType,uintptr_t Base, uintptr_t height, PrimaryVolumeDescriptor PVD);
+    
 };
 
 #endif

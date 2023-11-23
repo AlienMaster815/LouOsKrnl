@@ -30,7 +30,7 @@
 #include <drivers/Lou_drivers/hardrive.h>
 #include <drivers/lou_drv_api.h>
 #include <KernelAPI/IOManager.h>
-
+#include <drivers/Lou_drivers/FileSystems/ISO.h>
 
 uint8_t pata[4];
 
@@ -355,7 +355,7 @@ void PATA::determine_device_type(uint8_t drive){
 
 void PATA::initialize_pata(uint16_t drive,bool Master){
 
-
+    ISO9660 iso9660;
 
     if((drive == 0x1F0) && (Master)){
         pata[0] = 1;
