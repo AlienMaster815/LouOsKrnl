@@ -1,9 +1,14 @@
+
 #ifdef __cplusplus
 
 #ifndef _IDE_
 #define _IDE_
 
+#define READ_ERROR 0x00
+
+
 #include <drivers/lou_drv_api.h>
+
 
 typedef uint16_t* PATABUFF;
 
@@ -442,14 +447,14 @@ class SATA{
 #else
 
 
-
 #ifndef _HDC_H
 #define _HDC_H
+
+#define READ_ERROR 0x00
+
 #include <drivers/Lou_drivers/storage_struct.h>
 
 void pata_device_scanc();
-uintptr_t Read_patac(uint8_t device,pata_register_interface registers);
-void Write_patac(uint8_t device,pata_register_interface registers, uintptr_t data);
 
 #endif
 

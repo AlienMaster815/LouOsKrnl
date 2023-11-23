@@ -40,15 +40,15 @@ PrimaryVolumeDescriptor ISO9660::ReadPrimaryVolumeDescriptor(uint8_t DrvNum,uint
     switch(DrvType){
             
         case(PATADEV):{
-            PATABUFF PPATABUFF = pata.pata_Read28(DrvNum, 0x10, 2048);
-            if(PPATABUFF != 0x00){
+            PATABUFF patabuff = pata.pata_Read28(DrvNum, 0x10, 2048);
+            if(patabuff != READ_ERROR){ // Check If The Device Did Not Run Into Errors
                 
                 
                 
-                Lou_Free_Mem((RAMADD)PPATABUFF,sizeof(uint8_t) * 2048);
+                Lou_Free_Mem((RAMADD)patabuff,sizeof(uint8_t) * 2048);
             }
             else{
-                Lou_Free_Mem((RAMADD)PPATABUFF,sizeof(uint8_t) * 2048);
+                Lou_Free_Mem((RAMADD)patabuff,sizeof(uint8_t) * 2048);
                 return PVD;
             }
         }
