@@ -33,14 +33,14 @@ void ISO9660::ISOFormatDevice(uint8_t DrvNum,uint8_t DrvType,uintptr_t Base, uin
 }
 
 
-PrimaryVolumeDescriptor ISO9660::ReadPrimaryVolumeDescriptor(uint8_t DrvNum,uint8_t DrvType,uintptr_t Base, uintptr_t height){
+PrimaryVolumeDescriptor ISO9660::ReadPrimaryVolumeDescriptor(uint8_t DrvNum,uint8_t DrvType,uint32_t sector, uint32_t buffer){
     PrimaryVolumeDescriptor PVD;
     PATA pata;
     
     switch(DrvType){
             
         case(PATADEV):{
-            PATABUFF patabuff = pata.pata_Read28(DrvNum, 0x10, 2048);
+            PATABUFF patabuff = pata.pata_Read28(DrvNum, sector, buffer);
             if(patabuff != READ_ERROR){ // Check If The Device Did Not Run Into Errors
                 
                 PVD.Type = (int8)*patabuff;
@@ -75,7 +75,9 @@ PrimaryVolumeDescriptor ISO9660::ReadPrimaryVolumeDescriptor(uint8_t DrvNum,uint
 
 FSStruct ISO9660::DetectFileSystems(uint8_t DrvNum,uint8_t DrvType){
     FSStruct FSS;
-
+    PrimaryVolumeDescriptor PVD;
+    
+    PVD = ReadPrimaryVolumeDescriptor(DrvNum,DrvType);
     
     
     return FSS;

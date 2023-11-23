@@ -1,7 +1,7 @@
 #ifndef _ISO_H
 #define _ISO_H
 
-#include <drivers/lou_drv_api.h>
+#include <LouDDK.h>
 
 // Define Data Types For ISO Filesystems
 
@@ -50,12 +50,6 @@ typedef struct _sint32_LSB_MSB{
 }sint32_LSB_MSB, *psint32_LSB_MSB;
 #pragma pack(0)
 
-typedef struct _FSStruct{
-    char DriveLet;
-    uint8_t FSNum;
-    uintptr_t Base[23];
-    uintptr_t Limit[23];
-} FSStruct, *PFSStruct;
 
 typedef struct _PrimaryVolumeDescriptor{
     int8 Type;
@@ -77,7 +71,7 @@ class ISO9660{
         void ISOReadDirectoryStructure(uint8_t DrvNum,uint8_t DrvType,uint8_t FileSystemNum);
         void ISOWriteDirectoryStructure(uint8_t DrvNum,uint8_t DrvType,uint8_t FileSystemNum);
         void ISOFormatDevice(uint8_t DrvNum,uint8_t DrvType,uintptr_t Base, uintptr_t height);
-        PrimaryVolumeDescriptor ReadPrimaryVolumeDescriptor(uint8_t DrvNum,uint8_t DrvType,uintptr_t Base, uintptr_t height);
+        PrimaryVolumeDescriptor ReadPrimaryVolumeDescriptor(uint8_t DrvNum,uint8_t DrvType,uint32_t sector = 0x10, uint32_t buffer = 2048);
         ISO9660();
         ~ISO9660();
 
