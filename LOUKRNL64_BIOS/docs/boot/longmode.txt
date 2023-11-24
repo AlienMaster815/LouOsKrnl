@@ -6,4 +6,11 @@
 
 ================================================================================================
 
-	im going to wrap this up quick im tired and this is not that difficult to explain in computers there are officially 3 types of systems there's a shit ton of modes but fuck em we don't need to talk about them they can fuck themselves the three modes are 16 bit which was popular int the 70s and 80s, 32 bit which was popular in the late 80s up until 2004 when amd created 64 bit. The only thing special about each mode no matter what anyone tells you is one thing and one thing only and that is how much ram (Random Access Memorie) the processor can use at the instance the mode is running in... Long mode is one of the modes that uses the 64 bit mode in x86-64 machines
+	im going to wrap this up quick im tired and this is not that difficult to explain in
+    computers there are officially 3 types of systems there's a shit ton of modes but fuck
+    em we don't need to talk about them they can fuck themselves the three modes are 16 bit
+    which was popular int the 70s and 80s, 32 bit which was popular in the late 80s up until
+    2004 when amd created 64 bit. The only thing special about each mode no matter what anyone
+    tells you is one thing and one thing only and that is how much ram (Random Access Memorie)
+    the processor can use at the instance the mode is running in... Long mode is one of the modes
+    that uses the 64 bit mode in x86-64 machines

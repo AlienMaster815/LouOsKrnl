@@ -1,0 +1,29 @@
+==========================================================================================================================================================
+                                        
+                                            Tyler Grenier 11/23/23 11:37
+            
+                                      Subject Of File: What is PlayStation OS
+
+                                                Folder In Question N/A
+
+==========================================================================================================================================================
+
+
+the PlayStation operating system, also known as the PS OS, is the proprietary operating system used by
+Sony's PlayStation gaming consoles. However, specific details about the PlayStation OS, including its architecture and components, are typically not
+disclosed by Sony.
+
+Each generation of PlayStation consoles has its own version of the operating system. For example:
+
+PlayStation 3 (PS3): Used a custom operating system based on the XrossMediaBar (XMB) interface.
+
+PlayStation 4 (PS4): Used a modified version of FreeBSD as the underlying operating system with a custom user interface.
+
+PlayStation 5 (PS5): Introduced a new user interface and features. The underlying details of the operating system are not fully disclosed, but it is
+known to be a custom operating system.
+
+The PlayStation OS is responsible for managing the hardware resources of the console, providing the user interface, and facilitating the execution of
+games and other applications. It is optimized for gaming and multimedia experiences.
+
+Please note that developments might have occurred after my last update, and you may want to check for the latest information on the PlayStation OS as of
+your current date.
