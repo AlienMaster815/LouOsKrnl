@@ -1,7 +1,6 @@
 #include <LouDDK.h>
 
 
-
 bool DEBUG = true;
 
 PFSStruct ISO9660::ISOFileSystemScan(uint8_t DrvNum, uint8_t DrvType){
@@ -32,9 +31,14 @@ void ISO9660::ISOFormatDevice(uint8_t DrvNum,uint8_t DrvType,uintptr_t Base, uin
     
 }
 
+char* ISO9660::ReadDirectory(char* Directory){
+    
+    return 0x00;
+}
 
-PrimaryVolumeDescriptor ISO9660::ReadPrimaryVolumeDescriptor(uint8_t DrvNum,uint8_t DrvType,uint32_t sector, uint32_t buffer){
-    PrimaryVolumeDescriptor PVD;
+
+VolumeDescriptor ISO9660::ReadVolumeDescriptor(uint8_t DrvNum,uint8_t DrvType,uint32_t sector, uint32_t buffer){
+    VolumeDescriptor PVD;
     PATA pata;
     
     switch(DrvType){
@@ -75,16 +79,35 @@ PrimaryVolumeDescriptor ISO9660::ReadPrimaryVolumeDescriptor(uint8_t DrvNum,uint
 
 FSStruct ISO9660::DetectFileSystems(uint8_t DrvNum,uint8_t DrvType){
     FSStruct FSS;
-    PrimaryVolumeDescriptor PVD;
+    VolumeDescriptor PVD = ReadVolumeDescriptor(DrvNum,DrvType);
     
-    PVD = ReadPrimaryVolumeDescriptor(DrvNum,DrvType);
-    
-    
+    // Create A File System Structure
+    if((PVD.Type == ISO_PrimaryVolumeDescriptor) && (strncmp(PVD.Identifier, "CD001", 5) == 0) && (PVD.Version == 0x01)){
+        int16_LSB_MSB VolumeSetSize;
+        VolumeSetSize.LSB = (PVD.Data[120] << 8) | PVD.Data[121];
+        VolumeSetSize.MSB = (PVD.Data[122] << 8) | PVD.Data[123];
+        
+        uint32_t VolumeSize = (VolumeSetSize.LSB << 8) | VolumeSetSize.MSB;
+        
+     /* uint16_t PathTableSizeLowLow = (PVD.Data[132] << 8) | PVD.Data[133];
+        uint16_t PathTableSizeHighLow = (PVD.Data[134] << 8) | PVD.Data[135];
+        uint16_t PathTableSizeLowHigh = (PVD.Data[132] << 8) | PVD.Data[133];
+        uint16_t PathTableSizeHighHigh = (PVD.Data[134] << 8) | PVD.Data[135];
+        
+        int32_LSB_MSB PathTableSize;
+        
+        PathTableSize.LSB = (PathTableSizeLowLow << 16) | PathTableSizeHighLow;
+        PathTableSize.MSB = (PathTableSizeLowHigh << 16) | PathTableSizeHighHigh;
+      */
+        
+        FSS.FSNum = VolumeSize;
+        FSS.FSType = ISO;
+    }
     return FSS;
 }
 
 
-void ISO9660::WritePrimaryVolumeDescriptor(uint8_t DrvNum,uint8_t DrvType,uintptr_t Base, uintptr_t height, PrimaryVolumeDescriptor PVD){
+void ISO9660::WriteVolumeDescriptor(uint8_t DrvNum,uint8_t DrvType,uintptr_t Base, uintptr_t height, VolumeDescriptor VD){
         
     
 }

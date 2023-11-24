@@ -51,12 +51,12 @@ typedef struct _sint32_LSB_MSB{
 #pragma pack(0)
 
 
-typedef struct _PrimaryVolumeDescriptor{
+typedef struct _VolumeDescriptor{
     int8 Type;
     strA Identifier;
     int8 Version;
     int8_t Data[2041];
-}PrimaryVolumeDescriptor, *PPrimaryVolumeDescriptor;
+}VolumeDescriptor, *PVolumeDescriptor;
 
 #define ISO_BOOTRECORD 0
 #define ISO_PrimaryVolumeDescriptor 1
@@ -71,14 +71,17 @@ class ISO9660{
         void ISOReadDirectoryStructure(uint8_t DrvNum,uint8_t DrvType,uint8_t FileSystemNum);
         void ISOWriteDirectoryStructure(uint8_t DrvNum,uint8_t DrvType,uint8_t FileSystemNum);
         void ISOFormatDevice(uint8_t DrvNum,uint8_t DrvType,uintptr_t Base, uintptr_t height);
-        PrimaryVolumeDescriptor ReadPrimaryVolumeDescriptor(uint8_t DrvNum,uint8_t DrvType,uint32_t sector = 0x10, uint32_t buffer = 2048);
+    
+        char* ReadDirectory(char* Directory);
+    
+        VolumeDescriptor ReadVolumeDescriptor(uint8_t DrvNum,uint8_t DrvType,uint32_t sector = 0x10, uint32_t buffer = 2048);
         ISO9660();
         ~ISO9660();
 
     private:
         PFSStruct PFSS;
         FSStruct DetectFileSystems(uint8_t DrvNum,uint8_t DrvType);
-        void WritePrimaryVolumeDescriptor(uint8_t DrvNum,uint8_t DrvType,uintptr_t Base, uintptr_t height, PrimaryVolumeDescriptor PVD);
+        void WriteVolumeDescriptor(uint8_t DrvNum,uint8_t DrvType,uintptr_t Base, uintptr_t height, VolumeDescriptor PVD);
     
 };
 

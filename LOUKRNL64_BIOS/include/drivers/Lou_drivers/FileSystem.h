@@ -3,15 +3,19 @@
 
 
 
-
+#define ISO 0x01
 
 #ifdef __cplusplus
 typedef struct _FSStruct{
-    char DriveLet;
-    uint8_t FSNum;
-    uintptr_t Base[23];
-    uintptr_t Limit[23];
+    bool SystemDisk = false;
+    uint8_t FSType = 0x00;
+    uint32_t FSNum = 0;
 } FSStruct, *PFSStruct;
+
+typedef struct _ISO_STRUCT{
+    uint64_t PathTableSize;
+}ISO_STRUCT, *PISO_STRUCT;
+
 #else
 
 void FileSystemScan();

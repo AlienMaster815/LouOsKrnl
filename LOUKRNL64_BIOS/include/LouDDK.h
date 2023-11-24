@@ -61,4 +61,11 @@ extern "C" void LouPanic(char*,STATUS);
 //STD Library
 extern "C" void* memset(void* dest, int value, size_t count);
 
+
+extern "C" void* memcpy(void* dest, const void* src, size_t n);
+extern "C" int strncmp(const char* str1, const char* str2, size_t n);
+extern "C" int strcmp(const char* str1, const char* str2);
+extern "C" int memcmp(const void* ptr1, const void* ptr2, size_t num);
+extern "C" char* strncpy(char* dest, const char* src, size_t n);
+
 #endif

@@ -165,10 +165,16 @@ uint16_t* PATA::Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, in
     else if((drive == 0x170) && (!Master)) LouPrint("Secondary Slave\n");
         
     
-    for(int i = 0; i < BufferSize; i += 2)
+    uint16_t *ReadBuffer = (uint16_t *)Lou_Alloc_Mem(sizeof(uint8_t) * BufferSize);
+    
+    int j = 0;
+    
+    for(int i = 0; i < BufferSize; i += 2 && j++)
     {
         uint16_t wdata = DataPort.Read();
         
+        *(ReadBuffer + (sizeof(uint16_t) * j)) = wdata;
+                
         char *text = "  \0";
         text[0] = wdata & 0xFF;
         
@@ -180,9 +186,13 @@ uint16_t* PATA::Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, in
         LouPrint(text);
     }
     
+    
     for(int i = BufferSize + (BufferSize%2); i < BufferSize; i += 2)
         DataPort.Read();
-    return (uint16_t*)0x01;
+
+    return ReadBuffer;
+
+
     //Later We Will Do Some More Work With this To support Advanced ATA Features
 }
 
@@ -374,44 +384,80 @@ void PATA::initialize_pata(uint16_t drive,bool Master){
     if((drive == 0x1F0) && (Master)){
         pata[0] = 1;
         
-        //TODO: READ From The Drive And Deterrminedrive type and if its actualy a device or ghost device
-
+        PFSStruct PFSS = iso9660.ISOFileSystemScan(1,PATADEV);
         
+        if(PFSS->FSType == ISO){ //Its An ISO
+            FileSystemExist = true;
+            FileSystemCD = true;
+            pata[0] = 2;
+        }
+        
+        
+            
         
         //If The Drive Has A FileSystem Or Is Writeable Then Register It As A Device
+        if(((!FileSystemCD) && (FileSystemExist)) && (!WriteAble))Register_Storage_DeviceA(PATAPIDEV,1);
         if(((!FileSystemCD) && (FileSystemExist)) || (WriteAble))Register_Storage_DeviceA(PATADEV, 1);
         return;
     }
     else if((drive == 0x1F0) && (!Master)){
         pata[1] = 1;
 
-        //TODO: READ From The Drive And Deterrminedrive type and if its actualy a device or ghost device
-
+        PFSStruct PFSS = iso9660.ISOFileSystemScan(1,PATADEV);
+        
+        if(PFSS->FSType == ISO){ //Its An ISO
+            FileSystemExist = true;
+            FileSystemCD = true;
+            pata[1] = 2;
+        }
+        
+        
+            
         
         //If The Drive Has A FileSystem Or Is Writeable Then Register It As A Device
+        if(((!FileSystemCD) && (FileSystemExist)) && (!WriteAble))Register_Storage_DeviceA(PATAPIDEV,1);
         if(((!FileSystemCD) && (FileSystemExist)) || (WriteAble))Register_Storage_DeviceA(PATADEV, 2);
         return;
     }
     else if((drive == 0x170) &&  (Master)){
         pata[2] = 1;
 
-        //TODO: READ From The Drive And Deterrminedrive type and if its actualy a device or ghost device
-
+        PFSStruct PFSS = iso9660.ISOFileSystemScan(1,PATADEV);
+        
+        if(PFSS->FSType == ISO){ //Its An ISO
+            FileSystemExist = true;
+            FileSystemCD = true;
+            pata[2] = 2;
+        }
+        
+        
+            
+        
         //If The Drive Has A FileSystem Or Is Writeable Then Register It As A Device
+        if(((!FileSystemCD) && (FileSystemExist)) && (!WriteAble))Register_Storage_DeviceA(PATAPIDEV,1);
         if(((!FileSystemCD) && (FileSystemExist)) || (WriteAble))Register_Storage_DeviceA(PATADEV, 3);
         return;
     }
     else if((drive == 0x170) && (!Master)){
         pata[3] = 1;
         
+        PFSStruct PFSS = iso9660.ISOFileSystemScan(1,PATADEV);
+        
+        if(PFSS->FSType == ISO){ //Its An ISO
+            FileSystemExist = true;
+            FileSystemCD = true;
+            pata[3] = 2;
+        }
+        
+        
+            
         
         //If The Drive Has A FileSystem Or Is Writeable Then Register It As A Device
+        if(((!FileSystemCD) && (FileSystemExist)) && (!WriteAble))Register_Storage_DeviceA(PATAPIDEV,1);
         if(((!FileSystemCD) && (FileSystemExist)) || (WriteAble))Register_Storage_DeviceA(PATADEV, 4);
         return;
     }
     
-    //TODO: Read Information From The Drive To Determine If it Is There,  \n
-    //TODO: PATA Or PATAPI To See What Features We Can Milk From The Drive
 
 }
 
