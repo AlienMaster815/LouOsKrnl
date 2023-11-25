@@ -4,16 +4,10 @@
 #ifdef __cplusplus
 
 #else
-
-void RegisterForClockInterrupt(){
-    IRQ_Pic_clear_mask(0x20);
-}
-
-void RunTimerClock(uint64_t TimerInMS){
-        for(uint64_t i = 0; i < TimerInMS;  i++){
-            RegisterForClockInterrupt();
-            WaitForInterrupt();
-        }
-}
+void RunTimerClockMS(uint64_t TimerInMS);
+void RunTimerClockS(uint64_t TimerInS);
+void RunTimerClockS(uint64_t TimerInS);
+void RunTimerClockHs(uint64_t TimerHS);
+#endif
 
 #endif

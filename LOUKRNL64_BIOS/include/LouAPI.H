@@ -20,5 +20,7 @@
 #include <KernelAPI/IOManager.h>
 #include <KernelAPI/Security.h>
 #include <KernelAPI/Video.h>
+#include <kernel/Timers.h>
+#include <kernel/Clock.h>
 
 #endif
