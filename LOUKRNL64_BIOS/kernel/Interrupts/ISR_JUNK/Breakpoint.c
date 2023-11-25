@@ -4,6 +4,9 @@
 #include <CPUInstructionSet/CPURegisters.h>
 #include <kernel/pic.h>
 
+static bool UsingAPIC = false;
+
+
 void BreakPoint(){
     UnSetInterruptFlags();
     PIC_sendEOI(1);

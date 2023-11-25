@@ -4,8 +4,10 @@
 #include <CPUInstructionSet/CPURegisters.h>
 #include <kernel/pic.h>
 
-bool MemoryProbing;
-bool PageTableDeletion;
+static bool MemoryProbing;
+static bool PageTableDeletion;
+
+static bool UsingAPIC = false;
 
 
 void RegisterPageTableDeletion(){

@@ -18,7 +18,7 @@
 
 //TODO: Use Parralelles To Make The User Space Programs
 
-char* KERNEL_VERSION = "0.0.00026 RSC-2 64-BIT";
+char* KERNEL_VERSION = "0.0.00026 RSC-4 64-BIT";
 
 
 
@@ -28,10 +28,7 @@ LOUSTATUS Lou_kernel_early_initialization(){
     UnSetInterruptFlags();
     InitializeStartupInterruptHandleing();
     SetInterruptFlags();
-   
-
-    // this is a bad way to do this but what the hell i exasturated all other options This should Work On All Hardware
-    
+       
     return LOUSTATUS_GOOD;
 }
 
@@ -46,12 +43,13 @@ LOUSTATUS Set_Up_Devices(){
 }
 
 LOUSTATUS Advanced_Kernel_Initialization(){
-    
+    //if(InitializeMainInterruptHandleing() == LOUSTATUS_GOOD) LouPanic("Unable To Start Interrupts", BAD);
+
     return LOUSTATUS_GOOD;
 }
 
 LOUSTATUS User_Mode_Initialization(){
-    
+    //switch_to_user_Mode();
     return LOUSTATUS_GOOD;
 }
 
@@ -76,11 +74,10 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
     //SETUP DEVICES AND DRIVERS
     if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);
 
-    //if(InitializeMainInterruptHandleing() == LOUSTATUS_GOOD) LouPanic("Unable To Start Interrupts", BAD);
+    if(Advanced_Kernel_Initialization() != LOUSTATUS_GOOD)LouPanic("Final Kernel Initialization Failed",BAD);
 		
-	
+    if(User_Mode_Initialization() != LOUSTATUS_GOOD)LouPanic("User Mode Initialiation Failed",BAD);
     LouPrint("Hello World\n ");
-	//switch_to_user_segment();
 	while(1);
 
 	LouPanic("error kernel has gone too far terminating system\n",BAD);

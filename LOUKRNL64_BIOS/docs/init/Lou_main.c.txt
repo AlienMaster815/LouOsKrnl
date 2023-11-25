@@ -8,4 +8,27 @@
 
 ==========================================================================================================================================================
 
+For This I am going to be writing this in higlighted bulleted points to show what the code is doing but this is subject to change because all the files
+from here on out are going to be changed constantly during debuging and all throughout the project say if i find a better way to code the file
 
+
+* KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info);
+Lou_kernel_start is the first function after required setup for 64 bit or 32 bit mode or other hardware architectures/mode basicaly the code we were doing
+before this code in all the systems will be different per kernel branch because the code before served as a loader for our kernel From here on out
+*so far* We will not be using pure assembly like nasm or anything like that the only assembly we will use form here on out will either be in C with
+assembly Syntax or C++ with assembly syntax... So as we discussed before the kernel recieves parameters in the form of Of a Type MULTIBOOT_INFO* which
+means that there is a structure that holds all the multiboot information from the bootloader in this case grub because grub is easy to strait up make a
+ISO image to burn to disks or use in virtualbox for testing thus when we get into the make file we will be explaining everything further and the multiboot
+info variable holds a 64 bit value that is the location of the header in memory if youve taken c or c++ whenver you deal with the * dereferecer in c or
+c++ to declare or work with a variable your not dealing with that variable type your dealing with where it is in memory so if i deal with a char wich is
+an 8 bit integer such as 0x00 - 0xFF if I declare it with a pointer or is use & before the variable when passing it your actually not passing the
+variable your passing where it is in Ram which in 64 bit machines in a 64 bit integer such as 0x0000000000000000 - 0xFFFFFFFFFFFFFFFF but the value
+givven is where a value is in ram so that when you want the value at that address in ram you call it like ValueInMemory = *VariablePointedInMemory.
+Now Because I have a struct called Multiboot_info_t when dealing with structs wich are several variables packed into a structure when I want to get a
+variable stored in that memory address i would say VariableUsingToStorValue = StructVariablePointer->VariableINeed...
+
+* STATUS lou_init_stat;
+Here in this line I am creating a status lablel wich is one of the things i will be removing to replace with a better one STATUS is a type i defined a a
+boolean/bool basically if its (1 its true &| GOOD) and if its (0 its false &| BAD) On of the reasons I use FreeStanding Code instead of NoStdLib is even
+though I am not using the StdLib functions that obviously I cant use do to the fact that they need an operating system present for them to work i need to
+use pre defined types to help me so i dont have to define everything myself...

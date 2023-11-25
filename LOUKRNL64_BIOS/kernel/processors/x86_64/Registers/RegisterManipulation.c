@@ -81,5 +81,4 @@ void set_rdi(uint64_t new_rdi_value) {
     asm volatile("mov %0, %%rdi" : : "r" (new_rdi_value));
 }
 
-
 //TODO: Add Registers As Needed By The System

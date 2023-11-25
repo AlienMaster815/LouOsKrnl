@@ -16,9 +16,9 @@
 #include <kernel/memoryprobing.h>
 #include <kernel/interrupts.h>
 #include <drivers/Lou_drivers/FileSystem.h>
-
-#include "KernelAPI/IOManager.h"
-#include "KernelAPI/Security.h"
-#include "KernelAPI/Video.h"
+#include <kernel/pic.h>
+#include <KernelAPI/IOManager.h>
+#include <KernelAPI/Security.h>
+#include <KernelAPI/Video.h>
 
 #endif

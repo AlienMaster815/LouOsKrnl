@@ -105,3 +105,7 @@ void SetInterruptFlags(){
 void UnSetInterruptFlags(){
     asm volatile("cli");
 }
+
+void WaitForInterrupt(){
+    asm volatile("hlt");
+}

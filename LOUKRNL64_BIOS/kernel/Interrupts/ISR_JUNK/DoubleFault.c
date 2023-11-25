@@ -4,6 +4,8 @@
 #include <CPUInstructionSet/CPURegisters.h>
 #include <kernel/pic.h>
 
+static bool UsingAPIC = false;
+
 void DoubleFault(){
     UnSetInterruptFlags();
     LouPanic("Double Fault Detected",BAD);

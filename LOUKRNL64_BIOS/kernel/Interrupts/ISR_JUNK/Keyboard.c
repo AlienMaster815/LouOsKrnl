@@ -5,6 +5,8 @@
 #include <kernel/pic.h>
 #include <drivers/Lou_drivers/keyboards.h>
 
+static bool UsingAPIC = false;
+
 void Keyboard(){
     UnSetInterruptFlags();
     if(!USBKeyboardInterrupt)PS2KeyboardHandler();

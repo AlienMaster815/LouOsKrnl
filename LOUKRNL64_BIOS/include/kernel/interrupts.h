@@ -77,7 +77,7 @@ LOUSTATUS UpdateIDT(bool Init);
 
 void SetInterruptFlags();
 void UnSetInterruptFlags();
-
+void WaitForInterrupt();
 
 
 #endif
