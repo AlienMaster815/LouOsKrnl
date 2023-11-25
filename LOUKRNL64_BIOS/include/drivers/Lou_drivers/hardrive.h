@@ -26,6 +26,8 @@ class PATA{
 
     private:
     
+    static bool UsingSystemDriver = false;
+
     uint16_t* Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int BufferSize);
     uint16_t* Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, int BufferSize);
     

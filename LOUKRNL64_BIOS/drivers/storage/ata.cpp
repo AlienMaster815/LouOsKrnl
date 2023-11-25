@@ -55,6 +55,8 @@ PATA::~PATA(){
 
 uint16_t* PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int BufferSize){
     
+
+
     Port32Bit DataPort(drive);
     Port8Bit errorPort(drive + 0x1);
     Port8Bit sectorCountPort(drive + 0x2);
@@ -83,7 +85,7 @@ uint16_t* PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int 
         LouPrint("ERROR Reading From Drive\n");
         return (uint16_t*)0x00;
     }
-    
+            asm volatile ("hlt");
     
     LouPrint("Reading ATA Drive: ");
     
@@ -380,20 +382,19 @@ void PATA::initialize_pata(uint16_t drive,bool Master){
     bool FileSystemCD = false;
     bool WriteAble = false;
     bool FileSystemExist = false;
-    
+
+    LouPrint("Scanning For Filesystem\n");    
+
     if((drive == 0x1F0) && (Master)){
         pata[0] = 1;
-        
-        PFSStruct PFSS = iso9660.ISOFileSystemScan(1,PATADEV);
-        
-        if(PFSS->FSType == ISO){ //Its An ISO
+
+        FSStruct FSS = iso9660.ISOFileSystemScan(1,PATADEV);
+
+        if(FSS.FSType == ISO){ //Its An ISO
             FileSystemExist = true;
             FileSystemCD = true;
             pata[0] = 2;
         }
-        
-        
-            
         
         //If The Drive Has A FileSystem Or Is Writeable Then Register It As A Device
         if(((!FileSystemCD) && (FileSystemExist)) && (!WriteAble))Register_Storage_DeviceA(PATAPIDEV,1);
@@ -403,9 +404,9 @@ void PATA::initialize_pata(uint16_t drive,bool Master){
     else if((drive == 0x1F0) && (!Master)){
         pata[1] = 1;
 
-        PFSStruct PFSS = iso9660.ISOFileSystemScan(1,PATADEV);
-        
-        if(PFSS->FSType == ISO){ //Its An ISO
+        FSStruct FSS = iso9660.ISOFileSystemScan(1,PATADEV);
+          
+        if(FSS.FSType == ISO){ //Its An ISO
             FileSystemExist = true;
             FileSystemCD = true;
             pata[1] = 2;
@@ -422,9 +423,9 @@ void PATA::initialize_pata(uint16_t drive,bool Master){
     else if((drive == 0x170) &&  (Master)){
         pata[2] = 1;
 
-        PFSStruct PFSS = iso9660.ISOFileSystemScan(1,PATADEV);
+        FSStruct FSS = iso9660.ISOFileSystemScan(1,PATADEV);
         
-        if(PFSS->FSType == ISO){ //Its An ISO
+        if(FSS.FSType == ISO){ //Its An ISO
             FileSystemExist = true;
             FileSystemCD = true;
             pata[2] = 2;
@@ -441,9 +442,9 @@ void PATA::initialize_pata(uint16_t drive,bool Master){
     else if((drive == 0x170) && (!Master)){
         pata[3] = 1;
         
-        PFSStruct PFSS = iso9660.ISOFileSystemScan(1,PATADEV);
+        FSStruct FSS = iso9660.ISOFileSystemScan(1,PATADEV);
         
-        if(PFSS->FSType == ISO){ //Its An ISO
+        if(FSS.FSType == ISO){ //Its An ISO
             FileSystemExist = true;
             FileSystemCD = true;
             pata[3] = 2;
@@ -456,13 +457,13 @@ void PATA::initialize_pata(uint16_t drive,bool Master){
         if(((!FileSystemCD) && (FileSystemExist)) && (!WriteAble))Register_Storage_DeviceA(PATAPIDEV,1);
         if(((!FileSystemCD) && (FileSystemExist)) || (WriteAble))Register_Storage_DeviceA(PATADEV, 4);
         return;
+        
     }
     
 
 }
 
-void PATA::WakeAndIdentifyPata(uint16_t Device ,uint8_t head)
-{
+void PATA::WakeAndIdentifyPata(uint16_t Device ,uint8_t head){
 
     Port32Bit DataPort(Device);
     Port8Bit errorPort(Device + 0x1);

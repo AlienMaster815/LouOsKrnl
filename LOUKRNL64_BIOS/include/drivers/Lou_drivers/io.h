@@ -3,6 +3,8 @@
 
 #ifndef _IO_H
 #define _IO_H
+
+#ifdef __cplusplus
 class Port{
     protected:
         Port(uint16_t port_number);
@@ -63,4 +65,10 @@ class Port32Bit : public Port{
         uint32_t KeCallBuiltInInl(uint16_t port);
         void KeCallBuiltInOutl(uint16_t port,uint32_t data);
 };
+#else
+
+
+
+
+#endif
 #endif

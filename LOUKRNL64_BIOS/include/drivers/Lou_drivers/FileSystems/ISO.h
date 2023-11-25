@@ -67,7 +67,7 @@ typedef struct _VolumeDescriptor{
 class ISO9660{
     
     public:
-        PFSStruct ISOFileSystemScan(uint8_t DrvNum,uint8_t DrvType);
+        FSStruct ISOFileSystemScan(uint8_t DrvNum,uint8_t DrvType);
         void ISOReadDirectoryStructure(uint8_t DrvNum,uint8_t DrvType,uint8_t FileSystemNum);
         void ISOWriteDirectoryStructure(uint8_t DrvNum,uint8_t DrvType,uint8_t FileSystemNum);
         void ISOFormatDevice(uint8_t DrvNum,uint8_t DrvType,uintptr_t Base, uintptr_t height);
@@ -79,7 +79,7 @@ class ISO9660{
         ~ISO9660();
 
     private:
-        PFSStruct PFSS;
+        FSStruct FSS;
         FSStruct DetectFileSystems(uint8_t DrvNum,uint8_t DrvType);
         void WriteVolumeDescriptor(uint8_t DrvNum,uint8_t DrvType,uintptr_t Base, uintptr_t height, VolumeDescriptor PVD);
     

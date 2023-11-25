@@ -56,7 +56,7 @@ LOUSTATUS User_Mode_Initialization(){
 
 KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
     STATUS lou_init_stat;
-	mbi = multiboot_info;
+	//mbi = multiboot_info;
     
     
     setup_vga_systems();
@@ -66,7 +66,7 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
 	LouPrint("Lou Version %s \n", KERNEL_VERSION);
     LouPrint("Hello Im Lousine Getting Things Ready\n");
     
-	if(!(mbi->flags & MULTIBOOT_INFO_MEM_MAP))LouPanic("No Memory Information",BAD);
+	//if(!(mbi->flags & MULTIBOOT_INFO_MEM_MAP))LouPanic("No Memory Information",BAD);
 	
     //INITIALIZE IMPORTANT THINGS FOR US LATER
     if(Lou_kernel_early_initialization() != LOUSTATUS_GOOD)LouPanic("Early Initialization Failed",BAD);

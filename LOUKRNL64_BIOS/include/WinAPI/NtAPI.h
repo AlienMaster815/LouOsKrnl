@@ -6,7 +6,7 @@
 #include <WDKSubsystem/Types/SALTypes.h>
 #include <WinAPI/WinAPITypes/CommonTypes.h>
 #include <WinAPI/WinAPITypes/WDFLDRTypes.h>
-#include <KERNELAPI/WDFLDR.h>
+#include <KernelAPI/WDFLDR.h>
 #include <WinAPI/NtAPI/NtAPIFunc.h>
 
 #endif

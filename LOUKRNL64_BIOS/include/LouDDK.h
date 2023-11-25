@@ -8,7 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define MAXMEM 0xFFFFFFFFFFFFFFFF
+
 #define RAMADD unsigned char*
 #define RAMADDDATA unsigned char *
 #define BLOCK 4096
@@ -25,8 +25,7 @@
 
 #define STATUS bool
 
-//#include <drivers/Lou_drivers/hardrive.h>
-//#include <drivers/Lou_drivers/FileSystems/ISO.h>
+
 
 #include <drivers/Lou_drivers/storage_struct.h>
 
@@ -40,6 +39,7 @@
 #include <KernelAPI/Drives.h>
 #include <drivers/Lou_drivers/hardrive.h>
 
+#ifdef __cplusplus
 
 //define kernel c functions that we translate to the cpp world
 //Printing And Debugging
@@ -68,4 +68,8 @@ extern "C" int strcmp(const char* str1, const char* str2);
 extern "C" int memcmp(const void* ptr1, const void* ptr2, size_t num);
 extern "C" char* strncpy(char* dest, const char* src, size_t n);
 
+#else
+
+
+#endif
 #endif

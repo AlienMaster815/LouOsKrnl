@@ -3,17 +3,15 @@
 
 bool DEBUG = true;
 
-PFSStruct ISO9660::ISOFileSystemScan(uint8_t DrvNum, uint8_t DrvType){
-    //Allocate Memory For Our Structures
-    
-    if(DEBUG) LouPrint("Searching For A ISO FileSystem On \n");
-    
+FSStruct ISO9660::ISOFileSystemScan(uint8_t DrvNum, uint8_t DrvType){
+    //Allocate Memory For Our Structures   
+
+    if(DEBUG) LouPrint("Searching For A ISO FileSystem\n");
+
     FSStruct FSS = DetectFileSystems(DrvNum, DrvType);
     
-    *PFSS = FSS;
-    
     //Return The Pointer To Our Defined FS MAP
-    return PFSS;
+    return FSS;
 }
 
 void ISO9660::ISOReadDirectoryStructure(uint8_t DrvNum,uint8_t DrvType,uint8_t FileSystemNum){
@@ -39,12 +37,14 @@ char* ISO9660::ReadDirectory(char* Directory){
 
 VolumeDescriptor ISO9660::ReadVolumeDescriptor(uint8_t DrvNum,uint8_t DrvType,uint32_t sector, uint32_t buffer){
     VolumeDescriptor PVD;
-    PATA pata;
+    PATA* pata = RetrievePATAP();
     
+    //LouPrint("PATA ADDRESS = %d\n", &pata);
+
     switch(DrvType){
             
         case(PATADEV):{
-            PATABUFF patabuff = pata.pata_Read28(DrvNum, sector, buffer);
+            PATABUFF patabuff = pata->pata_Read28(DrvNum, sector, buffer);
             if(patabuff != READ_ERROR){ // Check If The Device Did Not Run Into Errors
                 
                 PVD.Type = (int8)*patabuff;
@@ -116,9 +116,9 @@ void ISO9660::WriteVolumeDescriptor(uint8_t DrvNum,uint8_t DrvType,uintptr_t Bas
 
 
 ISO9660::ISO9660(){
-    PFSS = (PFSStruct)Lou_Alloc_Mem(sizeof(FSStruct));
+
 }
 
 ISO9660::~ISO9660(){
-    Lou_Free_Mem((RAMADD)PFSS, sizeof(FSStruct));
+
 }
