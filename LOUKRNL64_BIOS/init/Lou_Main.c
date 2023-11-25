@@ -21,6 +21,7 @@
 char* KERNEL_VERSION = "0.0.00026 RSC-2 64-BIT";
 
 
+
 LOUSTATUS Lou_kernel_early_initialization(){
     //if (Initialize_Gdt() != LOUSTATUS_GOOD) LouPanic("Error Setting Gdt",BAD);
     
