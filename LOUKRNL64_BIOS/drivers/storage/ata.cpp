@@ -31,15 +31,17 @@
 
 uint8_t pata[4];
 
-
+static char* atabuffer;
 
 void PATA::pata_device_scan(){
     
 
     LouPrint("scaning ATA devices\n");
     
-    determine_device_type(0);
+    //determine_device_type(0);
+    //determine_device_type(1);
     determine_device_type(2);
+    determine_device_type(3);
     
     return;
 }
@@ -53,7 +55,7 @@ PATA::~PATA(){
 }
 
 
-uint16_t* PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int BufferSize){
+void PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int BufferSize){
     
 
 
@@ -67,25 +69,44 @@ uint16_t* PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int 
     Port8Bit commandPort(drive + 0x7);
     Port8Bit controlPort(drive + 0x206);
     
+    uint8_t sectorCount = BufferSize/2;
+    if((sectorCount * 512) < BufferSize) sectorCount++;
+
     devicePort.Write( (Master ? 0xE0 : 0xF0) | ((Sector_Num & 0x0F000000) >> 24) );
     errorPort.Write(0);
-    sectorCountPort.Write(1);
-    lbaLowPort.Write(  Sector_Num & 0x000000FF );
-    lbaMidPort.Write( (Sector_Num & 0x0000FF00) >> 8);
-    lbaLowPort.Write( (Sector_Num & 0x00FF0000) >> 16 );
-    commandPort.Write(0x20);
+    sectorCountPort.Write(sectorCount);
+    lbaLowPort.Write(Sector_Num & 0x000000FF);
+    lbaMidPort.Write((Sector_Num & 0x0000FF00) >> 8);
+    lbaHiPort.Write((Sector_Num & 0x00FF0000) >> 16);
     
+
+
+    commandPort.Write(0x20);
+
     uint8_t status = commandPort.Read();
-    while(((status & 0x80) == 0x80)
-       && ((status & 0x01) != 0x01))
+
+    while (((status & 0x80) == 0x80)
+          || (status & 0x01) == 0x01) {
         status = commandPort.Read();
-        
+    }
+
+    if(status == 0x00){
+        LouPrint("No Device\n");
+        atabuffer = "ERROR No Device";
+        return; //atabuffer;
+    }
+
     if(status & 0x01)
     {
-        LouPrint("ERROR Reading From Drive\n");
-        return (uint16_t*)0x00;
+        LouPrint("ERROR Reading From Drive ");
+        if     ((drive == 0x1F0) && (Master))  LouPrint("Primary Master\n");
+        else if((drive == 0x1F0) && (!Master)) LouPrint("Primary Slave\n");
+        else if((drive == 0x170) && (Master))  LouPrint("Secondary Master\n");
+        else if((drive == 0x170) && (!Master)) LouPrint("Secondary Slave\n");
+        atabuffer = "ERROR Reading From Device";        
+        return; //atabuffer;
     }
-            asm volatile ("hlt");
+
     
     LouPrint("Reading ATA Drive: ");
     
@@ -96,105 +117,46 @@ uint16_t* PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int 
     else if((drive == 0x170) && (Master))  LouPrint("Secondary Master\n");
     else if((drive == 0x170) && (!Master)) LouPrint("Secondary Slave\n");
         
-    uint16_t *ReadBuffer = (uint16_t *)Lou_Alloc_Mem(sizeof(uint8_t) * BufferSize);
+    
     
     int j = 0;
-    
+    char *text = "  \0";
+
     for(int i = 0; i < BufferSize; i += 2 && j++)
     {
         uint16_t wdata = DataPort.Read();
         
-        *(ReadBuffer + (sizeof(uint16_t) * j)) = wdata;
+        //*(ReadBuffer + (sizeof(uint16_t) * j)) = wdata;
                 
-        char *text = "  \0";
+
         text[0] = wdata & 0xFF;
-        
-        if(i+1 < BufferSize)
+        atabuffer[j] = text[0];        
+        j++;
+        if(i+1 < BufferSize){
             text[1] = (wdata >> 8) & 0xFF;
-        else
+            atabuffer[j] = text[1];
+        }
+        else{
             text[1] = '\0';
-        
+            atabuffer[j] = text[1];
+        }
         LouPrint(text);
     }
-    
-    for(int i = BufferSize + (BufferSize%2); i < 512; i += 2)
+
+    LouPrint("\n");    
+
+    for(int i = BufferSize + (BufferSize%2); i < (512 * sectorCount); i += 2)
         DataPort.Read();
     
-
+    //atabuffer = text;
     
     
-    return ReadBuffer;
+    //return atabuffer;
 }
 
-uint16_t* PATA::Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, int BufferSize){
+void PATA::Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, int BufferSize){
         
-    Port32Bit DataPort(drive);
-    Port8Bit errorPort(drive + 0x1);
-    Port8Bit sectorCountPort(drive + 0x2);
-    Port8Bit lbaLowPort(drive + 0x3);
-    Port8Bit lbaMidPort(drive + 0x4);
-    Port8Bit lbaHiPort(drive + 0x5);
-    Port8Bit devicePort(drive + 0x6);
-    Port8Bit commandPort(drive + 0x7);
-    Port8Bit controlPort(drive + 0x206);
-
-    devicePort.Write( (Master ? 0xE0 : 0xF0) | ((Sector_Num & 0x0F000000) >> 24) );
-    errorPort.Write(0);
-    sectorCountPort.Write(1);
-    lbaLowPort.Write(  Sector_Num & 0x000000FF );
-    lbaMidPort.Write( (Sector_Num & 0x0000FF00) >> 8);
-    lbaLowPort.Write( (Sector_Num & 0x00FF0000) >> 16 );
-    commandPort.Write(0x20);
-    
-    uint8_t status = commandPort.Read();
-    while(((status & 0x80) == 0x80)
-       && ((status & 0x01) != 0x01))
-        status = commandPort.Read();
-        
-    if(status & 0x01)
-    {
-        LouPrint("ERROR Reading From Drive\n");
-        return (uint16_t*)0x00;
-    }
-    
-    LouPrint("Reading ATAPI Drive: ");
-    
-    
-    
-    if     ((drive == 0x1F0) && (Master))  LouPrint("Primary Master\n");
-    else if((drive == 0x1F0) && (!Master)) LouPrint("Primary Slave\n");
-    else if((drive == 0x170) && (Master))  LouPrint("Secondary Master\n");
-    else if((drive == 0x170) && (!Master)) LouPrint("Secondary Slave\n");
-        
-    
-    uint16_t *ReadBuffer = (uint16_t *)Lou_Alloc_Mem(sizeof(uint8_t) * BufferSize);
-    
-    int j = 0;
-    
-    for(int i = 0; i < BufferSize; i += 2 && j++)
-    {
-        uint16_t wdata = DataPort.Read();
-        
-        *(ReadBuffer + (sizeof(uint16_t) * j)) = wdata;
-                
-        char *text = "  \0";
-        text[0] = wdata & 0xFF;
-        
-        if(i+1 < BufferSize)
-            text[1] = (wdata >> 8) & 0xFF;
-        else
-            text[1] = '\0';
-        
-        LouPrint(text);
-    }
-    
-    
-    for(int i = BufferSize + (BufferSize%2); i < BufferSize; i += 2)
-        DataPort.Read();
-
-    return ReadBuffer;
-
-
+    //return "ERROR";
     //Later We Will Do Some More Work With this To support Advanced ATA Features
 }
 
@@ -210,13 +172,16 @@ void PATA::Write28PATA(uint16_t device,bool Master, uint32_t Sector_Num ,uint8_t
     Port8Bit commandPort(device + 0x7);
     Port8Bit controlPort(device + 0x206);
     
+    uint8_t sectorCount = BufferSize/512;
+    if((sectorCount * 512) < BufferSize) sectorCount++;
+
     devicePort.Write( (Master ? 0xE0 : 0xF0) | ((Sector_Num & 0x0F000000) >> 24) );
     errorPort.Write(0);
-    sectorCountPort.Write(1);
+    sectorCountPort.Write(sectorCount);
     lbaLowPort.Write(  Sector_Num & 0x000000FF );
     lbaMidPort.Write( (Sector_Num & 0x0000FF00) >> 8);
-    lbaLowPort.Write( (Sector_Num & 0x00FF0000) >> 16 );
-    commandPort.Write(0x20);
+    lbaHiPort.Write( (Sector_Num & 0x00FF0000) >> 16 );
+    commandPort.Write(0x30);
     
     LouPrint("Writing to ATA Drive: ");
     
@@ -233,88 +198,55 @@ void PATA::Write28PATA(uint16_t device,bool Master, uint32_t Sector_Num ,uint8_t
         DataPort.Write(wdata);
         
         char *text = "  \0";
-        text[0] = (wdata >> 8) & 0xFF;
-        text[1] = wdata & 0xFF;
+        text[1] = (wdata >> 8) & 0xFF;
+        text[0] = wdata & 0xFF;
         LouPrint(text);
     }
     
-    for(uint32_t i = BufferSize + (BufferSize%2); i < 512; i += 2)
+    LouPrint("\n");    
+
+
+    for(uint32_t i = BufferSize + (BufferSize%2); i < (512 * sectorCount); i += 2)
         DataPort.Write(0x0000);
     
 }
 
 void PATA::Write28PATAPI(uint16_t device,bool Master, uint32_t Sector_Num ,uint8_t* Data, uint32_t BufferSize){
     
-    Port32Bit DataPort(device);
-    Port8Bit errorPort(device + 0x1);
-    Port8Bit sectorCountPort(device + 0x2);
-    Port8Bit lbaLowPort(device + 0x3);
-    Port8Bit lbaMidPort(device + 0x4);
-    Port8Bit lbaHiPort(device + 0x5);
-    Port8Bit devicePort(device + 0x6);
-    Port8Bit commandPort(device + 0x7);
-    Port8Bit controlPort(device + 0x206);
     
-    devicePort.Write( (Master ? 0xE0 : 0xF0) | ((Sector_Num & 0x0F000000) >> 24) );
-    errorPort.Write(0);
-    sectorCountPort.Write(1);
-    lbaLowPort.Write(  Sector_Num & 0x000000FF );
-    lbaMidPort.Write( (Sector_Num & 0x0000FF00) >> 8);
-    lbaLowPort.Write( (Sector_Num & 0x00FF0000) >> 16 );
-    commandPort.Write(0x20);
-    
-    LouPrint("Writing to ATAPI Drive: ");
-
-    for(uint32_t i = 0; i < BufferSize; i += 2)
-    {
-        uint16_t wdata = Data[i];
-        if(i+1 < BufferSize)
-            wdata |= ((uint16_t)Data[i+1]) << 8;
-        DataPort.Write(wdata);
-        
-        char *text = "  \0";
-        text[0] = (wdata >> 8) & 0xFF;
-        text[1] = wdata & 0xFF;
-        LouPrint(text);
-    }
-    
-    for(uint32_t i = BufferSize + (BufferSize%2); i < 512; i += 2)
-        DataPort.Write(0x0000);
-
-    //Later We Will Do Some More Work With this To support Advanced ATA Features
 }
     
 
-uint16_t* PATA::pata_Read28(uint8_t device,uint32_t Sector_Num, int BufferSize){
+void PATA::pata_Read28(uint8_t device,uint32_t Sector_Num, int BufferSize){
     
     if(Sector_Num > 0x0FFFFFFF)
-        return 0x00;
+        return; //"ERROR";
     
-    uint16_t* BuffAdd = 0x00;
+    //har* BuffAdd = 0x00;
     
     if(device == 1){
-        if     (pata[0] == 1) BuffAdd = Read28PATA(0x1F0,true,Sector_Num,BufferSize);
-        else if(pata[0] == 2) BuffAdd = Read28PATAPI(0x1F0,true, Sector_Num,BufferSize);
+        if     (pata[0] == 1) Read28PATA(0x1F0,true,Sector_Num,BufferSize);
+        else if(pata[0] == 2) Read28PATAPI(0x1F0,true, Sector_Num,BufferSize);
         else LouPrint("No Drive Present\n");
     }
     else if(device == 2){
-        if     (pata[1] == 1) BuffAdd = Read28PATA(0x1F0,false, Sector_Num, BufferSize);
-        else if(pata[1] == 2) BuffAdd = Read28PATAPI(0x1F0,false,Sector_Num, BufferSize);
+        if     (pata[1] == 1) Read28PATA(0x1F0,false, Sector_Num, BufferSize);
+        else if(pata[1] == 2) Read28PATAPI(0x1F0,false,Sector_Num, BufferSize);
         else LouPrint("No Drive Present\n");
     }
     else if(device == 3){
-        if     (pata[2] == 1) BuffAdd = Read28PATA(0x170,true, Sector_Num, BufferSize);
-        else if(pata[2] == 2) BuffAdd = Read28PATAPI(0x170,true, Sector_Num, BufferSize);
+        if     (pata[2] == 1) Read28PATA(0x170,true, Sector_Num, BufferSize);
+        else if(pata[2] == 2) Read28PATAPI(0x170,true, Sector_Num, BufferSize);
         else LouPrint("No Drive Present\n");
     }
     else if(device == 4){
-        if     (pata[3] == 1) BuffAdd = Read28PATA(0x170,false, Sector_Num, BufferSize);
-        else if(pata[3] == 2) BuffAdd = Read28PATAPI(0x170,false, Sector_Num, BufferSize);
+        if     (pata[3] == 1) Read28PATA(0x170,false, Sector_Num, BufferSize);
+        else if(pata[3] == 2) Read28PATAPI(0x170,false, Sector_Num, BufferSize);
         else LouPrint("No Drive Present\n");
     }
     else LouPrint("Error Selecting Drive\n");
     
-    return BuffAdd;
+    //return BuffAdd;
 }
 
 
@@ -322,8 +254,7 @@ void PATA::pata_Write28(uint8_t device, uint32_t Sector_Num ,uint8_t* Data, uint
     
     if(Sector_Num > 0x0FFFFFFF)
         return;
-    if(BufferSize > 512)
-        return;
+
     
     if(device == 1){
         if     (pata[0] == 1) Write28PATA(0x1F0,true,Sector_Num,Data ,BufferSize);
@@ -378,84 +309,50 @@ void PATA::determine_device_type(uint8_t drive){
 
 void PATA::initialize_pata(uint16_t drive,bool Master){
 
-    ISO9660 iso9660;
-    bool FileSystemCD = false;
-    bool WriteAble = false;
-    bool FileSystemExist = false;
+    
+    //bool FileSystemCD = false;
+    //bool WriteAble = false;
+    //bool FileSystemExist = false;
 
-    LouPrint("Scanning For Filesystem\n");    
+
 
     if((drive == 0x1F0) && (Master)){
         pata[0] = 1;
-
-        FSStruct FSS = iso9660.ISOFileSystemScan(1,PATADEV);
-
-        if(FSS.FSType == ISO){ //Its An ISO
-            FileSystemExist = true;
-            FileSystemCD = true;
-            pata[0] = 2;
-        }
+        char* atabuff = "Hello World!!!";
+        pata_Write28(1, 0, (uint8_t*)atabuff, 14);
+        Flush(1);
+        pata_Read28(1, 0, 21);
         
-        //If The Drive Has A FileSystem Or Is Writeable Then Register It As A Device
-        if(((!FileSystemCD) && (FileSystemExist)) && (!WriteAble))Register_Storage_DeviceA(PATAPIDEV,1);
-        if(((!FileSystemCD) && (FileSystemExist)) || (WriteAble))Register_Storage_DeviceA(PATADEV, 1);
+        
         return;
     }
     else if((drive == 0x1F0) && (!Master)){
         pata[1] = 1;
 
-        FSStruct FSS = iso9660.ISOFileSystemScan(1,PATADEV);
-          
-        if(FSS.FSType == ISO){ //Its An ISO
-            FileSystemExist = true;
-            FileSystemCD = true;
-            pata[1] = 2;
-        }
+        char* atabuff = "Hello World!!!";
+        pata_Write28(2, 0,(uint8_t*)atabuff, 14);
+        Flush(2);
+        pata_Read28(2, 0, 21);
         
-        
-            
-        
-        //If The Drive Has A FileSystem Or Is Writeable Then Register It As A Device
-        if(((!FileSystemCD) && (FileSystemExist)) && (!WriteAble))Register_Storage_DeviceA(PATAPIDEV,1);
-        if(((!FileSystemCD) && (FileSystemExist)) || (WriteAble))Register_Storage_DeviceA(PATADEV, 2);
+
         return;
     }
     else if((drive == 0x170) &&  (Master)){
         pata[2] = 1;
+        char* atabuff = "Hello World!!!";
+        pata_Write28(3, 0,(uint8_t*)atabuff, 14);
+        Flush(3);
+        pata_Read28(3, 0, 21);
 
-        FSStruct FSS = iso9660.ISOFileSystemScan(1,PATADEV);
-        
-        if(FSS.FSType == ISO){ //Its An ISO
-            FileSystemExist = true;
-            FileSystemCD = true;
-            pata[2] = 2;
-        }
-        
-        
-            
-        
-        //If The Drive Has A FileSystem Or Is Writeable Then Register It As A Device
-        if(((!FileSystemCD) && (FileSystemExist)) && (!WriteAble))Register_Storage_DeviceA(PATAPIDEV,1);
-        if(((!FileSystemCD) && (FileSystemExist)) || (WriteAble))Register_Storage_DeviceA(PATADEV, 3);
         return;
     }
     else if((drive == 0x170) && (!Master)){
         pata[3] = 1;
-        
-        FSStruct FSS = iso9660.ISOFileSystemScan(1,PATADEV);
-        
-        if(FSS.FSType == ISO){ //Its An ISO
-            FileSystemExist = true;
-            FileSystemCD = true;
-            pata[3] = 2;
-        }
-        
-        
-            
-        
-        //If The Drive Has A FileSystem Or Is Writeable Then Register It As A Device
-        if(((!FileSystemCD) && (FileSystemExist)) && (!WriteAble))Register_Storage_DeviceA(PATAPIDEV,1);
-        if(((!FileSystemCD) && (FileSystemExist)) || (WriteAble))Register_Storage_DeviceA(PATADEV, 4);
+        char* atabuff = "Hello World!!!";
+        pata_Write28(4, 0,(uint8_t*)atabuff, 14);
+        Flush(4);
+        pata_Read28(4, 0, 21);
+
         return;
         
     }
@@ -480,11 +377,11 @@ void PATA::WakeAndIdentifyPata(uint16_t Device ,uint8_t head){
     devicePort.Write(head);
     controlPort.Write(0);
     
-    
+    devicePort.Write(0xA0);
 
     uint8_t status = commandPort.Read();
     if(status == 0xFF){
-        LouPrint("No Device On\n");
+        LouPrint("No Device On \n");
         if     ((Device == 0x1F0) && (head == 0xA0))LouPrint("Primary Master\n");
         else if((Device == 0x1F0) && (head == 0xB0))LouPrint("Primary Slave\n");
         else if((Device == 0x170) && (head == 0xA0))LouPrint("Secondary Master\n");
@@ -492,17 +389,33 @@ void PATA::WakeAndIdentifyPata(uint16_t Device ,uint8_t head){
         return;
     }
 
-  
+    devicePort.Write(head);
+    sectorCountPort.Write(0);
+    lbaLowPort.Write(0);
+    lbaMidPort.Write(0);
+    lbaHiPort.Write(0);
+    commandPort.Write(0xEC);
+
+    if(status == 0x00){
+        LouPrint("No Device On \n");
+        if     ((Device == 0x1F0) && (head == 0xA0))LouPrint("Primary Master\n");
+        else if((Device == 0x1F0) && (head == 0xB0))LouPrint("Primary Slave\n");
+        else if((Device == 0x170) && (head == 0xA0))LouPrint("Secondary Master\n");
+        else if((Device == 0x170) && (head == 0xB0))LouPrint("Secondary Slave\n");
+        return;
+    }
+
 
     while(((status & 0x80) == 0x80)
        && ((status & 0x01) != 0x01))
         status = commandPort.Read();
-    
+        
         
 
     if(status & 0x01)
     {
-        LouPrint("ERROR Could Not Determine Device: Error Code: %d\n",status);
+        uint8_t error = errorPort.Read();
+        LouPrint("ERROR Could Not Determine Device: Error Code: %d\n", error);
         return;
     }
     
@@ -557,9 +470,10 @@ void PATA::Flush(uint8_t Device){
     commandPort.Write(0xE7);
     
     uint8_t status = commandPort.Read();
-    if(status == 0x00)
+    if(status == 0x00){
+        LouPrint("No Drive\n");
         return;
-    
+    }
     while(((status & 0x80) == 0x80)
        && ((status & 0x01) != 0x01))
         status = commandPort.Read();
@@ -575,4 +489,9 @@ void PATA::Flush(uint8_t Device){
         
         return;
     }
+    LouPrint("ATA Flush Complete for ");
+     if     (Device == 1)LouPrint("Primary Master\n");
+     else if(Device == 2)LouPrint("Primary Slave\n");
+     else if(Device == 3)LouPrint("Secondary Master\n");
+     else if(Device == 4)LouPrint("Secondary Slave\n");
 }
