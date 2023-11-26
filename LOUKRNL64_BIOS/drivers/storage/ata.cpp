@@ -30,16 +30,16 @@
 #include <LouDDK.h>
 
 uint8_t pata[4];
+//static char* atabuffer;
 
-static char* atabuffer;
 
 void PATA::pata_device_scan(){
     
 
     LouPrint("scaning ATA devices\n");
     
-    //determine_device_type(0);
-    //determine_device_type(1);
+    determine_device_type(0);
+    determine_device_type(1);
     determine_device_type(2);
     determine_device_type(3);
     
@@ -85,14 +85,29 @@ void PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int Buffe
 
     uint8_t status = commandPort.Read();
 
-    while (((status & 0x80) == 0x80)
-          || (status & 0x01) == 0x01) {
+    while ((status & 0x80) == 0x80){
         status = commandPort.Read();
     }
 
     if(status == 0x00){
-        LouPrint("No Device\n");
-        atabuffer = "ERROR No Device";
+        LouPrint("No Device On ");
+
+        if     ((drive == 0x1F0) && (Master)){
+               LouPrint("Primary Master\n");
+               pata[0] = 0;
+        }       
+        else if((drive == 0x1F0) && (!Master)){ 
+                LouPrint("Primary Slave\n");
+                pata[1] = 0;
+        }
+        else if((drive == 0x170) && (Master)){
+              LouPrint("Secondary Master\n");
+              pata[2] = 0;
+        }
+        else if((drive == 0x170) && (!Master)){
+              LouPrint("Secondary Slave\n");
+              pata[3] = 0;
+        }
         return; //atabuffer;
     }
 
@@ -103,7 +118,7 @@ void PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int Buffe
         else if((drive == 0x1F0) && (!Master)) LouPrint("Primary Slave\n");
         else if((drive == 0x170) && (Master))  LouPrint("Secondary Master\n");
         else if((drive == 0x170) && (!Master)) LouPrint("Secondary Slave\n");
-        atabuffer = "ERROR Reading From Device";        
+
         return; //atabuffer;
     }
 
@@ -130,15 +145,15 @@ void PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int Buffe
                 
 
         text[0] = wdata & 0xFF;
-        atabuffer[j] = text[0];        
+        //atabuffer[j] = text[0];        
         j++;
         if(i+1 < BufferSize){
             text[1] = (wdata >> 8) & 0xFF;
-            atabuffer[j] = text[1];
+            //atabuffer[j] = text[1];
         }
         else{
             text[1] = '\0';
-            atabuffer[j] = text[1];
+            //atabuffer[j] = text[1];
         }
         LouPrint(text);
     }
@@ -246,6 +261,8 @@ void PATA::pata_Read28(uint8_t device,uint32_t Sector_Num, int BufferSize){
     }
     else LouPrint("Error Selecting Drive\n");
     
+
+
     //return BuffAdd;
 }
 
@@ -318,9 +335,9 @@ void PATA::initialize_pata(uint16_t drive,bool Master){
 
     if((drive == 0x1F0) && (Master)){
         pata[0] = 1;
-        char* atabuff = "Hello World!!!";
-        pata_Write28(1, 0, (uint8_t*)atabuff, 14);
-        Flush(1);
+        //char* atabuff = "Hello World!!!";
+        //pata_Write28(1, 0, (uint8_t*)atabuff, 14);
+        //Flush(1);
         pata_Read28(1, 0, 21);
         
         
@@ -329,9 +346,9 @@ void PATA::initialize_pata(uint16_t drive,bool Master){
     else if((drive == 0x1F0) && (!Master)){
         pata[1] = 1;
 
-        char* atabuff = "Hello World!!!";
-        pata_Write28(2, 0,(uint8_t*)atabuff, 14);
-        Flush(2);
+        //char* atabuff = "Hello World!!!";
+        //pata_Write28(2, 0,(uint8_t*)atabuff, 14);
+        //Flush(2);
         pata_Read28(2, 0, 21);
         
 
@@ -339,18 +356,18 @@ void PATA::initialize_pata(uint16_t drive,bool Master){
     }
     else if((drive == 0x170) &&  (Master)){
         pata[2] = 1;
-        char* atabuff = "Hello World!!!";
-        pata_Write28(3, 0,(uint8_t*)atabuff, 14);
-        Flush(3);
+        //char* atabuff = "Hello World!!!";
+        //pata_Write28(3, 0,(uint8_t*)atabuff, 14);
+        //Flush(3);
         pata_Read28(3, 0, 21);
 
         return;
     }
     else if((drive == 0x170) && (!Master)){
         pata[3] = 1;
-        char* atabuff = "Hello World!!!";
-        pata_Write28(4, 0,(uint8_t*)atabuff, 14);
-        Flush(4);
+        //char* atabuff = "Hello World!!!";
+        //pata_Write28(4, 0,(uint8_t*)atabuff, 14);
+        //Flush(4);
         pata_Read28(4, 0, 21);
 
         return;
@@ -406,17 +423,25 @@ void PATA::WakeAndIdentifyPata(uint16_t Device ,uint8_t head){
     }
 
 
-    while(((status & 0x80) == 0x80)
-       && ((status & 0x01) != 0x01))
+    while((status & 0x80) == 0x80){
         status = commandPort.Read();
-        
+    }
         
 
-    if(status & 0x01)
-    {
+    if(status & 0x01){
         uint8_t error = errorPort.Read();
-        LouPrint("ERROR Could Not Determine Device: Error Code: %d\n", error);
-        return;
+        if(error == 127){
+            LouPrint("No Device On ");
+            if     ((Device == 0x1F0) && (head == 0xA0))LouPrint("Primary Master\n");
+            else if((Device == 0x1F0) && (head == 0xB0))LouPrint("Primary Slave\n");
+            else if((Device == 0x170) && (head == 0xA0))LouPrint("Secondary Master\n");
+            else if((Device == 0x170) && (head == 0xB0))LouPrint("Secondary Slave\n");
+            return;
+        }
+        if(error != 0){
+            LouPrint("ERROR Could Not Determine Device: Error Code: %d\n", error);
+            return;
+        }
     }
     
 
@@ -472,6 +497,24 @@ void PATA::Flush(uint8_t Device){
     uint8_t status = commandPort.Read();
     if(status == 0x00){
         LouPrint("No Drive\n");
+
+        if     ((drive == 0x1F0) && (Master)){
+               LouPrint("Primary Master\n");
+               pata[0] = 0;
+        }       
+        else if((drive == 0x1F0) && (!Master)){ 
+                LouPrint("Primary Slave\n");
+                pata[1] = 0;
+        }
+        else if((drive == 0x170) && (Master)){
+              LouPrint("Secondary Master\n");
+              pata[2] = 0;
+        }
+        else if((drive == 0x170) && (!Master)){
+              LouPrint("Secondary Slave\n");
+              pata[3] = 0;
+        }
+
         return;
     }
     while(((status & 0x80) == 0x80)
