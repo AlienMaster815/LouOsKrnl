@@ -11,7 +11,7 @@
 
 
 typedef uint16_t* PATABUFF;
-
+static uint16_t atabuffer[2352] __attribute__((unused));
 
 class PATA{
     public:

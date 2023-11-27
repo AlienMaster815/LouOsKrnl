@@ -2,7 +2,7 @@
 
 
 bool DEBUG = true;
-/* 
+
 FSStruct ISO9660::ISOFileSystemScan(uint8_t DrvNum, uint8_t DrvType){
     //Allocate Memory For Our Structures   
 
@@ -38,41 +38,34 @@ char* ISO9660::ReadDirectory(char* Directory){
 VolumeDescriptor ISO9660::ReadVolumeDescriptor(uint8_t DrvNum,uint8_t DrvType,uint32_t sector, uint32_t buffer){
 
 
-    
+    VolumeDescriptor VD;
     //LouPrint("PATA ADDRESS = %d\n", &pata);
 
-    switch(DrvType){
+    //switch(DrvType){
             
-        case(PATADEV):{
+        //case(PATADEV):{
 
-            if(patabuff != READ_ERROR){ // Check If The Device Did Not Run Into Errors
+            //if(){ // Check If The Device Did Not Run Into Errors
+
+
+            //}
+
+               
+            //}
+            //else{
+
                 
-                PVD.Type = (int8)*patabuff;
-                PVD.Identifier = (char *)(patabuff + (sizeof(uint8_t) * 1));
-                PVD.Version = (int8)*(patabuff + (sizeof(uint8_t) * 6));
                 
-                for(int i = 6; i < 2048; i++){
-                    int j = 0;
-                    PVD.Data[j] = (int8)*(patabuff + (sizeof(uint8_t) * i));
-                    j++;
-                }
-                Lou_Free_Mem((RAMADD)patabuff,sizeof(uint8_t) * 2048);
-                return PVD;
-            }
-            else{
-                LouPrint("Error Reading Drive\n");
-                Lou_Free_Mem((RAMADD)patabuff,sizeof(uint8_t) * 2048);
-                return PVD;
-            }
-        }
-        default:{
-            LouPrint("UnKnown Device Type\n");
+            //}
+        //}
+        //default:{
+            //LouPrint("UnKnown Device Type\n");
             //return PVD;
-            break;
-        }
-    }
+            //break;
+        //}
+    //}
     
-    //return PVD;
+    return VD;
 }
 
 //Private Classes
@@ -89,16 +82,16 @@ FSStruct ISO9660::DetectFileSystems(uint8_t DrvNum,uint8_t DrvType){
         
         uint32_t VolumeSize = (VolumeSetSize.LSB << 8) | VolumeSetSize.MSB;
         
-      uint16_t PathTableSizeLowLow = (PVD.Data[132] << 8) | PVD.Data[133];
-        uint16_t PathTableSizeHighLow = (PVD.Data[134] << 8) | PVD.Data[135];
-        uint16_t PathTableSizeLowHigh = (PVD.Data[132] << 8) | PVD.Data[133];
-        uint16_t PathTableSizeHighHigh = (PVD.Data[134] << 8) | PVD.Data[135];
+        //uint16_t PathTableSizeLowLow = (PVD.Data[132] << 8) | PVD.Data[133];
+        //uint16_t PathTableSizeHighLow = (PVD.Data[134] << 8) | PVD.Data[135];
+        //uint16_t PathTableSizeLowHigh = (PVD.Data[132] << 8) | PVD.Data[133];
+        //uint16_t PathTableSizeHighHigh = (PVD.Data[134] << 8) | PVD.Data[135];
         
-        int32_LSB_MSB PathTableSize;
+        //int32_LSB_MSB PathTableSize;
         
-        PathTableSize.LSB = (PathTableSizeLowLow << 16) | PathTableSizeHighLow;
-        PathTableSize.MSB = (PathTableSizeLowHigh << 16) | PathTableSizeHighHigh;
-      *//*
+        //PathTableSize.LSB = (PathTableSizeLowLow << 16) | PathTableSizeHighLow;
+        //PathTableSize.MSB = (PathTableSizeLowHigh << 16) | PathTableSizeHighHigh;
+      
         
         FSS.FSNum = VolumeSize;
         FSS.FSType = ISO;
@@ -122,4 +115,4 @@ ISO9660::ISO9660(){
 ISO9660::~ISO9660(){
 
 }
-*/
+

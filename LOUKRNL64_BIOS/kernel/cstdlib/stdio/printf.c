@@ -14,7 +14,7 @@ void intToString(uint64_t num, char* str);
 
 void uintToHexString(uint64_t number, char* hexString);
 
-int LouPrint(char* format, ...) {
+ int LouPrint(char* format, ...){
     va_list args;
     va_start(args, format);
 

@@ -1,5 +1,5 @@
 
-// ATA.cpp Version 1.0 Stable Release
+// ATA.cpp Version 1.03 Stable Release
 
 /*
 -- Tyler Grenier 10-9-23 7:05
@@ -54,7 +54,7 @@ PATA::~PATA(){
 
 }
 
-uint16_t atabuffer[2352];
+
 
 void PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int BufferSize){
     
