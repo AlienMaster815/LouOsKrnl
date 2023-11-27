@@ -1,0 +1,24 @@
+================================================================================================
+
+				Tyler Grenier 10/20/23 10:11 PM
+				    Subject In File: CpuID
+				Location Of File: boot/boot.asm
+
+================================================================================================
+
+	This will be a brief document because even though I'm going through some history in reality
+    this thing docent do much, because the cpuid instruction is actually only used for one thing
+    and this is getting information from the central processing units main data table such as
+    its signature manufacturer and you guessed it its Identification. Why would we need this the
+    reason has to do with "The Rise Of The Digital Age". When pentium was at its peak amd the
+    owner of intel had a falling out kind of like the Americans and the uk in the American war
+    of independence. Intel decided to do its own shit and so did amd with meant that now there
+    were two micro controller companies on the market and these two companies had more than one
+    processors at this point some in different architecture bitrates special features and register
+    so much shit to keep track of so they did the only right decision they ever made was make a
+    standardized way for an operating system to tell what the fuck it was running on however
+    achitectecture is still a bitch and you have do jump through hoops to fucking party you code
+    for each devices which is why until now even Microsoft hasn't fucked arround with  arm but
+    anyways lets get back on track enough rambling about bullshit I can't control these cpuid
+    systems make it easy for the kernel to use these spectrum of things that should just not
+    have existed without being standardized...

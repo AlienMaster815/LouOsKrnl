@@ -1,0 +1,51 @@
+==========================================================================================================================================================
+                                        
+                                            Tyler Grenier 11/23/23 11:37
+            
+                                            Subject Of File: What is Windows
+
+                                                Folder In Question N/A
+
+==========================================================================================================================================================
+
+Windows is a family of operating systems developed by Microsoft. Microsoft Windows is one of the most widely used operating systems for personal
+computers, servers, and a variety of devices. It provides a graphical user interface (GUI) that allows users to interact with the system using visual
+elements such as icons, windows, and menus.
+
+Key points about Windows:
+
+Graphical User Interface (GUI): Windows is known for its user-friendly GUI, which simplifies the interaction between users and the computer. It uses a
+desktop metaphor with icons representing files, folders, and applications.
+
+Multitasking: Windows supports multitasking, allowing users to run multiple applications simultaneously. This enables users to switch between different
+programs seamlessly.
+
+Multiuser Support: Windows operating systems are designed to support multiple users, each with their own user account and settings. User accounts help in
+managing access and personalization.
+
+Windows Versions: Over the years, Microsoft has released numerous versions of the Windows operating system. Some notable versions include Windows 3.1,
+Windows 95, Windows XP, Windows 7, Windows 8, and Windows 10. Each version introduced new features, improvements, and changes.
+
+Windows Server: Microsoft also offers server versions of the Windows operating system, such as Windows Server 2008, 2012, 2016, and 2019, which are
+tailored for server environments.
+
+Software Compatibility: Windows is widely supported by a vast ecosystem of software developers, making it compatible with a wide range of applications \
+and hardware devices.
+
+Microsoft Office Suite: Microsoft Windows is often used in conjunction with the Microsoft Office suite, which includes applications like Word, Excel, and
+PowerPoint.
+
+Updates and Security: Microsoft regularly releases updates and security patches for Windows to enhance features, fix bugs, and address security
+vulnerabilities.
+
+DirectX: Windows is known for its support of DirectX, a collection of APIs (Application Programming Interfaces) that is crucial for running multimedia
+and gaming applications.
+
+File System: Windows typically uses the NTFS (New Technology File System) as its primary file system, providing features like file and folder
+permissions, encryption, and compression.
+
+Windows Store: Windows 10 introduced the Windows Store, an online marketplace where users can download and install applications, including both
+traditional desktop applications and Universal Windows Platform (UWP) apps.
+
+Microsoft Windows is widely used in various environments, including home computers, businesses, education, and government institutions. Each version of
+Windows builds upon the previous ones, incorporating new features, security enhancements, and improvements in performance and usability.

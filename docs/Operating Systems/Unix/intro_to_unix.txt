@@ -1,0 +1,51 @@
+==========================================================================================================================================================
+                                        
+                                            Tyler Grenier 11/23/23 11:37
+            
+                                            Subject Of File: What is Unix
+
+                                            Folder In Question N/A
+
+==========================================================================================================================================================
+
+
+Unix is a powerful, multiuser, multitasking operating system originally developed in the 1960s and 1970s at Bell Labs (the research and development
+subsidiary of AT&T). Ken Thompson, Dennis Ritchie, and others are credited with its creation. Unix was designed to be portable, scalable, and flexible,
+making it suitable for a wide range of computing environments.
+
+Key features of Unix include:
+
+Multitasking: Unix allows multiple tasks or processes to run simultaneously. Users can interact with the system while background processes continue to
+execute.
+
+Multiuser: Multiple users can log in and use the system concurrently. Each user has their own account and workspace.
+
+Portability: Unix was designed to be portable across different hardware platforms. This portability has led to its widespread adoption in various
+computing environments.
+
+Hierarchical File System: Unix organizes files into a hierarchical directory structure. Directories can contain files or other directories, forming a
+tree-like structure.
+
+Shell: The Unix shell is a command-line interpreter that allows users to interact with the operating system by typing commands. Users can automate tasks
+by creating scripts.
+
+Security: Unix has a robust security model. Each user has a unique account, and file permissions are used to control access to resources.
+
+Networking: Unix was designed with networking in mind. It includes a variety of networking tools and services, making it well-suited for networked
+environments.
+
+C Programming Language: Unix was originally developed in the C programming language. This decision contributed to the portability of Unix because C is a
+low-level language that can be compiled for different hardware architectures.
+
+Over time, different versions of Unix have been developed, including commercial variants like AIX, HP-UX, Solaris, and BSD (Berkeley Software
+Distribution), as well as open-source versions like Linux. Linux, while not technically Unix, is Unix-like and adheres to many Unix principles, providing
+a similar environment for users and developers.
+
+Unix has had a profound influence on the development of operating systems and software design principles. Many concepts and tools that originated in Unix
+have been adopted in various forms by other operating systems, making Unix a foundational system in the history of computing.
+
+
+
+
+
+

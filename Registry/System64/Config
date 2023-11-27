@@ -1,0 +1,15 @@
+[HKEY_LOCAL_MACHINE]
+
+[HKEY_CLASSES_ROOT]
+// ClassesRootDefinesTheClassesDefined
+
+    [HKEY_CLASSES_ROOT\\.exe]
+    //.exe Registry Data
+        [HKEY_CLASSES_ROOT\\.exe\\.rdata]
+        // .rdata Registry Data
+            "2E", "72", "64", "61", "74", "61" \n
+        
+
+[HKEY_USERS]
+
+[HKEY_CURRENT_CONFIG]
