@@ -1,11 +1,11 @@
-#include <drivers/display/vga.h>
-
+//#include <drivers/display/vga.h>
+#include <LouAPI.h>
 
 
 size_t col = 0;
 size_t row = 0;
 
-Char* buffer = (Char*)0xb8000;
+Char* VgaBuffer = (Char*)0xb8000;
 
 uint8_t color;
 
@@ -28,7 +28,7 @@ void clear_row(size_t row) {
 
 
         for (size_t col = 0; col < NUM_COLS; col++) {
-            buffer[col + NUM_COLS * row] = empty;
+            VgaBuffer[col + NUM_COLS * row] = empty;
         }
     }
 }
@@ -66,14 +66,15 @@ void print_newline() {
             return;
         }
 
-        for (size_t row = 1; row < NUM_ROWS - 1; row++) {
-            for (size_t col = 0; col < NUM_COLS; col++) {
-               Char character = buffer[col + NUM_COLS * row];
-               buffer[col + NUM_COLS * (row - 1)] = character;
-            }
-        }
+        // Shift the entire content up by one row
+        size_t rowSize = NUM_COLS * sizeof(Char);
+        memcpy(VgaBuffer, VgaBuffer + NUM_COLS, (NUM_ROWS - 1) * rowSize);
 
-        clear_row(NUM_COLS - 1);
+        // Clear the last row
+        clear_row(NUM_ROWS - 1);
+        
+
+
     }
 }
 
@@ -88,8 +89,8 @@ void print_char(char character) {
     }
 
     if(vga_current == VGA_MODE_80x25){
-        buffer[col + NUM_COLS * row].character = (uint8_t)character;
-        buffer[col + NUM_COLS * row].color = color;
+        VgaBuffer[col + NUM_COLS * row].character = (uint8_t)character;
+        VgaBuffer[col + NUM_COLS * row].color = color;
         col++;
     }
 }

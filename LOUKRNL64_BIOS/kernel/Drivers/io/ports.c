@@ -42,3 +42,15 @@ uint64_t read_msr(uint32_t msr_id) {
     asm volatile("rdmsr" : "=a" (low), "=d" (high) : "c" (msr_id));
     return ((uint64_t)high << 32) | low;
 }
+
+void insw(uint16_t __port, void *__buf, unsigned long __n) {
+	__asm__ __volatile__("cld; rep; insw"
+			: "+D"(__buf), "+c"(__n)
+			: "d"(__port));
+}
+ 
+void outsw(uint16_t __port, const void *__buf, unsigned long __n) {
+	__asm__ __volatile__("cld; rep; outsw"
+			: "+S"(__buf), "+c"(__n)
+			: "d"(__port));
+}

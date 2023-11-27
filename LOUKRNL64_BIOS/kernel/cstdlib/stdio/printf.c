@@ -77,55 +77,7 @@ int LouPrint(char* format, ...) {
     return 0;
 }
 
-void intToString(uint64_t num, char* str) {
-    uint64_t i = 0;
-
-    if (num == 0) {
-        str[0] = '0';
-        str[1] = '\0';
-        return;
-    }
-
-    while (num > 0) {
-        uint64_t digit = num % 10;
-        str[i++] = digit + '0';
-        num /= 10;
-    }
-
-    str[i] = '\0';
-
-    // Reverse the string
-    uint64_t left = 0;
-    uint64_t right = i - 1;
-    while (left < right) {
-        char temp = str[left];
-        str[left] = str[right];
-        str[right] = temp;
-        left++;
-        right--;
-    }
-}
 
 
-void uintToHexString(uint64_t number, char* hexString) {
-    int i = 0;
-    do {
-        int digit = number % 16;
-        hexString[i++] = (digit < 10) ? (digit + '0') : (digit - 10 + 'a');
-        number /= 16;
-    } while (number != 0);
 
-    hexString[i] = '\0'; // Null-terminate the string
-}
 
-/* void intToHexString(int number, char *hexString) {
-    int i = 0;
-    do {
-        int digit = number % 16;
-        hexString[i++] = (digit < 10) ? (digit + '0') : (digit - 10 + 'a');
-        number /= 16;
-    } while (number != 0);
-
-    hexString[i] = '\0';  // Null-terminate the string
-}
-*/

@@ -38,6 +38,8 @@
 #include <drivers/Lou_drivers/FileSystems/ISO.h>
 #include <KernelAPI/Drives.h>
 #include <drivers/Lou_drivers/hardrive.h>
+#include <stdio.h>
+#include <drivers/Lou_drivers/io.h>
 
 #ifdef __cplusplus
 

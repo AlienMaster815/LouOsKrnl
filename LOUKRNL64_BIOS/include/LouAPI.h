@@ -22,5 +22,6 @@
 #include <KernelAPI/Video.h>
 #include <kernel/Timers.h>
 #include <kernel/Clock.h>
+#include <string.h>
 
 #endif
