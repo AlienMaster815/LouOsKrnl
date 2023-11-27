@@ -187,9 +187,7 @@ void PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int Buffe
 }
 
 void PATA::Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, int BufferSize){
-    // This Compiler Is Fucking Broken
-    // Im Using A Custom For This device Only
-    // In Out Function
+
 
     // This Is A Poor Translation For OSDEV.WIKI Because I Cant
     // Get This To Work With Pre Define Kernel Functions arround
@@ -199,7 +197,7 @@ void PATA::Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, int Buf
     // Is Picky With Code And Warnings And This Hardware Is Poorly
     // Designed In The First Place And I Dont Fucking Care This Was 
     // Made 20 Years Ago This is Almost As Bad As VGA Programming
-    // But At Least I Have Fucking Some Documentation
+    // But At Least I Have Some Fucking Documentation
 
     uint8_t sectorCount = BufferSize/2352;
     if((sectorCount * 2352) < BufferSize) sectorCount++;
