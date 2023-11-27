@@ -4,14 +4,51 @@
 # Change These Compiler Values To Your Correct Values if you Are on an x64 machine Use GCC Else You need a cross compiler \n
 # (e.g x86_64-elf-gcc)
 
-CC = gcc
-CP = g++
-LD = ld
+# Target Architecture Supported x86_64 ARM 
 
 
-#CC = x86_64-elf-gcc
-#CP = x86_64-elf-g++
-#LD = x86_64-elf-ld
+
+TARGET_ARCH = x86_64
+HOST_ARCH = x86_64
+FIRMWARE_TARGET = BIOS
+
+
+ifeq ($(HOST_ARCH),x86_64)
+    CC = gcc
+    CP = g++
+    LD = ld
+
+endif
+
+ifeq ($(HOST_ARCH),ARM)
+    CC = x86_64-elf-gcc
+    CP = x86_64-elf-g++
+    LD = x86_64-elf-ld
+endif
+
+ifeq ($(TARGET_ARCH),x86_64)
+    C_COMPILE_FLAGS = -m64
+    NASM_COMPILE_FLAGS = elf64
+endif
+
+ifeq ($(TARGET_ARCH),x86)
+    C_COMPILE_FLAGS = -m32
+    NASM_COMPILE_FLAGS = elf32
+endif
+
+
+ifeq ($(TARGET_ARCH),x86_64)
+	ifeq ($(FIRMWARE_TARGET),BIOS)
+		RELEASE_PATH = Releases/64BIOS/Annya.iso
+	endif
+	ifeq ($(FIRMWARE_TARGET),UEFI)
+		RELEASE_PATH = Releases/64UEFI/Annya.iso
+	endif
+endif
+
+
+CFLAGS = -c -fstack-protector -ffreestanding -Werror -I include 
+CPPFLAGS = -c -ffreestanding -O2 -Wall -fno-exceptions -fno-rtti -fstack-protector -Werror -Wno-write-strings -fno-use-cxa-atexit -I include
 
 kernel_source_files := $(shell find kernel -name *.c)
 kernel_object_files := $(patsubst kernel/%.c, build/kernel/%.o, $(kernel_source_files))
@@ -23,32 +60,35 @@ driver_cpp_source_files := $(shell find drivers -name *.cpp)
 driver_cpp_object_files := $(patsubst drivers/%.cpp, build/drivers/%.o, $(driver_cpp_source_files))
 
 
-
 x86_64_API_cpp_source_files := $(shell find API -name *.cpp)
 x86_64_API_cpp_object_files := $(patsubst API/%.cpp, build/x86_64/API/%.o, $(x86_64_API_cpp_source_files))
 
 
-kernel_source_filesX64 := $(shell find kernel -name *.c)
-kernel_object_filesX64 := $(patsubst kernel/%.c, build/kernel/%.o, $(kernel_source_files))
+x86_64_c_source_files := $(shell find init -name *.c)
+x86_64_c_object_files := $(patsubst init/%.c, build/x86_64/init/%.o, $(x86_64_c_source_files))
 
-x86_64_c_source_filesX64 := $(shell find init -name *.c)
-x86_64_c_object_filesX64 := $(patsubst init/%.c, build/x86_64/init/%.o, $(x86_64_c_source_files))
-
-driver_cpp_source_filesX64 := $(shell find drivers -name *.cpp)
-driver_cpp_object_filesX64 := $(patsubst drivers/%.cpp, build/drivers/%.o, $(driver_cpp_source_files))
+driver_cpp_source_files := $(shell find drivers -name *.cpp)
+driver_cpp_object_files := $(patsubst drivers/%.cpp, build/drivers/%.o, $(driver_cpp_source_files))
 
 
 
-x86_64_API_cpp_source_filesX64 := $(shell find API -name *.cpp)
-x86_64_API_cpp_object_filesX64 := $(patsubst API/%.cpp, build/x86_64/API/%.o, $(x86_64_API_cpp_source_files))
+x86_64_API_cpp_source_files := $(shell find API -name *.cpp)
+x86_64_API_cpp_object_filee := $(patsubst API/%.cpp, build/x86_64/API/%.o, $(x86_64_API_cpp_source_files))
 
 x86_64_API_asm_source_files := $(shell find API -name *.asm)
 x86_64_API_asm_object_files := $(patsubst API/%.asm, build/x86_64/asm/API/%.o, $(x86_64_API_asm_source_files))
 
 
+ifeq ($(TARGET_ARCH), x86_64)
+x86_64_asm_source_files = boot/x86_64/BOOT.asm
+endif
 
-x86_64_asm_source_files := $(shell find boot -name *.asm)
-x86_64_asm_object_files := $(patsubst boot/%.asm, build/x86_64/boot/%.o, $(x86_64_asm_source_files))
+
+ifeq ($(TARGET_ARCH), x86)
+x86_64_asm_source_files = boot/x86/BOOT.asm
+endif
+
+x86_64_asm_object_files = build/x86_64/boot/boot.o
 
 
 
@@ -59,99 +99,80 @@ kernel_asm_object_files := $(patsubst kernel/%.asm, build/x86_64/kernelasm/%.o, 
 x86_64_object_files := $(kernel_object_files) $(x86_64_c_object_files) $(x86_64_asm_object_files) $(kernel_asm_object_files) $(driver_cpp_object_files) $(x86_64_API_asm_object_files) $(x86_64_API_cpp_object_files)
 
 
-x86_64_object_filesX64 := $(kernel_object_filesX64) $(x86_64_c_object_filesX64) $(x86_64_asm_object_files) $(kernel_asm_object_files) $(driver_cpp_object_filesX64) $(x86_64_API_asm_object_files) $(x86_64_API_cpp_object_filesX64)
 
-#MacOS Compile Definitions
+
 
 $(kernel_object_files): build/kernel/%.o : kernel/%.c
 	mkdir -p $(dir $@) && \
-	$(CC) -m64 -c -fstack-protector -ffreestanding -Werror -I include $(patsubst build/kernel/%.o, kernel/%.c, $@) -o $@
+	$(CC) $(C_COMPILE_FLAGS) $(CFLAGS) $(patsubst build/kernel/%.o, kernel/%.c, $@) -o $@
 
 $(x86_64_c_object_files): build/x86_64/init/%.o : init/%.c
 	mkdir -p $(dir $@) && \
-	$(CC) -m64 -c -fstack-protector -ffreestanding -Werror -I include $(patsubst build/x86_64/init/%.o, init/%.c, $@) -o $@
+	$(CC) $(C_COMPILE_FLAGS) $(CFLAGS) $(patsubst build/x86_64/init/%.o, init/%.c, $@) -o $@
 
 $(driver_cpp_object_files): build/drivers/%.o : drivers/%.cpp
 	mkdir -p $(dir $@) && \
-	$(CP) -m64 -c -ffreestanding -O2 -Wall -fno-exceptions -fno-rtti -fstack-protector -Werror -Wno-write-strings -fno-use-cxa-atexit -I include $(patsubst build/drivers/%.o, drivers/%.cpp, $@) -o $@ -lc
+	$(CP) $(C_COMPILE_FLAGS) $(CPPFLAGS) $(patsubst build/drivers/%.o, drivers/%.cpp, $@) -o $@ -lc
 
 
 
 $(x86_64_API_cpp_object_files): build/x86_64/API/%.o : API/%.cpp
 	mkdir -p $(dir $@) && \
-	$(CP) -m64 -c -ffreestanding -O2 -Wall -fno-exceptions -fno-rtti -fstack-protector -Werror -Wno-write-strings -fno-use-cxa-atexit -I include $(patsubst build/x86_64/API/%.o, API/%.cpp, $@) -o $@ -lc
+	$(CP) $(C_COMPILE_FLAGS) $(CPPFLAGS) $(patsubst build/x86_64/API/%.o, API/%.cpp, $@) -o $@ -lc
 
 $(x86_64_API_asm_object_files): build/x86_64/asm/API/%.o : API/%.asm
 	mkdir -p $(dir $@) && \
-	nasm -f elf64 $(patsubst build/x86_64/asm/API/%.o, API/%.asm, $@) -o $@
-
-#End Of MacOS Compile Derfinitions
+	nasm -f $(NASM_COMPILE_FLAGS) $(patsubst build/x86_64/asm/API/%.o, API/%.asm, $@) -o $@
 
 
-
-#X64 Machine Build
-
-
-
-$(kernel_object_filesX64): build/kernel/%.o : kernel/%.c
+$(x86_64_asm_object_files): $(x86_64_asm_source_files)
 	mkdir -p $(dir $@) && \
-	$(CC) -m64 -c -fstack-protector -ffreestanding -Werror -I include $(patsubst build/kernel/%.o, kernel/%.c, $@) -o $@
-
-$(x86_64_c_object_filesX64): build/x86_64/init/%.o : init/%.c
-	mkdir -p $(dir $@) && \
-	$(CC) -m64 -c -fstack-protector -ffreestanding -Werror -I include $(patsubst build/x86_64/init/%.o, init/%.c, $@) -o $@
-
-$(driver_cpp_object_filesX64): build/drivers/%.o : drivers/%.cpp
-	mkdir -p $(dir $@) && \
-	$(CP) -m64 -c -ffreestanding -O2 -Wall -fno-exceptions -fno-rtti -fstack-protector -Werror -Wno-write-strings -fno-use-cxa-atexit -I include $(patsubst build/drivers/%.o, drivers/%.cpp, $@) -o $@ -lc
-
-
-
-$(x86_64_API_cpp_object_filesX64): build/x86_64/API/%.o : API/%.cpp
-	mkdir -p $(dir $@) && \
-	$(CP) -m64 -c -ffreestanding -O2 -Wall -fno-exceptions -fno-rtti -fstack-protector -Werror -Wno-write-strings -fno-use-cxa-atexit -I include $(patsubst build/x86_64/API/%.o, API/%.cpp, $@) -o $@ -lc
-
-$(x86_64_API_asm_object_filesX64): build/x86_64/asm/API/%.o : API/%.asm
-	mkdir -p $(dir $@) && \
-	nasm -f elf64 $(patsubst build/x86_64/asm/API/%.o, API/%.asm, $@) -o $@
-
-
-
-#End Of Compile Definitions
-
-
-
-$(x86_64_asm_object_files): build/x86_64/boot/%.o : boot/%.asm
-	mkdir -p $(dir $@) && \
-	nasm -f elf64 $(patsubst build/x86_64/boot/%.o, boot/%.asm, $@) -o $@
+	nasm -f $(NASM_COMPILE_FLAGS) $(x86_64_asm_source_files) -o $@
 
 $(kernel_asm_object_files): build/x86_64/kernelasm/%.o : kernel/%.asm
 	mkdir -p $(dir $@) && \
-	nasm -f elf64 $(patsubst build/x86_64/kernelasm/%.o, kernel/%.asm, $@) -o $@
+	nasm -f $(NASM_COMPILE_FLAGS) $(patsubst build/x86_64/kernelasm/%.o, kernel/%.asm, $@) -o $@
+
+
+
+
 
 
 clean:
 	rm -r build
 	rm -r release
 
+
+ifeq ($(TARGET_ARCH), x86_64)
 lou.exe: $(x86_64_object_files)
 	mkdir -p dist/x86_64 && \
-	$(LD) -n -o dist/x86_64/LOUOSKRNL.bin -T targets/linker.ld $(x86_64_object_files)
+	$(LD) -n -o dist/x86_64/LOUOSKRNL.bin -T targets/x86_64/linker.ld $(x86_64_object_files)
 	rm -r build
+endif
 
 
-louX64.exe: $(x86_64_object_filesX64)
-	mkdir -p dist/x86_64 && \
-	ld -n -o dist/x86_64/LOUOSKRNL.bin -T targets/linker.ld $(x86_64_object_filesX64)
+ifeq ($(TARGET_ARCH), x86)
+lou.exe: $(x86_64_object_files)
+	mkdir -p dist/x86 && \
+	$(LD) -n -o dist/x86/LOUOSKRNL.bin -T targets/x86/linker.ld $(x86_64_object_files)
 	rm -r build
+endif
 
-
+ifeq ($(TARGET_ARCH), x86_64)
 release: lou.exe
 	mkdir -p release/x86_64 && \
 	cp dist/x86_64/LOUOSKRNL.bin release/x86_64/LOUOSKRNL.exe
+endif
 
 
-annya.iso: louX64.exe
+ifeq ($(TARGET_ARCH), x86)
+release: lou.exe
+	mkdir -p release/x86 && \
+	cp dist/x86/LOUOSKRNL.bin release/x86/LOUOSKRNL.exe
+endif
+
+
+annya.iso: release
 	rm -rf iso
 	
 	#Make The System Directories
@@ -160,26 +181,77 @@ annya.iso: louX64.exe
 	mkdir iso/boot
 	mkdir iso/boot/grub
 	mkdir iso/Annya
+
+ifeq ($(HOST_ARCH),x86_64)
+
+	#Create Files For Backwords Compatibility
+
+	mkdir iso/Annya/System32
+	#mkdir iso/Annya/Profiles ALREADY DEFINED
+	mkdir iso/Annya/System32/drivers
+
+	#Create Files For Regular Systems
+
 	mkdir iso/Annya/System64
 	mkdir iso/Annya/Profiles
 	mkdir iso/Annya/System64/drivers
-	
+
 	#Copy System Files To The Appropriate Directories
 	
 	cp SYS/KModeDrvRevEng.sys iso/Annya/System64/drivers/KModeDrvRevEng.sys
 	cp Registry/System64/Config iso/Annya/System64/Config
+	cp release/x86_64/LOUOSKRNL.exe iso/Annya/System64/LOUOSKRNL.exe
+endif
+
+ifeq ($(HOST_ARCH),x86)
+
+	#Create System Files
+
+	mkdir iso/Annya/System32
+	mkdir iso/Annya/Profiles
+	mkdir iso/Annya/System32/drivers
+
+	#Copy System Files To The Appropriate Directories
+
+	cp SYS/KModeDrvRevEng.sys iso/Annya/System32/drivers/KModeDrvRevEng.sys
+	cp Registry/System64/Config iso/Annya/System32/Config
+	cp release/x86_64/LOUOSKRNL.exe iso/Annya/System32/LOUOSKRNL.exe
+endif
+
 	cp Registry/Profiles/Username iso/Annya/Profiles/Username
-	cp dist/x86_64/LOUOSKRNL.bin iso/Annya/System64/LOUOSKRNL.exe
-	
+
 	#Create A Grub Boot CFG For The Kernel And Make The Image
-	
+
+ifeq ($(HOST_ARCH),x86_64)
+
 	echo 'set timeout=0'                    		 >> iso/boot/grub/grub.cfg
 	echo 'set default=0'                    		 >> iso/boot/grub/grub.cfg
-	echo ''                                  	     >> iso/boot/grub/grub.cfg
-	echo 'menuentry "Annya/lou" {'					 >> iso/boot/grub/grub.cfg
-	echo 'multiboot /Annya/System64/LOUOSKRNL.exe'	 >> iso/boot/grub/grub.cfg
-	echo 'boot'										 >> iso/boot/grub/grub.cfg
-	echo '}'							    		 >> iso/boot/grub/grub.cfg
+	echo ''                                  	     	 >> iso/boot/grub/grub.cfg
+	echo 'menuentry "Annya/lou" {'				 >> iso/boot/grub/grub.cfg
+	echo 'multiboot /Annya/System64/LOUOSKRNL.exe'		 >> iso/boot/grub/grub.cfg
+	echo 'boot'						 >> iso/boot/grub/grub.cfg
+	echo '}'						 >> iso/boot/grub/grub.cfg
 	grub-mkrescue --output=annya.iso iso
 
+endif
+
+ifeq ($(HOST_ARCH),x86)
+
+	echo 'set timeout=0'                    		 >> iso/boot/grub/grub.cfg
+	echo 'set default=0'                    		 >> iso/boot/grub/grub.cfg
+	echo ''                                  	     	 >> iso/boot/grub/grub.cfg
+	echo 'menuentry "Annya/lou" {'				 >> iso/boot/grub/grub.cfg
+	echo 'multiboot /Annya/System32/LOUOSKRNL.exe'		 >> iso/boot/grub/grub.cfg
+	echo 'boot'						 >> iso/boot/grub/grub.cfg
+	echo '}'						 >> iso/boot/grub/grub.cfg
+	grub-mkrescue --output=annya.iso iso
+
+endif
+
 	rm -rf iso
+
+
+
+PublicRelease: annya.iso
+	cp annya.iso $(RELEASE_PATH)
+	rm -rf annya.iso
