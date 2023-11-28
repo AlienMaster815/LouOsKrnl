@@ -19,5 +19,8 @@ void outl(uint16_t port, uint32_t  data);
 
 void outbSlow(uint16_t port,uint8_t data);
 
+#ifdef __x86_64__
 uint64_t read_msr(uint32_t msr_id);
+#endif
+
 #endif

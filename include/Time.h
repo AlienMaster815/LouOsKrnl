@@ -3,7 +3,7 @@
 
 #ifdef __cplusplus
 
-extern void sleep(uint64_t MilSec);
+extern "C" void sleep(uint64_t MilSec);
 
 #else
 

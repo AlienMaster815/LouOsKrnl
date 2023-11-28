@@ -1,5 +1,5 @@
 #include <stdint.h>
-
+#ifdef __x86_64__
 uint64_t get_rsp() {
     uint64_t rsp_value;
     asm volatile("mov %%rsp, %0" : "=r" (rsp_value));
@@ -80,5 +80,6 @@ uint64_t get_rdi() {
 void set_rdi(uint64_t new_rdi_value) {
     asm volatile("mov %0, %%rdi" : : "r" (new_rdi_value));
 }
+#endif
 
 //TODO: Add Registers As Needed By The System

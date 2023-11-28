@@ -18,8 +18,12 @@
 
 //TODO: Use Parralelles To Make The User Space Programs
 
-char* KERNEL_VERSION = "0.0.00026 RSC-4 64-BIT";
-
+#ifdef __x86_64__
+char* KERNEL_VERSION = "0.0.00027 RSC-4 64-BIT";
+#endif
+#ifdef __i386__
+char* KERNEL_VERSION = "0.0.00027 RSC-4 32-BIT";
+#endif
 
 
 LOUSTATUS Lou_kernel_early_initialization(){
@@ -28,7 +32,6 @@ LOUSTATUS Lou_kernel_early_initialization(){
     UnSetInterruptFlags();
     InitializeStartupInterruptHandleing();
     SetInterruptFlags();
-       
     return LOUSTATUS_GOOD;
 }
 
@@ -54,9 +57,9 @@ LOUSTATUS User_Mode_Initialization(){
 }
 
 
-KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
+KERNEL_ENTRY Lou_kernel_start(){
     STATUS lou_init_stat;
-	//mbi = multiboot_info;
+	
     
     
     setup_vga_systems();
@@ -66,11 +69,12 @@ KERNEL_ENTRY Lou_kernel_start(multiboot_info_t* multiboot_info){
 	LouPrint("Lou Version %s \n", KERNEL_VERSION);
     LouPrint("Hello Im Lousine Getting Things Ready\n");
     
-	//if(!(mbi->flags & MULTIBOOT_INFO_MEM_MAP))LouPanic("No Memory Information",BAD);
+
 	
     //INITIALIZE IMPORTANT THINGS FOR US LATER
     if(Lou_kernel_early_initialization() != LOUSTATUS_GOOD)LouPanic("Early Initialization Failed",BAD);
-    
+    LouPrint("FUBAR\n");        
+    asm volatile("hlt");   
     //SETUP DEVICES AND DRIVERS
     if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);
 

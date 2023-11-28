@@ -19,6 +19,8 @@
 #define Present 0x1
 #define NotPresent 0x0
 
+#ifdef __x86_64__
+
 typedef struct __attribute__((packed)){
     uint16_t base_low;      // Lower 16 bits of the handler function's address
     uint16_t selector;      // Code segment selector
@@ -36,7 +38,7 @@ static Interrupt_Descriptor_Table IDT[256];
 typedef struct __attribute__((packed)){
     uint16_t limit;
     uint64_t base;
-}IDTP64;
+}IDTP;
 
 
 void RegisterMemoryProbe();
@@ -68,7 +70,62 @@ void FPUNoDev();
 void CLOCK();
 void Keyboard();
 
-void SetPicIDTGate(int index, void (*handler)());
+LOUSTATUS InitializeMainInterruptHandleing();
+LOUSTATUS InitializeStartupInterruptHandleing();
+
+LOUSTATUS UpdateIDT(bool Init);
+
+void SetInterruptFlags();
+void UnSetInterruptFlags();
+void WaitForInterrupt();
+
+#endif
+
+#ifdef __i386__
+
+typedef struct __attribute__((packed)) {
+    uint16_t base_low;      // Lower 16 bits of the handler function's address
+    uint16_t selector;      // Code segment selector
+    uint8_t zero;           // Must be zero
+    uint8_t type_attr;      // Type and attributes of the interrupt gate
+    uint16_t base_high;     // Higher 16 bits of the handler function's address
+} Interrupt_Descriptor_Table;
+
+static Interrupt_Descriptor_Table IDT[256];
+
+typedef struct __attribute__((packed)) {
+    uint16_t limit;
+    uint32_t base;
+} IDTP;
+
+void RegisterMemoryProbe();
+void RegisterPageTableDeletion();
+
+LOUSTATUS SetBasicInterrupts(bool init);
+
+LOUSTATUS set_idt_gate(int num, void (*handler)(), uint16_t selector, uint8_t ist, uint8_t type_attr);
+
+static bool USBKeyboardInterrupt;
+
+void MemoryProbingPageFaultHandler();
+
+void PageFault();
+void DoubleFault();
+void GeneralProtectionFault();
+
+bool GetProbeStatus();
+
+void DivideByZero();
+void DebugException();
+void NMI();
+void BreakPoint();
+void OverFlow();
+void BoundCheck();
+void InvalidOpcode();
+void FPUNoDev();
+void CLOCK();
+void Keyboard();
+
 
 LOUSTATUS InitializeMainInterruptHandleing();
 LOUSTATUS InitializeStartupInterruptHandleing();
@@ -79,5 +136,8 @@ void SetInterruptFlags();
 void UnSetInterruptFlags();
 void WaitForInterrupt();
 
+
+
+#endif
 
 #endif

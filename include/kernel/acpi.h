@@ -18,7 +18,7 @@
 -- might take a while and weve done a lot
 -- already tonight... 
 */
-
+#ifdef __x86_64__
 typedef struct __attribute__((packed)) {
 	char signature[8];
 	uint8_t checksum;
@@ -34,19 +34,6 @@ typedef struct __attribute__((packed)) {
 
 
 typedef struct __attribute__((packed)) {
-	char signature[4];
-	uint32_t length;
-	uint8_t revision;
-	uint8_t checksum;
-	char oem_id[6];
-	char oem_table_id[8];
-	uint32_t oem_revision;
-	uint32_t creator_id;
-	uint32_t creator_revision;
-}ACPITableHeader;
-
-
-typedef struct __attribute__((packed)) {
 	char signature[8]; // "RSD PTR " (8 bytes)
 	uint8_t checksum;  // Checksum of the first 20 bytes
 	char oem_id[6];    // OEM ID (6 bytes)
@@ -58,6 +45,21 @@ typedef struct __attribute__((packed)) {
 	uint8_t reserved[3]; // Reserved (3 bytes)
 	uint64_t xchecksum; // Checksum of entire table
 } RSDP3;
+
+#endif
+
+typedef struct __attribute__((packed)) {
+	char signature[4];
+	uint32_t length;
+	uint8_t revision;
+	uint8_t checksum;
+	char oem_id[6];
+	char oem_table_id[8];
+	uint32_t oem_revision;
+	uint32_t creator_id;
+	uint32_t creator_revision;
+}ACPITableHeader;
+
 
 typedef struct __attribute__((packed)) {
 	char signature[8]; // "RSD PTR " (8 bytes)

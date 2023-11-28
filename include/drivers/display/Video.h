@@ -2,16 +2,16 @@
 #define _DRIVER_VIDEO_H
 
 #include <stdint.h>
-#include
 
+/*
 class VideoGraphicsArray{
   
     public:
-    VideoGraphicsArraySetMode(uint64_t Height,uint64_t Width, uint8_t ColorDepth);
+    VideoGraphicsArraySetMode(uint32_t Height,uint32_t Width, uint8_t ColorDepth);
     
     private:
-    SetVideoGraphicsArrayMode(uint64_t height,uint64_t Width, uint8_t ColorDepth);
+    SetVideoGraphicsArrayMode(uint32_t height,uint32_t Width, uint8_t ColorDepth);
     
 };
-
+*/
 #endif

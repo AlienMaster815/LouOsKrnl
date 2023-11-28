@@ -1,20 +1,5 @@
 /*
 ; Copyright(C) 2023 Tyler Grenier
-;
-; This program is the property of Tyler Grenier and is protected by copyright law.
-; Unauthorized reproduction or distribution of this program, or any portion of it,
-; is prohibited.Modification of this program is allowed only with explicit
-; written permission from Tyler Grenier.
-;
-; Permission to possess and use this code is granted to You under
-; the condition that You complies with the terms of this copyright
-; notice.Failure to comply may result in legal action.
-;
-; Tyler Grenier makes no warranties, expressed or implied, about the suitability of
-; this software for any purpose.It is provided "as is" without any warranty.
-;
-; For inquiries or permission requests, please contact Tyler Grenier
-; Email tgrenier.815@aol.com Text 860 - 930 - 6436 Call 203 - 263 - 6104.
 */
 
 #ifndef ARCH_I386_VGA_H
@@ -25,10 +10,12 @@
 #include <stat.h>
 #include <kernel/memmory.h>
 
+#ifdef __x86_64__
+
 /*this is the basic vga driver definitions needed for the tty terminal function
  this will be used for early kernel stages until propitiery or better drivers can be found
- however it is important that this file will eventually include vesa support for the
- graphical usser interface Annya/anna*/
+ however it is important for the graphical interface Annya/anna nad debugging the system in bios so
+ i know that thew system works before porting it to UEFI*/
 enum vga_color {
 	VGA_COLOR_BLACK = 0,
 	VGA_COLOR_BLUE = 1,
@@ -112,3 +99,67 @@ void Set_Color(enum VGA_COLOR fg, enum VGA_COLOR bg);
 void Set_Y(uint64_t y);
 void Set_X(uint64_t x);
 #endif
+
+#endif
+
+#ifdef __i386__
+
+#ifndef _TTY_H
+#define _TTY_H
+
+#include <stdint.h>
+#include <stddef.h>
+
+enum VGA_COLOR {
+    PRINT_COLOR_BLACK = 0,
+	PRINT_COLOR_BLUE = 1,
+	PRINT_COLOR_GREEN = 2,
+	PRINT_COLOR_CYAN = 3,
+	PRINT_COLOR_RED = 4,
+	PRINT_COLOR_MAGENTA = 5,
+	PRINT_COLOR_BROWN = 6,
+	PRINT_COLOR_LIGHT_GRAY = 7,
+	PRINT_COLOR_DARK_GRAY = 8,
+	PRINT_COLOR_LIGHT_BLUE = 9,
+	PRINT_COLOR_LIGHT_GREEN = 10,
+	PRINT_COLOR_LIGHT_CYAN = 11,
+	PRINT_COLOR_LIGHT_RED = 12,
+	PRINT_COLOR_PINK = 13,
+	PRINT_COLOR_YELLOW = 14,
+	PRINT_COLOR_WHITE = 15,
+};
+
+#define NUM_COLS 80
+#define NUM_ROWS 25
+
+// Define a structure representing a VGA character cell
+typedef struct {
+    uint8_t character;
+    uint8_t color;
+} Char;
+
+// Function to clear the screen
+void print_clear();
+
+// Function to print a character to the screen
+void print_char(char character);
+
+// Function to print a string to the screen
+void print_str(char* string);
+
+// Function to set the foreground and background colors
+void print_set_color(uint8_t foreground, uint8_t background);
+
+// Function to initialize the terminal
+void init_terminal();
+
+// Function to set the cursor position
+void Set_Y(uint16_t y);
+
+// Function to set the cursor position
+void Set_X(uint16_t x);
+
+#endif
+
+#endif
+

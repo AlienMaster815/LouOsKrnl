@@ -36,12 +36,18 @@ typedef uint64_t SIZE_T;
 typedef int64_t SSIZE_T;
 typedef uint32_t UHALF_PTR;
 typedef unsigned int UINT_PTR;
-typedef unsigned ULONG_PTR;
+typedef unsigned long ULONG_PTR;
 
 //FIXED PRECISION POINTER TYPES
+//#ifdef __x86_64__
 typedef int64_t POINTER_64; // 32 in 32 bit
 
+#define ULONGLONG unsigned long long
+#define LONGLONG long long
 
+
+//#endif
+typedef int32_t POINTER_32;
 
 #define CONST const
 #define IRP_MJ_MAXIMUM_FUNCTION         0x1b
@@ -54,8 +60,7 @@ typedef int64_t POINTER_64; // 32 in 32 bit
 #define USHORT uint16_t
 #define WCHAR wchar_t
 #define UCHAR uint8_t
-#define ULONGLONG unsigned long long
-#define LONGLONG long long
+
 #define BOOLEAN bool
 
 #define RESTRICTED_POINTER __restrict

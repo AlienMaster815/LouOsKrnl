@@ -12,12 +12,20 @@
 #define RAMADD unsigned char*
 #define RAMADDDATA unsigned char *
 #define BLOCK 4096
-#define SIZE unsigned long long
+
+#ifdef __x86_64__
+    #define SIZE uint64_t
+    
+#endif
+#ifdef __i386__
+
+    #define SIZE uint32_t
+
+#endif
+
+
 
 #define LOUSTATUS_GOOD 0
-
-#define LOUSTATUS unsigned long long
-
 #define PATADEV 1
 #define PATAPIDEV 2
 
@@ -47,7 +55,11 @@
 //Printing And Debugging
 extern "C" int LouPrint(char *format, ...);
 // PORTS Stuff
-extern "C" uint64_t read_msr(uint32_t msr_id);
+
+#ifdef __x86_64__
+    extern "C" uint64_t read_msr(uint32_t msr_id);
+#endif
+
 extern "C" uint8_t inb(uint16_t port);
 extern "C" void outb(uint16_t port, uint8_t data);
 extern "C" uint16_t inw(uint16_t port);

@@ -27,7 +27,7 @@
 #define CODE true
 #define DATA false
 
-
+#if __x86_64__
 
 typedef struct __attribute__((packed)){
     uint16_t limit_low;      // The lower 16 bits of the limit
@@ -95,6 +95,68 @@ LOUSTATUS Modify_Gdt_Registers();
 LOUSTATUS Uninitialize_Gdt();
 
 LOUSTATUS Load_Gdt(GDT* gdt);
+
+#endif
+
+#ifdef __i386__
+typedef struct __attribute__((packed)){
+    uint16_t limit_low;      // The lower 16 bits of the limit
+    uint16_t base_low;       // The lower 16 bits of the base address
+    uint8_t base_middle;     // The next 8 bits of the base address
+    uint8_t access;          // Access flags and type
+    uint8_t granularity;     // Granularity flags and the upper 4 bits of the limit
+    uint8_t base_high;       // The upper 8 bits of the base address
+} GDT_ENTRY;
+
+typedef struct __attribute__((packed)){
+    GDT_ENTRY NULL_DATA;
+    GDT_ENTRY KERNEL_CODE;
+    GDT_ENTRY KERNEL_DATA;
+    GDT_ENTRY USER_CODE;
+    GDT_ENTRY USER_DATA;
+    GDT_ENTRY SYSTEM_SECURITY_CODE;
+    GDT_ENTRY SYSTEM_SECURITY_DATA;
+    GDT_ENTRY USER_SECURITY_CODE;
+    GDT_ENTRY USER_SECURITY_DATA;
+    GDT_ENTRY IDT_CODE;
+    GDT_ENTRY IDT_DATA;
+    GDT_ENTRY LDT_CODE;
+    GDT_ENTRY LDT_DATA;
+    GDT_ENTRY GDT_CODE;
+    GDT_ENTRY GDT_DATA;
+    GDT_ENTRY CALL_GATE_CODE;
+    GDT_ENTRY CALL_GATE_DATA;
+    GDT_ENTRY TASK_GATE_CODE;
+    GDT_ENTRY TASK_GATE_DATA;
+    GDT_ENTRY INTERRUPT_GATE_CODE;
+    GDT_ENTRY INTERRUPT_GATE_DATA;
+    GDT_ENTRY TRAP_GATE_CODE;
+    GDT_ENTRY TRAP_GATE_DATA;
+    GDT_ENTRY STACK_CODE;
+    GDT_ENTRY STACK_DATA;
+} GDT;
+
+typedef struct __attribute__((packed)){
+    uint16_t limit;        // 16-bit limit
+    uint32_t base;         // 32-bit base address
+} GDTP;
+
+// Function to initialize the GDT
+void Initialize_Gdt();
+
+// Functions to set different segments in the GDT
+void Set_Kernel_Segment(bool Code_Seg, uint32_t Base, uint32_t Limit, GDT* gdt);
+void Set_User_Segment(bool Code_Seg, uint8_t type, uint32_t Base, uint32_t Limit, GDT* gdt);
+// Add other segment setting functions as needed for 32-bit mode
+
+// Function to load the GDT
+LOUSTATUS Load_Gdt(GDT* gdt);
+
+// Other functions as needed for GDT management
+
+// Modify_Gdt_Registers, Uninitialize_Gdt, etc.
+
+#endif
 
 
 #endif

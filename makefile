@@ -47,8 +47,25 @@ ifeq ($(TARGET_ARCH),x86_64)
 endif
 
 
-CFLAGS = -c -fstack-protector -ffreestanding -Werror -I include 
-CPPFLAGS = -c -ffreestanding -O2 -Wall -fno-exceptions -fno-rtti -fstack-protector -Werror -Wno-write-strings -fno-use-cxa-atexit -I include
+ifeq ($(TARGET_ARCH),x86)
+	ifeq ($(FIRMWARE_TARGET),BIOS)
+		RELEASE_PATH = Releases/32BIOS/Annya.iso
+	endif
+	ifeq ($(FIRMWARE_TARGET),UEFI)
+		RELEASE_PATH = Releases/32UEFI/Annya.iso
+	endif
+endif
+
+ifeq ($(TARGET_ARCH),x86_64)
+CFLAGS = -c -fstack-protector -ffreestanding -Werror -I include
+CPPFLAGS = -c -fstack-protector -ffreestanding -O2 -Wall -fno-exceptions -fno-rtti -Werror -Wno-write-strings -fno-use-cxa-atexit -I include
+endif
+
+ifeq ($(TARGET_ARCH),x86)
+CFLAGS = -c -ffreestanding -Werror -I include
+CPPFLAGS = -c -ffreestanding -O2 -Wall -fno-exceptions -fno-rtti -Werror -Wno-write-strings -fno-use-cxa-atexit -I include
+endif
+
 
 kernel_source_files := $(shell find kernel -name *.c)
 kernel_object_files := $(patsubst kernel/%.c, build/kernel/%.o, $(kernel_source_files))
@@ -95,9 +112,9 @@ x86_64_asm_object_files = build/x86_64/boot/boot.o
 kernel_asm_source_files := $(shell find kernel -name *.asm)
 kernel_asm_object_files := $(patsubst kernel/%.asm, build/x86_64/kernelasm/%.o, $(kernel_asm_source_files))
 
-
+ifeq ($(FIRMWARE_TARGET),BIOS)
 x86_64_object_files := $(kernel_object_files) $(x86_64_c_object_files) $(x86_64_asm_object_files) $(kernel_asm_object_files) $(driver_cpp_object_files) $(x86_64_API_asm_object_files) $(x86_64_API_cpp_object_files)
-
+endif
 
 
 
@@ -154,7 +171,7 @@ endif
 ifeq ($(TARGET_ARCH), x86)
 lou.exe: $(x86_64_object_files)
 	mkdir -p dist/x86 && \
-	$(LD) -n -o dist/x86/LOUOSKRNL.bin -T targets/x86/linker.ld $(x86_64_object_files)
+	$(LD) -melf_i386 -n -o dist/x86/LOUOSKRNL.bin -T targets/x86/linker.ld $(x86_64_object_files)
 	rm -r build
 endif
 
@@ -182,7 +199,7 @@ annya.iso: release
 	mkdir iso/boot/grub
 	mkdir iso/Annya
 
-ifeq ($(HOST_ARCH),x86_64)
+ifeq ($(TARGET_ARCH),x86_64)
 
 	#Create Files For Backwords Compatibility
 
@@ -203,7 +220,7 @@ ifeq ($(HOST_ARCH),x86_64)
 	cp release/x86_64/LOUOSKRNL.exe iso/Annya/System64/LOUOSKRNL.exe
 endif
 
-ifeq ($(HOST_ARCH),x86)
+ifeq ($(TARGET_ARCH),x86)
 
 	#Create System Files
 
@@ -215,14 +232,14 @@ ifeq ($(HOST_ARCH),x86)
 
 	cp SYS/KModeDrvRevEng.sys iso/Annya/System32/drivers/KModeDrvRevEng.sys
 	cp Registry/System64/Config iso/Annya/System32/Config
-	cp release/x86_64/LOUOSKRNL.exe iso/Annya/System32/LOUOSKRNL.exe
+	cp release/x86/LOUOSKRNL.exe iso/Annya/System32/LOUOSKRNL.exe
 endif
 
 	cp Registry/Profiles/Username iso/Annya/Profiles/Username
 
 	#Create A Grub Boot CFG For The Kernel And Make The Image
 
-ifeq ($(HOST_ARCH),x86_64)
+ifeq ($(TARGET_ARCH),x86_64)
 
 	echo 'set timeout=0'                    		 >> iso/boot/grub/grub.cfg
 	echo 'set default=0'                    		 >> iso/boot/grub/grub.cfg
@@ -235,7 +252,7 @@ ifeq ($(HOST_ARCH),x86_64)
 
 endif
 
-ifeq ($(HOST_ARCH),x86)
+ifeq ($(TARGET_ARCH),x86)
 
 	echo 'set timeout=0'                    		 >> iso/boot/grub/grub.cfg
 	echo 'set default=0'                    		 >> iso/boot/grub/grub.cfg
@@ -247,7 +264,7 @@ ifeq ($(HOST_ARCH),x86)
 	grub-mkrescue --output=annya.iso iso
 
 endif
-
+	rm -rf release
 	rm -rf iso
 
 

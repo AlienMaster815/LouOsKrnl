@@ -19,11 +19,26 @@
 
 RAMADD Lou_Alloc_Mem(SIZE size);
 STATUS Lou_Free_Mem(RAMADD Addr, SIZE size);
-
+#ifdef __x86_64__
 typedef struct {
 	uint64_t entry; //this defines out memory that is mapped down the road
 }__attribute__((packed)) PageTableEntry;
+#endif
 
+#ifdef __i386__
+#include <stdint.h>
+
+typedef struct {
+    uint32_t present : 1;  // Page present in memory
+    uint32_t rw : 1;       // Read/write access
+    uint32_t user : 1;     // User/supervisor mode
+    uint32_t accessed : 1; // Page accessed since last refresh
+    uint32_t dirty : 1;    // Page written to since last refresh
+    uint32_t unused : 7;   // Unused and available for software use
+    uint32_t frame : 20;   // Frame address (physical address of the page frame)
+} __attribute__((packed)) PageTableEntry;
+
+#endif
 
 typedef struct {
 	PageTableEntry entries[512]; 

@@ -8,6 +8,8 @@
 
 #include <kernel/gdt.h>
 
+#ifdef __x86_64__
+
 LOUSTATUS Set_Kernel_Segment(bool Code_Seg, uint64_t Base, uint64_t Limit, GDT* gdt) {
     if (Code_Seg) { // Code Segment
         gdt->KERNEL_CODE.limit_low = (uint16_t)(Limit & 0xFFFF); // Lower 16 bits of the limit
@@ -345,3 +347,22 @@ LOUSTATUS Load_Gdt(GDT* gdt){
 
     asm("retf");
 }
+
+#endif
+
+#ifdef __i386__
+
+
+/*LOUSTATUS Load_Gdt(GDT* gdt){
+    GDTP gdtp;
+    
+    gdtp.base = (uint64_t)(uintptr_t)gdt;
+    gdtp.limit = sizeof(GDT) - 1;
+    
+    asm volatile ("lgdt %0" : : "m" (gdtp));
+
+    asm("retf");*/
+//}
+
+#endif
+

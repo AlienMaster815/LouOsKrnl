@@ -1,11 +1,16 @@
 #include <kernel/gdt.h>
-#include <limits.h>
+
+
+
+
 #include <kernel/memmory.h>
 #include <kernel/errors.h>
 #include <stdio.h>
 
 GDT* globalGDT;
 
+#ifdef __x86_64__
+#include <limits.h>
 LOUSTATUS Initialize_Gdt(){
     LOUSTATUS stat;
     LouPrint("Initializing GDT\n");
@@ -31,6 +36,8 @@ LOUSTATUS Initialize_Gdt(){
     
     return 0;
 }
+
+#endif
 
 LOUSTATUS Modify_Gdt_Registers(){
     

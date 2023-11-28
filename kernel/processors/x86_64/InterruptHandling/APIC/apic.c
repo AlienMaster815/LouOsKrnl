@@ -8,12 +8,16 @@ uint8_t IdentifyApicVersion(){
     #define MSR_IA32_APICBASE 0x1B
 
     // Read the IA32_APICBASE MSR
+    #ifdef __x86_64__    
     uint64_t apic_base = read_msr(MSR_IA32_APICBASE);
 
     // Extract the version from bits 16 to 23
     uint8_t version = (apic_base >> 16) & 0xFF;
     
     return version;
+    #endif
+    
+    return 0;
 }
 
 void GetApicInformation(uint8_t version){
