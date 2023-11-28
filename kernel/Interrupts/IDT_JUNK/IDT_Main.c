@@ -6,6 +6,18 @@
 #include <kernel/errors.h>
 #include <kernel/kernel.h>
 
+#ifdef __i386__
+
+
+extern void SetPicIDTGate(int index, void (*handler)());
+
+extern LOUSTATUS InitializeMainInterruptHandleing();
+extern LOUSTATUS InitializeStartupInterruptHandleing();
+
+extern LOUSTATUS UpdateIDT(bool Init);
+#endif
+
+
 #ifdef __x86_64__
 LOUSTATUS set_idt_gate(int num, void (*handler)(), uint16_t selector, uint8_t ist, uint8_t type_attr) {
     
@@ -29,7 +41,7 @@ void SetPicIDTGate(int index, void (*handler)()) {
     #ifdef __i386__
     uint32_t address = (uint32_t)handler;
 
-
+    //LouPrint("Index: %d ,Handler Address: %d\n",index , handler);
 
     idt[index].base_low = (uint16_t)(address & 0xFFFF);
 
@@ -184,33 +196,41 @@ LOUSTATUS UpdateIDT(bool Init){
 
     if(Init){// Using PIC With Legacy Interrupt Descriptor Table
 
-        idtp.base = (uint64_t)(uintptr_t)&idt;
+        idtp.base = (uint32_t)(uintptr_t)&idt;
 
         idtp.limit = 256*sizeof(Interrupt_Descriptor_Table) - 1;
 
         asm volatile("lidt %0" : : "m" (idtp) : "memory");
 
-        return 0;
+        //LouPrint("ADDRESS OF IDT: %d, ADDRESS OF IDTP: %d\n",&idt, &idtp);
+
+    unsigned short cs_value;
+
+    // Inline assembly to get CS value
+    asm("mov %%cs, %0" : "=r" (cs_value));
+
+    // Print the CS value
+    //LouPrint("CS register value: %d\n", cs_value);
 
     }
-
     else{ // Using APIC With Interrupt Descriptor Table 64
 
 
 
-        idtp.base = (uint64_t)(uintptr_t)&idt;
+        idtp.base = (uint32_t)(uintptr_t)&idt;
 
         idtp.limit = 256*sizeof(Interrupt_Descriptor_Table) - 1;
 
         asm volatile("lidt %0" : : "m" (idtp) : "memory");
 
         return 0;
+
 
     }
 
 
     #endif
-    return 0;
+    return 1;
     
 }
 

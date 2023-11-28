@@ -9,6 +9,7 @@
 #include <drivers/Lou_drivers/FileSystem.h>
 #include <stdio.h>
 #include <drivers/display/vga.h>
+
 extern LOUSTATUS InitializeStartupInterruptHandleing();
 
 extern void SetInterruptFlags();
@@ -34,11 +35,14 @@ extern void UnSetInterruptFlags();
 
 //TODO: Use Parralelles To Make The User Space Programs
 
+char* KERNEL_VERSION = "0.0.00028 RSC-1";
+
+
 #ifdef __x86_64__
-char* KERNEL_VERSION = "0.0.00027 RSC-4 64-BIT";
+char* KERNEL_ARCH = "64-BIT";
 #endif
 #ifdef __i386__
-char* KERNEL_VERSION = "0.0.00027 RSC-4 32-BIT";
+char* KERNEL_ARCH = "32-BIT";
 #endif
 
 
@@ -48,6 +52,7 @@ LOUSTATUS Lou_kernel_early_initialization(){
     UnSetInterruptFlags();
     InitializeStartupInterruptHandleing();
     SetInterruptFlags();
+
     return LOUSTATUS_GOOD;
 }
 
@@ -82,15 +87,14 @@ KERNEL_ENTRY Lou_kernel_start(){
 
 	//vga set for debug
 	
-	LouPrint("Lou Version %s \n", KERNEL_VERSION);
+	LouPrint("Lou Version %s %s\n", KERNEL_VERSION ,KERNEL_ARCH);
     LouPrint("Hello Im Lousine Getting Things Ready\n");
     
 
 	
     //INITIALIZE IMPORTANT THINGS FOR US LATER
     if(Lou_kernel_early_initialization() != LOUSTATUS_GOOD)LouPanic("Early Initialization Failed",BAD);
-    LouPrint("FUBAR\n");        
-    asm volatile("hlt");   
+
     //SETUP DEVICES AND DRIVERS
     if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);
 

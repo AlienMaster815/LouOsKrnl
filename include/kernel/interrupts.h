@@ -100,17 +100,12 @@ static Interrupt_Descriptor_Table idt[256]; // 256 entries for the IDT
 
 typedef struct __attribute__((packed)){
     uint16_t limit;
-    uint64_t base;
-}IDTP64;
-
-typedef struct __attribute__((packed)){
-    uint16_t limit;
     uint32_t base;
 }IDTP32;
 
 LOUSTATUS SetBasicInterrupts(bool init);
 
-LOUSTATUS set_idt_gate(int num, uint64_t base, uint16_t selector, uint8_t ist, uint8_t type_attr);
+
 
 static bool PageTableDeletion = false;
 static bool MemoryProbing = false;

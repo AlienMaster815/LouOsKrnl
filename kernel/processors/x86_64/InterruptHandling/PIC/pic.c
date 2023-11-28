@@ -16,6 +16,7 @@ void PIC_sendEOI(unsigned char irq){
 
     InitializeStartupInterruptHandleing();
     SetInterruptFlags();
+    
 }
 
 

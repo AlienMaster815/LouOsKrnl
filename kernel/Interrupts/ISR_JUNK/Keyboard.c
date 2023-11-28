@@ -17,7 +17,6 @@ static bool UsingAPIC = false;
 void Keyboard(){
     UnSetInterruptFlags();
     
-    LouPanic("YAY",GOOD);
 
     if(!USBKeyboardInterrupt)PS2KeyboardHandler();
     if(USBKeyboardInterrupt)USBKeyboardHandler();
