@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-
+#ifdef __x86_64__
 
 STATUS ACPI_PARSE(RSDP* rsdp){
 	 //FIND_ACPI_VERSION(rsdp);
@@ -39,7 +39,7 @@ STATUS ACPI_PARSE(RSDP* rsdp){
 	}
 	return BAD;
 }
-
+#endif
 //if no valid ACPI is found
 //panic occours because the
 //kernel requires ACPI 
@@ -49,3 +49,27 @@ STATUS ACPI_PARSE(RSDP* rsdp){
 //we will find any apm devices
 
 
+#ifdef __i386__
+
+STATUS ACPI_PARSE(RSDP* rsdp){
+     //FIND_ACPI_VERSION(rsdp);
+    uint8_t version = rsdp->revision;
+
+    if(version == 1){
+        RSDP1* rsdp1 = (RSDP1*)rsdp;
+        
+         
+        if (((uintptr_t)rsdp1 & 0xF) == 0) {
+            LouPrint("version 1 at address: %d \n", rsdp1->rsdt_address);
+            return GOOD;
+        }
+        else {
+            LouPrint("RSDP 1 Not Aligned");
+            return BAD;
+        }
+    }
+
+    return BAD;
+}
+
+#endif

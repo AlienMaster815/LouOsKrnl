@@ -5,6 +5,13 @@
 #include <kernel/pic.h>
 #include <drivers/Lou_drivers/keyboards.h>
 
+
+#ifdef __i386__
+void UnSetInterruptFlags();
+extern bool USBKeyboardInterrupt;
+#endif
+
+
 static bool UsingAPIC = false;
 
 void Keyboard(){

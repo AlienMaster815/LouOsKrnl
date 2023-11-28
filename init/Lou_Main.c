@@ -1,4 +1,9 @@
+#ifdef __x86_64__
 #include <LouAPI.h>
+#endif
+#ifdef __i386__
+
+#endif
 
 /* Tyler Grenier 9/21/23 9:56 PM
 -- Started the file with the main

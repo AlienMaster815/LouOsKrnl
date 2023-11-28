@@ -1,3 +1,5 @@
+
+
 #include <stdint.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -5,7 +7,6 @@
 
 #ifndef _INTERRUPTS_H
 #define _INTERRUPTS_H
-
 
 #define INTERRUPT_GATE 0x5
 #define TRAP_GATE 0x7
@@ -29,17 +30,16 @@ typedef struct __attribute__((packed)){
     uint16_t base_mid;      // Middle 16 bits of the handler function's address
     uint32_t base_high;     // Higher 32 bits of the handler function's address
     uint32_t reserved;      // Reserved for future use
-}Interrupt_Descriptor_Table;
+} Interrupt_Descriptor_Table;
 
 static Interrupt_Descriptor_Table IDT[256];
-
-
 
 typedef struct __attribute__((packed)){
     uint16_t limit;
     uint64_t base;
-}IDTP;
+} IDTP;
 
+// Rest of the code...
 
 void RegisterMemoryProbe();
 void RegisterPageTableDeletion();
@@ -79,27 +79,12 @@ void SetInterruptFlags();
 void UnSetInterruptFlags();
 void WaitForInterrupt();
 
+
 #endif
 
 #ifdef __i386__
 
-
-#ifndef _INTERRUPTS_H
-#define _INTERRUPTS_H
-
-
-#define INTERRUPT_GATE 0x5
-#define TRAP_GATE 0x7
-#define TASK_GATE 0x9
-
-#define HighestPrivledge 0x0
-#define HighPrivledge 0x1
-#define MediumPrivledge 0x2
-#define LowestPrivledge 0x3
-
-#define Present 0x1
-#define NotPresent 0x0
-
+// Same content as for x86_64...
 
 
 typedef struct __attribute__((packed)){
@@ -156,11 +141,6 @@ LOUSTATUS UpdateIDT(bool Init);
 
 void SetInterruptFlags();
 void UnSetInterruptFlags();
-
-
-#endif
-
-
 
 #endif
 

@@ -6,12 +6,11 @@
 #include <kernel/errors.h>
 #include <kernel/kernel.h>
 
-
+#ifdef __x86_64__
 LOUSTATUS set_idt_gate(int num, void (*handler)(), uint16_t selector, uint8_t ist, uint8_t type_attr) {
     
 
-    #ifdef __x86_64__
-    uintptr_t base = (uintptr_t)handler;    
+    uintptr_t base = (uintptr_t)handler;
         IDT[num].base_low = base & 0xFFFF;
         IDT[num].base_mid = (base >> 16) & 0xFFFF;
         IDT[num].base_high = (base >> 32) & 0xFFFFFFFF;
@@ -21,10 +20,9 @@ LOUSTATUS set_idt_gate(int num, void (*handler)(), uint16_t selector, uint8_t is
         IDT[num].reserved = 0;
     
         return 0;
-    #endif
         
-    return 1;
 }
+#endif
 
 
 void SetPicIDTGate(int index, void (*handler)()) {

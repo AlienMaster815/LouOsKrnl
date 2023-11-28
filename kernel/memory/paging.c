@@ -14,7 +14,9 @@
 //TODO make functions to reset
 //specific Page Tables
 
-
+#ifdef __i386
+void RegisterPageTableDeletion();
+#endif
 
 
 void Reset_All_Pages() {

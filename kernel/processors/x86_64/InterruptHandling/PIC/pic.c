@@ -2,6 +2,11 @@
 #include <kernel/pic.h>
 #include <kernel/interrupts.h>
 
+#ifdef __i386__
+LOUSTATUS InitializeStartupInterruptHandleing();
+void SetInterruptFlags();
+#endif
+
 void PIC_sendEOI(unsigned char irq){
  
     outb(0x20,0x20);

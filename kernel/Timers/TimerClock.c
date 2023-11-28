@@ -11,6 +11,10 @@
 
 #include <LouAPI.h>
 
+#ifdef __i386__
+void WaitForInterrupt();
+#endif
+
 void RegisterForClockInterrupt(){
     IRQ_Pic_clear_mask(0x20);
 }
