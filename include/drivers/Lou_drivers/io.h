@@ -1,5 +1,17 @@
+
+#ifdef __x86_64__
+
 #include <cstdlib.h>
 #include <cstdint.h>
+
+#endif
+
+#ifdef __i386__
+
+#include <cstdlib.h>
+#include <stdint.h>
+
+#endif
 
 #ifndef _IO_H
 #define _IO_H

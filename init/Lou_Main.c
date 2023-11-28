@@ -2,6 +2,17 @@
 #include <LouAPI.h>
 #endif
 #ifdef __i386__
+#include <kernel/errors.h>
+#include <kernel/kernel.h>
+#include <KernelAPI/IOManager.h>
+#include <kernel/interrupts.h>
+#include <drivers/Lou_drivers/FileSystem.h>
+#include <stdio.h>
+#include <drivers/display/vga.h>
+extern LOUSTATUS InitializeStartupInterruptHandleing();
+
+extern void SetInterruptFlags();
+extern void UnSetInterruptFlags();
 
 #endif
 

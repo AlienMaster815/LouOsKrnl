@@ -31,15 +31,15 @@ void SetPicIDTGate(int index, void (*handler)()) {
 
 
 
-    IDT[index].base_low = (uint16_t)(address & 0xFFFF);
+    idt[index].base_low = (uint16_t)(address & 0xFFFF);
 
-    IDT[index].selector = KernelCodeSegment; // Kernel code segment selector
+    idt[index].selector = KernelCodeSegment; // Kernel code segment selector
 
-    IDT[index].zero = 0;
+    idt[index].always0 = 0;
 
-    IDT[index].type_attr = 0x8E; // Present (P), Ring 0 (DPL), Interrupt Gate (Type)
+    idt[index].flags = 0x8E; // Present (P), Ring 0 (DPL), Interrupt Gate (Type)
 
-    IDT[index].base_high = (uint16_t)((address >> 16) & 0xFFFF);
+    idt[index].base_high = (uint16_t)((address >> 16) & 0xFFFF);
     #endif
 }
 
@@ -178,13 +178,13 @@ LOUSTATUS UpdateIDT(bool Init){
     
     #endif
     #ifdef __i386__
-    IDTP idtp;
+    IDTP32 idtp;
 
 
 
     if(Init){// Using PIC With Legacy Interrupt Descriptor Table
 
-        idtp.base = (uint64_t)(uintptr_t)&IDT;
+        idtp.base = (uint64_t)(uintptr_t)&idt;
 
         idtp.limit = 256*sizeof(Interrupt_Descriptor_Table) - 1;
 
@@ -198,7 +198,7 @@ LOUSTATUS UpdateIDT(bool Init){
 
 
 
-        idtp.base = (uint64_t)(uintptr_t)&IDT;
+        idtp.base = (uint64_t)(uintptr_t)&idt;
 
         idtp.limit = 256*sizeof(Interrupt_Descriptor_Table) - 1;
 

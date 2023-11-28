@@ -1,5 +1,4 @@
 #include <kernel/apic.h>
-#include <cstdint.h>
 
 LOUSTATUS InitializeAdvancedProgramableController(){
     uint8_t Ver = IdentifyApicVersion();
