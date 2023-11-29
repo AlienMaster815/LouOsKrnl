@@ -1,0 +1,29 @@
+
+<ExportsTable>
+    <!--Kerne Exports-->
+    
+    <KernelExports>
+        <KernelExport>DbgPrint</KernelExport>
+        <KernelExport>DbgPrintEx</KernelExport>
+    </KernelExports>
+    
+    <!--Miscilanious Exports-->
+    <misc>
+        <!--WDFLDR Builtin Kernel Module-->
+        <WDFLDR>
+            <WDFLDRModuleExport>WdfLdrDiagnosticsValueByNameAsULONG</WDFLDRModuleExport>
+            <WDFLDRModuleExport>DllInitialize</WDFLDRModuleExport>
+            <WDFLDRModuleExport>DllUnload</WDFLDRModuleExport>
+            <WDFLDRModuleExport>WdfVersionBindClass</WDFLDRModuleExport>
+            <WDFLDRModuleExport>WdfVersionUnbindClass</WDFLDRModuleExport>
+            <WDFLDRModuleExport>WdfLdrQueryInterface</WDFLDRModuleExport>
+            <WDFLDRModuleExport>WdfVersionBind</WDFLDRModuleExport>
+            <WDFLDRModuleExport>WdfVersionUnbind</WDFLDRModuleExport>
+            <WDFLDRModuleExport>WdfRegisterLibrary</WDFLDRModuleExport>
+            <WDFLDRModuleExport>WdfRegisterClassLibrary</WDFLDRModuleExport>
+        </WDFLDR>
+    </misc>
+</ExportsTable>
+
+
+

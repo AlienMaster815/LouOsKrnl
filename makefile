@@ -9,10 +9,16 @@
 
 
 TARGET_ARCH = x86_64
-HOST_ARCH = x86_64
+HOST_ARCH = ARM
 FIRMWARE_TARGET = BIOS
 
-EXPORT = DbgPrint
+ExportTable = Config/ExportTable.xml
+
+KernelEXPORTS := $(shell awk -F '[<>]' '/<KernelExport>/{print "-K " $$3}' $(ExportTable) | tr '\n' ' ')
+WDFLDRModuleEXPORTS := $(shell awk -F '[<>]' '/<WDFLDRModuleExport>/{print "-K " $$3}' $(ExportTable) | tr '\n' ' ')
+
+
+EXPORT := $(KernelEXPORTS) $(WDFLDRModuleEXPORTS)
 
 ifeq ($(HOST_ARCH),x86_64)
     CC = gcc
@@ -180,7 +186,7 @@ ifeq ($(TARGET_ARCH), x86_64)
 release: lou.exe
 	mkdir -p release/x86_64 && \
 	cp dist/x86_64/LOUOSKRNL.bin release/x86_64/LOUOSKRNL.exe
-	strip -K $(EXPORT) \
+	strip $(EXPORT) \
 	 release/x86_64/LOUOSKRNL.exe
 endif
 
@@ -189,7 +195,7 @@ ifeq ($(TARGET_ARCH), x86)
 release: lou.exe
 	mkdir -p release/x86 && \
 	cp dist/x86/LOUOSKRNL.bin release/x86/LOUOSKRNL.exe
-	strip -K $(EXPORT) \
+	strip $(EXPORT) \
 	release/x86/LOUOSKRNL.exe
 
 endif

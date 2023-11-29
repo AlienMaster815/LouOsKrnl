@@ -36,34 +36,29 @@ char* ISO9660::ReadDirectory(char* Directory){
 
 
 VolumeDescriptor ISO9660::ReadVolumeDescriptor(uint8_t DrvNum,uint8_t DrvType,uint32_t sector, uint32_t buffer){
-
-
+    
     VolumeDescriptor VD;
-    //LouPrint("PATA ADDRESS = %d\n", &pata);
 
-    //switch(DrvType){
+    switch(DrvType){
             
-        //case(PATADEV):{
-
-            //if(){ // Check If The Device Did Not Run Into Errors
-
-
-            //}
-
-               
-            //}
-            //else{
-
-                
-                
-            //}
-        //}
-        //default:{
-            //LouPrint("UnKnown Device Type\n");
-            //return PVD;
-            //break;
-        //}
-    //}
+        case(PATADEV):{
+            PATA* pata __attribute__((unused));
+            pata = RetrievePATAP();
+            pata->pata_Read(DrvNum,sector,buffer);
+            if(!pata->AtaReadSuccess()) return VD;
+            
+            // Logic For Parseing The Volume Descriptor
+            
+            
+            
+            return VD;
+        }
+        default:{
+            LouPrint("UnKnown Device Type\n");
+            return VD;
+            break;
+        }
+    }
     
     return VD;
 }

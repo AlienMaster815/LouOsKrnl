@@ -120,12 +120,12 @@ void Drives::HandleDriveRequests(char Drive, uint8_t Request, uint8_t* Data,uint
                 default: LouPrint("Unknown Device\n");
                 case PATADEV:{
                     PATA* pata = (PATA*) Lou_Alloc_Mem(sizeof(PATA));
-                    pata->pata_Read28(drive[i].DriveNum, Location, BufferSize);
+                    pata->pata_Read(drive[i].DriveNum, Location, BufferSize);
                     Lou_Free_Mem((RAMADD) pata,sizeof(PATA));
                 }
                 case PATAPIDEV:{
                     PATA* pata = (PATA*) Lou_Alloc_Mem(sizeof(PATA));
-                    pata->pata_Read28(drive[i].DriveNum, Location, BufferSize);
+                    pata->pata_Read(drive[i].DriveNum, Location, BufferSize);
                     Lou_Free_Mem((RAMADD) pata,sizeof(PATA));
                 }
             }
@@ -135,12 +135,12 @@ void Drives::HandleDriveRequests(char Drive, uint8_t Request, uint8_t* Data,uint
                 default: LouPrint("Unknown Device\n");
                 case PATADEV:{
                     PATA* pata = (PATA*) Lou_Alloc_Mem(sizeof(PATA));
-                    pata->pata_Write28(drive[i].DriveNum, Location , Data, BufferSize);
+                    pata->pata_Write(drive[i].DriveNum, Location , Data, BufferSize);
                     Lou_Free_Mem((RAMADD) pata,sizeof(PATA));
                 }
                 case PATAPIDEV:{
                     PATA* pata = (PATA*) Lou_Alloc_Mem(sizeof(PATA));
-                    pata->pata_Write28(drive[i].DriveNum, Location , Data, BufferSize);
+                    pata->pata_Write(drive[i].DriveNum, Location , Data, BufferSize);
                     Lou_Free_Mem((RAMADD) pata,sizeof(PATA));
                 }
             }
@@ -157,3 +157,4 @@ ACCESS Drives::RequestDriveAccess(char Drive, uint8_t Request, uint8_t* Data,uin
     
     return GRANTED;
 }
+

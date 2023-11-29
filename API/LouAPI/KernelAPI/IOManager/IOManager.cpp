@@ -1,5 +1,5 @@
 #include <LouDDK.h>
-
+#include <kernel/exports.h>
 Drives* DriveSystem;
 
 extern "C" LOUSTATUS IO_Manager_Init(){
@@ -7,6 +7,8 @@ extern "C" LOUSTATUS IO_Manager_Init(){
     DriveSystem = (Drives*) Lou_Alloc_Mem(sizeof(Drives));
     
     if(DriveSystem == 0)return 1;
+    
+    DeclareExports();
     
     LouPrint("IO Manager Is Started\n");
     

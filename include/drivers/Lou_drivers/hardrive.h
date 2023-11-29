@@ -16,10 +16,12 @@ static uint16_t atabuffer[2352] __attribute__((unused));
 class PATA{
     public:
     
-    void pata_Read28(uint8_t device,uint32_t Sector_Num, int BufferSize = 512);
-    void pata_Write28(uint8_t device, uint32_t Sector_Num ,uint8_t* Data, uint32_t BufferSize);
+    void pata_Read(uint8_t device,uint32_t Sector_Num, int BufferSize = 512);
+    void pata_Write(uint8_t device, uint32_t Sector_Num ,uint8_t* Data, uint32_t BufferSize);
     
     void pata_device_scan();
+    
+    bool AtaReadSuccess();
     
     PATA();
     ~PATA();

@@ -4,11 +4,18 @@
 
 #ifdef __cplusplus
 
+#include <WinAPI/NtAPI.h>
+
 extern "C" void DefineExport(uint64_t ExportNumber, void (*Handler)());
+
+void DeclareExports();
+#define KRNLEXPORT void (*)()
 
 #else
 
 void DefineExport(uint64_t ExportNumber, void (*Handler)());
+
+typedef void *KRNLEXPORT;
 
 #endif
 

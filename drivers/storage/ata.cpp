@@ -424,34 +424,63 @@ void PATA::Write28PATAPI(uint16_t device,bool Master, uint32_t Sector_Num ,uint8
 }
     
 
-void PATA::pata_Read28(uint8_t device,uint32_t Sector_Num, int BufferSize){
+void PATA::pata_Read(uint8_t device,uint32_t Sector_Num, int BufferSize){
     
-    if(Sector_Num > 0x0FFFFFFF)
+    if(Sector_Num > 0x0FFFFFFF){
         return; //"ERROR";
+        for(uint16_t i = 0 ; i < 2351 ; i++){
+            atabuffer[i] = 0x0000;
+        }
+    }
     
     //har* BuffAdd = 0x00;
     
     if(device == 1){
         if     (pata[0] == 1) Read28PATA(0x1F0,true,Sector_Num,BufferSize);
         else if(pata[0] == 2) Read28PATAPI(0x1F0,true, Sector_Num,BufferSize);
-        else LouPrint("No Drive Present\n");
+        else {
+            LouPrint("No Drive Present\n");
+            for(uint16_t i = 0 ; i < 2351 ; i++){
+                atabuffer[i] = 0x0000;
+            }
+        }
     }
     else if(device == 2){
         if     (pata[1] == 1) Read28PATA(0x1F0,false, Sector_Num, BufferSize);
         else if(pata[1] == 2) Read28PATAPI(0x1F0,false,Sector_Num, BufferSize);
-        else LouPrint("No Drive Present\n");
+        else {
+            LouPrint("No Drive Present\n");
+            for(uint16_t i = 0 ; i < 2351 ; i++){
+                atabuffer[i] = 0x0000;
+            }
+        }
     }
     else if(device == 3){
         if     (pata[2] == 1) Read28PATA(0x170,true, Sector_Num, BufferSize);
         else if(pata[2] == 2) Read28PATAPI(0x170,true, Sector_Num, BufferSize);
-        else LouPrint("No Drive Present\n");
+        else {
+            LouPrint("No Drive Present\n");
+            for(uint16_t i = 0 ; i < 2351 ; i++){
+                atabuffer[i] = 0x0000;
+            }
+        }
     }
     else if(device == 4){
         if     (pata[3] == 1) Read28PATA(0x170,false, Sector_Num, BufferSize);
         else if(pata[3] == 2) Read28PATAPI(0x170,false, Sector_Num, BufferSize);
-        else LouPrint("No Drive Present\n");
+        else { 
+            LouPrint("No Drive Present\n");
+            for(uint16_t i = 0 ; i < 2351 ; i++){
+                atabuffer[i] = 0x0000;
+            }
+        }
     }
-    else LouPrint("Error Selecting Drive\n");
+    else {
+        LouPrint("Error Selecting Drive\n");
+        for(uint16_t i = 0 ; i < 2351 ; i++){
+            atabuffer[i] = 0x0000;
+        }
+    }
     
 
 
@@ -459,7 +488,7 @@ void PATA::pata_Read28(uint8_t device,uint32_t Sector_Num, int BufferSize){
 }
 
 
-void PATA::pata_Write28(uint8_t device, uint32_t Sector_Num ,uint8_t* Data, uint32_t BufferSize){
+void PATA::pata_Write(uint8_t device, uint32_t Sector_Num ,uint8_t* Data, uint32_t BufferSize){
     
     if(Sector_Num > 0x0FFFFFFF)
         return;
@@ -468,24 +497,34 @@ void PATA::pata_Write28(uint8_t device, uint32_t Sector_Num ,uint8_t* Data, uint
     if(device == 1){
         if     (pata[0] == 1) Write28PATA(0x1F0,true,Sector_Num,Data ,BufferSize);
         else if(pata[0] == 2) Write28PATAPI(0x1F0,true, Sector_Num,Data,BufferSize);
-        else LouPrint("No Drive Present\n");
+        else{
+            LouPrint("No Drive Present\n");
+        }
     }
     else if(device == 2){
         if     (pata[1] == 1) Write28PATA(0x1F0,false, Sector_Num, Data, BufferSize);
         else if(pata[1] == 2) Write28PATAPI(0x1F0,false,Sector_Num, Data, BufferSize);
-        else LouPrint("No Drive Present\n");
+        else {
+            LouPrint("No Drive Present\n");
+        }
     }
     else if(device == 3){
         if     (pata[2] == 1) Write28PATA(0x170,true, Sector_Num, Data, BufferSize);
         else if(pata[2] == 2) Write28PATAPI(0x170,true,Sector_Num, Data, BufferSize);
-        else LouPrint("No Drive Present\n");
+        else{
+            LouPrint("No Drive Present\n");
+        }
     }
     else if(device == 4){
         if     (pata[3] == 1) Write28PATA(0x170,false, Sector_Num, Data, BufferSize);
         else if(pata[3] == 2) Write28PATAPI(0x170,false, Sector_Num, Data, BufferSize);
-        else LouPrint("No Drive Present\n");
+        else{
+            LouPrint("No Drive Present\n");
+        }
     }
-    else LouPrint("Error Selecting Drive\n");
+    else{
+        LouPrint("Error Selecting Drive\n");
+    }
     
 }
 
@@ -530,7 +569,7 @@ void PATA::initialize_pata(uint16_t drive,bool Master){
         //char* atabuff = "Hello World!!!";
         //pata_Write28(1, 0, (uint8_t*)atabuff, 14);
         //Flush(1);
-        pata_Read28(1, 0, 512);
+        pata_Read(1, 0, 512);
         
         
         return;
@@ -541,7 +580,7 @@ void PATA::initialize_pata(uint16_t drive,bool Master){
         //char* atabuff = "Hello World!!!";
         //pata_Write28(2, 0,(uint8_t*)atabuff, 14);
         //Flush(2);
-        pata_Read28(2, 0, 512);
+        pata_Read(2, 0, 512);
         
 
         return;
@@ -551,7 +590,7 @@ void PATA::initialize_pata(uint16_t drive,bool Master){
         //char* atabuff = "Hello World!!!";
         //pata_Write28(3, 0,(uint8_t*)atabuff, 14);
         //Flush(3);
-        pata_Read28(3, 0, 512);
+        pata_Read(3, 0, 512);
 
         return;
     }
@@ -560,7 +599,7 @@ void PATA::initialize_pata(uint16_t drive,bool Master){
         //char* atabuff = "Hello World!!!";
         //pata_Write28(4, 0,(uint8_t*)atabuff, 14);
         //Flush(4);
-        pata_Read28(4, 0, 512);
+        pata_Read(4, 0, 512);
 
         return;
         
@@ -730,3 +769,11 @@ void PATA::Flush(uint8_t Device){
      else if(Device == 3)LouPrint("Secondary Master\n");
      else if(Device == 4)LouPrint("Secondary Slave\n");
 }
+
+bool PATA::AtaReadSuccess(){
+    for(uint16_t i = 0 ; i < 2351 ; i++){
+        if(atabuffer[i] != 0x0000) return true;
+    }
+    return false;
+}
+
