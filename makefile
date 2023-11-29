@@ -9,9 +9,10 @@
 
 
 TARGET_ARCH = x86_64
-HOST_ARCH = x86_64
+HOST_ARCH = ARM
 FIRMWARE_TARGET = BIOS
 
+EXPORT = DbgPrint
 
 ifeq ($(HOST_ARCH),x86_64)
     CC = gcc
@@ -130,7 +131,7 @@ $(x86_64_c_object_files): build/x86_64/init/%.o : init/%.c
 $(driver_cpp_object_files): build/drivers/%.o : drivers/%.cpp
 	mkdir -p $(dir $@) && \
 	$(CP) $(C_COMPILE_FLAGS) $(CPPFLAGS) $(patsubst build/drivers/%.o, drivers/%.cpp, $@) -o $@ -lc
-
+	
 
 
 $(x86_64_API_cpp_object_files): build/x86_64/API/%.o : API/%.cpp
@@ -179,6 +180,8 @@ ifeq ($(TARGET_ARCH), x86_64)
 release: lou.exe
 	mkdir -p release/x86_64 && \
 	cp dist/x86_64/LOUOSKRNL.bin release/x86_64/LOUOSKRNL.exe
+	strip -K $(EXPORT) \
+	 release/x86_64/LOUOSKRNL.exe
 endif
 
 
@@ -186,6 +189,9 @@ ifeq ($(TARGET_ARCH), x86)
 release: lou.exe
 	mkdir -p release/x86 && \
 	cp dist/x86/LOUOSKRNL.bin release/x86/LOUOSKRNL.exe
+	strip -K $(EXPORT) \
+	release/x86/LOUOSKRNL.exe
+
 endif
 
 

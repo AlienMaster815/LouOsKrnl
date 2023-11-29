@@ -1,6 +1,7 @@
 #include <drivers/display/vga.h>
 #include <stdio.h>
 
+
 void setup_vga_systems(){
     vga_current = Lou_Alloc_Mem(sizeof(uint8_t));
     init_terminal();

@@ -1,9 +1,10 @@
 #include <WDKSubsystem/WDKSubsystem.h>
 #include <LouDDK.h>
 #include <stdarg.h>
-
+#include <kernel/exports.h>
 //I Will Need To Change The Cases To The Real Cases
 
+DefineExport(0x01, DbgPrint);
 
 uint64_t DbgPrint(_In_z_ _Printf_format_string_ PCSTR Format, ...){
     va_list args;
