@@ -1,0 +1,90 @@
+;
+; KModeDrvRevEng.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=Sample ; TODO: edit Class
+ClassGuid={78A1C341-4539-11d3-B88D-00C04FAD5171} ; TODO: edit ClassGuid
+Provider=%ManufacturerName%
+CatalogFile=KModeDrvRevEng.cat
+DriverVer = 11/29/2023,15.32.10.62
+PnpLockDown=1
+
+[DestinationDirs]
+DefaultDestDir = 12
+KModeDrvRevEng_Device_CoInstaller_CopyFiles = 11
+
+; ================= Class section =====================
+
+[ClassInstall32]
+Addreg=SampleClassReg
+
+[SampleClassReg]
+HKR,,,0,%ClassName%
+HKR,,Icon,,-5
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+KModeDrvRevEng.sys  = 1,,
+;
+
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NTamd64
+
+[Standard.NTamd64]
+%KModeDrvRevEng.DeviceDesc%=KModeDrvRevEng_Device, Root\KModeDrvRevEng ; TODO: edit hw-id
+
+[KModeDrvRevEng_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+KModeDrvRevEng.sys
+
+;-------------- Service installation
+[KModeDrvRevEng_Device.NT.Services]
+AddService = KModeDrvRevEng,%SPSVCINST_ASSOCSERVICE%, KModeDrvRevEng_Service_Inst
+
+; -------------- KModeDrvRevEng driver install sections
+[KModeDrvRevEng_Service_Inst]
+DisplayName    = %KModeDrvRevEng.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\KModeDrvRevEng.sys
+
+;
+;--- KModeDrvRevEng_Device Coinstaller installation ------
+;
+
+[KModeDrvRevEng_Device.NT.CoInstallers]
+AddReg=KModeDrvRevEng_Device_CoInstaller_AddReg
+CopyFiles=KModeDrvRevEng_Device_CoInstaller_CopyFiles
+
+[KModeDrvRevEng_Device_CoInstaller_AddReg]
+;
+
+
+[KModeDrvRevEng_Device_CoInstaller_CopyFiles]
+;
+
+
+[KModeDrvRevEng_Device.NT.Wdf]
+KmdfService =  KModeDrvRevEng, KModeDrvRevEng_wdfsect
+[KModeDrvRevEng_wdfsect]
+KmdfLibraryVersion = 1.15
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+ClassName="Samples" ; TODO: edit ClassName
+DiskName = "KModeDrvRevEng Installation Disk"
+KModeDrvRevEng.DeviceDesc = "KModeDrvRevEng Device"
+KModeDrvRevEng.SVCDESC = "KModeDrvRevEng Service"

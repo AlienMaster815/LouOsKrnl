@@ -217,7 +217,7 @@ ifeq ($(TARGET_ARCH),x86_64)
 
 	mkdir iso/Annya/System32
 	#mkdir iso/Annya/Profiles ALREADY DEFINED
-	mkdir iso/Annya/System32/drivers
+	#mkdir iso/Annya/System32/drivers
 
 	#Create Files For Regular Systems
 
@@ -227,7 +227,8 @@ ifeq ($(TARGET_ARCH),x86_64)
 
 	#Copy System Files To The Appropriate Directories
 	
-	cp SYS/KModeDrvRevEng.sys iso/Annya/System64/drivers/KModeDrvRevEng.sys
+	cp SYS/X64/KModeDrvRevEng.sys iso/Annya/System64/drivers/KModeDrvRevEng.sys
+	cp Registry/System32/Config iso/Annya/System32/Config
 	cp Registry/System64/Config iso/Annya/System64/Config
 	cp release/x86_64/LOUOSKRNL.exe iso/Annya/System64/LOUOSKRNL.exe
 endif
@@ -242,8 +243,8 @@ ifeq ($(TARGET_ARCH),x86)
 
 	#Copy System Files To The Appropriate Directories
 
-	cp SYS/KModeDrvRevEng.sys iso/Annya/System32/drivers/KModeDrvRevEng.sys
-	cp Registry/System64/Config iso/Annya/System32/Config
+	#cp SYS/X86/KModeDrvRevEng.sys iso/Annya/System32/drivers/KModeDrvRevEng.sys
+	cp Registry/System32/Config iso/Annya/System32/Config
 	cp release/x86/LOUOSKRNL.exe iso/Annya/System32/LOUOSKRNL.exe
 endif
 
