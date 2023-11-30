@@ -9,14 +9,16 @@
 
 
 TARGET_ARCH = x86_64
-HOST_ARCH = ARM
+HOST_ARCH = x86_64
 FIRMWARE_TARGET = BIOS
 
 ExportTable = Config/Kernel_Config/ExportTable.xml
 DriverTable = Config/System_Config/drivers.xml
 FileStructureTable = Config/System_Config/FileStructure.xml
-SystemFileTable = Config/System_Config/FileStructure.xml
+SystemFileTable = Config/System_Config/SystemFiles.xml
 
+OSBUILDX64 := $(shell cat Config/OSIMGBUILDX64.cfg)
+OSBUILDX86 := $(shell cat Config/OSIMGBUILDX86.cfg)
 
 KernelEXPORTS := $(shell awk -F '[<>]' '/<KernelExport>/{print "-K " $$3}' $(ExportTable) | tr '\n' ' ')
 WDFLDRModuleEXPORTS := $(shell awk -F '[<>]' '/<WDFLDRModuleExport>/{print "-K " $$3}' $(ExportTable) | tr '\n' ' ')
@@ -26,7 +28,7 @@ MAKEDIR := $(shell awk -F '[<>]' '/<MainDirectoryStructure>/{print " " $$3 ";"}'
 MAKEDIR64 := $(shell awk -F '[<>]' '/<MainDirectoryStructure64>/{print " " $$3 ";"}' $(FileStructureTable) | tr '\n' ' ')
 
 CPY32 := $(shell awk -F '[<>]' '/<FILETOCPY32>/{print " " $$3 ";"}' $(SystemFileTable) | tr '\n' ' ')
-cpy64 := $(shell awk -F '[<>]' '/<FILETOCPY64>/{print " " $$3 ";"}' $(SystemFileTable) | tr '\n' ' ')
+CPY64 := $(shell awk -F '[<>]' '/<FILETOCPY64>/{print " " $$3 ";"}' $(SystemFileTable) | tr '\n' ' ')
 
 Drivers32 := $(shell awk -F '[<>]' '/<DRIVERTOCPY32>/{print " " $$3 ";"}' $(DriverTable) | tr '\n' ' ')
 Drivers64 := $(shell awk -F '[<>]' '/<DRIVERTOCPY64>/{print " " $$3 ";"}' $(DriverTable) | tr '\n' ' ')
@@ -177,7 +179,6 @@ $(kernel_asm_object_files): build/x86_64/kernelasm/%.o : kernel/%.asm
 
 clean:
 	rm -r build
-	rm -r release
 
 
 ifeq ($(TARGET_ARCH), x86_64)
@@ -217,7 +218,7 @@ endif
 
 
 annya.iso: release
-	rm -rf iso
+	rm -rf ISO
 	
 	#Make The System Directories
 	$(MAKEDIR)
@@ -231,6 +232,9 @@ ifeq ($(TARGET_ARCH),x86_64)
 	#Copy System Files To The Appropriate Directories
 	$(CPY64)
 	$(Drivers64)
+	#Build The Image In One Shabang
+	$(OSBUILDX64)
+
 
 endif
 
@@ -239,24 +243,13 @@ ifeq ($(TARGET_ARCH),x86)
 	#Copy System Files To The Appropriate Directories
 	$(CPY32)
 	#$(Drivers32)
+	#Build The Image In One Shabang
+	$(OSBUILDX86)
 
 endif
 
-	#Create A Grub Boot CFG For The Kernel And Make The Image
-
-ifeq ($(TARGET_ARCH),x86_64)
-
-	include Config/OSIMGBUILDX64.cfg
-
-endif
-
-ifeq ($(TARGET_ARCH),x86)
-
-	include Config/OSIMGBUILDX86.cfg
-
-endif
 	rm -rf release
-	rm -rf iso
+	rm -rf ISO
 
 
 
