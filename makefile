@@ -15,10 +15,21 @@ FIRMWARE_TARGET = BIOS
 ExportTable = Config/Kernel_Config/ExportTable.xml
 DriverTable = Config/System_Config/drivers.xml
 FileStructureTable = Config/System_Config/FileStructure.xml
+SystemFileTable = Config/System_Config/FileStructure.xml
+
 
 KernelEXPORTS := $(shell awk -F '[<>]' '/<KernelExport>/{print "-K " $$3}' $(ExportTable) | tr '\n' ' ')
 WDFLDRModuleEXPORTS := $(shell awk -F '[<>]' '/<WDFLDRModuleExport>/{print "-K " $$3}' $(ExportTable) | tr '\n' ' ')
 
+
+MAKEDIR := $(shell awk -F '[<>]' '/<MainDirectoryStructure>/{print " " $$3 ";"}' $(FileStructureTable) | tr '\n' ' ')
+MAKEDIR64 := $(shell awk -F '[<>]' '/<MainDirectoryStructure64>/{print " " $$3 ";"}' $(FileStructureTable) | tr '\n' ' ')
+
+CPY32 := $(shell awk -F '[<>]' '/<FILETOCPY32>/{print " " $$3 ";"}' $(SystemFileTable) | tr '\n' ' ')
+cpy64 := $(shell awk -F '[<>]' '/<FILETOCPY64>/{print " " $$3 ";"}' $(SystemFileTable) | tr '\n' ' ')
+
+Drivers32 := $(shell awk -F '[<>]' '/<DRIVERTOCPY32>/{print " " $$3 ";"}' $(DriverTable) | tr '\n' ' ')
+Drivers64 := $(shell awk -F '[<>]' '/<DRIVERTOCPY64>/{print " " $$3 ";"}' $(DriverTable) | tr '\n' ' ')
 
 EXPORT := $(KernelEXPORTS) $(WDFLDRModuleEXPORTS)
 
@@ -189,7 +200,7 @@ release: lou.exe
 	mkdir -p release/x86_64 && \
 	cp dist/x86_64/LOUOSKRNL.bin release/x86_64/LOUOSKRNL.exe
 	strip $(EXPORT) \
-	 release/x86_64/LOUOSKRNL.exe
+	release/x86_64/LOUOSKRNL.exe
 endif
 
 
@@ -203,11 +214,6 @@ release: lou.exe
 endif
 
 
-MAKEDIR := $(shell awk -F '[<>]' '/<MainDirectoryStructure>/{print " " $$3 ";"}' $(FileStructureTable) | tr '\n' ' ')
-MAKEDIR64 := $(shell awk -F '[<>]' '/<MainDirectoryStructure64>/{print " " $$3 ";"}' $(FileStructureTable) | tr '\n' ' ')
-
-CPY32 := $(shell awk -F '[<>]' '/<FILETOCPY32>/{print " " $$3 ";"}' $(SystemFiles.xml) | tr '\n' ' ')
-cpy64 := $(shell awk -F '[<>]' '/<FILETOCPY64>/{print " " $$3 ";"}' $(SystemFiles.xml) | tr '\n' ' ')
 
 
 annya.iso: release
@@ -224,13 +230,15 @@ ifeq ($(TARGET_ARCH),x86_64)
 
 	#Copy System Files To The Appropriate Directories
 	$(CPY64)
+	$(Drivers64)
 
 endif
 
 ifeq ($(TARGET_ARCH),x86)
 
-	#Create System Files
+	#Copy System Files To The Appropriate Directories
 	$(CPY32)
+	#$(Drivers32)
 
 endif
 
@@ -238,13 +246,13 @@ endif
 
 ifeq ($(TARGET_ARCH),x86_64)
 
-include Config/OSIMGBUILDX64.cfg
+	include Config/OSIMGBUILDX64.cfg
 
 endif
 
 ifeq ($(TARGET_ARCH),x86)
 
-include Config/OSIMGBUILDX86.cfg
+	include Config/OSIMGBUILDX86.cfg
 
 endif
 	rm -rf release
