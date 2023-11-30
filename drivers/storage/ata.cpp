@@ -351,11 +351,11 @@ void PATA::Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, int Buf
  
     if(init == true){
         for (int i = 0; i < 0x200/2; ++i) {
-            //LouPrint("%h ", atabuffer[i]);
+            //LouPrint(" %h ", atabuffer[i]);
             //LouPrint("hello World %d\n",i);
-            char* hex = "0x00";
-            uintToHexString(atabuffer[i],hex);
-            if(strncmp(hex,"0x55aa", 6)){
+            //char* hex = "0x00";
+            //uintToHexString(atabuffer[i],hex);
+            if(atabuffer[i] == 0xAA55){
                 LouPrint("Bootable CD ROM\n");
                 return;
             }    

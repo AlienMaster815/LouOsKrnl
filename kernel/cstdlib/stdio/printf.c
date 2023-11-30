@@ -15,7 +15,7 @@
 
 #ifdef __x86_64__
 void intToString(uint64_t num, char* str);
-
+void uintToLittleEndianHexString(uint64_t number, char* hexString);
 void uintToHexString(uint64_t number, char* hexString);
 
  int LouPrint(char* format, ...){
@@ -56,9 +56,10 @@ void uintToHexString(uint64_t number, char* hexString);
                 break;
             }
             case 'h':{
-                int64_t num = va_arg(args, int64_t); // get the Number in integer Form
+                format++;
+                int32_t num = va_arg(args, int32_t); // get the Number in integer Form
                 char hexString[21]; //Define A string To Print
-                uintToHexString((uint64_t)num,hexString); // Change The Integer To A Hex String
+                uintToHexString((uint32_t)num,hexString); // Change The Integer To A Hex String
                 LouPrint("%s", hexString); // Print Hex String;
                 break;
             }
@@ -85,7 +86,7 @@ void uintToHexString(uint64_t number, char* hexString);
 
 #ifdef __i386__
 void intToString(uint32_t num, char* str);
-
+void uintToLittleEndianHexString(uint32_t number, char* hexString);
 void uintToHexString(uint32_t number, char* hexString);
 
  int LouPrint(char* format, ...){
@@ -126,6 +127,7 @@ void uintToHexString(uint32_t number, char* hexString);
                 break;
             }
             case 'h':{
+
                 int32_t num = va_arg(args, int32_t); // get the Number in integer Form
                 char hexString[21]; //Define A string To Print
                 uintToHexString((uint32_t)num,hexString); // Change The Integer To A Hex String
@@ -152,4 +154,3 @@ void uintToHexString(uint32_t number, char* hexString);
 }
 
 #endif
-

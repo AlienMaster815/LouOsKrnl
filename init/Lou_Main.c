@@ -102,6 +102,9 @@ KERNEL_ENTRY Lou_kernel_start(){
 		
     if(User_Mode_Initialization() != LOUSTATUS_GOOD)LouPanic("User Mode Initialiation Failed",BAD);
     LouPrint("Hello World\n ");
+
+    LouPrint("HEX 0xAFAF: %h \n", 0xAFAF);
+
 	while(1);
 
 	LouPanic("error kernel has gone too far terminating system\n",BAD);
