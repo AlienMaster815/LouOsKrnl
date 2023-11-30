@@ -12,7 +12,9 @@ TARGET_ARCH = x86_64
 HOST_ARCH = ARM
 FIRMWARE_TARGET = BIOS
 
-ExportTable = Config/ExportTable.xml
+ExportTable = Config/Kernel_Config/ExportTable.xml
+DriverTable = Config/System_Config/drivers.xml
+FileStructureTable = Config/System_Config/FileStructure.xml
 
 KernelEXPORTS := $(shell awk -F '[<>]' '/<KernelExport>/{print "-K " $$3}' $(ExportTable) | tr '\n' ' ')
 WDFLDRModuleEXPORTS := $(shell awk -F '[<>]' '/<WDFLDRModuleExport>/{print "-K " $$3}' $(ExportTable) | tr '\n' ' ')
@@ -201,80 +203,48 @@ release: lou.exe
 endif
 
 
+MAKEDIR := $(shell awk -F '[<>]' '/<MainDirectoryStructure>/{print " " $$3 ";"}' $(FileStructureTable) | tr '\n' ' ')
+MAKEDIR64 := $(shell awk -F '[<>]' '/<MainDirectoryStructure64>/{print " " $$3 ";"}' $(FileStructureTable) | tr '\n' ' ')
+
+CPY32 := $(shell awk -F '[<>]' '/<FILETOCPY32>/{print " " $$3 ";"}' $(SystemFiles.xml) | tr '\n' ' ')
+cpy64 := $(shell awk -F '[<>]' '/<FILETOCPY64>/{print " " $$3 ";"}' $(SystemFiles.xml) | tr '\n' ' ')
+
+
 annya.iso: release
 	rm -rf iso
 	
 	#Make The System Directories
-	
-	mkdir iso
-	mkdir iso/boot
-	mkdir iso/boot/grub
-	mkdir iso/Annya
+	$(MAKEDIR)
+
 
 ifeq ($(TARGET_ARCH),x86_64)
 
-	#Create Files For Backwords Compatibility
-
-	mkdir iso/Annya/System32
-	#mkdir iso/Annya/Profiles ALREADY DEFINED
-	#mkdir iso/Annya/System32/drivers
-
-	#Create Files For Regular Systems
-
-	mkdir iso/Annya/System64
-	mkdir iso/Annya/Profiles
-	mkdir iso/Annya/System64/drivers
+	#Make 64 Bit System Directories
+	$(MAKEDIR64)
 
 	#Copy System Files To The Appropriate Directories
-	
-	cp SYS/X64/KModeDrvRevEng.sys iso/Annya/System64/drivers/KModeDrvRevEng.sys
-	cp Registry/System32/Config iso/Annya/System32/Config
-	cp Registry/System64/Config iso/Annya/System64/Config
-	cp release/x86_64/LOUOSKRNL.exe iso/Annya/System64/LOUOSKRNL.exe
+	$(CPY64)
+
 endif
 
 ifeq ($(TARGET_ARCH),x86)
 
 	#Create System Files
+	$(CPY32)
 
-	mkdir iso/Annya/System32
-	mkdir iso/Annya/Profiles
-	mkdir iso/Annya/System32/drivers
-
-	#Copy System Files To The Appropriate Directories
-
-	#cp SYS/X86/KModeDrvRevEng.sys iso/Annya/System32/drivers/KModeDrvRevEng.sys
-	cp Registry/System32/Config iso/Annya/System32/Config
-	cp release/x86/LOUOSKRNL.exe iso/Annya/System32/LOUOSKRNL.exe
 endif
-
-	cp Registry/Profiles/Username iso/Annya/Profiles/Username
 
 	#Create A Grub Boot CFG For The Kernel And Make The Image
 
 ifeq ($(TARGET_ARCH),x86_64)
 
-	echo 'set timeout=0'                    		 >> iso/boot/grub/grub.cfg
-	echo 'set default=0'                    		 >> iso/boot/grub/grub.cfg
-	echo ''                                  	     	 >> iso/boot/grub/grub.cfg
-	echo 'menuentry "Annya/lou" {'				 >> iso/boot/grub/grub.cfg
-	echo 'multiboot /Annya/System64/LOUOSKRNL.exe'		 >> iso/boot/grub/grub.cfg
-	echo 'boot'						 >> iso/boot/grub/grub.cfg
-	echo '}'						 >> iso/boot/grub/grub.cfg
-	grub-mkrescue --output=annya.iso iso
+include Config/OSIMGBUILDX64.cfg
 
 endif
 
 ifeq ($(TARGET_ARCH),x86)
 
-	echo 'set timeout=0'                    		 >> iso/boot/grub/grub.cfg
-	echo 'set default=0'                    		 >> iso/boot/grub/grub.cfg
-	echo ''                                  	     	 >> iso/boot/grub/grub.cfg
-	echo 'menuentry "Annya/lou" {'				 >> iso/boot/grub/grub.cfg
-	echo 'multiboot /Annya/System32/LOUOSKRNL.exe'		 >> iso/boot/grub/grub.cfg
-	echo 'boot'						 >> iso/boot/grub/grub.cfg
-	echo '}'						 >> iso/boot/grub/grub.cfg
-	grub-mkrescue --output=annya.iso iso
+include Config/OSIMGBUILDX86.cfg
 
 endif
 	rm -rf release

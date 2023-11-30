@@ -1,0 +1,21 @@
+
+<!--File Map For Operating System-->
+<FILESBEFORECOPY>
+    <32Targets>
+        <FILETOCPY32>cp Registry/System32/Config ISO/Annya/System32/Config</FILETOCPY32>
+        <FILETOCPY32>cp release/x86/LOUOSKRNL.exe ISO/Annya/System32/LOUOSKRNL.exe</FILETOCPY32>
+        <FILETOCPY32>cp Registry/Profiles/Username ISO/Annya/Profiles/Username</FILETOCPY32>
+    </32Targets>
+    <64Targets>
+        <FILETOCPY64>cp Registry/System64/Config ISO/Annya/System64/Config</FILETOCPY64>
+        <FILETOCPY64>cp release/x86_64/LOUOSKRNL.exe ISO/Annya/System64/LOUOSKRNL.exe</FILETOCPY64>
+        <FILETOCPY64>cp SYS/X64/KModeDrvRevEng.sys ISO/Annya/System64/Drivers/KModeDrvRevEng.sys</FILETOCPY64>
+        <FILETOCPY64>cp Registry/System32/Config ISO/Annya/System32/Config</FILETOCPY64>
+        <FILETOCPY64>cp Registry/Profiles/Username ISO/Annya/Profiles/Username</FILETOCPY64>
+    </64Targets>
+</FILESBEFORECOPY>
+    
+    
+<FILESAFTERCOPY>
+    
+</FILESAFTERCOPY>

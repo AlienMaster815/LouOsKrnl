@@ -1,0 +1,15 @@
+<!--File Map For Operating System-->
+<MainDirectoryStructure>mkdir ISO</MainDirectoryStructure>
+<MainDirectoryStructure>mkdir ISO/boot</MainDirectoryStructure>
+<MainDirectoryStructure>mkdir ISO/boot/grub</MainDirectoryStructure>
+<MainDirectoryStructure>mkdir ISO/Annya</MainDirectoryStructure>
+<MainDirectoryStructure>mkdir ISO/Annya/Profiles</MainDirectoryStructure>
+<MainDirectoryStructure>mkdir ISO/Annya/System32</MainDirectoryStructure>
+<MainDirectoryStructure>mkdir ISO/Annya/System32/Drivers</MainDirectoryStructure>
+<MainDirectoryStructure>mkdir ISO/Annya/System32/Config</MainDirectoryStructure>
+<MainDirectoryStructure64>mkdir ISO/Annya/System64</MainDirectoryStructure64>
+<MainDirectoryStructure64>mkdir ISO/Annya/System64/Drivers</MainDirectoryStructure64>
+<MainDirectoryStructure64>mkdir ISO/Annya/System64/Config</MainDirectoryStructure64>
+
+    
+
