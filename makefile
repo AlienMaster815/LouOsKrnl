@@ -9,7 +9,7 @@
 
 
 TARGET_ARCH = x86_64
-HOST_ARCH = x86_64
+HOST_ARCH = ARM
 FIRMWARE_TARGET = BIOS
 
 ExportTable = Config/Kernel_Config/ExportTable.xml
@@ -200,7 +200,7 @@ ifeq ($(TARGET_ARCH), x86_64)
 release: lou.exe
 	mkdir -p release/x86_64 && \
 	cp dist/x86_64/LOUOSKRNL.bin release/x86_64/LOUOSKRNL.exe
-	strip $(EXPORT) \
+#	strip $(EXPORT) \
 	release/x86_64/LOUOSKRNL.exe
 endif
 
