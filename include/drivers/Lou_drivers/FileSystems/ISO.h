@@ -53,7 +53,7 @@ typedef struct _sint32_LSB_MSB{
 
 typedef struct _VolumeDescriptor{
     int8 Type;
-    strA Identifier;
+    strA Identifier[5];
     int8 Version;
     int8_t Data[2041];
 }VolumeDescriptor, *PVolumeDescriptor;
