@@ -50,11 +50,11 @@ VolumeDescriptor ISO9660::ReadVolumeDescriptor(uint8_t DrvNum,uint8_t DrvType,ui
             // Logic For Parseing The Volume Descriptor
             VD.Type = atabuffer[0] >> 8;
             
-            VD.Identifier[0] = atabuffe[0] & 0xFF;
-            VD.Identifier[1] = atabuffe[1] >> 8;
-            VD.Identifier[2] = atabuffe[1] & 0xFF;
-            VD.Identifier[3] = atabuffe[2] >> 8;
-            VD.Identifier[4] = atabuffe[2] & 0xFF;
+            VD.Identifier[0] = (char*)(uintptr_t)(atabuffer[0] & 0xFF);
+            VD.Identifier[1] = (char*)(uintptr_t)(atabuffer[1] >> 8);
+            VD.Identifier[2] = (char*)(uintptr_t)(atabuffer[1] & 0xFF);
+            VD.Identifier[3] = (char*)(uintptr_t)(atabuffer[2] >> 8);
+            VD.Identifier[4] = (char*)(uintptr_t)(atabuffer[2] & 0xFF);
             VD.Version = atabuffer[3] >> 8;
 
             uint8_t i = 3;
@@ -83,7 +83,7 @@ FSStruct ISO9660::DetectFileSystems(uint8_t DrvNum,uint8_t DrvType){
     VolumeDescriptor PVD = ReadVolumeDescriptor(DrvNum,DrvType);
     
     // Create A File System Structure
-    if((PVD.Type == ISO_PrimaryVolumeDescriptor) && (strncmp(PVD.Identifier, "CD001", 5) == 0) && (PVD.Version == 0x01)){
+    if((PVD.Type == ISO_PrimaryVolumeDescriptor) && (strncmp((const char*)PVD.Identifier, "CD001", 5) == 0) && (PVD.Version == 0x01)){
         int16_LSB_MSB VolumeSetSize;
         VolumeSetSize.LSB = (PVD.Data[120] << 8) | PVD.Data[121];
         VolumeSetSize.MSB = (PVD.Data[122] << 8) | PVD.Data[123];
