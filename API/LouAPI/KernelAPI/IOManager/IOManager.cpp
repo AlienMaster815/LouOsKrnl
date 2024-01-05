@@ -72,7 +72,11 @@ extern "C" void SetVideoMode(uint64_t Height,uint64_t Widthe, uint8_t  ColorDept
 
 
 extern "C" void FileSystemScan(){
-    
+    ISO9660 scan;
+    //TODO: Scan iso filesystem
+    for(uint8_t i = 0; i <= 4;i++){
+        scan.ISOFileSystemScan(i,PATADEV);
+    }
 }
 
 // End Of Redundant File

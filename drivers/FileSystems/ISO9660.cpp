@@ -84,6 +84,7 @@ FSStruct ISO9660::DetectFileSystems(uint8_t DrvNum,uint8_t DrvType){
     
     // Create A File System Structure
     if((PVD.Type == ISO_PrimaryVolumeDescriptor) && (strncmp((const char*)PVD.Identifier, "CD001", 5) == 0) && (PVD.Version == 0x01)){
+        LouPrint("Primary Volume Descriptor Found\n");
         int16_LSB_MSB VolumeSetSize;
         VolumeSetSize.LSB = (PVD.Data[120] << 8) | PVD.Data[121];
         VolumeSetSize.MSB = (PVD.Data[122] << 8) | PVD.Data[123];
