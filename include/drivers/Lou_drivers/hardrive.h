@@ -23,6 +23,8 @@ class PATA{
     
     bool AtaReadSuccess();
     
+    uint8_t pata[4];
+    
     PATA();
     ~PATA();
 
