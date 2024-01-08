@@ -44,7 +44,7 @@ VolumeDescriptor ISO9660::ReadVolumeDescriptor(uint8_t DrvNum,uint8_t DrvType,ui
         case(PATADEV):{
             PATA* pata __attribute__((unused));
             pata = RetrievePATAP();
-            if(pata->pata[DrvNum - 1] != 0)pata->pata_Read(DrvNum,sector,buffer);
+            pata->pata_Read(DrvNum,sector,buffer);
             if(!pata->AtaReadSuccess()) return VD;
             
             //Logic For Parseing The Volume Descriptor
