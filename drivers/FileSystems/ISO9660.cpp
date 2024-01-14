@@ -42,29 +42,29 @@ VolumeDescriptor ISO9660::ReadVolumeDescriptor(uint8_t DrvNum,uint8_t DrvType,ui
     switch(DrvType){
             
         case(PATADEV):{
-            //PATA* pata __attribute__((unused));
-            //pata = RetrievePATAP();
-            //pata->pata_Read(DrvNum,sector,buffer);
-            //if(!pata->AtaReadSuccess()) return VD;
+            PATA* pata __attribute__((unused));
+            pata = RetrievePATAP();
+            pata->pata_Read(DrvNum,sector,buffer);
+            if(!pata->AtaReadSuccess()) return VD;
             
             // Logic For Parseing The Volume Descriptor
-            //VD.Type = atabuffer[0] >> 8;
+            VD.Type = atabuffer[0] >> 8;
             
-            //VD.Identifier[0] = (char*)(uintptr_t)(atabuffer[0] & 0xFF);
-            //VD.Identifier[1] = (char*)(uintptr_t)(atabuffer[1] >> 8);
-            //VD.Identifier[2] = (char*)(uintptr_t)(atabuffer[1] & 0xFF);
-            //VD.Identifier[3] = (char*)(uintptr_t)(atabuffer[2] >> 8);
-            //VD.Identifier[4] = (char*)(uintptr_t)(atabuffer[2] & 0xFF);
-            //VD.Version = atabuffer[3] >> 8;
+            VD.Identifier[0] = (char*)(uintptr_t)(atabuffer[0] & 0xFF);
+            VD.Identifier[1] = (char*)(uintptr_t)(atabuffer[1] >> 8);
+            VD.Identifier[2] = (char*)(uintptr_t)(atabuffer[1] & 0xFF);
+            VD.Identifier[3] = (char*)(uintptr_t)(atabuffer[2] >> 8);
+            VD.Identifier[4] = (char*)(uintptr_t)(atabuffer[2] & 0xFF);
+            VD.Version = atabuffer[3] >> 8;
 
-            //uint8_t i = 3;
-            //for(uint8_t x = 0; x < 2040; x++){
-                //if(x <= 2040)VD.Data[x] = atabuffer[i] & 0xFF;
-                //i++;
-                //if(x <= 2040)VD.Data[x] = atabuffer[i] >> 8;
-            //}
+            uint8_t i = 3;
+            for(uint8_t x = 0; x < 2040; x++){
+                if(x <= 2040)VD.Data[x] = atabuffer[i] & 0xFF;
+                i++;
+                if(x <= 2040)VD.Data[x] = atabuffer[i] >> 8;
+            }
             
-            //return VD;
+            return VD;
         }
         default:{
             LouPrint("Non ISO Formated Device\n");
