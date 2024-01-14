@@ -29,6 +29,7 @@
 
 #include <LouDDK.h>
 
+uint8_t pata[4];
 //static char* atabuffer;
 bool init;
 
