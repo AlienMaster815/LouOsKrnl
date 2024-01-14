@@ -30,7 +30,7 @@
 #include <LouDDK.h>
 
 uint8_t pata[4];
-//static char* atabuffer;
+static char* atabuffer;
 bool init;
 
 void PATA::pata_device_scan(){

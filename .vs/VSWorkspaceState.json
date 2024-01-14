@@ -1,0 +1,17 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\drivers",
+    "\\drivers\\storage",
+    "\\kernel",
+    "\\kernel\\Drivers",
+    "\\kernel\\Drivers\\io",
+    "\\kernel\\Drivers\\io\\periphials",
+    "\\kernel\\Drivers\\io\\periphials\\Keyboard",
+    "\\kernel\\errors",
+    "\\kernel\\Interrupts\\IDT_JUNK",
+    "\\kernel\\Interrupts\\ISR_JUNK"
+  ],
+  "SelectedNode": "\\kernel\\Security",
+  "PreviewInSolutionExplorer": false
+}

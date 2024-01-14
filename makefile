@@ -9,7 +9,7 @@
 
 
 TARGET_ARCH = x86_64
-HOST_ARCH = ARM
+HOST_ARCH = x86_64
 FIRMWARE_TARGET = BIOS
 
 ExportTable = Config/Kernel_Config/ExportTable.xml
@@ -207,7 +207,8 @@ endif
 
 ifeq ($(TARGET_ARCH), x86)
 release: lou.exe
-	mkdir -p release/x86 && \
+	
+	smkdir -p release/x86 && \
 	cp dist/x86/LOUOSKRNL.bin release/x86/LOUOSKRNL.exe
 	strip $(EXPORT) \
 	release/x86/LOUOSKRNL.exe
@@ -234,8 +235,6 @@ ifeq ($(TARGET_ARCH),x86_64)
 	$(Drivers64)
 	#Build The Image In One Shabang
 	$(OSBUILDX64)
-
-
 endif
 
 ifeq ($(TARGET_ARCH),x86)
@@ -249,7 +248,7 @@ ifeq ($(TARGET_ARCH),x86)
 endif
 
 	rm -rf release
-	rm -rf ISO
+	#rm -rf ISO
 
 
 
