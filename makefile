@@ -119,12 +119,12 @@ x86_64_API_asm_object_files := $(patsubst API/%.asm, build/x86_64/asm/API/%.o, $
 
 
 ifeq ($(TARGET_ARCH), x86_64)
-x86_64_asm_source_files = boot/x86_64/BOOT.asm
+x86_64_asm_source_files = boot_grub/x86_64/BOOT.asm
 endif
 
 
 ifeq ($(TARGET_ARCH), x86)
-x86_64_asm_source_files = boot/x86/BOOT.asm
+x86_64_asm_source_files = boot_grub/x86/BOOT.asm
 endif
 
 x86_64_asm_object_files = build/x86_64/boot/boot.o
@@ -233,7 +233,7 @@ ifeq ($(TARGET_ARCH),x86_64)
 	$(CPY64)
 	$(Drivers64)
 	#Build The Image In One Shabang
-	$(OSBUILDX64)
+	#$(OSBUILDX64)
 
 
 endif
@@ -244,15 +244,12 @@ ifeq ($(TARGET_ARCH),x86)
 	$(CPY32)
 	#$(Drivers32)
 	#Build The Image In One Shabang
-	$(OSBUILDX86)
+	#$(OSBUILDX86)
 
 endif
 
 	rm -rf release
-	rm -rf ISO
+	#rm -rf ISO
 
 
 
-PublicRelease: annya.iso
-	cp annya.iso $(RELEASE_PATH)
-	rm -rf annya.iso
