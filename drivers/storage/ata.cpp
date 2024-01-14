@@ -286,17 +286,19 @@ void PATA::Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, int Buf
         if((error == 4) && (init == true)){
             
             if((drive == 0x1F0) && (Master)){
-               pata[0] = 0;
+               pata[0] = 2;
             }       
             else if((drive == 0x1F0) && (!Master)){ 
-                pata[1] = 0;
+                pata[1] = 2;
             }
             else if((drive == 0x170) && (Master)){
-                pata[2] = 0;
+                pata[2] = 2;
             }
             else if((drive == 0x170) && (!Master)){
-                pata[3] = 0;
+                pata[3] = 2;
             }
+
+            Read28PATAPI(drive,Master,Sector_Num, BufferSize);
             return;
         }
 
