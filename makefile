@@ -9,7 +9,7 @@
 
 
 TARGET_ARCH = x86_64
-HOST_ARCH = ARM
+HOST_ARCH = x86_64
 FIRMWARE_TARGET = BIOS
 
 ExportTable = Config/Kernel_Config/ExportTable.xml
