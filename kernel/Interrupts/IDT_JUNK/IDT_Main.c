@@ -6,6 +6,8 @@
 #include <kernel/errors.h>
 #include <kernel/kernel.h>
 
+extern void Interrupt_RouterLong();
+
 #ifdef __i386__
 
 
@@ -21,6 +23,7 @@ extern LOUSTATUS UpdateIDT(bool Init);
 #ifdef __x86_64__
 LOUSTATUS set_idt_gate(int num, void (*handler)(), uint16_t selector, uint8_t ist, uint8_t type_attr) {
     
+    //LouPrint("%d", num);
 
     uintptr_t base = (uintptr_t)handler;
         IDT[num].base_low = base & 0xFFFF;
@@ -60,108 +63,24 @@ LOUSTATUS SetBasicInterrupts(bool Init){
     LOUSTATUS result;    
     #ifdef __x86_64__
     if(Init){
-            
-    
-        //Right Now We Dont have an ist or api information and we are using legacy pic 
-
-        result = set_idt_gate(0x00,&DivideByZero,KernelCodeSegment,0 , Present + HighestPrivledge + INTERRUPT_GATE);
-        if(result != 0) return 1;
-        result = set_idt_gate(0x01,&DebugException,KernelCodeSegment,0 , Present + HighestPrivledge + INTERRUPT_GATE);
-        if(result != 0) return 1;
-        result = set_idt_gate(0x02,&NMI,KernelCodeSegment,0 , Present + HighestPrivledge + INTERRUPT_GATE);
-        if(result != 0) return 1;        
-        result = set_idt_gate(0x03,&BreakPoint,KernelCodeSegment,0 , Present + HighestPrivledge + INTERRUPT_GATE);
-        if(result != 0) return 1;
-        result = set_idt_gate(0x04,&OverFlow,KernelCodeSegment,0 , Present + HighestPrivledge + INTERRUPT_GATE);
-        if(result != 0) return 1;
-        result = set_idt_gate(0x05,&BoundCheck,KernelCodeSegment,0 , Present + HighestPrivledge + INTERRUPT_GATE);
-        if(result != 0) return 1;
-        result = set_idt_gate(0x06,&InvalidOpcode,KernelCodeSegment,0 , Present + HighestPrivledge + INTERRUPT_GATE);
-        if(result != 0) return 1;
-        result = set_idt_gate(0x07,&FPUNoDev,KernelCodeSegment,0 , Present + HighestPrivledge + INTERRUPT_GATE);
-        if(result != 0) return 1;
-        result = set_idt_gate(0x08,&DoubleFault,KernelCodeSegment,0 , Present + HighestPrivledge + INTERRUPT_GATE);
-        if(result != 0) return 1;
-        result = set_idt_gate(0x20,&CLOCK,KernelCodeSegment,0 , Present + HighestPrivledge + INTERRUPT_GATE);
-        if(result != 0) return 1;
-        result = set_idt_gate(0x21,&Keyboard,KernelCodeSegment,0 , Present + HighestPrivledge + INTERRUPT_GATE);
-        if(result != 0) return 1;
-        result = set_idt_gate(0x0E,&PageFault,KernelCodeSegment,0 , Present + HighestPrivledge + INTERRUPT_GATE);
-        if(result != 0) return 1;
-        result = set_idt_gate(0x0D,&GeneralProtectionFault,KernelCodeSegment,0 , Present + HighestPrivledge + INTERRUPT_GATE);
-        if(result != 0) return 1;
+        for (uint16_t i = 0; i < 256; i++) set_idt_gate(i, &Interrupt_RouterLong, KernelCodeSegment, 0, 0);
+        //LouPrint("Hallo!!!\n");
         return 0;
     }
     else{
-        //TODO: Finish Apic Interrupts when We Get That Far
-        //set_idt_gate(0x00,(uint64_t)&DivideByZero,KernelCodeSegment,0 , Present + HighestPrivledge + INTERRUPT_GATE);
+
         return 0;
     }
     #endif
     #ifdef __i386__
     if(Init){
 
-        SetPicIDTGate(0x00,DivideByZero);
-
-        SetPicIDTGate(0x01,DebugException);
-
-        SetPicIDTGate(0x02,NMI);
-
-        SetPicIDTGate(0x03,BreakPoint);
-
-        SetPicIDTGate(0x04,OverFlow);
-
-        SetPicIDTGate(0x05,BoundCheck);
-
-        SetPicIDTGate(0x06,InvalidOpcode);
-
-        SetPicIDTGate(0x07,FPUNoDev);
-
-        SetPicIDTGate(0x08,DoubleFault);
-
-        SetPicIDTGate(0x20,CLOCK);
-
-        SetPicIDTGate(0x21,Keyboard);
-
-        SetPicIDTGate(0x0E,PageFault);
-
-        SetPicIDTGate(0x0D,GeneralProtectionFault);
-
         return 0;
-
     }
 
     else{
 
         //TODO: Finish Apic Interrupts when We Get That Far
-
-        SetPicIDTGate(0x00,DivideByZero);
-
-        SetPicIDTGate(0x01,DebugException);
-
-        SetPicIDTGate(0x02,NMI);
-
-        SetPicIDTGate(0x03,BreakPoint);
-
-        SetPicIDTGate(0x04,OverFlow);
-
-        SetPicIDTGate(0x05,BoundCheck);
-
-        SetPicIDTGate(0x06,InvalidOpcode);
-
-        SetPicIDTGate(0x07,FPUNoDev);
-
-        SetPicIDTGate(0x08,DoubleFault);
-
-        SetPicIDTGate(0x20,CLOCK);
-
-        SetPicIDTGate(0x21,Keyboard);
-
-        SetPicIDTGate(0x0E,PageFault);
-
-        SetPicIDTGate(0x0D,GeneralProtectionFault);
-
-    
 
         return 0;
 

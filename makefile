@@ -127,7 +127,7 @@ ifeq ($(TARGET_ARCH), x86)
 x86_64_asm_source_files = boot/x86/BOOT.asm
 endif
 
-x86_64_asm_object_files = build/x86_64/boot/boot.o
+x86_64_asm_object_files = build/x86_64/boot/boot.o 
 
 
 
@@ -135,7 +135,7 @@ kernel_asm_source_files := $(shell find kernel -name *.asm)
 kernel_asm_object_files := $(patsubst kernel/%.asm, build/x86_64/kernelasm/%.o, $(kernel_asm_source_files))
 
 ifeq ($(FIRMWARE_TARGET),BIOS)
-x86_64_object_files := $(kernel_object_files) $(x86_64_c_object_files) $(x86_64_asm_object_files) $(kernel_asm_object_files) $(driver_cpp_object_files) $(x86_64_API_asm_object_files) $(x86_64_API_cpp_object_files)
+x86_64_object_files := $(kernel_object_files) $(x86_64_c_object_files) $(x86_64_asm_object_files) $(driver_cpp_object_files) $(x86_64_API_asm_object_files) $(x86_64_API_cpp_object_files) $(kernel_asm_object_files)
 endif
 
 
@@ -208,7 +208,7 @@ endif
 ifeq ($(TARGET_ARCH), x86)
 release: lou.exe
 	
-	smkdir -p release/x86 && \
+	mkdir -p release/x86 && \
 	cp dist/x86/LOUOSKRNL.bin release/x86/LOUOSKRNL.exe
 	strip $(EXPORT) \
 	release/x86/LOUOSKRNL.exe

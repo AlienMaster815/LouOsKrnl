@@ -1,17 +1,19 @@
 {
   "ExpandedNodes": [
     "",
-    "\\drivers",
-    "\\drivers\\storage",
+    "\\init",
     "\\kernel",
     "\\kernel\\Drivers",
     "\\kernel\\Drivers\\io",
     "\\kernel\\Drivers\\io\\periphials",
     "\\kernel\\Drivers\\io\\periphials\\Keyboard",
-    "\\kernel\\errors",
+    "\\kernel\\Interrupts",
     "\\kernel\\Interrupts\\IDT_JUNK",
-    "\\kernel\\Interrupts\\ISR_JUNK"
+    "\\kernel\\Interrupts\\ISR_JUNK",
+    "\\kernel\\processors",
+    "\\kernel\\processors\\x86_64",
+    "\\kernel\\processors\\x86_64\\InterruptHandling"
   ],
-  "SelectedNode": "\\kernel\\Security",
+  "SelectedNode": "\\init\\Lou_Main.c",
   "PreviewInSolutionExplorer": false
 }

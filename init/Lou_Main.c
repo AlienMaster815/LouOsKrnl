@@ -35,7 +35,7 @@ extern void UnSetInterruptFlags();
 
 //TODO: Use Parralelles To Make The User Space Programs
 
-char* KERNEL_VERSION = "0.0.00028 RSC-1";
+char* KERNEL_VERSION = "0.0.00029 RSC-1";
 
 
 #ifdef __x86_64__
@@ -49,7 +49,7 @@ char* KERNEL_ARCH = "32-BIT";
 LOUSTATUS Lou_kernel_early_initialization(){
     //if (Initialize_Gdt() != LOUSTATUS_GOOD) LouPanic("Error Setting Gdt",BAD);
     
-    UnSetInterruptFlags();
+    //UnSetInterruptFlags();
     InitializeStartupInterruptHandleing();
     SetInterruptFlags();
 
@@ -93,6 +93,8 @@ KERNEL_ENTRY Lou_kernel_start(){
 	
     //INITIALIZE IMPORTANT THINGS FOR US LATER
     if(Lou_kernel_early_initialization() != LOUSTATUS_GOOD)LouPanic("Early Initialization Failed",BAD);
+
+    //LouPrint("Hallo!!!");
 
     //SETUP DEVICES AND DRIVERS
     //if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);
