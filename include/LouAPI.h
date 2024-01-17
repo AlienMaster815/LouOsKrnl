@@ -2,6 +2,7 @@
 #ifndef LOUAPI_H
 #define LOUAPI_H
 
+#include <KernelAPI/ARCH_LIMITS.h>
 #include <kernel/kernel.h>
 #include <kernel/memmory.h>
 #include <stdint.h>

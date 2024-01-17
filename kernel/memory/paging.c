@@ -77,7 +77,6 @@ void unmap_page(void *physaddr, void *virtualaddr) {
  
     pt[ptindex] = 0x00000000;
  
-    RegisterPageTableDeletion();
     
     // Now you need to flush the entry in the TLB
     // or you might not notice the change.
