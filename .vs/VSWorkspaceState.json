@@ -5,11 +5,10 @@
     "\\include\\KernelAPI",
     "\\kernel",
     "\\kernel\\Interrupts",
+    "\\kernel\\Interrupts\\IDT_JUNK",
     "\\kernel\\Interrupts\\ISR_JUNK",
-    "\\kernel\\memory",
-    "\\kernel\\processors",
-    "\\kernel\\processors\\x86_64",
-    "\\kernel\\processors\\x86_64\\InterruptHandling"
+    "\\Registry"
   ],
+  "SelectedNode": "\\kernel\\Interrupts\\ISR_JUNK\\InterruptCordinationManager.c",
   "PreviewInSolutionExplorer": false
 }
