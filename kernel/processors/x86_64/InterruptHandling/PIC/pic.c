@@ -12,11 +12,7 @@ void PIC_sendEOI(unsigned char irq){
     outb(0x20,0x20);
 
     if(irq >= 8) 
-        outb(0xa0,0x20);
-
-    InitializeStartupInterruptHandleing();
-    SetInterruptFlags();
-    
+        outb(0xa0,0x20);    
 }
 
 
