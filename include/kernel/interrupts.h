@@ -41,8 +41,7 @@ typedef struct __attribute__((packed)){
 
 // Rest of the code...
 
-void RegisterMemoryProbe();
-void RegisterPageTableDeletion();
+
 
 
 LOUSTATUS SetBasicInterrupts(bool init);
@@ -51,24 +50,6 @@ LOUSTATUS set_idt_gate(int num,void (*handler)(), uint16_t selector, uint8_t ist
 
 static bool USBKeyboardInterrupt;
 
-void MemoryProbingPageFaultHandler();
-
-void PageFault();
-void DoubleFault();
-void GeneralProtectionFault();
-
-bool GetProbeStatus();
-
-void DivideByZero();
-void DebugException();
-void NMI();
-void BreakPoint();
-void OverFlow();
-void BoundCheck();
-void InvalidOpcode();
-void FPUNoDev();
-void CLOCK();
-void Keyboard();
 
 LOUSTATUS InitializeMainInterruptHandleing();
 LOUSTATUS InitializeStartupInterruptHandleing();
@@ -79,6 +60,14 @@ void SetInterruptFlags();
 void UnSetInterruptFlags();
 void WaitForInterrupt();
 
+struct interrupt_frame
+{
+    uint32_t ip;
+    uint32_t cs;
+    uint32_t flags;
+    uint32_t sp;
+    uint32_t ss;
+};
 
 #endif
 
@@ -111,21 +100,7 @@ static bool PageTableDeletion = false;
 static bool MemoryProbing = false;
 static bool USBKeyboardInterrupt = false;
 
-void PageFault();
-void DoubleFault();
-void GeneralProtectionFault();
 
-
-void DivideByZero();
-void DebugException();
-void NMI();
-void BreakPoint();
-void OverFlow();
-void BoundCheck();
-void InvalidOpcode();
-void FPUNoDev();
-void CLOCK();
-void Keyboard();
 
 void SetPicIDTGate(int index, void (*handler)());
 
@@ -136,6 +111,15 @@ LOUSTATUS UpdateIDT(bool Init);
 
 void SetInterruptFlags();
 void UnSetInterruptFlags();
+
+struct interrupt_frame
+{
+    uint32_t ip;
+    uint32_t cs;
+    uint32_t flags;
+    uint32_t sp;
+    uint32_t ss;
+};
 
 #endif
 

@@ -1,17 +1,17 @@
 {
   "ExpandedNodes": [
     "",
+    "\\include",
+    "\\include\\kernel",
     "\\init",
-    "\\init\\Interrupts",
+    "\\init\\MemorySegregation",
     "\\kernel",
     "\\kernel\\Interrupts",
-    "\\kernel\\Interrupts\\ISR_JUNK",
+    "\\kernel\\Interrupts\\IDT_JUNK",
     "\\kernel\\processors",
     "\\kernel\\processors\\x86_64",
-    "\\kernel\\processors\\x86_64\\InterruptHandling",
-    "\\kernel\\processors\\x86_64\\InterruptHandling\\PIC",
-    "\\Registry"
+    "\\kernel\\processors\\x86_64\\memory_segmentation"
   ],
-  "SelectedNode": "\\kernel\\Interrupts\\ISR_JUNK\\InterruptCordinationManager.c",
+  "SelectedNode": "\\kernel\\Interrupts\\ISR_JUNK\\ISRStubs.c",
   "PreviewInSolutionExplorer": false
 }

@@ -6,22 +6,22 @@
 #include <kernel/errors.h>
 #include <kernel/kernel.h>
 
-extern void ISR0_Long();
-extern void ISR1_Long();
-extern void ISR2_Long();
-extern void ISR3_Long();
-extern void ISR4_Long();
-extern void ISR5_Long();
-extern void ISR6_Long();
-extern void ISR7_Long();
-extern void ISR8_Long();
-extern void ISR9_Long();
-extern void ISR10_Long();
-extern void ISR11_Long();
-extern void ISR12_Long();
-extern void ISR13_Long();
-extern void ISR14_Long();
-extern void ISR15_Long();
+__attribute__((interrupt)) void ISR0(struct interrupt_frame* frame);
+__attribute__((interrupt)) void ISR1(struct interrupt_frame* frame);
+__attribute__((interrupt)) void ISR2(struct interrupt_frame* frame);
+__attribute__((interrupt)) void ISR3(struct interrupt_frame* frame);
+__attribute__((interrupt)) void ISR4(struct interrupt_frame* frame);
+__attribute__((interrupt)) void ISR5(struct interrupt_frame* frame);
+__attribute__((interrupt)) void ISR6(struct interrupt_frame* frame);
+__attribute__((interrupt)) void ISR7(struct interrupt_frame* frame);
+__attribute__((interrupt)) void ISR8(struct interrupt_frame* frame);
+__attribute__((interrupt)) void ISR9(struct interrupt_frame* frame);
+__attribute__((interrupt)) void ISR10(struct interrupt_frame* frame);
+__attribute__((interrupt)) void ISR11(struct interrupt_frame* frame);
+__attribute__((interrupt)) void ISR12(struct interrupt_frame* frame);
+__attribute__((interrupt)) void ISR13(struct interrupt_frame* frame);
+__attribute__((interrupt)) void ISR14(struct interrupt_frame* frame);
+__attribute__((interrupt)) void ISR15(struct interrupt_frame* frame);
 
 
 #ifdef __i386__
@@ -79,22 +79,22 @@ LOUSTATUS SetBasicInterrupts(bool Init){
     LOUSTATUS result;    
     #ifdef __x86_64__
     if(Init){
-        //set_idt_gate(0x20,ISR0 , KernelCodeSegment, 0, 0);
-        //set_idt_gate(0x21,ISR1 , KernelCodeSegment, 0, 0);
-        //set_idt_gate(0x22,ISR2 , KernelCodeSegment, 0, 0);
-        //set_idt_gate(0x23,ISR3 , KernelCodeSegment, 0, 0);
-        //set_idt_gate(0x24,ISR4 , KernelCodeSegment, 0, 0);
-        //set_idt_gate(0x25,ISR5 , KernelCodeSegment, 0, 0);
-        //set_idt_gate(0x26,ISR6 , KernelCodeSegment, 0, 0);
-        //set_idt_gate(0x27,ISR7 , KernelCodeSegment, 0, 0);
-        //set_idt_gate(0x28,ISR8 , KernelCodeSegment, 0, 0);
-        //set_idt_gate(0x29,ISR9 , KernelCodeSegment, 0, 0);
-        //set_idt_gate(0x2A,ISR10 , KernelCodeSegment, 0, 0);
-        //set_idt_gate(0x2B,ISR11 , KernelCodeSegment, 0, 0);
-        //set_idt_gate(0x2C,ISR12 , KernelCodeSegment, 0, 0);
-        //set_idt_gate(0x2E,ISR13 , KernelCodeSegment, 0, 0);
-        //set_idt_gate(0x2F,ISR14 , KernelCodeSegment, 0, 0);
-        //set_idt_gate(0x30,ISR15 , KernelCodeSegment, 0, 0);
+        set_idt_gate(0x20,ISR0 , KernelCodeSegment, 0, 0);
+        set_idt_gate(0x21,ISR1 , KernelCodeSegment, 0, 0);
+        set_idt_gate(0x22,ISR2 , KernelCodeSegment, 0, 0);
+        set_idt_gate(0x23,ISR3 , KernelCodeSegment, 0, 0);
+        set_idt_gate(0x24,ISR4 , KernelCodeSegment, 0, 0);
+        set_idt_gate(0x25,ISR5 , KernelCodeSegment, 0, 0);
+        set_idt_gate(0x26,ISR6 , KernelCodeSegment, 0, 0);
+        set_idt_gate(0x27,ISR7 , KernelCodeSegment, 0, 0);
+        set_idt_gate(0x28,ISR8 , KernelCodeSegment, 0, 0);
+        set_idt_gate(0x29,ISR9 , KernelCodeSegment, 0, 0);
+        set_idt_gate(0x2A,ISR10 , KernelCodeSegment, 0, 0);
+        set_idt_gate(0x2B,ISR11 , KernelCodeSegment, 0, 0);
+        set_idt_gate(0x2C,ISR12 , KernelCodeSegment, 0, 0);
+        set_idt_gate(0x2E,ISR13 , KernelCodeSegment, 0, 0);
+        set_idt_gate(0x2F,ISR14 , KernelCodeSegment, 0, 0);
+        set_idt_gate(0x30,ISR15 , KernelCodeSegment, 0, 0);
         return 0;
     }
     else{

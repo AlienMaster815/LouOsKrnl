@@ -98,12 +98,12 @@ void Turn_Off_Device(uint8_t Interrupt_Num, UMAXBITRATE Device_Number, uint16_t 
 // guess we should put in dynamic interrupt handleing earlyer... :( 
 // It is also type void because we will be doing kernel checks 
 // in the interrupt handlers themselves
-void InteruptCordinationManager(uint8_t Interrupt_Num,UMAXBITRATE Device_Number,uint16_t Device_Type,uint16_t Device_ID) {
-	uint16_t i;
+void InteruptCordinationManager(uint8_t Interrupt_Num) {
+	/*uint16_t i;
 	for (i = 0; i < 1001; i++) {
-		if ((deviceTable[i]->Device_Number == Device_Number) &&
-			(deviceTable[i]->Device_Type == Device_Type) &&
-			(deviceTable[i]->Device_ID == Device_ID) &&
+		if ((deviceTable[i]->Device_Number != 0) &&
+			(deviceTable[i]->Device_Type != 0) &&
+			(deviceTable[i]->Device_ID != 0) &&
 			(deviceTable[i]->Interrupt_Number == Interrupt_Num)) {
 				deviceTable[i]->Interrupt_Handler;
 				return;
@@ -111,5 +111,5 @@ void InteruptCordinationManager(uint8_t Interrupt_Num,UMAXBITRATE Device_Number,
 	}
 	// If we are here we ignore the interrupt handleing and give off a device is not
 	// being managed or is unknown and shut it down
-	Turn_Off_Device(Interrupt_Num,Device_Number,Device_Type,Device_ID);
+	*/
 }
