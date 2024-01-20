@@ -1,17 +1,16 @@
 {
   "ExpandedNodes": [
     "",
-    "\\include",
-    "\\include\\kernel",
     "\\init",
-    "\\init\\MemorySegregation",
+    "\\init\\Interrupts",
+    "\\init\\memoryProbing",
     "\\kernel",
     "\\kernel\\Interrupts",
     "\\kernel\\Interrupts\\IDT_JUNK",
-    "\\kernel\\processors",
+    "\\kernel\\Interrupts\\ISR_JUNK",
     "\\kernel\\processors\\x86_64",
     "\\kernel\\processors\\x86_64\\memory_segmentation"
   ],
-  "SelectedNode": "\\kernel\\Interrupts\\ISR_JUNK\\ISRStubs.c",
+  "SelectedNode": "\\init\\Lou_Main.c",
   "PreviewInSolutionExplorer": false
 }

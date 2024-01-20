@@ -60,13 +60,12 @@ void SetInterruptFlags();
 void UnSetInterruptFlags();
 void WaitForInterrupt();
 
-struct interrupt_frame
-{
-    uint32_t ip;
-    uint32_t cs;
-    uint32_t flags;
-    uint32_t sp;
-    uint32_t ss;
+struct interrupt_frame {
+    uint64_t rip;
+    uint64_t cs;
+    uint64_t rflags;
+    uint64_t rsp;
+    uint64_t ss;
 };
 
 #endif

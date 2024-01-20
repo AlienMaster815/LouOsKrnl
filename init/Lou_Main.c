@@ -92,6 +92,9 @@ KERNEL_ENTRY Lou_kernel_start(){
     if(Lou_kernel_early_initialization() != LOUSTATUS_GOOD)LouPanic("Early Initialization Failed",BAD);
 
     //LouPrint("Hallo!!!");
+    
+
+
 
     //SETUP DEVICES AND DRIVERS
     //if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);
@@ -103,10 +106,12 @@ KERNEL_ENTRY Lou_kernel_start(){
 
     //LouPrint("HEX 0xAFAF: %h \n", 0xAFAF);
 
+
     while (1);
+
 
 	LouPanic("error kernel has gone too far terminating system\n",BAD);
 	// IF the Kernel returns from this
-	// the whole thing crashes crashes
+	// the whole thing crashes
 }
 
