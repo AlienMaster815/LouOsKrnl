@@ -7,12 +7,18 @@ LOUSTATUS InitializeStartupInterruptHandleing();
 void SetInterruptFlags();
 #endif
 
+
+
 void PIC_sendEOI(unsigned char irq){
  
     outb(0x20,0x20);
 
     if(irq >= 8) 
-        outb(0xa0,0x20);    
+        outb(PicMaster,PicSlave);   
+    
+    PIC_remap(0x20,0x28);
+    Mask_All_Programable_Interrupts();
+    UnMaskKeyboard();
 }
 
 

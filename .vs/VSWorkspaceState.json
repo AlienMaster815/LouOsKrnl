@@ -1,16 +1,17 @@
 {
   "ExpandedNodes": [
     "",
-    "\\init",
-    "\\init\\Interrupts",
-    "\\init\\memoryProbing",
+    "\\include",
+    "\\include\\kernel",
     "\\kernel",
+    "\\kernel\\Drivers",
+    "\\kernel\\Drivers\\io",
+    "\\kernel\\Drivers\\io\\periphials",
+    "\\kernel\\Drivers\\io\\periphials\\Keyboard",
     "\\kernel\\Interrupts",
-    "\\kernel\\Interrupts\\IDT_JUNK",
-    "\\kernel\\Interrupts\\ISR_JUNK",
     "\\kernel\\processors\\x86_64",
-    "\\kernel\\processors\\x86_64\\memory_segmentation"
+    "\\kernel\\processors\\x86_64\\InterruptHandling"
   ],
-  "SelectedNode": "\\init\\Lou_Main.c",
+  "SelectedNode": "\\kernel\\Interrupts\\ISR_JUNK\\ProcessorInterrupts.c",
   "PreviewInSolutionExplorer": false
 }

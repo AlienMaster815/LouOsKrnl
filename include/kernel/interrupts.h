@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <LouAPI.h>
 
 #ifndef _INTERRUPTS_H
 #define _INTERRUPTS_H
@@ -41,14 +42,16 @@ typedef struct __attribute__((packed)){
 
 // Rest of the code...
 
+static uint8_t PicMaster = 0x20, PicSlave = 0x28;
 
-
-
+void PS2KeyboardHandler();
 LOUSTATUS SetBasicInterrupts(bool init);
 
 LOUSTATUS set_idt_gate(int num,void (*handler)(), uint16_t selector, uint8_t ist, uint8_t type_attr);
 
 static bool USBKeyboardInterrupt;
+
+LOUSTATUS Register_Device_To_Interrupt(uint8_t Interrupt_Number, void (*Interrupt_Handler)());
 
 
 LOUSTATUS InitializeMainInterruptHandleing();
@@ -84,7 +87,6 @@ typedef struct __attribute__((packed)){
 } Interrupt_Descriptor_Table;
 
 static Interrupt_Descriptor_Table idt[256]; // 256 entries for the IDT
-
 
 typedef struct __attribute__((packed)){
     uint16_t limit;

@@ -23,7 +23,7 @@
 
 
 void WaitForKeyboardReadiness(uint8_t devtype){
-    uint8_t readyornot;
+    //uint8_t readyornot;
     switch(devtype){
         case PS2: {
             break;
