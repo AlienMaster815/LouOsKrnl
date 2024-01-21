@@ -37,7 +37,7 @@ void ISR7(struct interrupt_frame* frame) {
 	asm volatile("hlt");
 }
 void ISR8(struct interrupt_frame* frame) {
-	LouPrint("Interrupt Vector: 8\n");
+	LOUSTATUS LouStat = InteruptCordinationManager(8);
 	asm volatile("hlt");
 }
 void ISR9(struct interrupt_frame* frame) {
@@ -57,7 +57,7 @@ void ISR12(struct interrupt_frame* frame) {
 	asm volatile("hlt");
 }
 void ISR13(struct interrupt_frame* frame) {
-	LouPrint("Interrupt Vector: 13\n");
+	LOUSTATUS LouStat = InteruptCordinationManager(13);
 	asm volatile("hlt");
 }
 void ISR14(struct interrupt_frame* frame) {

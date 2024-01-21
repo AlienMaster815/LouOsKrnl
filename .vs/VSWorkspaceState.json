@@ -1,17 +1,18 @@
 {
   "ExpandedNodes": [
     "",
-    "\\include",
-    "\\include\\kernel",
+    "\\API",
+    "\\API\\LouAPI",
+    "\\API\\LouAPI\\KernelAPI",
+    "\\API\\LouAPI\\KernelAPI\\IOManager",
+    "\\init",
+    "\\init\\Interrupts",
     "\\kernel",
-    "\\kernel\\Drivers",
-    "\\kernel\\Drivers\\io",
-    "\\kernel\\Drivers\\io\\periphials",
-    "\\kernel\\Drivers\\io\\periphials\\Keyboard",
+    "\\kernel\\errors",
     "\\kernel\\Interrupts",
-    "\\kernel\\processors\\x86_64",
-    "\\kernel\\processors\\x86_64\\InterruptHandling"
+    "\\kernel\\Interrupts\\ISR_JUNK",
+    "\\kernel\\Interrupts\\ISR_JUNK\\EarlyRoutines"
   ],
-  "SelectedNode": "\\kernel\\Interrupts\\ISR_JUNK\\ProcessorInterrupts.c",
+  "SelectedNode": "\\kernel\\Interrupts\\ISR_JUNK\\EarlyRoutines\\DoubleFault.c",
   "PreviewInSolutionExplorer": false
 }

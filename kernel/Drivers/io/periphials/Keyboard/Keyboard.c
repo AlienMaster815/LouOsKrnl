@@ -46,7 +46,7 @@ char GetPS2CharecterData(uint8_t KBL,uint8_t keyData){
             switch(keyData){
                 
                 //SHIFT
-                case 42:
+            case 42:
                 SHIFT = true;
                 return -1;
                 

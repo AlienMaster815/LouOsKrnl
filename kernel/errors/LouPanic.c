@@ -7,8 +7,20 @@
 
 #ifdef ARCH_I386_VGA_H
 #define LOU_PANIC
-_Noreturn void LouPanic(char* error_message,STATUS recoverable) {
+
+LOUSTATUS SilentPanic() {
+	LOUSTATUS Status = 1;
+
+
+	return Status;
+}
+
+void LouPanic(char* error_message,STATUS recoverable) {
 	
+	if (true == recoverable) {
+		if(LOUSTATUS_GOOD == SilentPanic()) return;
+	}
+
 	Set_Color(PRINT_COLOR_WHITE, PRINT_COLOR_BLUE);
 	
 	init_terminal();
@@ -19,8 +31,7 @@ _Noreturn void LouPanic(char* error_message,STATUS recoverable) {
 	LouPrint("%x%yReason For Crash:", 27, 8);
 	LouPrint("%x%y%s", 27, 9, error_message);
 	
-	if (recoverable == GOOD)LouPrint("%x%ySystem Is Recoverable: Recover Y/N", 20, 11);
-	if (recoverable == BAD)LouPrint("%x%ySystem Is NOT Recoverable: System Halted", 17, 11);
+	LouPrint("%x%ySystem Is NOT Recoverable: System Halted", 17, 11);
 	
     asm volatile("cli");
     asm volatile("hlt");

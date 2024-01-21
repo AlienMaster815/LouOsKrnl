@@ -45,9 +45,9 @@ LOUSTATUS Lou_kernel_early_initialization(){
 LOUSTATUS Set_Up_Devices(){
     if(IO_Manager_Init() != LOUSTATUS_GOOD)LouPanic("IO Manager Failed To Start",BAD);
 
-    pata_device_scanc();
+    //pata_device_scanc();
 
-    FileSystemScan();
+    //FileSystemScan();
     
     return LOUSTATUS_GOOD;
 }
@@ -82,11 +82,11 @@ KERNEL_ENTRY Lou_kernel_start(){
 
 
     //SETUP DEVICES AND DRIVERS
-    //if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);
+    if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);
 
     //if(Advanced_Kernel_Initialization() != LOUSTATUS_GOOD)LouPanic("Final Kernel Initialization Failed",BAD);
 		
-    //if(User_Mode_Initialization() != LOUSTATUS_GOOD)LouPanic("User Mode Initialiation Failed",BAD);
+   // if(User_Mode_Initialization() != LOUSTATUS_GOOD)LouPanic("User Mode Initialiation Failed",BAD);
     LouPrint("Hello World\n");
 
     //LouPrint("HEX 0xAFAF: %h \n", 0xAFAF);
