@@ -1,18 +1,17 @@
 {
   "ExpandedNodes": [
     "",
-    "\\API",
-    "\\API\\LouAPI",
-    "\\API\\LouAPI\\KernelAPI",
-    "\\API\\LouAPI\\KernelAPI\\IOManager",
-    "\\init",
-    "\\init\\Interrupts",
     "\\kernel",
-    "\\kernel\\errors",
-    "\\kernel\\Interrupts",
-    "\\kernel\\Interrupts\\ISR_JUNK",
-    "\\kernel\\Interrupts\\ISR_JUNK\\EarlyRoutines"
+    "\\kernel\\cstdlib",
+    "\\kernel\\cstdlib\\stdio",
+    "\\kernel\\cstdlib\\strings",
+    "\\kernel\\Drivers",
+    "\\kernel\\Drivers\\Display",
+    "\\kernel\\Drivers\\io",
+    "\\kernel\\Drivers\\io\\periphials",
+    "\\kernel\\Drivers\\io\\periphials\\Keyboard",
+    "\\kernel\\UserSpace"
   ],
-  "SelectedNode": "\\kernel\\Interrupts\\ISR_JUNK\\EarlyRoutines\\DoubleFault.c",
+  "SelectedNode": "\\kernel\\Drivers\\Display\\vga.c",
   "PreviewInSolutionExplorer": false
 }

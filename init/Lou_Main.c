@@ -43,7 +43,7 @@ LOUSTATUS Lou_kernel_early_initialization(){
 }
 
 LOUSTATUS Set_Up_Devices(){
-    if(IO_Manager_Init() != LOUSTATUS_GOOD)LouPanic("IO Manager Failed To Start",BAD);
+    //if(IO_Manager_Init() != LOUSTATUS_GOOD)LouPanic("IO Manager Failed To Start",BAD);
 
     //pata_device_scanc();
 
@@ -65,10 +65,7 @@ LOUSTATUS User_Mode_Initialization(){
 
 
 KERNEL_ENTRY Lou_kernel_start(){
-    STATUS lou_init_stat;
-	
-    
-    
+	    
     setup_vga_systems();
 
 	//vga set for debug
@@ -82,17 +79,21 @@ KERNEL_ENTRY Lou_kernel_start(){
 
 
     //SETUP DEVICES AND DRIVERS
-    if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);
+    //if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);
 
     //if(Advanced_Kernel_Initialization() != LOUSTATUS_GOOD)LouPanic("Final Kernel Initialization Failed",BAD);
 		
+
+   // Initialize User Mode
    // if(User_Mode_Initialization() != LOUSTATUS_GOOD)LouPanic("User Mode Initialiation Failed",BAD);
     LouPrint("Hello World\n");
 
     //LouPrint("HEX 0xAFAF: %h \n", 0xAFAF);
 
 
-    while (1);
+    while (1) {
+        asm("hlt");
+    }
 
 
 	LouPanic("error kernel has gone too far terminating system\n",BAD);

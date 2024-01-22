@@ -16,6 +16,7 @@ LOUSTATUS InitializeMainInterruptHandleing(){
 void InvalidOpcode();
 void DoubleFault();
 void GPF();
+void PageFault();
 
 LOUSTATUS InitializeStartupInterruptHandleing(){
     
@@ -24,6 +25,7 @@ LOUSTATUS InitializeStartupInterruptHandleing(){
     Register_Device_To_Interrupt(6, InvalidOpcode);
     Register_Device_To_Interrupt(8, GPF);
     Register_Device_To_Interrupt(13, DoubleFault);
+    Register_Device_To_Interrupt(14, PageFault);
     Register_Device_To_Interrupt(33, PS2KeyboardHandler);
 
     PIC_remap(0x20,0x20 + 8);

@@ -44,15 +44,12 @@ void Turn_Off_Device(uint8_t Interrupt_Num, UMAXBITRATE Device_Number, uint16_t 
 // guess we should put in dynamic interrupt handleing earlyer... :( 
 // It is also type void because we will be doing kernel checks 
 // in the interrupt handlers themselves
-LOUSTATUS InteruptCordinationManager(uint8_t Interrupt_Num) {
-	
+void InteruptCordinationManager(uint8_t Interrupt_Num) {
 	
 	if (Handler[Interrupt_Num] == NULL) {
-		LouPrint("Unable To Handle Interrupt Number: %d\n", Interrupt_Num);
-		return !LOUSTATUS_GOOD;
+		LouPanic("Interrupt Could Not Be Handled",GOOD);
 	}
 	else {
 		Handler[Interrupt_Num]();
-		return LOUSTATUS_GOOD;
 	}
 }

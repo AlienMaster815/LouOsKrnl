@@ -1,10 +1,10 @@
 #include <LouAPI.h>
 
-LOUSTATUS InteruptCordinationManager(uint8_t Interrupt_Num);
+void InteruptCordinationManager(uint8_t Interrupt_Num);
 
 
 void ISR0(struct interrupt_frame* frame) {
-	LouPrint("Interrupt Vector: 1\n");
+	LouPrint("Interrupt Vector: 0\n");
 	asm volatile("hlt");
 }
 void ISR1(struct interrupt_frame* frame) {
@@ -28,16 +28,15 @@ void ISR5(struct interrupt_frame* frame) {
 	asm volatile("hlt");
 }
 void ISR6(struct interrupt_frame* frame) {
-	LOUSTATUS LouStat = InteruptCordinationManager(6);
-	//PIC_sendEOI(1);
-	SetInterruptFlags();
+	InteruptCordinationManager(6);
+	asm volatile("hlt");
 }
 void ISR7(struct interrupt_frame* frame) {
 	LouPrint("Interrupt Vector: 7\n");
 	asm volatile("hlt");
 }
 void ISR8(struct interrupt_frame* frame) {
-	LOUSTATUS LouStat = InteruptCordinationManager(8);
+	InteruptCordinationManager(8);
 	asm volatile("hlt");
 }
 void ISR9(struct interrupt_frame* frame) {
@@ -57,11 +56,11 @@ void ISR12(struct interrupt_frame* frame) {
 	asm volatile("hlt");
 }
 void ISR13(struct interrupt_frame* frame) {
-	LOUSTATUS LouStat = InteruptCordinationManager(13);
+	InteruptCordinationManager(13);
 	asm volatile("hlt");
 }
 void ISR14(struct interrupt_frame* frame) {
-	LouPrint("Interrupt Vector: 14\n");
+	InteruptCordinationManager(14);
 	asm volatile("hlt");
 }
 void ISR15(struct interrupt_frame* frame) {
