@@ -23,7 +23,7 @@ extern void UnSetInterruptFlags();
 -- with allocation functions
 */
 
-char* KERNEL_VERSION = "0.0.00031 RSC-3";
+char* KERNEL_VERSION = "0.0.00031 RSC-6";
 
 
 #ifdef __x86_64__
@@ -86,7 +86,6 @@ KERNEL_ENTRY Lou_kernel_start(){
 
    // Initialize User Mode
    // if(User_Mode_Initialization() != LOUSTATUS_GOOD)LouPanic("User Mode Initialiation Failed",BAD);
-    LouPrint("Hello World\n");
 
     //LouPrint("HEX 0xAFAF: %h \n", 0xAFAF);
 

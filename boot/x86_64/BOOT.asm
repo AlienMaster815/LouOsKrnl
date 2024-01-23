@@ -124,8 +124,10 @@ page_table_l3:
     resb 4096
 page_table_l2:
     resb 4096
+
+align 4096
 stack_bottom:
-    resb 4096 * 4
+    resb 24 * 1024 / 8  ; Allocate 24KB for the stack
 stack_top:
 
 section .rodata
