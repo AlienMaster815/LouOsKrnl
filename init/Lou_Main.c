@@ -33,11 +33,12 @@ char* KERNEL_ARCH = "64-BIT";
 char* KERNEL_ARCH = "32-BIT";
 #endif
 
+uint64_t get_rsp();
 
 LOUSTATUS Lou_kernel_early_initialization(){
 
     InitializeStartupInterruptHandleing();
-    SetInterruptFlags();
+    //SetInterruptFlags();
 
     return LOUSTATUS_GOOD;
 }
@@ -89,7 +90,8 @@ KERNEL_ENTRY Lou_kernel_start(){
 
     //LouPrint("HEX 0xAFAF: %h \n", 0xAFAF);
 
-
+    uint64_t Foo = get_rsp();
+    LouPrint("Where We Are After Initialization: %d",Foo);
     while (1) {
         asm("hlt");
     }

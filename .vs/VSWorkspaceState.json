@@ -1,17 +1,16 @@
 {
   "ExpandedNodes": [
     "",
-    "\\boot",
-    "\\boot\\x86_64",
-    "\\include",
+    "\\init",
+    "\\init\\Interrupts",
     "\\kernel",
-    "\\kernel\\cstdlib",
-    "\\kernel\\cstdlib\\Time",
     "\\kernel\\Interrupts",
-    "\\kernel\\Interrupts\\ISR_JUNK",
-    "\\kernel\\Interrupts\\ISR_JUNK\\EarlyRoutines",
-    "\\kernel\\Timers"
+    "\\kernel\\Interrupts\\IDT_JUNK",
+    "\\kernel\\processors\\x86_64",
+    "\\kernel\\processors\\x86_64\\InterruptHandling",
+    "\\kernel\\processors\\x86_64\\InterruptHandling\\PIC",
+    "\\kernel\\processors\\x86_64\\Registers"
   ],
-  "SelectedNode": "\\kernel\\cstdlib\\Time\\sleep.c",
+  "SelectedNode": "\\kernel\\Interrupts\\IDT_JUNK\\IDT_Main.c",
   "PreviewInSolutionExplorer": false
 }

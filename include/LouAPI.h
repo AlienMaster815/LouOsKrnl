@@ -24,5 +24,6 @@
 #include <kernel/Timers.h>
 #include <kernel/Clock.h>
 #include <string.h>
+#include <Time.h>
 
 #endif

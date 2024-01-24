@@ -16,7 +16,8 @@ void WaitForInterrupt();
 #endif
 
 void RegisterForClockInterrupt(){
-    IRQ_Pic_clear_mask(0x20);
+    Mask_All_Programable_Interrupts();
+    IRQ_Pic_clear_mask(0);
 }
 
 void RunTimerClockMS(uint64_t TimerInMS){
@@ -29,7 +30,7 @@ void RunTimerClockMS(uint64_t TimerInMS){
 
 void RunTimerClockS(uint64_t TimerInS){
 
-    for(uint64_t i = 0; i < TimerInS;  i++){
+    for(uint64_t i = 0; i < (TimerInS * 1000);  i++){
             //TODO: change The Clock Speed For Time Segments
             RegisterForClockInterrupt();
             WaitForInterrupt();
@@ -38,9 +39,11 @@ void RunTimerClockS(uint64_t TimerInS){
 
 void RunTimerClockHs(uint64_t TimerHS){
     
-    for(uint64_t i = 0; i < TimerHS; i++){
+    for(uint64_t i = 0; i < ((TimerHS * 1000) * 30); i++){
             //TODO: change The Clock Speed For Time Segments
             RegisterForClockInterrupt();
             WaitForInterrupt();
     }
 }
+
+//Bree Likes Cars
