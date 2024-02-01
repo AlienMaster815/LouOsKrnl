@@ -83,7 +83,7 @@ KERNEL_ENTRY Lou_kernel_start(){
     if(Lou_kernel_early_initialization() != LOUSTATUS_GOOD)LouPanic("Early Initialization Failed",BAD);
 
     //for (uint8_t i = 0; i < 250; i++) {
-   //     asm("INT $0x21");
+        asm("INT $0x21");
    // }
     //SETUP DEVICES AND DRIVERS
     //if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);

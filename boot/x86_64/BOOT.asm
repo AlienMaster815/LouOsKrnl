@@ -13,7 +13,6 @@ section .text
 
 global start
 
-;Define Global Code Adn Data Segments For The Rest Of The Kernel
 
 
 extern Lou_kernel_start
@@ -163,6 +162,13 @@ gdt64:
 
 bits 64
 long_mode_start:
+    mov ax, gdt64.data_segment
+    mov ds, ax
+    mov fs, ax
+    mov es, ax 
+    mov gs, ax 
+    mov ss, ax 
+
     ;mov rdi, [multiboot_info_ptr]
     call Lou_kernel_start
     jmp $ 

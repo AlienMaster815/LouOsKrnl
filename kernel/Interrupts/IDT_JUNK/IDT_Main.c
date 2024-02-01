@@ -168,7 +168,7 @@ LOUSTATUS SetBasicInterrupts(bool Init){
     if(Init){
 
         for (uint8_t i = 0; i < 48; i++ ) {
-            set_idt_gate(i, Handler[i], cs_value, 0, 0);
+            set_idt_gate(i, Handler[i], 0x38, 0, 0);
         }
         return 0;
     }

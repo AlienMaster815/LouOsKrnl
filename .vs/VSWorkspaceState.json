@@ -10,6 +10,6 @@
     "\\kernel\\Interrupts\\IDT_JUNK",
     "\\kernel\\Interrupts\\ISR_JUNK"
   ],
-  "SelectedNode": "\\boot\\x86_64\\BOOT.asm",
+  "SelectedNode": "\\kernel\\Interrupts\\ISR_JUNK\\HardwareInterrupts.asm",
   "PreviewInSolutionExplorer": false
 }
