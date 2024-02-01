@@ -51,8 +51,8 @@ LOUSTATUS set_idt_gate(int num,void (*handler)(), uint16_t selector, uint8_t ist
 
 static bool USBKeyboardInterrupt;
 
-LOUSTATUS Register_Device_To_Interrupt(uint8_t Interrupt_Number, void (*Interrupt_Handler)());
-
+void RegisterInterruptHandler(void(*Handler), uint8_t InterruptNumber);
+void UnRegisterInterruptHandler(uint8_t InterruptNumber);
 
 LOUSTATUS InitializeMainInterruptHandleing();
 LOUSTATUS InitializeStartupInterruptHandleing();
@@ -101,7 +101,8 @@ static bool PageTableDeletion = false;
 static bool MemoryProbing = false;
 static bool USBKeyboardInterrupt = false;
 
-
+void RegisterInterruptHandler(void(*Handler), uint8_t InterruptNumber);
+void UnRegisterInterruptHandler(uint8_t InterruptNumber);
 
 void SetPicIDTGate(int index, void (*handler)());
 

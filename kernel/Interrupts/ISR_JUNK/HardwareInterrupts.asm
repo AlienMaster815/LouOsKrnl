@@ -13,8 +13,7 @@ section .bss
 
 section .text
 extern InterruptRouter
-extern RSP_Current
-extern RBP_Current
+extern PIC_sendEOI
 
 %macro pusha 0
     ; Push General-Purpose Registers
@@ -44,11 +43,14 @@ extern RBP_Current
 
 %endmacro
 
-
+;PIC_sendEOI(unsigned char irq)
 
 %macro Handle 0
 	mov rdi, [InterruptNum]
 	call InterruptRouter
+	mov rdi, [InterruptNum]
+	call PIC_sendEOI
+
 %endmacro
 
 global ISR32

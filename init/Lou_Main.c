@@ -39,11 +39,14 @@ char* KERNEL_ARCH = "32-BIT";
 uint64_t get_rsp();
 uint64_t get_rbp();
 
+void PS2KeyboardHandler();
+
 LOUSTATUS Lou_kernel_early_initialization(){
 
+    RegisterInterruptHandler(PS2KeyboardHandler, 33);
 
     InitializeStartupInterruptHandleing();
-    //SetInterruptFlags();
+    SetInterruptFlags();
 
     return LOUSTATUS_GOOD;
 }
@@ -82,9 +85,6 @@ KERNEL_ENTRY Lou_kernel_start(){
     //INITIALIZE IMPORTANT THINGS FOR US LATER
     if(Lou_kernel_early_initialization() != LOUSTATUS_GOOD)LouPanic("Early Initialization Failed",BAD);
 
-    //for (uint8_t i = 0; i < 250; i++) {
-        asm("INT $0x21");
-   // }
     //SETUP DEVICES AND DRIVERS
     //if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);
 

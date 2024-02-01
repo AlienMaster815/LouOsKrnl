@@ -4,6 +4,16 @@
 void(*InterruptHandler[256])();
 
 
+void RegisterInterruptHandler(void(*Handler),uint8_t InterruptNumber) {
+	
+	InterruptHandler[InterruptNumber] = Handler;
+
+}
+
+void UnRegisterInterruptHandler(uint8_t InterruptNumber) {
+	InterruptHandler[InterruptNumber] = NULL;
+}
+
 void InterruptRouter(uint8_t Interrupt) {
 
 	if (NULL != InterruptHandler[Interrupt]) {
