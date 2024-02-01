@@ -10,7 +10,12 @@ section .data
 ;multiboot_info_ptr dd 0
 
 section .text
+
 global start
+
+;Define Global Code Adn Data Segments For The Rest Of The Kernel
+
+
 extern Lou_kernel_start
 start:
     
@@ -145,6 +150,12 @@ gdt64:
     dq 0x00AF92000000FFFF ; 64-bit System mode Code segment (CS)
 .system_data_segment: equ $ - gdt64
     dq 0x00AF92000000FFFF ; 64-bit System mode Data segment (DS)
+; Define an interrupt code segment
+.interrupt_code_segment: equ $ - gdt64
+    dq 0x00AF9A000000FFFF ; Modify with appropriate attributes
+; Define an interrupt data segment
+.interrupt_data_segment: equ $ - gdt64
+    dq 0x00AF92000000FFFF ; Modify with appropriate attributes
 
 .pointer:
     dw $ - gdt64 - 1 ; length

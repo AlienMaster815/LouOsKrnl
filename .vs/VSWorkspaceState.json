@@ -1,16 +1,15 @@
 {
   "ExpandedNodes": [
     "",
+    "\\boot",
+    "\\boot\\x86_64",
     "\\init",
     "\\init\\Interrupts",
     "\\kernel",
     "\\kernel\\Interrupts",
     "\\kernel\\Interrupts\\IDT_JUNK",
-    "\\kernel\\processors\\x86_64",
-    "\\kernel\\processors\\x86_64\\InterruptHandling",
-    "\\kernel\\processors\\x86_64\\InterruptHandling\\PIC",
-    "\\kernel\\processors\\x86_64\\Registers"
+    "\\kernel\\Interrupts\\ISR_JUNK"
   ],
-  "SelectedNode": "\\kernel\\Interrupts\\IDT_JUNK\\IDT_Main.c",
+  "SelectedNode": "\\boot\\x86_64\\BOOT.asm",
   "PreviewInSolutionExplorer": false
 }

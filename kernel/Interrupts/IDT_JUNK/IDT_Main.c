@@ -19,6 +19,105 @@ extern LOUSTATUS InitializeStartupInterruptHandleing();
 extern LOUSTATUS UpdateIDT(bool Init);
 #endif
 
+extern void ISR0();
+extern void ISR1();
+extern void ISR2();
+extern void ISR3();
+extern void ISR4();
+extern void ISR5();
+extern void ISR6();
+extern void ISR7();
+extern void ISR8();
+extern void ISR9();
+extern void ISR10();
+extern void ISR11();
+extern void ISR12();
+extern void ISR13();
+extern void ISR14();
+extern void ISR15();
+extern void ISR16();
+extern void ISR17();
+extern void ISR18();
+extern void ISR19();
+extern void ISR20();
+extern void ISR21();
+extern void ISR22();
+extern void ISR23();
+extern void ISR24();
+extern void ISR25();
+extern void ISR26();
+extern void ISR27();
+extern void ISR28();
+extern void ISR29();
+extern void ISR30();
+extern void ISR31();
+extern void ISR32();
+extern void ISR33();
+extern void ISR34();
+extern void ISR35();
+extern void ISR36();
+extern void ISR37();
+extern void ISR38();
+extern void ISR39();
+extern void ISR40();
+extern void ISR41();
+extern void ISR42();
+extern void ISR43();
+extern void ISR44();
+extern void ISR45();
+extern void ISR46();
+extern void ISR47();
+
+void(*Handler[48])() = {
+    ISR0,
+    ISR1,
+    ISR2,
+    ISR3,
+    ISR4,
+    ISR5,
+    ISR6,
+    ISR7,
+    ISR8,
+    ISR9,
+    ISR10,
+    ISR11,
+    ISR12,
+    ISR13,
+    ISR14,
+    ISR15,
+    ISR16,
+    ISR17,
+    ISR18,
+    ISR19,
+    ISR20,
+    ISR21,
+    ISR22,
+    ISR23,
+    ISR24,
+    ISR25,
+    ISR26,
+    ISR27,
+    ISR28,
+    ISR29,
+    ISR30,
+    ISR31,
+    ISR32,
+    ISR33,
+    ISR34,
+    ISR35,
+    ISR36,
+    ISR37,
+    ISR38,
+    ISR39,
+    ISR40,
+    ISR41,
+    ISR42,
+    ISR43,
+    ISR44,
+    ISR45,
+    ISR46,
+    ISR47
+}; 
 
 #ifdef __x86_64__
 LOUSTATUS set_idt_gate(int num, void (*handler)(), uint16_t selector, uint8_t ist, uint8_t type_attr) {
@@ -59,11 +158,18 @@ void SetPicIDTGate(int index, void (*handler)()) {
 }
 
 LOUSTATUS SetBasicInterrupts(bool Init){
-    
+    unsigned short cs_value;
+
+    // Inline assembly to read the CS register
+    asm("mov %%cs, %0" : "=r" (cs_value));
+
     LOUSTATUS result;    
     #ifdef __x86_64__
     if(Init){
-       
+
+        for (uint8_t i = 0; i < 48; i++ ) {
+            set_idt_gate(i, Handler[i], cs_value, 0, 0);
+        }
         return 0;
     }
     else{

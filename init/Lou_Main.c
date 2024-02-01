@@ -17,6 +17,9 @@ extern void UnSetInterruptFlags();
 
 #endif
 
+uintptr_t RSP_Current;
+uintptr_t RBP_Current;
+
 /* Tyler Grenier 9/21/23 9:56 PM
 -- Started the file with the main
 -- functions to get us going along 
@@ -34,8 +37,10 @@ char* KERNEL_ARCH = "32-BIT";
 #endif
 
 uint64_t get_rsp();
+uint64_t get_rbp();
 
 LOUSTATUS Lou_kernel_early_initialization(){
+
 
     InitializeStartupInterruptHandleing();
     //SetInterruptFlags();
@@ -77,8 +82,9 @@ KERNEL_ENTRY Lou_kernel_start(){
     //INITIALIZE IMPORTANT THINGS FOR US LATER
     if(Lou_kernel_early_initialization() != LOUSTATUS_GOOD)LouPanic("Early Initialization Failed",BAD);
 
-
-
+    //for (uint8_t i = 0; i < 250; i++) {
+   //     asm("INT $0x21");
+   // }
     //SETUP DEVICES AND DRIVERS
     //if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);
 
@@ -90,8 +96,6 @@ KERNEL_ENTRY Lou_kernel_start(){
 
     //LouPrint("HEX 0xAFAF: %h \n", 0xAFAF);
 
-    uint64_t Foo = get_rsp();
-    LouPrint("Where We Are After Initialization: %d",Foo);
     while (1) {
         asm("hlt");
     }
