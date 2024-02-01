@@ -3,14 +3,14 @@
 Drives* DriveSystem;
 
 extern "C" LOUSTATUS IO_Manager_Init(){
-    //LouPrint("IO Manager Is Starting\n");
-    //DriveSystem = (Drives*) Lou_Alloc_Mem(sizeof(Drives));
+    LouPrint("IO Manager Is Starting\n");
+    DriveSystem = (Drives*) Lou_Alloc_Mem(sizeof(Drives));
     
-    //if(DriveSystem == 0)return 1;
+    if(DriveSystem == 0)return 1;
     
-    //DeclareExports();
+    DeclareExports();
     
-    //LouPrint("IO Manager Is Started\n");
+    LouPrint("IO Manager Is Started\n");
     
     return 0;
 }

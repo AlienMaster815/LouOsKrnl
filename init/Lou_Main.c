@@ -26,7 +26,7 @@ uintptr_t RBP_Current;
 -- with allocation functions
 */
 
-char* KERNEL_VERSION = "0.0.00031 RSC-6";
+char* KERNEL_VERSION = "0.0.00032 RSC-1";
 
 
 #ifdef __x86_64__
@@ -36,14 +36,19 @@ char* KERNEL_ARCH = "64-BIT";
 char* KERNEL_ARCH = "32-BIT";
 #endif
 
-uint64_t get_rsp();
-uint64_t get_rbp();
-
 void PS2KeyboardHandler();
+void PageFault();
+void GPF();
+void DoubleFault();
 
 LOUSTATUS Lou_kernel_early_initialization(){
 
+    
+    RegisterInterruptHandler(DoubleFault, 8);
+    RegisterInterruptHandler(GPF, 13);
+    RegisterInterruptHandler(PageFault, 14);
     RegisterInterruptHandler(PS2KeyboardHandler, 33);
+
 
     InitializeStartupInterruptHandleing();
     SetInterruptFlags();
@@ -52,9 +57,9 @@ LOUSTATUS Lou_kernel_early_initialization(){
 }
 
 LOUSTATUS Set_Up_Devices(){
-    //if(IO_Manager_Init() != LOUSTATUS_GOOD)LouPanic("IO Manager Failed To Start",BAD);
+    if(IO_Manager_Init() != LOUSTATUS_GOOD)LouPanic("IO Manager Failed To Start",BAD);
 
-    //pata_device_scanc();
+    pata_device_scanc();
 
     //FileSystemScan();
     
@@ -86,7 +91,7 @@ KERNEL_ENTRY Lou_kernel_start(){
     if(Lou_kernel_early_initialization() != LOUSTATUS_GOOD)LouPanic("Early Initialization Failed",BAD);
 
     //SETUP DEVICES AND DRIVERS
-    //if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);
+    if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);
 
     //if(Advanced_Kernel_Initialization() != LOUSTATUS_GOOD)LouPanic("Final Kernel Initialization Failed",BAD);
 		

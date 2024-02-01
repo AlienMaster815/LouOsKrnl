@@ -88,7 +88,7 @@ void PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int Buffe
     while ((status & 0x80) == 0x80){
         status = commandPort.Read();
     }
-
+    while (1);
     if(status == 0x00){
         LouPrint("No Device On ");
 

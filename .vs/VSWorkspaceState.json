@@ -1,17 +1,17 @@
 {
   "ExpandedNodes": [
     "",
-    "\\include",
-    "\\include\\kernel",
+    "\\API",
+    "\\API\\LouAPI",
+    "\\API\\LouAPI\\KernelAPI",
+    "\\API\\LouAPI\\KernelAPI\\IOManager",
+    "\\drivers",
+    "\\drivers\\storage",
+    "\\init",
     "\\kernel",
-    "\\kernel\\Drivers",
-    "\\kernel\\Drivers\\io",
     "\\kernel\\Drivers\\io\\periphials",
-    "\\kernel\\Drivers\\io\\periphials\\Keyboard",
-    "\\kernel\\Interrupts",
-    "\\kernel\\Interrupts\\ISR_JUNK",
-    "\\kernel\\Interrupts\\ISR_JUNK\\EarlyRoutines"
+    "\\kernel\\Drivers\\io\\periphials\\Keyboard"
   ],
-  "SelectedNode": "\\init\\Lou_Main.c",
+  "SelectedNode": "\\drivers\\storage\\ata.cpp",
   "PreviewInSolutionExplorer": false
 }
