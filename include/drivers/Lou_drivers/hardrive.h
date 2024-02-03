@@ -1,4 +1,7 @@
 
+
+
+
 #ifdef __cplusplus
 
 #ifndef _IDE_
@@ -9,9 +12,10 @@
 
 #include <LouDDK.h>
 
+[[maybe_unused]] static uint16_t atabuffer[2352];
 
 typedef uint16_t* PATABUFF;
-//static uint16_t atabuffer[2352] __attribute__((unused));
+
 
 class PATA{
     public:

@@ -6,12 +6,13 @@
     "\\API\\LouAPI\\KernelAPI",
     "\\API\\LouAPI\\KernelAPI\\IOManager",
     "\\drivers",
+    "\\drivers\\FileSystems",
     "\\drivers\\storage",
+    "\\include\\drivers",
+    "\\include\\drivers\\Lou_drivers",
     "\\init",
-    "\\kernel",
-    "\\kernel\\Drivers\\io\\periphials",
-    "\\kernel\\Drivers\\io\\periphials\\Keyboard"
+    "\\kernel"
   ],
-  "SelectedNode": "\\drivers\\storage\\ata.cpp",
+  "SelectedNode": "\\drivers\\FileSystems\\ISO9660.cpp",
   "PreviewInSolutionExplorer": false
 }

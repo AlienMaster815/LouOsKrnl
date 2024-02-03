@@ -33,7 +33,7 @@
 
 #define STATUS bool
 
-
+#include <drivers/Lou_drivers/hardrive.h>
 
 #include <drivers/Lou_drivers/storage_struct.h>
 

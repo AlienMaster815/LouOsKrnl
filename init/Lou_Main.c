@@ -26,7 +26,7 @@ uintptr_t RBP_Current;
 -- with allocation functions
 */
 
-char* KERNEL_VERSION = "0.0.00032 RSC-1";
+char* KERNEL_VERSION = "0.0.00032 RSC-2";
 
 
 #ifdef __x86_64__
@@ -51,7 +51,7 @@ LOUSTATUS Lou_kernel_early_initialization(){
 
 
     InitializeStartupInterruptHandleing();
-    SetInterruptFlags();
+    //SetInterruptFlags();
 
     return LOUSTATUS_GOOD;
 }
@@ -61,7 +61,7 @@ LOUSTATUS Set_Up_Devices(){
 
     pata_device_scanc();
 
-    //FileSystemScan();
+    FileSystemScan();
     
     return LOUSTATUS_GOOD;
 }
@@ -99,7 +99,7 @@ KERNEL_ENTRY Lou_kernel_start(){
    // Initialize User Mode
    // if(User_Mode_Initialization() != LOUSTATUS_GOOD)LouPanic("User Mode Initialiation Failed",BAD);
 
-    //LouPrint("HEX 0xAFAF: %h \n", 0xAFAF);
+    LouPrint("Hello World\n");
 
     while (1) {
         asm("hlt");

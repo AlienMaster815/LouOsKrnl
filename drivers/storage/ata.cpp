@@ -1,5 +1,13 @@
 
-// ATA.cpp Version 1.03 Stable Release
+// ATA.cpp Version 1.04 Stable Release
+
+
+/*
+-- Tyler Grenier 2-3-24 5:00 PM
+-- Patch 1.04 Release: 
+-- Bug Fixes And code Optimization
+*/
+
 
 /*
 -- Tyler Grenier 10-9-23 7:05
@@ -30,7 +38,7 @@
 #include <LouDDK.h>
 
 uint8_t pata[4];
-static char* atabuffer;
+
 bool init;
 
 void PATA::pata_device_scan(){
@@ -88,7 +96,9 @@ void PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int Buffe
     while ((status & 0x80) == 0x80){
         status = commandPort.Read();
     }
-    while (1);
+
+
+
     if(status == 0x00){
         LouPrint("No Device On ");
 
@@ -110,6 +120,7 @@ void PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int Buffe
         }
         return; //atabuffer;
     }
+
 
     if(status & 0x01)
     {
@@ -146,6 +157,7 @@ void PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int Buffe
 
         return; //atabuffer;
     }
+
 
     
     LouPrint("Reading ATA Drive: ");
@@ -199,6 +211,7 @@ void PATA::Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, int Buf
     // Made 20 Years Ago This is Almost As Bad As VGA Programming
     // But At Least I Have Some Fucking Documentation
 
+
     uint8_t sectorCount = BufferSize/2352;
     if((sectorCount * 2352) < BufferSize) sectorCount++;
 
@@ -213,6 +226,7 @@ void PATA::Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, int Buf
                         static_cast<uint8_t>((sectorCount >> 0x08) & 0xFF),
                         static_cast<uint8_t>((sectorCount >> 0x00) & 0xFF),
                         0, 0};
+
 
 
 
@@ -318,7 +332,6 @@ void PATA::Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, int Buf
     else if((drive == 0x170) && (!Master)) LouPrint("Secondary Slave\n");
 
 
-
     for(uint32_t i = 0; i < sectorCount; i++){
         status = commandPort.Read();
         while (1) {
@@ -333,28 +346,11 @@ void PATA::Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, int Buf
         
     }
 
-    char *text = "  \0";
-    uint32_t i = 0;
-    for(int j = 0; j < BufferSize; j+=2 ){
-        uint16_t wdata = atabuffer[i];
-        
-        text[0] = wdata & 0xFF;
-        if(j+1 < BufferSize){
-            text[1] = (wdata >> 8) & 0xFF;
-        }
-        else{
-            text[1] = '\0';
-        }
-        //if((text[1] != '\0') /*&& ((i == 0x1FE) || (i == 0x1FF))*/)LouPrint(" %h %h ", text[0], text[1] );
-        i++;
-    }
- 
+
+
     if(init == true){
         for (int i = 0; i < 0x200/2; ++i) {
             //LouPrint(" %h ", atabuffer[i]);
-            //LouPrint("hello World %d\n",i);
-            //char* hex = "0x00";
-            //uintToHexString(atabuffer[i],hex);
             if(atabuffer[i] == 0xAA55){
                 LouPrint("Bootable CD ROM\n");
                 return;
@@ -362,6 +358,7 @@ void PATA::Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, int Buf
         }
   
     }
+
 
 }
 

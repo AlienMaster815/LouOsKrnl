@@ -1,12 +1,13 @@
-//#include <LouDDK.h>
+#include <LouDDK.h>
 
-/*
+
 bool DEBUG = true;
 
 FSStruct ISO9660::ISOFileSystemScan(uint8_t DrvNum, uint8_t DrvType){
     //Allocate Memory For Our Structures   
 
     if(DEBUG) LouPrint("Searching For A ISO FileSystem\n");
+
 
     FSStruct FSS = DetectFileSystems(DrvNum, DrvType);
     
@@ -69,6 +70,8 @@ FSStruct ISO9660::DetectFileSystems(uint8_t DrvNum,uint8_t DrvType){
     FSStruct FSS;
     VolumeDescriptor PVD = ReadVolumeDescriptor(DrvNum,DrvType);
     
+
+
     // Create A File System Structure
     if((PVD.Type == ISO_PrimaryVolumeDescriptor) && (strncmp(PVD.Identifier, "CD001", 5) == 0) && (PVD.Version == 0x01)){
         int16_LSB_MSB VolumeSetSize;
@@ -111,4 +114,3 @@ ISO9660::~ISO9660(){
 
 }
 
-*/

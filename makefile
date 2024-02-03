@@ -79,12 +79,12 @@ ifeq ($(TARGET_ARCH),x86)
 endif
 
 ifeq ($(TARGET_ARCH),x86_64)
-CFLAGS = -c -fstack-protector -ffreestanding -Werror -I include -mno-sse -mno-mmx -mno-3dnow -msoft-float -mgeneral-regs-only
+CFLAGS = -c -fstack-protector -ffreestanding -Werror -I include 
 CPPFLAGS = -c -fstack-protector -ffreestanding -O2 -Wall -fno-exceptions -fno-rtti -Werror -Wno-write-strings -fno-use-cxa-atexit -I include
 endif
 
 ifeq ($(TARGET_ARCH),x86)
-CFLAGS = -c -ffreestanding -Werror -I include -mno-sse -mno-mmx -mno-3dnow -msoft-float -mgeneral-regs-only
+CFLAGS = -c -ffreestanding -Werror -I include
 CPPFLAGS = -c -ffreestanding -O2 -Wall -fno-exceptions -fno-rtti -Werror -Wno-write-strings -fno-use-cxa-atexit -I include
 endif
 
