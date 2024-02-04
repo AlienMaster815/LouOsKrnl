@@ -1,13 +1,14 @@
 
 
 
-
 #ifdef __cplusplus
 
 #ifndef _IDE_
 #define _IDE_
 
 #define READ_ERROR 0x00
+
+extern "C" uint16_t * GetAtaBufferAddr();
 
 
 #include <LouDDK.h>

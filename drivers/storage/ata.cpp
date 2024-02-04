@@ -1,5 +1,5 @@
 
-// ATA.cpp Version 1.04 Stable Release
+// ATA.cpp Version 1.05 Stable Release
 
 
 /*
@@ -426,7 +426,7 @@ void PATA::pata_Read(uint8_t device,uint32_t Sector_Num, int BufferSize){
     if(Sector_Num > 0x0FFFFFFF){
         return; //"ERROR";
         for(uint16_t i = 0 ; i < 2351 ; i++){
-            atabuffer[i] = 0x0000;
+            atabuffer[i] = 0xFFFF;
         }
     }
     
@@ -438,7 +438,7 @@ void PATA::pata_Read(uint8_t device,uint32_t Sector_Num, int BufferSize){
         else {
             LouPrint("No Drive Present\n");
             for(uint16_t i = 0 ; i < 2351 ; i++){
-                atabuffer[i] = 0x0000;
+                atabuffer[i] = 0xFFFF;
             }
         }
     }
@@ -448,7 +448,7 @@ void PATA::pata_Read(uint8_t device,uint32_t Sector_Num, int BufferSize){
         else {
             LouPrint("No Drive Present\n");
             for(uint16_t i = 0 ; i < 2351 ; i++){
-                atabuffer[i] = 0x0000;
+                atabuffer[i] = 0xFFFF;
             }
         }
     }
@@ -458,7 +458,7 @@ void PATA::pata_Read(uint8_t device,uint32_t Sector_Num, int BufferSize){
         else {
             LouPrint("No Drive Present\n");
             for(uint16_t i = 0 ; i < 2351 ; i++){
-                atabuffer[i] = 0x0000;
+                atabuffer[i] = 0xFFFF;
             }
         }
     }
@@ -468,14 +468,14 @@ void PATA::pata_Read(uint8_t device,uint32_t Sector_Num, int BufferSize){
         else { 
             LouPrint("No Drive Present\n");
             for(uint16_t i = 0 ; i < 2351 ; i++){
-                atabuffer[i] = 0x0000;
+                atabuffer[i] = 0xFFFF;
             }
         }
     }
     else {
         LouPrint("Error Selecting Drive\n");
         for(uint16_t i = 0 ; i < 2351 ; i++){
-            atabuffer[i] = 0x0000;
+            atabuffer[i] = 0xFFFF;
         }
     }
     
@@ -768,9 +768,21 @@ void PATA::Flush(uint8_t Device){
 }
 
 bool PATA::AtaReadSuccess(){
-    for(uint16_t i = 0 ; i < 2351 ; i++){
-        if(atabuffer[i] != 0x0000) return true;
+    
+    LouPrint("Checking Drive Read\n");
+
+    uint16_t i, errors = 0;
+    for(i = 0; i < 2351 ; i++){
+        if (atabuffer[i] == 0xFFFF) errors++;
     }
-    return false;
+    //LouPrint("Errors Present: %d\n", errors); Thisd is For Debug This Dosent Actually Tell You How Many Errors Are Present in a Read
+    if (2351 == errors) {
+        LouPrint("Ata Read Failed\n");
+        return false;
+    }
+    return true;
 }
 
+uint16_t *GetAtaBufferAddr() {
+    return (uint16_t *)&atabuffer;
+}

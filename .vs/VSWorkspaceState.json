@@ -1,15 +1,13 @@
 {
   "ExpandedNodes": [
     "",
-    "\\API",
-    "\\API\\LouAPI",
-    "\\API\\LouAPI\\KernelAPI",
-    "\\API\\LouAPI\\KernelAPI\\IOManager",
     "\\drivers",
     "\\drivers\\FileSystems",
     "\\drivers\\storage",
+    "\\include",
     "\\include\\drivers",
     "\\include\\drivers\\Lou_drivers",
+    "\\include\\drivers\\Lou_drivers\\FileSystems",
     "\\init",
     "\\kernel"
   ],
