@@ -18,7 +18,7 @@ typedef struct _ISO_STRUCT{
 
 #else
 
-void FileSystemScan();
+void FileSystemSetup();
 
 #endif
 

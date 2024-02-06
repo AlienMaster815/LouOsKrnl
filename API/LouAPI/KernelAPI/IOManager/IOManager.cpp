@@ -2,6 +2,8 @@
 #include <kernel/exports.h>
 Drives* DriveSystem;
 
+void PCI_Scan_Bus();
+
 extern "C" LOUSTATUS IO_Manager_Init(){
     LouPrint("IO Manager Is Starting\n");
     DriveSystem = (Drives*) Lou_Alloc_Mem(sizeof(Drives));
@@ -47,6 +49,13 @@ extern "C" void ReadStorageDrive(char Drive, uint32_t Location , uint32_t Buffer
  * that also takes too long
 */
 
+/*
+-- Tyler Grenier 2-16-24 11:09 AM
+-- This File Is Now modified significantly at this 
+-- point and Is now significant in the initialization
+-- of this kernel
+*/
+
 #include <WDKSubsystem/WDKSubsystem.h>
 
 
@@ -59,7 +68,9 @@ extern "C" void pata_device_scanc(){
 
 }
 
-
+extern "C" void PCI_Setup() {
+    PCI_Scan_Bus();
+}
 
 PATA* RetrievePATAP(){
     return pataobj;
@@ -71,11 +82,11 @@ extern "C" void SetVideoMode(uint64_t Height,uint64_t Widthe, uint8_t  ColorDept
 }
 
 
-extern "C" void FileSystemScan(){
+extern "C" void FileSystemSetup(){
 
-    ISO9660 iso;
+    //ISO9660 iso;
     
-    iso.ISOFileSystemScan(3, PATADEV);
+    //iso.ISOFileSystemScan(3, PATADEV);
     
     //for(uint8_t i = 1; i < 5; i++) 
         //iso.ISOFileSystemScan(i,PATADEV);

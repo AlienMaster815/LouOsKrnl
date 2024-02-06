@@ -2,15 +2,16 @@
   "ExpandedNodes": [
     "",
     "\\drivers",
-    "\\drivers\\FileSystems",
-    "\\drivers\\storage",
+    "\\drivers\\pci_systems",
+    "\\drivers\\pci_systems\\pci",
     "\\include",
     "\\include\\drivers",
     "\\include\\drivers\\Lou_drivers",
     "\\include\\drivers\\Lou_drivers\\FileSystems",
     "\\init",
-    "\\kernel"
+    "\\kernel",
+    "\\kernel\\Interrupts"
   ],
-  "SelectedNode": "\\drivers\\FileSystems\\ISO9660.cpp",
+  "SelectedNode": "\\init\\Lou_Main.c",
   "PreviewInSolutionExplorer": false
 }

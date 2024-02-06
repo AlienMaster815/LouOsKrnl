@@ -40,12 +40,14 @@ void PS2KeyboardHandler();
 void PageFault();
 void GPF();
 void DoubleFault();
+void FP();
 
 LOUSTATUS Lou_kernel_early_initialization(){
 
     
     RegisterInterruptHandler(DoubleFault, 8);
-    RegisterInterruptHandler(GPF, 13);
+    RegisterInterruptHandler(GPF, 6);
+    RegisterInterruptHandler(FP, 13);
     RegisterInterruptHandler(PageFault, 14);
     RegisterInterruptHandler(PS2KeyboardHandler, 33);
 
@@ -61,8 +63,10 @@ LOUSTATUS Set_Up_Devices(){
 
     pata_device_scanc();
 
-    FileSystemScan();
+    FileSystemSetup();
     
+    PCI_Setup();
+
     return LOUSTATUS_GOOD;
 }
 
@@ -100,6 +104,7 @@ KERNEL_ENTRY Lou_kernel_start(){
    // if(User_Mode_Initialization() != LOUSTATUS_GOOD)LouPanic("User Mode Initialiation Failed",BAD);
 
     LouPrint("Hello World\n");
+
 
     while (1) {
         asm("hlt");

@@ -186,7 +186,7 @@ ISR18:
 	Handle
 
 ISR19:
-	call PushStack
+	pusha
 	mov ah, 19
 	mov [InterruptNum], ah
 	jmp Handle
@@ -222,7 +222,7 @@ ISR24:
 	Handle
 
 ISR25:
-	PushStack
+	pusha
 	mov ah, 25
 	mov [InterruptNum], ah
 	Handle

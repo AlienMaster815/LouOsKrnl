@@ -56,20 +56,21 @@ typedef struct _VolumeDescriptor{
     strA Identifier;
     int8 Version;
     int8_t Data[2041 - 7];
-}VolumeDescriptor, *PVolumeDescriptor;
+}VolumeDescriptor, *PVolumeDescriptor,* P_VolumeDescriptor;
 
 typedef struct _DirectoryTable {
     int8 DirectoryLength;
     int8 ExtendedAttributeLength;
     int32_LSB_MSB MSBExtentLocation;
     int32_LSB_MSB DataLength;
-    uint32_t Flags; // the last byte is File Flags and is seperate from the first 3 bytes
+    int8 Time[7];
+    int8 Flags; // the last byte is File Flags and is seperate from the first 3 bytes
     int8 FileUnitSize;
     int8 GapSize;
     int16_LSB_MSB MSBVolumeSequenceNumber;
     int8 LengthOfFileIdentifier;
     strD FileIdentifier;
-}DirectoryTable, *PDirectoryTable;
+}DirectoryTable, *PDirectoryTable,* P_DirectoryTable;
 
 #define ISO_BOOTRECORD 0
 #define ISO_PrimaryVolumeDescriptor 1
@@ -81,19 +82,20 @@ class ISO9660{
     
     public:
         FSStruct ISOFileSystemScan(uint8_t DrvNum,uint8_t DrvType);
-        void ISOReadDirectoryStructure(uint8_t DrvNum,uint8_t DrvType,uint8_t FileSystemNum);
-        //void ISOWriteDirectoryStructure(uint8_t DrvNum,uint8_t DrvType,uint8_t FileSystemNum);
+        void ISOReadDirectoryStructure(uint8_t DrvNum,uint8_t DrvType);
         void ISOFormatDevice(uint8_t DrvNum,uint8_t DrvType,uintptr_t Base, uintptr_t height);
     
-    
-        VolumeDescriptor ReadVolumeDescriptor(uint8_t DrvNum,uint8_t DrvType,uint32_t sector = 0x10, uint32_t buffer = 2048);
+        void MinipulateDirectoryTable(strA Directory);
+
         ISO9660();
         ~ISO9660();
 
     private:
         FSStruct FSS;
         FSStruct DetectFileSystems(uint8_t DrvNum,uint8_t DrvType);
-    
+        VolumeDescriptor ReadVolumeDescriptor(uint8_t DrvNum, uint8_t DrvType, uint32_t sector = 0x10, uint32_t buffer = 2048);
+
+
 };
 
 #endif

@@ -1,5 +1,17 @@
+/*
+-- Tyler Grenier 2/5/24  PM
+-- Iso FileSystem 1.01 Release
+-- Features: 
+-- Detects ISO Filesystems
+-- Reads ISO Filesystems
+-- Current Limits Cannot Read Devices Other Than PATA or legacy ATA
+*/
+
+
 #include <LouDDK.h>
 
+[[maybe_unused]] static VolumeDescriptor PriVolDesc;
+[[maybe_unused]] static DirectoryTable CDT;
 
 bool DEBUG = true;
 
@@ -14,7 +26,11 @@ FSStruct ISO9660::ISOFileSystemScan(uint8_t DrvNum, uint8_t DrvType){
     return FSS;
 }
 
-void ISO9660::ISOReadDirectoryStructure(uint8_t DrvNum,uint8_t DrvType,uint8_t FileSystemNum){
+void ISO9660::MinipulateDirectoryTable(strA Directory) {
+
+}
+
+void ISO9660::ISOReadDirectoryStructure(uint8_t DrvNum,uint8_t DrvType){
     
     switch (DrvType) {
 
@@ -23,19 +39,71 @@ void ISO9660::ISOReadDirectoryStructure(uint8_t DrvNum,uint8_t DrvType,uint8_t F
             VolumeDescriptor VD = ReadVolumeDescriptor(DrvNum, DrvType);
 
             if ((VD.Identifier == NULL) && (VD.Type == 0) && (VD.Version == 0)) {
-                LouPrint("No FileSystem On Device");
+                LouPrint("No FileSystem On Device\n");
                 //At this point unmount/eject the drive
                 return;
             }
 
             LouPrint("Parsing File Directory\n");
 
-            break;
+            PriVolDesc = VD;
+
+            CDT.DirectoryLength = PriVolDesc.Data[156 - 7];
+            CDT.ExtendedAttributeLength = PriVolDesc.Data[157 - 7];
+            
+            CDT.MSBExtentLocation.LSB = ((int16_LSB)(PriVolDesc.Data[158 - 7] << 8) |
+                                         (int16_LSB)(PriVolDesc.Data[159 - 7]));
+            CDT.MSBExtentLocation.MSB = ((int16_LSB)(PriVolDesc.Data[160 - 7] << 8) |
+                                         (int16_LSB)(PriVolDesc.Data[161 - 7]));
+
+            CDT.DataLength.LSB = ((int16_LSB)(PriVolDesc.Data[162 - 7] << 8) |
+                                  (int16_LSB)(PriVolDesc.Data[163 - 7]));
+            CDT.DataLength.MSB = ((int16_LSB)(PriVolDesc.Data[164 - 7] << 8) | 
+                                  (int16_LSB)(PriVolDesc.Data[165 - 7]));
+
+            CDT.Time[0] = PriVolDesc.Data[166 - 7];
+            CDT.Time[1] = PriVolDesc.Data[167 - 7];
+            CDT.Time[2] = PriVolDesc.Data[168 - 7];
+            CDT.Time[3] = PriVolDesc.Data[169 - 7];
+            CDT.Time[4] = PriVolDesc.Data[170 - 7];
+            CDT.Time[5] = PriVolDesc.Data[171 - 7];
+            CDT.Time[6] = PriVolDesc.Data[172 - 7];
+
+            CDT.Flags = PriVolDesc.Data[173 - 7];
+            CDT.FileUnitSize = PriVolDesc.Data[174 - 7];
+            CDT.GapSize = PriVolDesc.Data[175 - 7];
+
+            CDT.MSBVolumeSequenceNumber.LSB = ((int16_LSB)(PriVolDesc.Data[176 - 7] << 8) |
+                (int16_LSB)(PriVolDesc.Data[177 - 7]));
+            CDT.MSBVolumeSequenceNumber.MSB = ((int16_LSB)(PriVolDesc.Data[178 - 7] << 8) |
+                (int16_LSB)(PriVolDesc.Data[179 - 7]));
+
+            CDT.LengthOfFileIdentifier = PriVolDesc.Data[180 - 7];
+
+            strD FileIdentifier;
+
+            char Foo[255];
+            uint16_t Bar = (181 - 7);
+            
+            for (uint8_t i = 0; i < CDT.LengthOfFileIdentifier; i++) {
+                Foo[i] = PriVolDesc.Data[Bar + i];
+            }
+            Bar = Bar + CDT.LengthOfFileIdentifier;
+
+            Foo[Bar] = '\0';
+
+            FileIdentifier = Foo;
+
+            CDT.FileIdentifier = FileIdentifier;
+
+            LouPrint("Done Parsing File Directory\n");
+
+            return;
         }
 
         default: {
             LouPrint("Unkown Device Type\n");
-            break;
+            return;;
         }
     }
     
@@ -145,7 +213,7 @@ FSStruct ISO9660::DetectFileSystems(uint8_t DrvNum,uint8_t DrvType){
         
         uint32_t VolumeSize = (VolumeSetSize.LSB << 8) | VolumeSetSize.MSB;
         
-        ISOReadDirectoryStructure(DrvNum, DrvType, 0);
+        ISOReadDirectoryStructure(DrvNum, DrvType);
               
         FSS.FSNum = VolumeSize;
         FSS.FSType = ISO;

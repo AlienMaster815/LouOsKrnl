@@ -79,7 +79,7 @@ ISR32:
 
 ISR33:
 	pusha
-	SetSegments
+	
 	mov ah, 33
 	mov [InterruptNum], ah
 	Handle

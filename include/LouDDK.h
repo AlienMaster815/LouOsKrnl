@@ -41,13 +41,18 @@
 
 #include <KernelAPI/IOManager.h>
 
-#include <drivers/Lou_drivers/pci.h>
-
 #include <drivers/Lou_drivers/FileSystems/ISO.h>
 #include <KernelAPI/Drives.h>
 #include <drivers/Lou_drivers/hardrive.h>
 #include <stdio.h>
-#include <drivers/Lou_drivers/io.h>
+#include <drivers/Lou_drivers/io.h> 
+
+
+// Tyler Grenier 2/6/24 11:17
+// Add PCI System
+#include <drivers/Lou_drivers/pci.h>
+
+
 
 #ifdef __cplusplus
 
