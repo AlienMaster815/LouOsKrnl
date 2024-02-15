@@ -1,17 +1,17 @@
 {
   "ExpandedNodes": [
     "",
-    "\\drivers",
-    "\\drivers\\pci_systems",
-    "\\drivers\\pci_systems\\pci",
     "\\include",
     "\\include\\drivers",
     "\\include\\drivers\\Lou_drivers",
-    "\\include\\drivers\\Lou_drivers\\FileSystems",
-    "\\init",
     "\\kernel",
-    "\\kernel\\Interrupts"
+    "\\kernel\\cstdlib",
+    "\\kernel\\cstdlib\\strings",
+    "\\kernel\\processors",
+    "\\kernel\\processors\\x86_64",
+    "\\kernel\\processors\\x86_64\\Intel",
+    "\\kernel\\processors\\x86_64\\VIA"
   ],
-  "SelectedNode": "\\init\\Lou_Main.c",
+  "SelectedNode": "\\kernel\\processors\\x86_64\\x86_64.c",
   "PreviewInSolutionExplorer": false
 }

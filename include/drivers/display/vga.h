@@ -92,7 +92,7 @@ void setup_vga_systems();
 STATUS register_new_mode(RAMADD new_vga,uint8_t mode);
 void print_clear();
 void print_char(char character);
-void print_str(char* string);
+void print_str(char* str);
 void print_set_color(uint8_t foreground, uint8_t background);
 void init_terminal();
 void Set_Color(enum VGA_COLOR fg, enum VGA_COLOR bg);
@@ -145,7 +145,7 @@ void print_clear();
 void print_char(char character);
 
 // Function to print a string to the screen
-void print_str(char* string);
+void print_str(char* str);
 
 // Function to set the foreground and background colors
 void print_set_color(uint8_t foreground, uint8_t background);

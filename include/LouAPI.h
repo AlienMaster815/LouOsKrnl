@@ -25,6 +25,8 @@
 #include <kernel/Clock.h>
 #include <string.h>
 #include <Time.h>
+#include <drivers/Lou_drivers/Processor.h>
+#include <CPUInstructionSet/CPURegisters.h>
 
 //Tyler Grenier 2/6/24 11:21 AM
 //included PCI To LOUAPI

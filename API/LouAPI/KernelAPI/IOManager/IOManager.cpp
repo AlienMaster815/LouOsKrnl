@@ -84,12 +84,12 @@ extern "C" void SetVideoMode(uint64_t Height,uint64_t Widthe, uint8_t  ColorDept
 
 extern "C" void FileSystemSetup(){
 
-    //ISO9660 iso;
+    ISO9660 iso;
     
     //iso.ISOFileSystemScan(3, PATADEV);
     
-    //for(uint8_t i = 1; i < 5; i++) 
-        //iso.ISOFileSystemScan(i,PATADEV);
+    for(uint8_t i = 1; i < 5; i++) 
+        iso.ISOFileSystemScan(i,PATADEV);
 
 }
 

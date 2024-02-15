@@ -105,6 +105,7 @@ KERNEL_ENTRY Lou_kernel_start(){
 
     LouPrint("Hello World\n");
 
+    DeterminCPU();
 
     while (1) {
         asm("hlt");

@@ -17,6 +17,14 @@
 
 #ifdef __cplusplus
 
+typedef struct _PCIDev{
+
+}PCIDev,*P_PCIDEV;
+
+typedef struct _PCIBuffer{
+
+}PCIBuffer ,*P_PCIBuffer;
+
 class PCI{
 
 	public:
