@@ -103,9 +103,9 @@ KERNEL_ENTRY Lou_kernel_start(){
    // Initialize User Mode
    // if(User_Mode_Initialization() != LOUSTATUS_GOOD)LouPanic("User Mode Initialiation Failed",BAD);
 
-    LouPrint("Hello World\n");
-
     DeterminCPU();
+
+    LouPrint("Hello World\n");
 
     while (1) {
         asm("hlt");

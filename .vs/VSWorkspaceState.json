@@ -1,17 +1,16 @@
 {
   "ExpandedNodes": [
     "",
-    "\\include",
+    "\\drivers",
+    "\\drivers\\pci_systems",
+    "\\drivers\\pci_systems\\pci",
     "\\include\\drivers",
     "\\include\\drivers\\Lou_drivers",
-    "\\kernel",
-    "\\kernel\\cstdlib",
-    "\\kernel\\cstdlib\\strings",
     "\\kernel\\processors",
     "\\kernel\\processors\\x86_64",
     "\\kernel\\processors\\x86_64\\Intel",
     "\\kernel\\processors\\x86_64\\VIA"
   ],
-  "SelectedNode": "\\kernel\\processors\\x86_64\\x86_64.c",
+  "SelectedNode": "\\drivers\\pci_systems\\pci\\pci.cpp",
   "PreviewInSolutionExplorer": false
 }

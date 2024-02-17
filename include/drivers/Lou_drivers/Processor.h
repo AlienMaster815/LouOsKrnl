@@ -6,11 +6,27 @@
 //Define Intell Strings
 
 static const string IntelString = "Intel";
+static const string IntelCoreString = "Core";
+static const string IntelCoreVersionString[] = {"i3", "I3", "i5", "I5","i7", "I7", "i9", "I9" };
+static const string SpeedString = "@";
 
 bool IsIntel(string VendorID);
+bool IsCore(string VendorID);
+bool WhatSpeed(string VendorID);
+uint8_t GetCoreVersion(string VendorID);
+uint64_t GetCoreGeneration(string VendorID);
 
+//Define Intel brand
+#define INTEL 1
 
+//Define Intel Products
 
+#define INTEL_CORE_I3 3
+#define INTEL_CORE_I5 5
+#define INTEL_CORE_I7 7
+#define INTEL_CORE_I9 9
+
+bool IsIntelIntegratedGraphics();
 //End Of Intel Stub
 
 //AMD Stub
@@ -36,7 +52,13 @@ bool IsVIA(string VendorID);
 
 void DeterminCPU();
 
+static string CPUFullString;
+
 //Define A processor Information system
 static uint8_t vendor = 0;
+static uint8_t Processor = 0;
+static uint8_t CoreVersion = 0;
+static uint64_t CoreGeneration = 0;
+static double Speed = 0.0;
 
 #endif

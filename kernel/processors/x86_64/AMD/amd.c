@@ -8,3 +8,8 @@ bool IsAMD(string VendorID) {
 
 	return false;
 }
+
+
+bool IsAMDIntegratedGraphics() {
+
+}

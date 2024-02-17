@@ -15,19 +15,28 @@
 #ifndef _PCI_H
 #define _PCI_H
 
+//Define World Wide Constant
+
+typedef struct _PCIDev {
+
+}PCIDev, * P_PCIDEV;
+
+typedef struct _PCIBuffer {
+
+}PCIBuffer, * P_PCIBuffer;
+
+
+
 #ifdef __cplusplus
 
-typedef struct _PCIDev{
-
-}PCIDev,*P_PCIDEV;
-
-typedef struct _PCIBuffer{
-
-}PCIBuffer ,*P_PCIBuffer;
+extern "C" P_PCIBuffer PCI_Read(P_PCIDEV Device);
+extern "C" void PCI_Write(P_PCIDEV Device, P_PCIBuffer buffer);
 
 class PCI{
 
 	public:
+		P_PCIBuffer PCI_Read(P_PCIDEV Device);
+		void PCI_Write(P_PCIDEV Device, P_PCIBuffer buffer);
 
 	private:
 
@@ -38,7 +47,8 @@ class PCI{
 #else
 
 //Is C Land
-
+P_PCIBuffer PCI_Read(P_PCIDEV Device);
+void PCI_Write(P_PCIDEV Device, P_PCIBuffer buffer);
 void PCI_Setup();
 
 
