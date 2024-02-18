@@ -16,7 +16,7 @@ LOUDDK_API_ENTRY LOUSTATUS IntelIGPUInit(uint8_t DriverType);
 // C World
 #include <LouAPI.h>
 
-
+LOUSTATUS IntelIGPUInit(uint8_t DriverType);
 
 #include <stdint.h>
 

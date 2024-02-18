@@ -1,12 +1,18 @@
 #ifndef _LOUDDK_H
 #define _LOUDDK_H
 
+#include <stdlib.h>
+
+#define LOUDDK_API_ENTRY extern "C"
+#define DRIVER_IO_FUNCTION extern "C"
+#define KERNEL_IMPORT extern "C"
 
 //define common used cpp functions with drivers
 #include <drivers/Lou_drivers/io.h>
 #include <stat.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
 
 #define RAMADD unsigned char*
@@ -38,9 +44,7 @@
 //typedef struct _LOUDDK_API {
 //    uint64_t initStatus;
 //}LOUDDK_API,*PLOUDDK_API;
-#define LOUDDK_API_ENTRY extern "C"
-#define DRIVER_IO_FUNCTION extern "C"
-#define KERNEL_IMPORT extern "C"
+
 
 
 #ifdef __cplusplus
@@ -54,7 +58,7 @@ KERNEL_IMPORT int LouPrint(char *format, ...);
     KERNEL_IMPORT uint64_t read_msr(uint32_t msr_id);
 #endif
 
-
+#include <KernelAPI/DriverAPI.h>
 #include <drivers/Lou_drivers/hardrive.h>
 #include <drivers/Lou_drivers/storage_struct.h>
 #include <drivers/Lou_drivers/FileSystem.h>
@@ -67,7 +71,8 @@ KERNEL_IMPORT int LouPrint(char *format, ...);
 #include <drivers/Lou_drivers/pci.h>
 #include <drivers/display/IntegratedGPU.h>
 #include <stdlib.h>
-
+#include <drivers/Lou_drivers/Processor.h>
+#include <KernelAPI/Video.h>
 
 KERNEL_IMPORT uint8_t inb(uint16_t port);
 KERNEL_IMPORT void outb(uint16_t port, uint8_t data);

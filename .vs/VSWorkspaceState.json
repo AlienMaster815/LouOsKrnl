@@ -1,16 +1,16 @@
 {
   "ExpandedNodes": [
     "",
-    "\\API",
-    "\\API\\WinAPI\\KernelAPI",
-    "\\drivers",
     "\\drivers\\Video",
-    "\\drivers\\WDKSubsystem\\Debuging",
+    "\\drivers\\Video\\Intel",
+    "\\drivers\\Video\\Intel\\4thGen",
+    "\\drivers\\WDKSubsystem",
     "\\include",
-    "\\include\\drivers",
-    "\\include\\drivers\\display",
-    "\\kernel"
+    "\\include\\kernel",
+    "\\kernel",
+    "\\kernel\\Interrupts",
+    "\\kernel\\Interrupts\\ISR_JUNK"
   ],
-  "SelectedNode": "\\include\\drivers\\display\\IntegratedGpu.h",
+  "SelectedNode": "\\init\\Lou_Main.c",
   "PreviewInSolutionExplorer": false
 }

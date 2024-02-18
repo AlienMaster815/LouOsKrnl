@@ -1,5 +1,27 @@
 #include <LouAPI.h>
 
+static uint8_t vendor = 0;
+static uint8_t Processor = 0;
+static uint8_t CoreVersion = 0;
+static uint64_t CoreGeneration = 0;
+static double Speed = 0.0;
+
+uint8_t GetCPUVendor() {
+    return vendor;
+}
+
+uint8_t GetProcessor(){
+    return Processor;
+}
+
+uint8_t GetCPUCoreVersion() {
+    return CoreVersion;
+}
+
+uint64_t GetCPUCoreGeneration() {
+    return CoreGeneration;
+}
+
 void DeterminCPU() {
 
     unsigned int eax, ebx, ecx, edx;
@@ -46,21 +68,22 @@ void DeterminCPU() {
     VIA = IsVIA(VenCheck);
 
     if (true == Intel) { 
-        vendor = INTEL; LouPrint("Intel Cpu Detected\n");
-        bool core = IsCore(VenCheck); if(core == true)LouPrint("Intel Core Cpu Detected\n");
+        vendor = GENUINEINTEL; LouPrint("Intel Cpu Detected\n");
+        bool core = IsIntelCore(VenCheck); if(core == true)LouPrint("Intel Core Cpu Detected\n");
         if (core == true) {
-            uint8_t foo = GetCoreVersion(VenCheck);
+            uint8_t foo = GetIntelCoreVersion(VenCheck);
             if ((0 == foo) || (1 == foo))      { CoreVersion = INTEL_CORE_I3; LouPrint("Intel Core 3 Detected\n"); }
             else if ((2 == foo) || (3 == foo)) { CoreVersion = INTEL_CORE_I5; LouPrint("Intel Core 5 Detected\n"); }
             else if ((4 == foo) || (5 == foo)) { CoreVersion = INTEL_CORE_I7; LouPrint("Intel Core 7 Detected\n"); }
             else if ((6 == foo) || (7 == foo)) { CoreVersion = INTEL_CORE_I9; LouPrint("Intel Core 9 Detected\n"); }
             else LouPrint("Unkown Core\n");
-            CoreGeneration = GetCoreGeneration(VenCheck);
+            CoreGeneration = GetIntelCoreGeneration(VenCheck);
             LouPrint("Core Generation is: %d\n",CoreGeneration);
         }
+        return;
     }
-    if (true == AMD)   { vendor = 2; LouPrint("AMD Cpu Detected\n");}
-    if (true == VIA)   { vendor = 3; LouPrint("VIA Cpu Detected\n");}
+    else if (true == AMD)   { vendor = AUTHENTICAMD; LouPrint("AMD Cpu Detected\n");}
+    else if (true == VIA)   { vendor = AUTHENTICVIA; LouPrint("VIA Cpu Detected\n");}
 
 
 }

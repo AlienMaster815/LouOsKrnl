@@ -1,0 +1,6 @@
+#include <LouDDK.h>
+
+INTEL_IGPU_DEVICE_IDENTIFICATION_NUIMBER GetGen4IGPUID() {
+
+	return 0;
+}

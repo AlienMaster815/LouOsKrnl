@@ -4,6 +4,8 @@
 
 //Include API Headers
 
+#include <stdlib.h>
+
 #include <stdint.h>
 #include <stat.h>
 #include <stdio.h>

@@ -26,7 +26,12 @@ uintptr_t RBP_Current;
 -- with allocation functions
 */
 
-char* KERNEL_VERSION = "0.0.00032 RSC-2";
+//NOTE: There is a bug int the code for getting the gen type
+//      integer for processors with string literals later change
+//      the code to add a 0 place where the char is to make it
+//      the right 10 place value
+
+char* KERNEL_VERSION = "0.0.00035 RSC-0";
 
 
 #ifdef __x86_64__
@@ -45,11 +50,11 @@ void FP();
 LOUSTATUS Lou_kernel_early_initialization(){
 
     
-    RegisterInterruptHandler(DoubleFault, 8);
-    RegisterInterruptHandler(GPF, 6);
-    RegisterInterruptHandler(FP, 13);
-    RegisterInterruptHandler(PageFault, 14);
-    RegisterInterruptHandler(PS2KeyboardHandler, 33);
+    RegisterInterruptHandler(DoubleFault, INTERRUPT_SERVICE_ROUTINE_8);
+    RegisterInterruptHandler(GPF, INTERRUPT_SERVICE_ROUTINE_6);
+    RegisterInterruptHandler(FP, INTERRUPT_SERVICE_ROUTINE_13);
+    RegisterInterruptHandler(PageFault, INTERRUPT_SERVICE_ROUTINE_14);
+    RegisterInterruptHandler(PS2KeyboardHandler, INTERRUPT_SERVICE_ROUTINE_33);
 
 
     InitializeStartupInterruptHandleing();
@@ -64,8 +69,7 @@ LOUSTATUS Lou_kernel_early_initialization(){
 LOUSTATUS Set_Up_Devices(){
     if(IO_Manager_Init() != LOUSTATUS_GOOD)LouPanic("IO Manager Failed To Start",BAD);
 
-    //later on we will check to see if there is a setting for the graphics setup
-    /*if setting dosent exist*/ SwitchVideoDevice(INTEGRATED_DEVICE,DEFAULT_DEVICE,DEFAULT_DRIVER);
+    SwitchVideoDevice(INTEGRATED_DEVICE,DEFAULT_DEVICE,DEFAULT_DRIVER);
 
     //pata_device_scanc();
 

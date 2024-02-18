@@ -4,6 +4,7 @@
 //VGA Information STUB
 #define VideoGraphicsArray 0
 
+#define NO_GPUID 0
 
 //INTEGRATED GRAND STUB
 #define INTEGRATED_DEVICE 1

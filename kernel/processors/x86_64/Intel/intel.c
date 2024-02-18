@@ -8,14 +8,14 @@ bool IsIntel(string VendorID) {
 	return false;
 }
 
-bool IsCore(string VendorID) {
+bool IsIntelCore(string VendorID) {
 	for (uint8_t i = 0; i < strlen(VendorID) - strlen(IntelCoreString) + 1; i++) {
 		if (strncmp((StrCmpCast)VendorID + i, (StrCmpCast)IntelCoreString, strlen(IntelCoreString)) == StrCmpTrue)return true;
 	}
 	return false;
 }
 
-uint8_t GetCoreVersion(string VendorID) {
+uint8_t GetIntelCoreVersion(string VendorID) {
 	for (uint8_t j = 0; j < 8; j++) {
 		for (uint8_t i = 0; i < strlen(VendorID) - strlen(IntelCoreVersionString[j]) + 1; i++) {
 			if (strncmp((StrCmpCast)VendorID + i, (StrCmpCast)IntelCoreVersionString[j], strlen(IntelCoreVersionString[j])) == StrCmpTrue)return j;
@@ -24,7 +24,7 @@ uint8_t GetCoreVersion(string VendorID) {
 	return 0;
 }
 
-uint64_t GetCoreGeneration(string VendorID) {
+uint64_t GetIntelCoreGeneration(string VendorID) {
 	for (uint8_t j = 0; j < 8; j++) {
 		for (uint8_t i = 0; i < strlen(VendorID) - strlen(IntelCoreVersionString[j]) + 1; i++) {
 			if (strncmp((StrCmpCast)VendorID + i, (StrCmpCast)IntelCoreVersionString[j], strlen(IntelCoreVersionString[j])) == StrCmpTrue) {
@@ -43,7 +43,7 @@ uint64_t GetCoreGeneration(string VendorID) {
 	return 0;
 }
 
-bool WhatSpeed(string VendorID) {
+bool WhatIntelSpeed(string VendorID) {
 	for (uint8_t i = 0; i < strlen(VendorID) - strlen(SpeedString) + 1; i++) {
 		if (strncmp((StrCmpCast)VendorID + i, (StrCmpCast)SpeedString, strlen(SpeedString)) == StrCmpTrue)return true;
 	}

@@ -5,6 +5,12 @@
 #include <stdint.h>
 
 
+#ifdef __cplusplus
+#define UNUSED [[maybe_unused]]
+#else
+#define UNUSED __attribute__((unused))
+#endif
+
 #define VOID void
 #define VOIDP void*
 
