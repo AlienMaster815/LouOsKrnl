@@ -1,16 +1,16 @@
 {
   "ExpandedNodes": [
     "",
+    "\\API",
+    "\\API\\WinAPI\\KernelAPI",
     "\\drivers",
-    "\\drivers\\pci_systems",
-    "\\drivers\\pci_systems\\pci",
+    "\\drivers\\Video",
+    "\\drivers\\WDKSubsystem\\Debuging",
+    "\\include",
     "\\include\\drivers",
-    "\\include\\drivers\\Lou_drivers",
-    "\\kernel\\processors",
-    "\\kernel\\processors\\x86_64",
-    "\\kernel\\processors\\x86_64\\Intel",
-    "\\kernel\\processors\\x86_64\\VIA"
+    "\\include\\drivers\\display",
+    "\\kernel"
   ],
-  "SelectedNode": "\\drivers\\pci_systems\\pci\\pci.cpp",
+  "SelectedNode": "\\include\\drivers\\display\\IntegratedGpu.h",
   "PreviewInSolutionExplorer": false
 }

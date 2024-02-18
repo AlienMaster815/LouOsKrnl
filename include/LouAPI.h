@@ -2,35 +2,22 @@
 #ifndef LOUAPI_H
 #define LOUAPI_H
 
-#include <KernelAPI/ARCH_LIMITS.h>
-#include <kernel/kernel.h>
-#include <kernel/memmory.h>
+//Include API Headers
+
 #include <stdint.h>
 #include <stat.h>
-#include <drivers/display/vga.h>
 #include <stdio.h>
-#include <kernel/errors.h>
-#include <kernel/acpi.h>
-#include <bootloader/grub/multiboot.h>
-#include <drivers/Lou_drivers/hardrive.h>
-#include <kernel/gdt.h>
-#include <kernel/memoryprobing.h>
-#include <kernel/interrupts.h>
-#include <drivers/Lou_drivers/FileSystem.h>
-#include <kernel/pic.h>
-#include <KernelAPI/IOManager.h>
-#include <KernelAPI/Security.h>
-#include <KernelAPI/Video.h>
-#include <kernel/Timers.h>
-#include <kernel/Clock.h>
 #include <string.h>
 #include <Time.h>
-#include <drivers/Lou_drivers/Processor.h>
+
+#include <KernelAPI/KernelAPI.h>
+#include <Kernel/kernel.h>
+#include <drivers/drivers.h>
+
+#include <bootloader/grub/multiboot.h>
+
 #include <CPUInstructionSet/CPURegisters.h>
 
-//Tyler Grenier 2/6/24 11:21 AM
-//included PCI To LOUAPI
-#include <drivers/Lou_drivers/pci.h>
 
 
 #endif

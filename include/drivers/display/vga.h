@@ -10,6 +10,7 @@
 #include <stat.h>
 #include <kernel/memmory.h>
 
+
 #ifdef __x86_64__
 
 /*this is the basic vga driver definitions needed for the tty terminal function

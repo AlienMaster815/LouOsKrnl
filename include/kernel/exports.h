@@ -4,7 +4,7 @@
 
 #ifdef __cplusplus
 
-#include <WinAPI/NtAPI.h>
+#include <NtAPI.h>
 
 extern "C" void DefineExport(uint64_t ExportNumber, void (*Handler)());
 

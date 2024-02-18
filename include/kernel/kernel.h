@@ -10,9 +10,19 @@
 
 #include <stdint.h>
 #include <stdnoreturn.h>
+
 #include <kernel/memmory.h>
 #include <kernel/acpi.h>
 #include <kernel/gdt.h>
+#include <kernel/apic.h>
+#include <kernel/Clock.h>
+#include <kernel/errors.h>
+#include <kernel/exports.h>
+#include <kernel/interrupts.h>
+#include <kernel/memoryprobing.h>
+#include <kernel/pic.h>
+#include <kernel/ports.h>
+#include <kernel/Timers.h>
 
 #define KERNEL_ENTRY extern void
 

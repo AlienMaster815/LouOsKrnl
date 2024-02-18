@@ -55,17 +55,23 @@ LOUSTATUS Lou_kernel_early_initialization(){
     InitializeStartupInterruptHandleing();
     //SetInterruptFlags();
 
+
+    DeterminCPU();
+
     return LOUSTATUS_GOOD;
 }
 
 LOUSTATUS Set_Up_Devices(){
     if(IO_Manager_Init() != LOUSTATUS_GOOD)LouPanic("IO Manager Failed To Start",BAD);
 
-    pata_device_scanc();
+    //later on we will check to see if there is a setting for the graphics setup
+    /*if setting dosent exist*/ SwitchVideoDevice(INTEGRATED_DEVICE,DEFAULT_DEVICE,DEFAULT_DRIVER);
 
-    FileSystemSetup();
+    //pata_device_scanc();
+
+    //FileSystemSetup();
     
-    PCI_Setup();
+    //PCI_Setup();
 
     return LOUSTATUS_GOOD;
 }
@@ -103,7 +109,6 @@ KERNEL_ENTRY Lou_kernel_start(){
    // Initialize User Mode
    // if(User_Mode_Initialization() != LOUSTATUS_GOOD)LouPanic("User Mode Initialiation Failed",BAD);
 
-    DeterminCPU();
 
     LouPrint("Hello World\n");
 
