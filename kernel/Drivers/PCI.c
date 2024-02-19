@@ -1,8 +1,6 @@
 #include <LouAPI.h>
 
-UNUSED uint16_t VENDOR_ID[] = {0x0000};
 
-UNUSED uint16_t DEVICE_ID[] = {0x0000};
 
 uint16_t pciConfigReadWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset) {
     uint32_t address;

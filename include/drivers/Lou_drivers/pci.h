@@ -25,6 +25,10 @@ typedef struct _PCIBuffer {
 
 }PCIBuffer, * P_PCIBuffer;
 
+typedef struct _PCI_DEVICE_OBJECT {
+	uint16_t VendorID;
+	uint16_t DeviceID;
+}PCI_DEVICE_OBJECT,*P_PCI_DEVICE_OBJECT;
 
 #define PCI_CONFIG_ADDRESS_PORT 0xCF8
 #define PCI_CONFIG_DATA_PORT    0xCFC

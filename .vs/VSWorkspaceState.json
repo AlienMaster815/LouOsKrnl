@@ -1,12 +1,14 @@
 {
   "ExpandedNodes": [
     "",
-    "\\drivers",
+    "\\include",
+    "\\include\\drivers",
+    "\\include\\drivers\\Vendors",
     "\\init",
     "\\kernel",
     "\\kernel\\Drivers",
     "\\kernel\\memory"
   ],
-  "SelectedNode": "\\init\\Lou_Main.c",
+  "SelectedNode": "\\include\\drivers\\Vendors\\IntelDictionary.h",
   "PreviewInSolutionExplorer": false
 }
