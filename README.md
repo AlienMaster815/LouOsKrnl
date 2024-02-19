@@ -1,12 +1,12 @@
 # LOUOSKRNL.EXE
 
 Known Bugs List:
-Printing Hexes Prints Out A Random String
+
 
 NOTE: Only Releases Folder Will Contain Working kernel/OS images
 If your architecture is not available or behind other architecturs
 I am only one person doing a monumentous task between 3 different 
-kernels and I will be adding arm soon
+kernels and I will be adding arm After i finish x86_64
  
 Please Go to the read me txt 
 file in bios versions docs folder

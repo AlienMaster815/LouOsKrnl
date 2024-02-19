@@ -1,5 +1,20 @@
 #include <LouAPI.h>
 
+uint32_t pci_read(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset) {
+    uint32_t address;
+    uint32_t lbus = (uint32_t)bus;
+    uint32_t lslot = (uint32_t)slot;
+    uint32_t lfunc = (uint32_t)func;
+
+    // Create the PCI configuration address
+    address = (uint32_t)((lbus << 16) | (lslot << 11) |
+        (lfunc << 8) | (offset & 0xFC) | ((uint32_t)0x80000000));
+
+    // Write the address to the PCI configuration address register
+    outl(PCI_CONFIG_ADDRESS_PORT, address);
+    // Read and return the data from the PCI configuration data register
+    return inl(PCI_CONFIG_DATA_PORT);
+}
 
 
 uint16_t pciConfigReadWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset) {
@@ -71,7 +86,7 @@ uint8_t getHeaderType(uint8_t bus, uint8_t device, uint8_t function) {
     return headerType;
 }
 
-uint16_t pciCheckVendor(uint8_t bus, uint8_t slot) {
+uint16_t PciGetVendorID(uint8_t bus, uint8_t slot) {
     UNUSED uint16_t vendor, device;
     /* Try and read the first configuration register. Since there are no
      * vendors that == 0xFFFF, it must be a non-existent device. */
@@ -81,6 +96,29 @@ uint16_t pciCheckVendor(uint8_t bus, uint8_t slot) {
     } return (vendor);
 }
 
+
+int check_pci_device_id(uint16_t device_id, uint8_t bus, uint8_t slot,uint8_t func) {
+    // Read the vendor ID and device ID from the PCI configuration space
+    uint32_t data = pci_read(bus, slot, func, 0x00);
+    uint16_t vendor_id = data & 0xFFFF;
+    uint16_t dev_id = (data >> 16) & 0xFFFF;
+
+    // Check if the device ID matches
+    if (dev_id == device_id) {
+        return 1;  // Match found
+    }
+    return 0;  // No match found
+}
+
+
+
+// Function to retrieve the device ID of a PCI device
+uint16_t PciGetDeviceID(uint8_t bus ,uint8_t slot,uint8_t func) {
+    // Read the vendor ID from the PCI configuration space
+    uint32_t data = pci_read(bus, slot, func, 0x00);
+    // Extract and return the vendor ID
+    return (data >> 16) & 0xFFFF;
+}
 
 bool IsPartOfVendorDictionary() {
 

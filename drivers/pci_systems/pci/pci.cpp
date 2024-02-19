@@ -24,19 +24,23 @@ LOUDDK_API_ENTRY void checkBus(uint8_t bus) {
 LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device) {
     uint8_t function = 0;
 
-    uint16_t vendorID = pciCheckVendor(bus, device);
+    uint16_t vendorID = PciGetVendorID(bus, device);
     if (vendorID == 0xFFFF) return; // Device doesn't exist
-    LouPrint("PCI Device Found\n");
     checkFunction(bus, device, function);
+    LouPrint("PCI Device Found Vedor Is: %h and Device Is: %h\n", vendorID, PciGetDeviceID( bus , device, function));
     uint8_t headerType = getHeaderType(bus, device, function);
     if ((headerType & 0x80) != 0) {
         LouPrint("Device Is MultiFunction\n");
         // It's a multi-function device, so check remaining functions
         for (function = 1; function < 8; function++) {
-            if (pciCheckVendor(bus, device) != 0xFFFF) {
+            if (PciGetVendorID(bus, device) != 0xFFFF) {
                 checkFunction(bus, device, function);
+                //Parse Funxtios and have fun
             }
         }
+    }
+    else{
+        //device is single function have fun
     }
 }
 
@@ -71,7 +75,7 @@ LOUDDK_API_ENTRY void PCI_Scan_Bus(){
     else {
         // Multiple PCI host controllers
         for (function = 0; function < 8; function++) {
-            if (pciCheckVendor(0, 0) != 0xFFFF) break;
+            if (PciGetVendorID(0, 0) != 0xFFFF) break;
             bus = function;
             checkBus(bus);
         }

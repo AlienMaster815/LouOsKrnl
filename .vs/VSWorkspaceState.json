@@ -1,14 +1,16 @@
 {
   "ExpandedNodes": [
     "",
+    "\\drivers",
+    "\\drivers\\storage",
     "\\include",
     "\\include\\drivers",
-    "\\include\\drivers\\Vendors",
-    "\\init",
     "\\kernel",
+    "\\kernel\\cstdlib",
+    "\\kernel\\cstdlib\\stdio",
     "\\kernel\\Drivers",
     "\\kernel\\memory"
   ],
-  "SelectedNode": "\\Config",
+  "SelectedNode": "\\init\\Lou_Main.c",
   "PreviewInSolutionExplorer": false
 }

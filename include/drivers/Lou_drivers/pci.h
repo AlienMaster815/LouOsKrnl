@@ -28,10 +28,15 @@ typedef struct _PCIBuffer {
 typedef struct _PCI_DEVICE_OBJECT {
 	uint16_t VendorID;
 	uint16_t DeviceID;
+	uint8_t bus;
+	uint8_t slot;
+	uint8_t func;
 }PCI_DEVICE_OBJECT,*P_PCI_DEVICE_OBJECT;
 
 #define PCI_CONFIG_ADDRESS_PORT 0xCF8
 #define PCI_CONFIG_DATA_PORT    0xCFC
+
+
 
 #ifdef __cplusplus
 #include <LouDDK.h>
@@ -45,8 +50,10 @@ KERNEL_IMPORT uint8_t pciConfigReadByte(uint8_t bus, uint8_t device, uint8_t fun
 KERNEL_IMPORT uint8_t getBaseClass(uint8_t bus, uint8_t device, uint8_t function);
 KERNEL_IMPORT uint8_t getSubClass(uint8_t bus, uint8_t device, uint8_t function);
 KERNEL_IMPORT uint8_t getSecondaryBus(uint8_t bus, uint8_t device, uint8_t function);
-KERNEL_IMPORT uint16_t pciCheckVendor(uint8_t bus, uint8_t slot);
+KERNEL_IMPORT uint16_t PciGetVendorID(uint8_t bus, uint8_t slot);
 KERNEL_IMPORT uint8_t getHeaderType(uint8_t bus, uint8_t device, uint8_t function);
+KERNEL_IMPORT int check_pci_device_id(uint16_t device_id, uint8_t bus, uint8_t slot, uint8_t func);
+KERNEL_IMPORT uint16_t PciGetDeviceID(uint8_t bus, uint8_t slot, uint8_t func);
 
 LOUDDK_API_ENTRY void PCI_Scan_Bus();
 LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device);
@@ -87,12 +94,13 @@ void PCI_Write(P_PCIDEV Device, P_PCIBuffer buffer);
 uint16_t pciConfigReadWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset);
 
 void PCI_Scan_Bus();
-uint16_t pciCheckVendor(uint8_t bus, uint8_t slot);
+uint16_t PciGetVenmdorID(uint8_t bus, uint8_t slot);
 void checkDevice(uint8_t bus, uint8_t device);
 void checkBus(uint8_t bus);
 void checkFunction(uint8_t bus, uint8_t device, uint8_t function);
 void PCI_Scan_Bus();
-
+int check_pci_device_id(uint16_t device_id, uint8_t bus, uint8_t slot, uint8_t func);
+uint16_t PciGetDeviceID(uint8_t bus, uint8_t slot, uint8_t func);
 
 #endif
 
