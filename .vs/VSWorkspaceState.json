@@ -1,15 +1,15 @@
 {
   "ExpandedNodes": [
     "",
-    "\\drivers\\Video",
-    "\\drivers\\Video\\Intel",
-    "\\drivers\\Video\\Intel\\4thGen",
-    "\\drivers\\WDKSubsystem",
-    "\\include",
-    "\\include\\kernel",
+    "\\drivers",
+    "\\drivers\\pci_systems\\pci",
+    "\\include\\drivers",
+    "\\include\\drivers\\Lou_drivers",
+    "\\init",
     "\\kernel",
-    "\\kernel\\Interrupts",
-    "\\kernel\\Interrupts\\ISR_JUNK"
+    "\\kernel\\Drivers",
+    "\\kernel\\Drivers\\io\\periphials\\Keyboard",
+    "\\kernel\\memory"
   ],
   "SelectedNode": "\\init\\Lou_Main.c",
   "PreviewInSolutionExplorer": false

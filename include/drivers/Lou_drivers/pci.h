@@ -26,11 +26,29 @@ typedef struct _PCIBuffer {
 }PCIBuffer, * P_PCIBuffer;
 
 
+#define PCI_CONFIG_ADDRESS_PORT 0xCF8
+#define PCI_CONFIG_DATA_PORT    0xCFC
 
 #ifdef __cplusplus
+#include <LouDDK.h>
 
-extern "C" P_PCIBuffer PCI_Read(P_PCIDEV Device);
-extern "C" void PCI_Write(P_PCIDEV Device, P_PCIBuffer buffer);
+DRIVER_IO_FUNCTION P_PCIBuffer PCI_Read(P_PCIDEV Device);
+DRIVER_IO_FUNCTION void PCI_Write(P_PCIDEV Device, P_PCIBuffer buffer);
+
+KERNEL_IMPORT uint16_t pciConfigReadWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset);
+
+KERNEL_IMPORT uint32_t pciConfigAddress(uint8_t bus, uint8_t device, uint8_t function, uint8_t reg);
+KERNEL_IMPORT uint8_t pciConfigReadByte(uint8_t bus, uint8_t device, uint8_t function, uint8_t reg);
+KERNEL_IMPORT uint8_t getBaseClass(uint8_t bus, uint8_t device, uint8_t function);
+KERNEL_IMPORT uint8_t getSubClass(uint8_t bus, uint8_t device, uint8_t function);
+KERNEL_IMPORT uint8_t getSecondaryBus(uint8_t bus, uint8_t device, uint8_t function);
+
+LOUDDK_API_ENTRY void PCI_Scan_Bus();
+LOUDDK_API_ENTRY uint16_t pciCheckVendor(uint8_t bus, uint8_t slot);
+LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device);
+LOUDDK_API_ENTRY void checkBus(uint8_t bus);
+LOUDDK_API_ENTRY void checkFunction(uint8_t bus, uint8_t device, uint8_t function);
+LOUDDK_API_ENTRY void PCI_Scan_Bus();
 
 class PCI{
 
@@ -46,10 +64,30 @@ class PCI{
 
 #else
 
+#include <LouAPI.h>
+
 //Is C Land
 P_PCIBuffer PCI_Read(P_PCIDEV Device);
 void PCI_Write(P_PCIDEV Device, P_PCIBuffer buffer);
 void PCI_Setup();
+
+uint16_t pciConfigReadWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset);
+
+uint32_t pciConfigAddress(uint8_t bus, uint8_t device, uint8_t function, uint8_t reg);
+
+uint8_t pciConfigReadByte(uint8_t bus, uint8_t device, uint8_t function, uint8_t reg);
+
+P_PCIBuffer PCI_Read(P_PCIDEV Device);
+void PCI_Write(P_PCIDEV Device, P_PCIBuffer buffer);
+
+uint16_t pciConfigReadWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset);
+
+void PCI_Scan_Bus();
+uint16_t pciCheckVendor(uint8_t bus, uint8_t slot);
+void checkDevice(uint8_t bus, uint8_t device);
+void checkBus(uint8_t bus);
+void checkFunction(uint8_t bus, uint8_t device, uint8_t function);
+void PCI_Scan_Bus();
 
 
 #endif
