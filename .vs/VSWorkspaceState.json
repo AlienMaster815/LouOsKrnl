@@ -2,13 +2,9 @@
   "ExpandedNodes": [
     "",
     "\\drivers",
-    "\\drivers\\pci_systems\\pci",
-    "\\include\\drivers",
-    "\\include\\drivers\\Lou_drivers",
     "\\init",
     "\\kernel",
     "\\kernel\\Drivers",
-    "\\kernel\\Drivers\\io\\periphials\\Keyboard",
     "\\kernel\\memory"
   ],
   "SelectedNode": "\\init\\Lou_Main.c",

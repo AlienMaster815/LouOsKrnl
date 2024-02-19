@@ -56,6 +56,34 @@ uint8_t getSecondaryBus(uint8_t bus, uint8_t device, uint8_t function) {
 }
 
 
+uint8_t getHeaderType(uint8_t bus, uint8_t device, uint8_t function) {
+    // Assuming pciConfigReadByte is a function to read a byte from PCI configuration space
+    // You might need to replace it with the appropriate function from your hardware access library
+    uint8_t headerType;
+
+    if (function == 0) {
+        // For function 0, directly read the header type from offset 0xE
+        headerType = pciConfigReadByte(bus, device, function, 0xE); // Offset 0xE contains header type
+    }
+    else {
+        // For non-function 0, read the header type from offset 0x0E in the multi-function header
+        headerType = pciConfigReadByte(bus, device, 0, 0xE); // Offset 0xE contains header type
+    }
+
+    return headerType;
+}
+
+uint16_t pciCheckVendor(uint8_t bus, uint8_t slot) {
+    UNUSED uint16_t vendor, device;
+    /* Try and read the first configuration register. Since there are no
+     * vendors that == 0xFFFF, it must be a non-existent device. */
+    if ((vendor = pciConfigReadWord(bus, slot, 0, 0)) != 0xFFFF) {
+        device = pciConfigReadWord(bus, slot, 0, 2);
+        //TODO: Is Vendor Part Of System
+    } return (vendor);
+}
+
+
 bool IsPartOfVendorDictionary() {
 
 }

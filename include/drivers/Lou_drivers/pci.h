@@ -36,15 +36,15 @@ DRIVER_IO_FUNCTION P_PCIBuffer PCI_Read(P_PCIDEV Device);
 DRIVER_IO_FUNCTION void PCI_Write(P_PCIDEV Device, P_PCIBuffer buffer);
 
 KERNEL_IMPORT uint16_t pciConfigReadWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset);
-
 KERNEL_IMPORT uint32_t pciConfigAddress(uint8_t bus, uint8_t device, uint8_t function, uint8_t reg);
 KERNEL_IMPORT uint8_t pciConfigReadByte(uint8_t bus, uint8_t device, uint8_t function, uint8_t reg);
 KERNEL_IMPORT uint8_t getBaseClass(uint8_t bus, uint8_t device, uint8_t function);
 KERNEL_IMPORT uint8_t getSubClass(uint8_t bus, uint8_t device, uint8_t function);
 KERNEL_IMPORT uint8_t getSecondaryBus(uint8_t bus, uint8_t device, uint8_t function);
+KERNEL_IMPORT uint16_t pciCheckVendor(uint8_t bus, uint8_t slot);
+KERNEL_IMPORT uint8_t getHeaderType(uint8_t bus, uint8_t device, uint8_t function);
 
 LOUDDK_API_ENTRY void PCI_Scan_Bus();
-LOUDDK_API_ENTRY uint16_t pciCheckVendor(uint8_t bus, uint8_t slot);
 LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device);
 LOUDDK_API_ENTRY void checkBus(uint8_t bus);
 LOUDDK_API_ENTRY void checkFunction(uint8_t bus, uint8_t device, uint8_t function);

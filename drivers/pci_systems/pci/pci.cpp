@@ -13,35 +13,13 @@ DRIVER_IO_FUNCTION void PCI::PCI_Write(P_PCIDEV Device, P_PCIBuffer buffer) {
 }
 
 
-LOUDDK_API_ENTRY uint8_t getHeaderType(uint8_t bus, uint8_t device, uint8_t function) {
-    // Assuming pciConfigReadByte is a function to read a byte from PCI configuration space
-    // You might need to replace it with the appropriate function from your hardware access library
-    uint8_t headerType;
+LOUDDK_API_ENTRY void checkBus(uint8_t bus) {
+    uint8_t device;
 
-    if (function == 0) {
-        // For function 0, directly read the header type from offset 0xE
-        headerType = pciConfigReadByte(bus, device, function, 0xE); // Offset 0xE contains header type
+    for (device = 0; device < 32; device++) {
+        checkDevice(bus, device);
     }
-    else {
-        // For non-function 0, read the header type from offset 0x0E in the multi-function header
-        headerType = pciConfigReadByte(bus, device, 0, 0xE); // Offset 0xE contains header type
-    }
-
-    return headerType;
 }
-
-
-LOUDDK_API_ENTRY uint16_t pciCheckVendor(uint8_t bus, uint8_t slot) {
-    UNUSED uint16_t vendor, device;
-    /* Try and read the first configuration register. Since there are no
-     * vendors that == 0xFFFF, it must be a non-existent device. */
-    if ((vendor = pciConfigReadWord(bus, slot, 0, 0)) != 0xFFFF) {
-        device = pciConfigReadWord(bus, slot, 0, 2);
-        //TODO: Is Vendor Part Of System
-    } return (vendor);
-}
-
-
 
 LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device) {
     uint8_t function = 0;
@@ -62,14 +40,6 @@ LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device) {
     }
 }
 
-
-LOUDDK_API_ENTRY void checkBus(uint8_t bus) {
-    uint8_t device;
-
-    for (device = 0; device < 32; device++) {
-        checkDevice(bus, device);
-    }
-}
 
 
 LOUDDK_API_ENTRY void checkFunction(uint8_t bus, uint8_t device, uint8_t function) {
