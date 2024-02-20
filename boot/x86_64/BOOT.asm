@@ -13,6 +13,10 @@ section .text
 
 global start
 
+global page_table_l4
+global page_table_l3
+global page_table_l2
+global age_table_l1
 
 
 extern Lou_kernel_start
@@ -120,14 +124,17 @@ error:
     mov byte  [0xb800a], al
     hlt
 
+
 section .bss
 align 4096
 page_table_l4:
-    resb 4096
+    resq 4096; Allocate space for the L4 table (PML4), containing one entry
 page_table_l3:
-    resb 4096
+    resq 4096; 512 entries for the L3 table (PDPT)
 page_table_l2:
-    resb 4096
+    resq 4096 ; 512 entries for the L2 table (PDT)
+page_table_l1:
+    resq 4096 ; 512 entries for the L1 table (PT)
 
 align 4096
 stack_bottom:

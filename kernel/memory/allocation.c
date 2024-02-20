@@ -17,7 +17,7 @@
 
 
 // Define a memory bitmap (assuming each bit corresponds to a byte)
-#define MEMORY_SIZE (1024 * 2)
+#define MEMORY_SIZE (1024 * 500)
 unsigned char memory_bitmap[MEMORY_SIZE / 8] = { 0 };
 
 RAMADD Lou_Alloc_Mem(SIZE size) {
@@ -123,3 +123,23 @@ STATUS Lou_Free_Mem(RAMADD Addr, SIZE size) {
     return GOOD;
 }
 
+void* Lou_Calloc_Mem(size_t numElements, size_t sizeOfElement) {
+    // Check for overflow in the multiplication
+    if (numElements == 0 || sizeOfElement == 0 || SIZE_MAX / numElements < sizeOfElement) {
+        return NULL; // Overflow occurred, return NULL
+    }
+
+    // Calculate the total size needed
+    size_t totalSize = numElements * sizeOfElement;
+
+    // Allocate memory using malloc
+    void* ptr = Lou_Alloc_Mem(totalSize);
+
+    // Check if memory allocation was successful
+    if (ptr != NULL) {
+        // Clear the allocated memory by setting all bytes to zero
+        memset(ptr, 0, totalSize);
+    }
+
+    return ptr;
+}

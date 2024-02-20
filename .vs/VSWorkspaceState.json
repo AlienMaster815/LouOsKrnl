@@ -3,15 +3,15 @@
     "",
     "\\drivers",
     "\\drivers\\storage",
-    "\\drivers\\storage\\SATA_SPECS",
+    "\\drivers\\storage\\SATA",
+    "\\drivers\\storage\\SATA\\SATA_SPECS",
     "\\include",
     "\\include\\drivers",
     "\\include\\drivers\\Lou_drivers",
-    "\\init",
-    "\\kernel",
-    "\\kernel\\Drivers",
-    "\\kernel\\Drivers\\io"
+    "\\Releases\\64BIOS",
+    "\\targets",
+    "\\targets\\x86_64"
   ],
-  "SelectedNode": "\\drivers\\storage\\SATA.cpp",
+  "SelectedNode": "\\drivers\\storage\\SATA\\SATA.cpp",
   "PreviewInSolutionExplorer": false
 }

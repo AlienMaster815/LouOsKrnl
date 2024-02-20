@@ -19,6 +19,7 @@
 
 RAMADD Lou_Alloc_Mem(SIZE size);
 STATUS Lou_Free_Mem(RAMADD Addr, SIZE size);
+void* Lou_Calloc_Mem(size_t numElements, size_t sizeOfElement);
 #ifdef __x86_64__
 typedef struct {
 	uint64_t entry; //this defines out memory that is mapped down the road
@@ -40,40 +41,26 @@ typedef struct {
 
 #endif
 
-typedef struct {
-	PageTableEntry entries[512]; 
-}__attribute__((packed)) PageTable;;
+#define MachineMemoryBase 0 
 
-static const uintptr_t FindMemoryLimit();
+#define PAGE_SIZE_BYTES 4096  // 4KB page size
+#define PAGE_TABLE_SIZE_ENTRIES 1024 // 1GB page table size (1GB / 4KB = 262144 entries)
 
+// Define the page table entry structure
 
-
-static PageTable PML4;
-static PageTable PDPTT;
-static PageTable PDT;
- 
-static multiboot_info_t* mbi;
-//static multiboot_memory_map_t* mmap;
-
-static uintptr_t mapped_memory = 1072693248;
-
-
-#define MachineMemoryBase 0
 
 
 VOID init_paging();
 
 
 
-void unmap_page(void *physaddr, void *virtualaddr);
-void map_page(void *physaddr, void *virtualaddr, unsigned int flags);
-
 void* memset(void* dest, int value, size_t count);
-void setup_page_tables();
 uint64_t Parse_Mem_Map(multiboot_info_t* mbi);
 
 void* align_memory(void* ptr, size_t alignment);
 
 void Reset_All_Pages();
+
+void* get_physaddr(void* virtualaddr);
 
 #endif
