@@ -13,6 +13,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+#include <drivers/Vendors/VendorsDictionary.h>
 
 
 #define RAMADD unsigned char*

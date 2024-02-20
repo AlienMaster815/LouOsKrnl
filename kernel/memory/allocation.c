@@ -17,38 +17,42 @@
 
 
 // Define a memory bitmap (assuming each bit corresponds to a byte)
-#define MEMORY_SIZE 1024
+#define MEMORY_SIZE (1024 * 2)
 unsigned char memory_bitmap[MEMORY_SIZE / 8] = { 0 };
 
 RAMADD Lou_Alloc_Mem(SIZE size) {
-    // Calculate the number of bytes needed for allocation
-    SIZE blocks_needed = size / sizeof(unsigned char);
-    #ifdef __x86_64__
-    for (uint64_t adrint = 0; adrint < MEMORY_SIZE; ++adrint) {
-        RAMADD adr = (RAMADD)adrint;
-        uint64_t byte_index = (adrint / 8);
+    if (size == 0 || size > MEMORY_SIZE) {
+        return (RAMADD)MAXMEM; // Request is too large or zero, cannot allocate
+    }
+
+    // Calculate the number of blocks needed without dividing by sizeof(unsigned char)
+    SIZE blocks_needed = size; // Each bit in the bitmap represents a block
+
+#ifdef __x86_64__
+    // 64-bit version
+    for (uint64_t adrint = 0; adrint < MEMORY_SIZE - blocks_needed + 1; ++adrint) {
+        uint64_t byte_index = adrint / 8;
         unsigned char mask = 1 << (adrint % 8);
 
         // Check if the current block is free
         if ((memory_bitmap[byte_index] & mask) == 0) {
-            // Allocate this block and the required number of contiguous blocks
             SIZE contiguous_blocks = 0;
-            while (contiguous_blocks < blocks_needed) {
+            while (contiguous_blocks < blocks_needed && (adrint + contiguous_blocks) < MEMORY_SIZE) {
                 if ((memory_bitmap[(adrint + contiguous_blocks) / 8] & (1 << ((adrint + contiguous_blocks) % 8))) == 0) {
                     contiguous_blocks++;
                 }
                 else {
-                    break;  // Not enough contiguous free blocks
+                    break; // Found a used block, stop checking
                 }
             }
 
-            if (contiguous_blocks >= blocks_needed) {
-                // Mark blocks as allocated in the bitmap
+            if (contiguous_blocks == blocks_needed) {
+                // Found sufficient contiguous blocks, mark them as used
                 for (SIZE i = 0; i < blocks_needed; ++i) {
                     memory_bitmap[(adrint + i) / 8] |= (1 << ((adrint + i) % 8));
                 }
-                adr = (uint8_t*)adrint;
-                return adr;
+                // Return the address as an example. In real use, convert this to a proper address.
+                return (RAMADD)(adrint);
             }
         }
     }
@@ -86,7 +90,6 @@ RAMADD Lou_Alloc_Mem(SIZE size) {
 
     #endif
 
-    return (RAMADD)MAXMEM; // Allocation failed
 }
 
 STATUS Lou_Free_Mem(RAMADD Addr, SIZE size) {

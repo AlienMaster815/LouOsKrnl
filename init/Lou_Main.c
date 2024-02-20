@@ -71,9 +71,9 @@ LOUSTATUS Set_Up_Devices(){
 
     SwitchVideoDevice(INTEGRATED_DEVICE,DEFAULT_DEVICE,DEFAULT_DRIVER);
 
-    //pata_device_scanc();
+    pata_device_scanc();
 
-    //FileSystemSetup();
+    FileSystemSetup();
     
     PCI_Setup();
 
@@ -115,6 +115,9 @@ KERNEL_ENTRY Lou_kernel_start(){
 
 
     LouPrint("Hello World\n");
+
+    RAMADD foo = Lou_Alloc_Mem(1);
+
 
     while (1) {
         asm("hlt");

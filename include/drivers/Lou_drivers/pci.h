@@ -52,7 +52,7 @@ KERNEL_IMPORT uint8_t getSubClass(uint8_t bus, uint8_t device, uint8_t function)
 KERNEL_IMPORT uint8_t getSecondaryBus(uint8_t bus, uint8_t device, uint8_t function);
 KERNEL_IMPORT uint16_t PciGetVendorID(uint8_t bus, uint8_t slot);
 KERNEL_IMPORT uint8_t getHeaderType(uint8_t bus, uint8_t device, uint8_t function);
-KERNEL_IMPORT int check_pci_device_id(uint16_t device_id, uint8_t bus, uint8_t slot, uint8_t func);
+KERNEL_IMPORT bool CheckPciDeviceID(uint16_t device_id, uint8_t bus, uint8_t slot, uint8_t func);
 KERNEL_IMPORT uint16_t PciGetDeviceID(uint8_t bus, uint8_t slot, uint8_t func);
 
 LOUDDK_API_ENTRY void PCI_Scan_Bus();
@@ -94,12 +94,12 @@ void PCI_Write(P_PCIDEV Device, P_PCIBuffer buffer);
 uint16_t pciConfigReadWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset);
 
 void PCI_Scan_Bus();
-uint16_t PciGetVenmdorID(uint8_t bus, uint8_t slot);
+uint16_t PciGetVendorID(uint8_t bus, uint8_t slot);
 void checkDevice(uint8_t bus, uint8_t device);
 void checkBus(uint8_t bus);
 void checkFunction(uint8_t bus, uint8_t device, uint8_t function);
 void PCI_Scan_Bus();
-int check_pci_device_id(uint16_t device_id, uint8_t bus, uint8_t slot, uint8_t func);
+bool CheckPciDeviceID(uint16_t device_id, uint8_t bus, uint8_t slot, uint8_t func);
 uint16_t PciGetDeviceID(uint8_t bus, uint8_t slot, uint8_t func);
 
 #endif

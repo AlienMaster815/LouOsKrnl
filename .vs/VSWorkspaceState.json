@@ -2,15 +2,15 @@
   "ExpandedNodes": [
     "",
     "\\drivers",
+    "\\drivers\\pci_systems",
     "\\drivers\\storage",
     "\\include",
     "\\include\\drivers",
+    "\\include\\drivers\\Vendors",
+    "\\init",
     "\\kernel",
-    "\\kernel\\cstdlib",
-    "\\kernel\\cstdlib\\stdio",
-    "\\kernel\\Drivers",
     "\\kernel\\memory"
   ],
-  "SelectedNode": "\\init\\Lou_Main.c",
+  "SelectedNode": "\\drivers\\storage\\SATA.cpp",
   "PreviewInSolutionExplorer": false
 }

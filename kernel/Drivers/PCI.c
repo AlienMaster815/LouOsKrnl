@@ -97,7 +97,7 @@ uint16_t PciGetVendorID(uint8_t bus, uint8_t slot) {
 }
 
 
-int check_pci_device_id(uint16_t device_id, uint8_t bus, uint8_t slot,uint8_t func) {
+bool CheckPciDeviceID(uint16_t device_id, uint8_t bus, uint8_t slot,uint8_t func) {
     // Read the vendor ID and device ID from the PCI configuration space
     uint32_t data = pci_read(bus, slot, func, 0x00);
     uint16_t vendor_id = data & 0xFFFF;
@@ -105,9 +105,9 @@ int check_pci_device_id(uint16_t device_id, uint8_t bus, uint8_t slot,uint8_t fu
 
     // Check if the device ID matches
     if (dev_id == device_id) {
-        return 1;  // Match found
+        return true;  // Match found
     }
-    return 0;  // No match found
+    return false;  // No match found
 }
 
 

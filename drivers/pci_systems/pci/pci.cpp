@@ -35,12 +35,20 @@ LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device) {
         for (function = 1; function < 8; function++) {
             if (PciGetVendorID(bus, device) != 0xFFFF) {
                 checkFunction(bus, device, function);
-                //Parse Funxtios and have fun
+                if (PciGetDeviceID(bus,device,function) == 0xffff) continue;
+                else {
+                    LouPrint("PCI Device Found Vedor Is: %h and Device Is: %h\n", vendorID, PciGetDeviceID(bus, device, function));
+                    //Parse Funxtios and have fun
+
+                    //IsSataCheck(bus, device, function);
+                }
             }
         }
     }
     else{
         //device is single function have fun
+
+        IsSataCheck(bus,  device, function);
     }
 }
 
