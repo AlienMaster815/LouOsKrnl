@@ -3,6 +3,7 @@
     "",
     "\\drivers",
     "\\drivers\\storage",
+    "\\drivers\\storage\\SATA_SPECS",
     "\\include",
     "\\include\\drivers",
     "\\include\\drivers\\Lou_drivers",
@@ -11,6 +12,6 @@
     "\\kernel\\Drivers",
     "\\kernel\\Drivers\\io"
   ],
-  "SelectedNode": "\\include\\drivers\\Lou_drivers\\pci.h",
+  "SelectedNode": "\\drivers\\storage\\SATA.cpp",
   "PreviewInSolutionExplorer": false
 }

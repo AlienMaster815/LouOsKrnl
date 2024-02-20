@@ -16,6 +16,12 @@ uint32_t pci_read(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset) {
     return inl(PCI_CONFIG_DATA_PORT);
 }
 
+void write_pci(uint8_t bus, uint8_t slot, uint8_t function, uint8_t offset, uint32_t value) {
+    // Calculate the address based on bus, device, function, and offset
+    uint32_t address = (1U << 31) | ((uint32_t)bus << 16) | ((uint32_t)slot << 11) | ((uint32_t)function << 8) | (offset & 0xFC);
+    // Write to PCI configuration space
+    outl(address, value);
+}
 
 uint16_t pciConfigReadWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset) {
     uint32_t address;
@@ -36,6 +42,33 @@ uint16_t pciConfigReadWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offs
     return tmp;
 }
 
+void pciConfigWriteWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset, uint16_t value) {
+    uint32_t address;
+    uint32_t lbus = (uint32_t)bus;
+    uint32_t lslot = (uint32_t)slot;
+    uint32_t lfunc = (uint32_t)func;
+
+    // Create configuration address as per Figure 1
+    address = (uint32_t)((lbus << 16) | (lslot << 11) |
+        (lfunc << 8) | (offset & 0xFC) | ((uint32_t)0x80000000));
+
+    // Write out the address
+    outl(0xCF8, address);
+
+    // Read the current 32-bit value at the specified address
+    uint32_t currentValue = inl(0xCFC);
+
+    // Clear the bits corresponding to the 16-bit value we are about to write
+    currentValue &= ~((uint32_t)0xFFFF << ((offset & 2) * 8));
+
+    // Set the bits with the new 16-bit value
+    currentValue |= (uint32_t)value << ((offset & 2) * 8);
+
+    // Write the modified value back to the PCI configuration space
+    outl(0xCFC, currentValue);
+}
+
+
 
 uint32_t pciConfigAddress(uint8_t bus, uint8_t device, uint8_t function, uint8_t reg) {
     // Construct the address for PCI configuration space access
@@ -52,6 +85,27 @@ uint8_t pciConfigReadByte(uint8_t bus, uint8_t device, uint8_t function, uint8_t
     // Read and return the byte from the data port
     return inb(PCI_CONFIG_DATA_PORT + (reg & 3));
 }
+
+void pciConfigWriteByte(uint8_t bus, uint8_t device, uint8_t function, uint8_t reg, uint8_t value) {
+    // Calculate the address for PCI configuration space access
+    uint32_t address = pciConfigAddress(bus, device, function, reg);
+
+    // Write the address to the address port
+    outl(PCI_CONFIG_ADDRESS_PORT, address);
+
+    // Read the current 32-bit value at the specified address
+    uint32_t currentValue = inl(PCI_CONFIG_DATA_PORT);
+
+    // Clear the bits corresponding to the byte we are about to write
+    currentValue &= ~((uint32_t)0xFF << ((reg & 3) * 8));
+
+    // Set the bits with the new byte value
+    currentValue |= (uint32_t)value << ((reg & 3) * 8);
+
+    // Write the modified value back to the PCI configuration space
+    outl(PCI_CONFIG_DATA_PORT, currentValue);
+}
+
 
 uint8_t getBaseClass(uint8_t bus, uint8_t device, uint8_t function) {
     // Offset 0xB in the PCI configuration space contains the base class
@@ -171,12 +225,5 @@ bool IsPciEnable(uint8_t bus, uint8_t slot, uint8_t func) {
     return (command & (1 << 0)) != 0;
 }
 
-uint32_t find_ahci_mmio_base(uint8_t bus, uint8_t slot, uint8_t func) {
-    // Read the BAR5 register (assuming it contains the MMIO base address)
-    uint32_t bar5 = pci_read(bus, slot, func, 0x24); // Offset for BAR5 register
 
-    // Extract the MMIO base address from BAR5 (bits 31:4)
-    uint32_t mmio_base = bar5 & ~0xF;
 
-    return mmio_base;
-}

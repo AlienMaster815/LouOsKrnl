@@ -43,6 +43,7 @@ typedef struct _PCI_DEVICE_OBJECT {
 
 
 KERNEL_IMPORT uint32_t pci_read(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset);
+KERNEL_IMPORT uint32_t write_pci(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset,uint32_t Value);
 KERNEL_IMPORT uint16_t pciConfigReadWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset);
 KERNEL_IMPORT uint32_t pciConfigAddress(uint8_t bus, uint8_t device, uint8_t function, uint8_t reg);
 KERNEL_IMPORT uint8_t pciConfigReadByte(uint8_t bus, uint8_t device, uint8_t function, uint8_t reg);
@@ -55,8 +56,8 @@ KERNEL_IMPORT bool CheckPciDeviceID(uint16_t device_id, uint8_t bus, uint8_t slo
 KERNEL_IMPORT uint16_t PciGetDeviceID(uint8_t bus, uint8_t slot, uint8_t func);
 KERNEL_IMPORT bool PciEnableDevice(uint8_t bus, uint8_t slot, uint8_t function);
 KERNEL_IMPORT bool IsPciEnable(uint8_t bus, uint8_t slot, uint8_t func);
-KERNEL_IMPORT uint32_t find_ahci_mmio_base(uint8_t bus, uint8_t slot, uint8_t func);
-
+KERNEL_IMPORT void pciConfigWriteByte(uint8_t bus, uint8_t device, uint8_t function, uint8_t reg, uint8_t value);
+KERNEL_IMPORT void pciConfigWriteWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset, uint16_t value);
 
 LOUDDK_API_ENTRY void PCI_Scan_Bus();
 LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device);
@@ -79,6 +80,8 @@ class PCI{
 #else
 
 #include <LouAPI.h>
+
+
 
 //Is C Land
 P_PCIBuffer PCI_Read(P_PCIDEV Device);
@@ -108,8 +111,15 @@ bool CheckPciDeviceID(uint16_t device_id, uint8_t bus, uint8_t slot, uint8_t fun
 uint16_t PciGetDeviceID(uint8_t bus, uint8_t slot, uint8_t func);
 bool IsPciEnable(uint8_t bus, uint8_t slot, uint8_t func);
 
-uint32_t find_ahci_mmio_base(uint8_t bus, uint8_t slot, uint8_t func);
+void pciConfigWriteByte(uint8_t bus, uint8_t device, uint8_t function, uint8_t reg, uint8_t value);
+void pciConfigWriteWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset, uint16_t value);
 
 #endif
+
+#ifndef PCI_GLOBAL_VAR
+#define PCI_GLOBAL_VAR
+
+#endif
+
 
 #endif
