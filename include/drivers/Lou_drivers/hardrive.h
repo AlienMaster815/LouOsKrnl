@@ -88,4 +88,12 @@ typedef struct _SATA_PCI_DEVICE {
 }SATA_PCI_DEVICE, * P_SATA_PCI_DEVICE;
 
 UNUSED static P_SATA_PCI_DEVICE SataDevices[256];
+
+#define AHCI_BAR_OFFSET       0x10  // Offset of AHCI controller's BAR in PCI configuration space
+#define AHCI_REG_CAP          0x00  // Offset of AHCI capabilities register
+#define AHCI_REG_GHC          0x04  // Offset of AHCI global host control register
+#define AHCI_CAP_SSS          (1U << 27) // Staggered Spin-Up Supported bit in AHCI capabilities register
+#define AHCI_GHC_AE           (1U << 31) // AHCI Enable bit in AHCI global host control register
+
+
 #endif

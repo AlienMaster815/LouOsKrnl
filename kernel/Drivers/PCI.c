@@ -120,10 +120,63 @@ uint16_t PciGetDeviceID(uint8_t bus ,uint8_t slot,uint8_t func) {
     return (data >> 16) & 0xFFFF;
 }
 
-bool IsPartOfVendorDictionary() {
 
+bool PciEnableDevice(uint8_t bus, uint8_t slot, uint8_t function) {
+    uint32_t address;
+    uint16_t command;
+
+    // Construct the configuration address
+    address = (1U << 31) | (bus << 16) | (slot << 11) | (function << 8);
+
+    // Write the configuration address to the address port
+    outl(PCI_CONFIG_ADDRESS_PORT, address);
+
+    // Read the device's command register
+    command = inw(PCI_CONFIG_DATA_PORT);
+
+    // Enable the device by setting the enable bit
+    command |= (1 << 0); // Enable bit (bit 0)
+
+    // Write the updated command register back to the device
+    outw(PCI_CONFIG_DATA_PORT, command);
+
+    // Read the command register again to verify if the device is enabled
+    command = inw(PCI_CONFIG_DATA_PORT);
+
+    // Check if the enable bit is set
+    if (command & (1 << 0)) {
+        // Device successfully enabled
+        return true;
+    }
+    else {
+        // Device not enabled
+        return false;
+    }
 }
 
-bool IsPartOfDeviceDictionary() {
+bool IsPciEnable(uint8_t bus, uint8_t slot, uint8_t func) {
+    uint32_t address;
+    uint16_t command;
 
+    // Construct the configuration address
+    address = (1U << 31) | (bus << 16) | (slot << 11) | (func << 8);
+
+    // Write the configuration address to the address port
+    outl(PCI_CONFIG_ADDRESS_PORT, address);
+
+    // Read the device's command register
+    command = inw(PCI_CONFIG_DATA_PORT);
+
+    // Check if the enable bit is set
+    return (command & (1 << 0)) != 0;
+}
+
+uint32_t find_ahci_mmio_base(uint8_t bus, uint8_t slot, uint8_t func) {
+    // Read the BAR5 register (assuming it contains the MMIO base address)
+    uint32_t bar5 = pci_read(bus, slot, func, 0x24); // Offset for BAR5 register
+
+    // Extract the MMIO base address from BAR5 (bits 31:4)
+    uint32_t mmio_base = bar5 & ~0xF;
+
+    return mmio_base;
 }

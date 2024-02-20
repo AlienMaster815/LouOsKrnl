@@ -41,9 +41,8 @@ typedef struct _PCI_DEVICE_OBJECT {
 #ifdef __cplusplus
 #include <LouDDK.h>
 
-DRIVER_IO_FUNCTION P_PCIBuffer PCI_Read(P_PCIDEV Device);
-DRIVER_IO_FUNCTION void PCI_Write(P_PCIDEV Device, P_PCIBuffer buffer);
 
+KERNEL_IMPORT uint32_t pci_read(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset);
 KERNEL_IMPORT uint16_t pciConfigReadWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset);
 KERNEL_IMPORT uint32_t pciConfigAddress(uint8_t bus, uint8_t device, uint8_t function, uint8_t reg);
 KERNEL_IMPORT uint8_t pciConfigReadByte(uint8_t bus, uint8_t device, uint8_t function, uint8_t reg);
@@ -54,6 +53,10 @@ KERNEL_IMPORT uint16_t PciGetVendorID(uint8_t bus, uint8_t slot);
 KERNEL_IMPORT uint8_t getHeaderType(uint8_t bus, uint8_t device, uint8_t function);
 KERNEL_IMPORT bool CheckPciDeviceID(uint16_t device_id, uint8_t bus, uint8_t slot, uint8_t func);
 KERNEL_IMPORT uint16_t PciGetDeviceID(uint8_t bus, uint8_t slot, uint8_t func);
+KERNEL_IMPORT bool PciEnableDevice(uint8_t bus, uint8_t slot, uint8_t function);
+KERNEL_IMPORT bool IsPciEnable(uint8_t bus, uint8_t slot, uint8_t func);
+KERNEL_IMPORT uint32_t find_ahci_mmio_base(uint8_t bus, uint8_t slot, uint8_t func);
+
 
 LOUDDK_API_ENTRY void PCI_Scan_Bus();
 LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device);
@@ -82,6 +85,8 @@ P_PCIBuffer PCI_Read(P_PCIDEV Device);
 void PCI_Write(P_PCIDEV Device, P_PCIBuffer buffer);
 void PCI_Setup();
 
+bool PciEnableDevice(uint8_t bus, uint8_t slot, uint8_t function);
+
 uint16_t pciConfigReadWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset);
 
 uint32_t pciConfigAddress(uint8_t bus, uint8_t device, uint8_t function, uint8_t reg);
@@ -101,6 +106,9 @@ void checkFunction(uint8_t bus, uint8_t device, uint8_t function);
 void PCI_Scan_Bus();
 bool CheckPciDeviceID(uint16_t device_id, uint8_t bus, uint8_t slot, uint8_t func);
 uint16_t PciGetDeviceID(uint8_t bus, uint8_t slot, uint8_t func);
+bool IsPciEnable(uint8_t bus, uint8_t slot, uint8_t func);
+
+uint32_t find_ahci_mmio_base(uint8_t bus, uint8_t slot, uint8_t func);
 
 #endif
 
