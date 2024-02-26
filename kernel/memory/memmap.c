@@ -15,6 +15,11 @@ PML* GetPageBase() {
     return (PML*)(GetCr3() & 0x000FFFFFFFFFF000LL);
 }
 
+void SetCr3(uint64_t cr3_value) {
+    __asm__ volatile ("mov %0, %%cr3" : : "r" (cr3_value));
+}
+
+
 
 static inline void PageFlush(uint64_t addr) {
     asm volatile("invlpg (%0)" ::"r" (addr) : "memory");
@@ -22,37 +27,21 @@ static inline void PageFlush(uint64_t addr) {
 }
 
 
-void MapEntryToTable(uint16_t L4Entry, uint16_t L3Entry, uint16_t L2Entry, uint64_t PAddress,uint64_t FLAGS) {
 
 
 
-}
+extern uint64_t GetPageValue(uint64_t PAddress, uint64_t FLAGS);
 
 
 
-void LouMapAddress(uint64_t PAddress , uint64_t FLAGS) {
-    UNUSED uint64_t L4Entry = 0, L3Entry = 0, L2Entry = 0;
 
-    PAddress &= ~( (2 * MEGABYTE) - 1); // Clear the 21 least significant bits
 
-    // Calculate the entries
-    if (PAddress < GIGABYTE) {
-        L2Entry = (PAddress / (2LL * MEGABYTE));
-    }
-    else if ((PAddress >= GIGABYTE) && (PAddress < (GIGABYTE * 512LL))) {
-        L3Entry = (uint64_t)(PAddress / GIGABYTE);
-        L2Entry = (uint64_t)((PAddress % GIGABYTE) / (2LL * MEGABYTE));
-    }
-    else {
-        L4Entry = (uint64_t)(PAddress / (GIGABYTE * 512LL));
-        L3Entry = (uint64_t)((PAddress % (512LL * GIGABYTE)) / GIGABYTE);
-        L2Entry = (uint64_t)((PAddress % GIGABYTE) / (2LL * MEGABYTE));
-    }
+void LouMapAddress(uint64_t PAddress,uint64_t VAddress , uint64_t FLAGS) {
+    
+    uint64_t foo = VAddress/(2LL * MEGABYTE);
 
-    LouPrint("Mapping L4 Enrty:%d\n", L4Entry);
-    LouPrint("Mapping L3 Enrty:%d\n", L3Entry);
-    LouPrint("Mapping L2 Enrty:%d\n", L2Entry);
+    PML* PML4 = GetPageBase();
 
-    MapEntryToTable(L4Entry,L3Entry,L2Entry,PAddress,FLAGS);
+    PML4->PML2.entries[foo] = GetPageValue(PAddress,FLAGS);
 
 }

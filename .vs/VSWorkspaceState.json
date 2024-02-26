@@ -11,6 +11,6 @@
     "\\kernel\\memory",
     "\\kernel\\memory\\paging"
   ],
-  "SelectedNode": "\\init\\Lou_Main.c",
+  "SelectedNode": "\\boot\\x86_64\\BOOT.asm",
   "PreviewInSolutionExplorer": false
 }

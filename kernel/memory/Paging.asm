@@ -56,3 +56,13 @@ enable_paging:
     ret
 
 bits 64
+
+global GetPageValue
+
+GetPageValue:
+    ;rdi has the paddress
+    ;rsi has the flags
+    mov rax, rdi ; rax now is paddress
+    or rax, rsi  ; bitwise by flags
+    ret
+    

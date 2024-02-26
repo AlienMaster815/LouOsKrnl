@@ -9,10 +9,7 @@
 
 //include headers from freestanding
 
-#include <stddef.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include <kernel/memmory.h>
+#include <LouAPI.h>
 // define constants
 
 
@@ -145,5 +142,25 @@ void* Lou_Calloc_Mem(size_t numElements, size_t sizeOfElement) {
 }
 
 RAMADD Lou_Alloc_Mem_Alligned(SIZE size, uint64_t allignment) {
-    return (RAMADD)align_memory(Lou_Alloc_Mem(size),allignment);
+    RAMADD foo = (RAMADD)align_memory(Lou_Alloc_Mem(size),allignment);
+
+    CHECK_AGAIN:
+
+    LouPrint("Checking If Address Is Free\n");
+
+    for (uint32_t i = 0; i < size; i++) {
+        if (0 != *(foo + i))goto FIX;
+    }
+
+    LouPrint("Found A Free Block\n");
+
+    return foo;
+ 
+    FIX:
+
+    LouPrint("Address Givien For Allignment Is Not Free Fixing Now\n");
+
+    foo += allignment;
+
+    goto CHECK_AGAIN;
 }

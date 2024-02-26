@@ -41,32 +41,19 @@ typedef struct  __attribute__((packed, aligned(4096))) _PageTable {
 
 typedef struct __attribute__((packed, aligned(4096))) _PML {
     PageTable PML4;
-    PageTable PML3[512];
-    PageTable PML2[512];
+    PageTable PML3;
+    PageTable PML2;
     PageTable PML1;
 }PML;
 
+PML* page_table_l4;
 
-
-void LouMapAddress(uint64_t PAddress, uint64_t FLAGS);
+void LouMapAddress(uint64_t PAddress,uint64_t VAddress, uint64_t FLAGS);
 //Directory Entry FLAGS
 
 //2mb Entry
-#define PRESENT                      0b1
-#define WRITEABLE                   0b10
-#define USERABLE                   0b100
-#define ISPWT                     0b1000
-#define ISPCD                    0b10000
-#define ACCESSBIT               0b100000
-#define DIRTY                  0b1000000
-#define ISPST                 0b10000000
-#define ISGLOBAL             0b100000000
-#define ISAVL1B1            0b1000000000
-#define ISAVL1B2           0b10000000000
-#define ISAVL1B3          0b100000000000
-#define ISPAT            0b1000000000000
+#define KERNEL_PAGE_WRITE_PRESENT 0b10000011
 
-#define NOTEXECUTE 0b1000000000000000000000000000000000000000000000000000000000000000
 
 //endof Paging Stubs
 
