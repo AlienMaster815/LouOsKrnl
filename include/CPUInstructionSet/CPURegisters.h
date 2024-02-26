@@ -4,6 +4,9 @@
 
 #ifdef __x86_64__
 
+
+uint64_t get_cr3_value();
+
 uint64_t get_rsp();
 void set_rsp(uint64_t new_rsp_value);
 uint64_t get_rbp();

@@ -17,8 +17,8 @@
 
 
 // Define a memory bitmap (assuming each bit corresponds to a byte)
-#define MEMORY_SIZE (1024 * 500)
-unsigned char memory_bitmap[MEMORY_SIZE / 8] = { 0 };
+#define MEMORY_SIZE (1024 * 1024 * 500)
+uint64_t memory_bitmap[MEMORY_SIZE / 8] = { 0 };
 
 RAMADD Lou_Alloc_Mem(SIZE size) {
     if (size == 0 || size > MEMORY_SIZE) {
@@ -142,4 +142,8 @@ void* Lou_Calloc_Mem(size_t numElements, size_t sizeOfElement) {
     }
 
     return ptr;
+}
+
+RAMADD Lou_Alloc_Mem_Alligned(SIZE size, uint64_t allignment) {
+    return (RAMADD)align_memory(Lou_Alloc_Mem(size),allignment);
 }

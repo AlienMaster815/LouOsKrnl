@@ -75,11 +75,11 @@ ISR32:
 	mov ah, 32
 	mov [InterruptNum], ah
 	Handle
-	hlt
+	popa
+	iretq
 
 ISR33:
 	pusha
-	
 	mov ah, 33
 	mov [InterruptNum], ah
 	Handle

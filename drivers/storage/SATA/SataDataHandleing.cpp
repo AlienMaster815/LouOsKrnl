@@ -17,9 +17,9 @@ void WriteAhciRegister(uint32_t Base, uint32_t offset, uint32_t value) {
 }
 
 
-uint32_t FindAhciAddress(uint8_t bus, uint8_t slot, uint8_t func) {
+uint32_t FindAhciAddress(P_SATA_PCI_DEVICE devObj) {
 	// Read the BAR5 register (assuming it contains the MMIO base address)
-	uint32_t bar5 = pci_read(bus, slot, func, 0x24); // Offset for BAR5 register
+	uint32_t bar5 = pci_read(devObj->bus, devObj->slot, devObj->function, AHCI_BAR_OFFSET); // Offset for BAR5 register
 
 	// Extract the MMIO base address from BAR5 (bits 31:4)
 	uint32_t mmio_base = bar5 & ~0xF;
@@ -28,9 +28,9 @@ uint32_t FindAhciAddress(uint8_t bus, uint8_t slot, uint8_t func) {
 }
 
 
-bool SetAHCIMode(uint32_t Base,uint8_t bus, uint8_t slot, uint8_t func) {
+bool SetAHCIMode(P_SATA_PCI_DEVICE DevObj) {
 	// Read the AHCI controller's BAR to determine its MMIO base address
-	uint32_t ahci_bar = pci_read(bus, slot, func, AHCI_BAR_OFFSET);
+	uint32_t ahci_bar = pci_read(DevObj->bus, DevObj->slot, DevObj->function, AHCI_BAR_OFFSET);
 
 	// Determine the MMIO base address from the BAR (bits 31:4)
 	ahci_mmio_base = ahci_bar & ~0xF;
@@ -47,7 +47,7 @@ bool SetAHCIMode(uint32_t Base,uint8_t bus, uint8_t slot, uint8_t func) {
 	WriteAhciRegister(ahci_mmio_base , AHCI_REG_GHC, AHCI_GHC_AE);
 
 	// Verify if AHCI mode is enabled by reading the GHC register again
-	uint32_t ghc_value = ReadAhciRegister(Base , AHCI_REG_GHC);
+	uint32_t ghc_value = ReadAhciRegister(ahci_mmio_base , AHCI_REG_GHC);
 	bool ahci_enabled = (ghc_value & AHCI_GHC_AE) != 0;
 
 	return ahci_enabled;

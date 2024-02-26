@@ -1,17 +1,16 @@
 {
   "ExpandedNodes": [
     "",
-    "\\drivers",
-    "\\drivers\\storage",
-    "\\drivers\\storage\\SATA",
-    "\\drivers\\storage\\SATA\\SATA_SPECS",
+    "\\boot",
+    "\\boot\\x86_64",
     "\\include",
-    "\\include\\drivers",
-    "\\include\\drivers\\Lou_drivers",
-    "\\Releases\\64BIOS",
-    "\\targets",
-    "\\targets\\x86_64"
+    "\\include\\kernel",
+    "\\init",
+    "\\kernel",
+    "\\kernel\\cstdlib",
+    "\\kernel\\memory",
+    "\\kernel\\memory\\paging"
   ],
-  "SelectedNode": "\\drivers\\storage\\SATA\\SATA.cpp",
+  "SelectedNode": "\\init\\Lou_Main.c",
   "PreviewInSolutionExplorer": false
 }

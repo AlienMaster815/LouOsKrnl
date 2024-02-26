@@ -45,26 +45,35 @@ void PS2KeyboardHandler();
 void PageFault();
 void GPF();
 void DoubleFault();
-void FP();
+void OpCode();
+void Clock();
 
 
 
 LOUSTATUS Lou_kernel_early_initialization(){
 
-    
+    InitializeStartupInterruptHandleing();
+
     RegisterInterruptHandler(DoubleFault, INTERRUPT_SERVICE_ROUTINE_8);
-    RegisterInterruptHandler(GPF, INTERRUPT_SERVICE_ROUTINE_6);
-    RegisterInterruptHandler(FP, INTERRUPT_SERVICE_ROUTINE_13);
+    RegisterInterruptHandler(GPF, INTERRUPT_SERVICE_ROUTINE_13);
+    RegisterInterruptHandler(OpCode, INTERRUPT_SERVICE_ROUTINE_6);
     RegisterInterruptHandler(PageFault, INTERRUPT_SERVICE_ROUTINE_14);
     RegisterInterruptHandler(PS2KeyboardHandler, INTERRUPT_SERVICE_ROUTINE_33);
+    RegisterInterruptHandler(Clock, INTERRUPT_SERVICE_ROUTINE_32);
 
-
-    InitializeStartupInterruptHandleing();
     //SetInterruptFlags();
 
+    
 
+     
+    // LouPrint("Mapping an address\n");
 
+    //LouMapAddress(GIGABYTE, PRESENT + WRITEABLE);
 
+    //uint8_t* foo = (uint8_t*)GIGABYTE;
+    //LouPrint("Checking The address\n");
+    
+    //uint8_t bar = *foo;
 
     DeterminCPU();
 
@@ -74,7 +83,7 @@ LOUSTATUS Lou_kernel_early_initialization(){
 LOUSTATUS Set_Up_Devices(){
     if(IO_Manager_Init() != LOUSTATUS_GOOD)LouPanic("IO Manager Failed To Start",BAD);
 
-    SwitchVideoDevice(INTEGRATED_DEVICE,DEFAULT_DEVICE,DEFAULT_DRIVER);
+    //SwitchVideoDevice(INTEGRATED_DEVICE,DEFAULT_DEVICE,DEFAULT_DRIVER);
 
     pata_device_scanc();
 
@@ -111,7 +120,7 @@ KERNEL_ENTRY Lou_kernel_start(){
     if(Lou_kernel_early_initialization() != LOUSTATUS_GOOD)LouPanic("Early Initialization Failed",BAD);
 
     //SETUP DEVICES AND DRIVERS
-    if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);
+    //if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);
 
     //if(Advanced_Kernel_Initialization() != LOUSTATUS_GOOD)LouPanic("Final Kernel Initialization Failed",BAD);
 		
@@ -121,9 +130,6 @@ KERNEL_ENTRY Lou_kernel_start(){
 
 
     LouPrint("Hello World\n");
-
-    RAMADD foo = Lou_Alloc_Mem(1);
-
 
     while (1) {
         asm("hlt");

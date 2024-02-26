@@ -17,50 +17,67 @@
 #define BLOCK 4096
 #define SIZE unsigned long long
 
+#define GIGABYTE 0x40000000
+#define MEGABYTE 0x100000
+
+#define PAGE_TABLE_ALLIGNMENT 4096
+
 RAMADD Lou_Alloc_Mem(SIZE size);
 STATUS Lou_Free_Mem(RAMADD Addr, SIZE size);
 void* Lou_Calloc_Mem(size_t numElements, size_t sizeOfElement);
-#ifdef __x86_64__
-typedef struct {
-	uint64_t entry; //this defines out memory that is mapped down the road
-}__attribute__((packed)) PageTableEntry;
-#endif
+RAMADD Lou_Alloc_Mem_Alligned(SIZE size,uint64_t allignment);
 
-#ifdef __i386__
+
 #include <stdint.h>
-
-typedef struct {
-    uint32_t present : 1;  // Page present in memory
-    uint32_t rw : 1;       // Read/write access
-    uint32_t user : 1;     // User/supervisor mode
-    uint32_t accessed : 1; // Page accessed since last refresh
-    uint32_t dirty : 1;    // Page written to since last refresh
-    uint32_t unused : 7;   // Unused and available for software use
-    uint32_t frame : 20;   // Frame address (physical address of the page frame)
-} __attribute__((packed)) PageTableEntry;
-
-#endif
 
 #define MachineMemoryBase 0 
 
-#define PAGE_SIZE_BYTES 4096  // 4KB page size
-#define PAGE_TABLE_SIZE_ENTRIES 1024 // 1GB page table size (1GB / 4KB = 262144 entries)
 
-// Define the page table entry structure
+//Paging Stub
+
+typedef struct  __attribute__((packed, aligned(4096))) _PageTable {
+    uint64_t entries[512];
+} PageTable;
+
+typedef struct __attribute__((packed, aligned(4096))) _PML {
+    PageTable PML4;
+    PageTable PML3[512];
+    PageTable PML2[512];
+    PageTable PML1;
+}PML;
 
 
 
-VOID init_paging();
+void LouMapAddress(uint64_t PAddress, uint64_t FLAGS);
+//Directory Entry FLAGS
 
+//2mb Entry
+#define PRESENT                      0b1
+#define WRITEABLE                   0b10
+#define USERABLE                   0b100
+#define ISPWT                     0b1000
+#define ISPCD                    0b10000
+#define ACCESSBIT               0b100000
+#define DIRTY                  0b1000000
+#define ISPST                 0b10000000
+#define ISGLOBAL             0b100000000
+#define ISAVL1B1            0b1000000000
+#define ISAVL1B2           0b10000000000
+#define ISAVL1B3          0b100000000000
+#define ISPAT            0b1000000000000
+
+#define NOTEXECUTE 0b1000000000000000000000000000000000000000000000000000000000000000
+
+//endof Paging Stubs
 
 
 void* memset(void* dest, int value, size_t count);
-uint64_t Parse_Mem_Map(multiboot_info_t* mbi);
 
 void* align_memory(void* ptr, size_t alignment);
 
-void Reset_All_Pages();
 
-void* get_physaddr(void* virtualaddr);
+// Initialize a page table
+
+
 
 #endif

@@ -3,6 +3,17 @@
 
 //64 bit Registera
 
+#include <stdint.h>
+
+uint64_t get_cr3_value() {
+    uint64_t cr3_value;
+    // Inline assembly to read the value of CR3 into the cr3_value variable
+    asm volatile ("mov %%cr3, %0" : "=r" (cr3_value));
+    return cr3_value;
+}
+
+
+
 uint64_t get_rsp() {
     uint64_t rsp_value;
     asm volatile("mov %%rsp, %0" : "=r" (rsp_value));

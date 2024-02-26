@@ -26,6 +26,9 @@ void RunTimerClockMS(uint64_t TimerInMS){
             RegisterForClockInterrupt();
             WaitForInterrupt();
         }
+        Mask_All_Programable_Interrupts();
+        IRQ_Pic_clear_mask(1);
+
 }
 
 void RunTimerClockS(uint64_t TimerInS){
