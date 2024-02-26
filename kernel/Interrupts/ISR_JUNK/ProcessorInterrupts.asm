@@ -4,8 +4,12 @@ section .data
 
 section .text
 extern InterruptRouter
+extern InterruptCode
 
 %macro pusha 0
+	
+	mov [InterruptCode], rax
+	
 	push rax
 	push rbx
 	push rcx

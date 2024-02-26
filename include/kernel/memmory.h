@@ -41,19 +41,23 @@ typedef struct  __attribute__((packed, aligned(4096))) _PageTable {
 
 typedef struct __attribute__((packed, aligned(4096))) _PML {
     PageTable PML4;
-    PageTable PML3;
-    PageTable PML2;
+    PageTable PML3[2];
+    PageTable PML2[512];
     PageTable PML1;
 }PML;
 
 PML* page_table_l4;
 
 void LouMapAddress(uint64_t PAddress,uint64_t VAddress, uint64_t FLAGS);
+void LouUnMapAddress(uint64_t VAddress);
+
 //Directory Entry FLAGS
 
 //2mb Entry
 #define KERNEL_PAGE_WRITE_PRESENT 0b10000011
 
+typedef uint64_t pde_t; // Page Directory Entry
+typedef uint64_t pte_t; // Page Table Entry
 
 //endof Paging Stubs
 

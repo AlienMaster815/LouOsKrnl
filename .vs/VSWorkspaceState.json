@@ -2,15 +2,15 @@
   "ExpandedNodes": [
     "",
     "\\boot",
-    "\\boot\\x86_64",
-    "\\include",
     "\\include\\kernel",
     "\\init",
     "\\kernel",
-    "\\kernel\\cstdlib",
-    "\\kernel\\memory",
-    "\\kernel\\memory\\paging"
+    "\\kernel\\Interrupts\\ISR_JUNK",
+    "\\kernel\\Interrupts\\ISR_JUNK\\Routines",
+    "\\kernel\\Interrupts\\ISR_JUNK\\SubRoutines",
+    "\\kernel\\Interrupts\\ISR_JUNK\\SubRoutines\\Pagefault",
+    "\\kernel\\memory"
   ],
-  "SelectedNode": "\\boot\\x86_64\\BOOT.asm",
+  "SelectedNode": "\\init\\Lou_Main.c",
   "PreviewInSolutionExplorer": false
 }

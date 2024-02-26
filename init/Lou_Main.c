@@ -63,21 +63,7 @@ LOUSTATUS Lou_kernel_early_initialization(){
 
     //SetInterruptFlags();
 
-    
 
-     
-    // LouPrint("Mapping an address\n");
-
-    LouMapAddress(GIGABYTE,(2LL * MEGABYTE), KERNEL_PAGE_WRITE_PRESENT);
-
-    uint8_t* foo = (uint8_t*)(2LL * MEGABYTE);
-    LouPrint("Checking The address\n");
-    
-    uint8_t bar = *foo;
-
-    //LouPrint("The Address has the value of:%d\n", bar);
-
-    DeterminCPU();
 
     return LOUSTATUS_GOOD;
 }

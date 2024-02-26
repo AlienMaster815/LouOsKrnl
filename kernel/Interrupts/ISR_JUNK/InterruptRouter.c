@@ -16,6 +16,8 @@ void UnRegisterInterruptHandler(uint8_t InterruptNumber) {
 
 void InterruptRouter(uint8_t Interrupt) {
 
+	
+
 	if (NULL != InterruptHandler[Interrupt]) {
 		InterruptHandler[Interrupt]();
 		return;

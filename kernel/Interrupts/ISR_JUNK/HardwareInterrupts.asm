@@ -4,8 +4,11 @@
 
 section .data
 
+global InterruptCode
 
 InterruptNum db 0
+InterruptCode dq 0
+
 
 savedRIP dq 0 
 
@@ -16,7 +19,9 @@ extern InterruptRouter
 extern PIC_sendEOI
 
 %macro pusha 0
-    ; Push General-Purpose Registers
+	
+	mov [InterruptCode], rax
+    
     push rax
     push rbx
     push rcx

@@ -15,12 +15,6 @@ PML* GetPageBase() {
     return (PML*)(GetCr3() & 0x000FFFFFFFFFF000LL);
 }
 
-void SetCr3(uint64_t cr3_value) {
-    __asm__ volatile ("mov %0, %%cr3" : : "r" (cr3_value));
-}
-
-
-
 static inline void PageFlush(uint64_t addr) {
     asm volatile("invlpg (%0)" ::"r" (addr) : "memory");
     asm("mfence");
@@ -29,19 +23,64 @@ static inline void PageFlush(uint64_t addr) {
 
 
 
-
 extern uint64_t GetPageValue(uint64_t PAddress, uint64_t FLAGS);
-
-
-
 
 
 void LouMapAddress(uint64_t PAddress,uint64_t VAddress , uint64_t FLAGS) {
     
-    uint64_t foo = VAddress/(2LL * MEGABYTE);
+    UNUSED uint64_t L4Entry = 0, L3Entry = 0, L2Entry = 0;
+    if (VAddress < GIGABYTE) {
+        L2Entry = (VAddress / (2LL * MEGABYTE));
+    }
+    else if ((VAddress >= GIGABYTE) && (VAddress < (GIGABYTE * 512LL))) {
+        L3Entry = (uint64_t)(VAddress / GIGABYTE);
+        L2Entry = (uint64_t)((VAddress % GIGABYTE) / (2LL * MEGABYTE));
+    }
 
-    PML* PML4 = GetPageBase();
 
-    PML4->PML2.entries[foo] = GetPageValue(PAddress,FLAGS);
 
+    UNUSED PML* PML4 = GetPageBase();
+
+
+
+    //LouPrint("Gig:%d\n", L3Entry);
+    //LouPrint("Meg by 2:%d\n", L2Entry);
+
+    PML4->PML2[L3Entry].entries[L2Entry] = GetPageValue(PAddress,FLAGS);
+    PML4->PML3[L4Entry].entries[L3Entry] = (uint64_t) GetPageValue((uint64_t)PML4->PML2[L3Entry].entries[L2Entry],0b11);
+
+    //LouPrint("FOO:%d\n", PML4->PML2[L3Entry].entries[L2Entry]);
+
+    PageFlush(PML4->PML2[L3Entry].entries[L2Entry]);
+    PageFlush(PML4->PML3[L4Entry].entries[L3Entry]);
+}
+
+
+void LouUnMapAddress(uint64_t VAddress) {
+
+    UNUSED uint64_t L4Entry = 0, L3Entry = 0, L2Entry = 0;
+    if (VAddress < GIGABYTE) {
+        L2Entry = (VAddress / (2LL * MEGABYTE));
+    }
+    else if ((VAddress >= GIGABYTE) && (VAddress < (GIGABYTE * 512LL))) {
+        L3Entry = (uint64_t)(VAddress / GIGABYTE);
+        L2Entry = (uint64_t)((VAddress % GIGABYTE) / (2LL * MEGABYTE));
+    }
+
+
+
+    UNUSED PML* PML4 = GetPageBase();
+
+
+
+    //LouPrint("Gig:%d\n", L3Entry);
+    //LouPrint("Meg by 2:%d\n", L2Entry);
+
+    PML4->PML2[L3Entry].entries[L2Entry] = 0;
+    PML4->PML3[L4Entry].entries[L3Entry] = 0;
+
+    //LouPrint("FOO:%d\n", PML4->PML2[L3Entry].entries[L2Entry]);
+
+    PageFlush(PML4->PML2[L3Entry].entries[L2Entry]);
+    PageFlush(PML4->PML3[L4Entry].entries[L3Entry]);
 }
