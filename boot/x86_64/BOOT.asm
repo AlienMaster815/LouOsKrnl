@@ -89,6 +89,7 @@ stack_bottom:
 stack_top:
 
 section .rodata
+
 gdt64:
     dq 0 ; Null segment
 .code_segment: equ $ - gdt64
@@ -105,10 +106,11 @@ gdt64:
     dq 0x00AF92000000FFFF ; 64-bit System mode Data segment (DS)
 ; Define an interrupt code segment
 .interrupt_code_segment: equ $ - gdt64
-    dq 0x00AF9A000000FFFF ; Modify with appropriate attributes
+    dq 0x00AF9A000000FFFF ; 64-bit Code segment (CS)
 ; Define an interrupt data segment
 .interrupt_data_segment: equ $ - gdt64
-    dq 0x00AF92000000FFFF ; Modify with appropriate attributes
+    dq 0x00AF92000000FFFF ; 64-bit Data segment (DS)
+
 
 .pointer:
     dw $ - gdt64 - 1 ; length

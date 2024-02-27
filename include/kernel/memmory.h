@@ -50,6 +50,9 @@ PML* page_table_l4;
 
 void LouMapAddress(uint64_t PAddress,uint64_t VAddress, uint64_t FLAGS);
 void LouUnMapAddress(uint64_t VAddress);
+uint64_t GetPageOfFaultValue(uint64_t VAddress);
+extern uint64_t GetPageValue(uint64_t PAddress, uint64_t FLAGS);
+
 
 //Directory Entry FLAGS
 

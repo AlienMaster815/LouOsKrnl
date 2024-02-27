@@ -24,5 +24,5 @@ void InterruptRouter(uint8_t Interrupt) {
 	}
 
 	LouPrint("Interrupt Number: %d Was Called\n",Interrupt);
-
+	asm("hlt");
 }

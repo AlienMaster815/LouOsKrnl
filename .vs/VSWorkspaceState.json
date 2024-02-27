@@ -2,15 +2,15 @@
   "ExpandedNodes": [
     "",
     "\\boot",
+    "\\boot\\x86",
+    "\\boot\\x86_64",
+    "\\include",
     "\\include\\kernel",
     "\\init",
     "\\kernel",
-    "\\kernel\\Interrupts\\ISR_JUNK",
-    "\\kernel\\Interrupts\\ISR_JUNK\\Routines",
-    "\\kernel\\Interrupts\\ISR_JUNK\\SubRoutines",
-    "\\kernel\\Interrupts\\ISR_JUNK\\SubRoutines\\Pagefault",
-    "\\kernel\\memory"
+    "\\kernel\\atomic",
+    "\\kernel\\Interrupts\\IDT_JUNK"
   ],
-  "SelectedNode": "\\init\\Lou_Main.c",
+  "SelectedNode": "\\include\\kernel\\atomic.h",
   "PreviewInSolutionExplorer": false
 }

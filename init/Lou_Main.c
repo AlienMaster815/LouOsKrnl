@@ -63,6 +63,10 @@ LOUSTATUS Lou_kernel_early_initialization(){
 
     //SetInterruptFlags();
 
+    uint8_t* foo = (uint8_t*)GIGABYTE;
+
+    uint8_t bar = *foo;
+    asm volatile("hlt");
 
 
     return LOUSTATUS_GOOD;

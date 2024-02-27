@@ -12,6 +12,6 @@ CheckPresent:
 	mov rax, 1
 	ret
 
-	.notEqu
+	.notEqu:
 	mov rax, 0
 	ret

@@ -3,6 +3,7 @@ section .text
 
 global SetUpPages
 global enable_paging
+global clear_cr2
 
 extern page_table_l4
 extern page_table_l3
@@ -11,7 +12,7 @@ extern page_table_l1
 
 SetUpPages:
     mov eax, page_table_l3
-    or eax, 0b11 ; present, writable
+    or eax, 0b11 ; present writable
     mov [page_table_l4], eax
 
     mov eax, page_table_l2
@@ -98,3 +99,8 @@ GetPageValue:
     or rax, rsi  ; bitwise by flags
     ret
     
+
+clear_cr2:
+    mov rax, 0
+    mov cr2, rax
+    ret

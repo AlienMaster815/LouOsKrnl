@@ -23,6 +23,7 @@
 #include <kernel/pic.h>
 #include <kernel/ports.h>
 #include <kernel/Timers.h>
+#include <kernel/atomic.h>
 
 #define KERNEL_ENTRY extern void
 
@@ -30,7 +31,10 @@
 
 
 #define KernelCodeSegment 0x08
+#ifndef __cplusplus
+static bool IsKernelMode = true;
 
+#endif
 
 #endif
 
