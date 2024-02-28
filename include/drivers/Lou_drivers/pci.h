@@ -36,6 +36,16 @@ typedef struct _PCI_DEVICE_OBJECT {
 #define PCI_CONFIG_ADDRESS_PORT 0xCF8
 #define PCI_CONFIG_DATA_PORT    0xCFC
 
+// Define the PCI configuration space address space
+#define PCI_CONFIG_ADDRESS 0xCF8
+#define PCI_CONFIG_DATA    0xCFC
+
+// Define PCI configuration space registers
+#define PCI_VENDOR_ID      0x00
+#define PCI_COMMAND        0x04
+#define PCI_STATUS         0x06
+#define PCI_REVISION_ID    0x08
+#define PCI_CLASS_CODE     0x0B
 
 
 #ifdef __cplusplus
@@ -58,6 +68,7 @@ KERNEL_IMPORT bool PciEnableDevice(uint8_t bus, uint8_t slot, uint8_t function);
 KERNEL_IMPORT bool IsPciEnable(uint8_t bus, uint8_t slot, uint8_t func);
 KERNEL_IMPORT void pciConfigWriteByte(uint8_t bus, uint8_t device, uint8_t function, uint8_t reg, uint8_t value);
 KERNEL_IMPORT void pciConfigWriteWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset, uint16_t value);
+
 
 LOUDDK_API_ENTRY void PCI_Scan_Bus();
 LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device);

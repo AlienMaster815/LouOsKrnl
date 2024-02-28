@@ -27,6 +27,10 @@ static inline void PageFlush(uint64_t addr) {
 
 void LouMapAddress(uint64_t PAddress,uint64_t VAddress , uint64_t FLAGS) {
     
+    PAddress = (uint64_t)align_memory((void*)PAddress, 2ULL * MEGABYTE);
+    VAddress = (uint64_t)align_memory((void*)VAddress, 2ULL * MEGABYTE);
+
+
     UNUSED uint64_t L4Entry = 0, L3Entry = 0, L2Entry = 0;
     if (VAddress < GIGABYTE) {
         L2Entry = (VAddress / (2LL * MEGABYTE));
@@ -46,18 +50,23 @@ void LouMapAddress(uint64_t PAddress,uint64_t VAddress , uint64_t FLAGS) {
     //LouPrint("Meg by 2:%d\n", L2Entry);
 
     PML4->PML2[L3Entry].entries[L2Entry] = GetPageValue(PAddress,FLAGS);
-    PML4->PML3[L4Entry].entries[L3Entry] = (uint64_t) GetPageValue((uint64_t)PML4->PML2[L3Entry].entries[0],0b11);
+    if ((VAddress >= GIGABYTE) && (VAddress < (GIGABYTE * 512LL))) {
+        PML4->PML3[L4Entry].entries[L3Entry] = (uint64_t) GetPageValue((uint64_t)PML4->PML2[L3Entry].entries[0],0b11);
+    }
 
     //LouPrint("FOO:%d\n", PML4->PML2[L3Entry].entries[L2Entry]);
     //LouPrint("FOO2:%d\n", PML4->PML3[L4Entry].entries[L3Entry]);
 
     PageFlush(PML4->PML2[L3Entry].entries[L2Entry]);
-    PageFlush(PML4->PML3[L4Entry].entries[L3Entry]);
+    if ((VAddress >= GIGABYTE) && (VAddress < (GIGABYTE * 512LL))) {
+        PageFlush(PML4->PML3[L4Entry].entries[L3Entry]);
+    }
 }
 
 
 void LouUnMapAddress(uint64_t VAddress) {
 
+    VAddress = (uint64_t)align_memory((void*)VAddress, 2ULL * MEGABYTE);
     
     UNUSED uint64_t L4Entry = 0, L3Entry = 0, L2Entry = 0;
     if (VAddress < GIGABYTE) {

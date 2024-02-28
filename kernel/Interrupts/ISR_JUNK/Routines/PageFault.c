@@ -19,7 +19,7 @@ void PageFault() {
 
 
     uint64_t VAddress = get_cr2();
-
+    VAddress = (uint64_t)align_memory((void*)VAddress, 2ULL * MEGABYTE);
 
     LouPrint("Page Fault Detected At Address %h Handleing Now\n",VAddress);
 

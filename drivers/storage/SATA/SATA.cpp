@@ -3,6 +3,7 @@
 
 
 
+
 LOUDDK_API_ENTRY void IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func) {
 	LouPrint("Checking PCI For Sata Controller\n");
 
@@ -17,7 +18,7 @@ LOUDDK_API_ENTRY void IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func) {
 			Sata_init(bus, slot, func);
 			break;
 		default:
-			LouPrint("Not A Sata Device\n");
+			LouPrint("Not A Recognized Sata Device: No Driver Available\n");
 			break;
 		}
 		break;
@@ -41,13 +42,21 @@ LOUDDK_API_ENTRY void Sata_init(uint8_t bus, uint8_t slot, uint8_t func) {
 	DeviceSelected = DevSet;
 	DevSet++;
 
+	SataDevices[DeviceSelected]->AHCI_Address = FindAhciAddress(SataDevices[DeviceSelected]);
+
+	LouMapAddress(SataDevices[DeviceSelected]->AHCI_Address, SataDevices[DeviceSelected]->AHCI_Address, KERNEL_PAGE_WRITE_PRESENT);
+
+
 	//INITIALIZE CONTROLLER
 	if (!SetAHCIMode(SataDevices[DeviceSelected])) {
-		LouPrint("Error Initializing Device");
+		LouPrint("Error Initializing Device\n");
 		return;
 	}
 
 	//find implemented ports
+
+	LouPrint("AHCI Address Is:%d\n", SataDevices[DeviceSelected]->AHCI_Address);
+
 
 
 

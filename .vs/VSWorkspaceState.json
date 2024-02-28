@@ -1,13 +1,15 @@
 {
   "ExpandedNodes": [
     "",
-    "\\boot\\x86_64",
     "\\drivers",
-    "\\kernel\\Interrupts\\IDT_JUNK",
-    "\\kernel\\Interrupts\\ISR_JUNK",
-    "\\kernel\\Interrupts\\ISR_JUNK\\Routines",
-    "\\kernel\\memory\\paging"
+    "\\drivers\\storage",
+    "\\drivers\\storage\\SATA",
+    "\\include\\drivers",
+    "\\include\\drivers\\Lou_drivers",
+    "\\kernel",
+    "\\kernel\\Drivers",
+    "\\kernel\\Interrupts\\ISR_JUNK\\Routines"
   ],
-  "SelectedNode": "\\drivers",
+  "SelectedNode": "\\drivers\\storage\\SATA\\SATA.cpp",
   "PreviewInSolutionExplorer": false
 }

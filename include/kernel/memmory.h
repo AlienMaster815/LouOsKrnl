@@ -10,6 +10,9 @@
 #include <stdlib.h>
 #include <bootloader/grub/multiboot.h>
 
+
+#ifndef __cplusplus
+
 // Section 1:1 RAM ADDRESS
 #define MAXMEM 0xFFFFFFFFFFFFFFFFULL
 #define RAMADD unsigned char*
@@ -21,6 +24,8 @@
 #define MEGABYTE 0x100000
 
 #define PAGE_TABLE_ALLIGNMENT 4096
+
+
 
 RAMADD Lou_Alloc_Mem(SIZE size);
 STATUS Lou_Free_Mem(RAMADD Addr, SIZE size);
@@ -71,7 +76,17 @@ void* align_memory(void* ptr, size_t alignment);
 
 
 // Initialize a page table
+#else
+
+#define GIGABYTE 0x40000000
+#define MEGABYTE 0x100000
+
+#define KERNEL_PAGE_WRITE_PRESENT 0b10000011
 
 
+extern "C" void LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS);
+extern "C" void LouUnMapAddress(uint64_t VAddress);
 
+
+#endif
 #endif

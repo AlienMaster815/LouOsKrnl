@@ -52,3 +52,44 @@ bool SetAHCIMode(P_SATA_PCI_DEVICE DevObj) {
 
 	return ahci_enabled;
 }
+
+
+
+void GetSataCmdPacket(P_SATA_PCI_DEVICE SataObj,P_CMD_PACKET packet) {
+
+	uint16_t CMD_Value = pciConfigReadWord(SataObj->bus,SataObj->slot,SataObj->function, CMD_OFFSET);
+	
+	packet->IOSpaceEnabled = CMD_Value & 1;
+	packet->MemorySpaceEnabled = (CMD_Value >> 1) & 1;
+	packet->BusMasterEnable = (CMD_Value >> 2) & 1;
+	packet->SpecialCycleEnable = (CMD_Value >> 3) & 1;
+	packet->MemoryWriteInvalidateEnable = (CMD_Value >> 4) & 1;
+	packet->VGAPaletteSnooping = (CMD_Value >> 5) & 1;
+	packet->ParityErrorResponseEnable = (CMD_Value >> 6) & 1;
+	packet->WaitCycleEnable = (CMD_Value >> 7) & 1;
+	packet->SSER = (CMD_Value >> 8) & 1;
+	packet->FastBackToBackEnable = (CMD_Value >> 9) & 1;
+	packet->InterruptDisable = (CMD_Value >> 10) & 1;
+	packet->Reserved = (CMD_Value >> 11) & 0x1F;
+}
+
+
+void SendSataCmdPacket(P_SATA_PCI_DEVICE SataObj,P_CMD_PACKET packet) {
+
+	uint16_t CMD_Value = 0;
+
+	CMD_Value |= (packet->IOSpaceEnabled ? 1 : 0) << 0;
+	CMD_Value |= (packet->MemorySpaceEnabled ? 1 : 0) << 1;
+	CMD_Value |= (packet->BusMasterEnable ? 1 : 0) << 2;
+	CMD_Value |= (packet->SpecialCycleEnable ? 1 : 0) << 3;
+	CMD_Value |= (packet->MemoryWriteInvalidateEnable ? 1 : 0) << 4;
+	CMD_Value |= (packet->VGAPaletteSnooping ? 1 : 0) << 5;
+	CMD_Value |= (packet->ParityErrorResponseEnable ? 1 : 0) << 6;
+	CMD_Value |= (packet->WaitCycleEnable ? 1 : 0) << 7;
+	CMD_Value |= (packet->SSER ? 1 : 0) << 8;
+	CMD_Value |= (packet->FastBackToBackEnable ? 1 : 0) << 9;
+	CMD_Value |= (packet->InterruptDisable ? 1 : 0) << 10;
+
+	pciConfigWriteWord(SataObj->bus, SataObj->slot, SataObj->function, CMD_OFFSET, CMD_Value);
+}
+

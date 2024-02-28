@@ -15,5 +15,3 @@
 #define HBA_BOHC_OFFSET 0x28 //32 bit
 //End Of Generic
 */
-
-
