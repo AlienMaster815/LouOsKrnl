@@ -1,16 +1,13 @@
 {
   "ExpandedNodes": [
     "",
-    "\\boot",
-    "\\boot\\x86",
     "\\boot\\x86_64",
-    "\\include",
-    "\\include\\kernel",
-    "\\init",
-    "\\kernel",
-    "\\kernel\\atomic",
-    "\\kernel\\Interrupts\\IDT_JUNK"
+    "\\drivers",
+    "\\kernel\\Interrupts\\IDT_JUNK",
+    "\\kernel\\Interrupts\\ISR_JUNK",
+    "\\kernel\\Interrupts\\ISR_JUNK\\Routines",
+    "\\kernel\\memory\\paging"
   ],
-  "SelectedNode": "\\include\\kernel\\atomic.h",
+  "SelectedNode": "\\drivers",
   "PreviewInSolutionExplorer": false
 }

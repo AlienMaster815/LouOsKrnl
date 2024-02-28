@@ -63,12 +63,6 @@ LOUSTATUS Lou_kernel_early_initialization(){
 
     //SetInterruptFlags();
 
-    uint8_t* foo = (uint8_t*)GIGABYTE;
-
-    uint8_t bar = *foo;
-    asm volatile("hlt");
-
-
     return LOUSTATUS_GOOD;
 }
 
@@ -112,7 +106,7 @@ KERNEL_ENTRY Lou_kernel_start(){
     if(Lou_kernel_early_initialization() != LOUSTATUS_GOOD)LouPanic("Early Initialization Failed",BAD);
 
     //SETUP DEVICES AND DRIVERS
-    //if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);
+    if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);
 
     //if(Advanced_Kernel_Initialization() != LOUSTATUS_GOOD)LouPanic("Final Kernel Initialization Failed",BAD);
 		

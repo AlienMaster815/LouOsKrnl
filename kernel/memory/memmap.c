@@ -58,6 +58,7 @@ void LouMapAddress(uint64_t PAddress,uint64_t VAddress , uint64_t FLAGS) {
 
 void LouUnMapAddress(uint64_t VAddress) {
 
+    
     UNUSED uint64_t L4Entry = 0, L3Entry = 0, L2Entry = 0;
     if (VAddress < GIGABYTE) {
         L2Entry = (VAddress / (2LL * MEGABYTE));
@@ -68,21 +69,15 @@ void LouUnMapAddress(uint64_t VAddress) {
     }
 
 
-
     UNUSED PML* PML4 = GetPageBase();
 
 
-
-    //LouPrint("Gig:%d\n", L3Entry);
-    //LouPrint("Meg by 2:%d\n", L2Entry);
-
     PML4->PML2[L3Entry].entries[L2Entry] = 0;
-    PML4->PML3[L4Entry].entries[L3Entry] = 0;
 
-    //LouPrint("FOO:%d\n", PML4->PML2[L3Entry].entries[L2Entry]);
 
     PageFlush(PML4->PML2[L3Entry].entries[L2Entry]);
     PageFlush(PML4->PML3[L4Entry].entries[L3Entry]);
+
 }
 
 uint64_t GetPageOfFaultValue(uint64_t VAddress) {

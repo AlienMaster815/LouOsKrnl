@@ -5,18 +5,15 @@
 section .data
 
 global InterruptCode
-
+raxp dq 0
 global InterruptNum
 
 InterruptNum db 0
 InterruptCode dq 0
 
-raxp dq 0
-rbxp dq 0
-rcxp dq 0
-rdxp dq 0
-rsip dq 0
-rdip dq 0
+global SYSTEMCALL
+
+SYSTEMCALL dq 0
 
 savedRIP dq 0 
 
@@ -28,13 +25,6 @@ extern PIC_sendEOI
 
 %macro pusha 0	
 	
-	mov [raxp], rax
-	mov [rbxp], rbx
-	mov [rcxp], rcx
-	mov [rdxp], rdx
-
-	mov [rdip], rdi
-	mov [rsip], rsi
 
 	push rax
 	push rbx
@@ -229,15 +219,21 @@ ISR13:
 	mov ah, 13
 	mov [InterruptNum], ah
 	Handle
+	popa
+	iretq
 
 ISR14:
-	pusha
-	mov ah, 14
-	mov [InterruptNum], ah
-	Handle
-	popa
-	hlt
-	iretq	
+    mov [raxp], rax
+    pop rax
+    mov [InterruptCode], rax
+    xor rax, rax
+    mov rax, [raxp]
+    pusha
+    mov ah, 14
+    mov [InterruptNum], ah
+    Handle
+    popa
+    iretq
 
 ISR15:
 	pusha

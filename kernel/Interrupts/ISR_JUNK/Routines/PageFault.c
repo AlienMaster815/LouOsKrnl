@@ -16,10 +16,13 @@ bool CheckIsSuccess = true;
 
 void PageFault() {
     
+
+
     uint64_t VAddress = get_cr2();
 
 
     LouPrint("Page Fault Detected At Address %h Handleing Now\n",VAddress);
+
 
 
 
@@ -29,7 +32,9 @@ void PageFault() {
         LouPrint("vaulue of the Fault Page:%h\n",PageValue);
         if (GetPageOfFaultValue(VAddress) != GetPageValue(VAddress, KERNEL_PAGE_WRITE_PRESENT)) {
             
-            
+            LouPrint("Error Code Is:%d\n",InterruptCode);
+
+
             LouUnMapAddress(VAddress);
             LouMapAddress(VAddress, VAddress, KERNEL_PAGE_WRITE_PRESENT);
 
@@ -37,7 +42,7 @@ void PageFault() {
             LouPrint("vaulue of the Fault Page is now:%h\n", PageValue);
             if (PageValue != GetPageValue(VAddress, KERNEL_PAGE_WRITE_PRESENT)) goto FUCK;
             
-            //clear_cr2();
+            clear_cr2();
             return;
         }
     }
