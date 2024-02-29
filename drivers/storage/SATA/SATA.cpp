@@ -14,11 +14,11 @@ LOUDDK_API_ENTRY void IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func) {
 	case 0x8086:
 		switch (deviceID) {
 		case INTEL_DEVICE_8086_82801HM_HEM_ICH8M_ICH8M_E_SATA_CONTROLLER_AHCI_MODE:
-			LouPrint("Found A Sata Device\n");
+			LouPrint("Found Device: Intel HM HEM ICH8M E SATA CONTROLLER AHCI\n");
 			Sata_init(bus, slot, func);
 			break;
 		default:
-			LouPrint("Not A Recognized Sata Device: No Driver Available\n");
+			LouPrint("Non Sata Intel Device\n");
 			break;
 		}
 		break;

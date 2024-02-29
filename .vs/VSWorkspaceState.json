@@ -4,12 +4,9 @@
     "\\drivers",
     "\\drivers\\storage",
     "\\drivers\\storage\\SATA",
-    "\\include\\drivers",
-    "\\include\\drivers\\Lou_drivers",
     "\\kernel",
-    "\\kernel\\Drivers",
-    "\\kernel\\Interrupts\\ISR_JUNK\\Routines"
+    "\\kernel\\Drivers"
   ],
-  "SelectedNode": "\\drivers\\storage\\SATA\\SATA.cpp",
+  "SelectedNode": "\\drivers\\storage\\SATA\\AHCIDataHandleing.cpp",
   "PreviewInSolutionExplorer": false
 }

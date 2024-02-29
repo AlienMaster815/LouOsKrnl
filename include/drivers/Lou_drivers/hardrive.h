@@ -2,34 +2,92 @@
 
 #ifndef GLOBAL_HARDRIVE_VARIABLES
 #define GLOBAL_HARDRIVE_VARIABLES
-
 #pragma pack(push, 1)
+
+
+
+
+typedef struct _SS_PACKET {
+    uint16_t VEN_ID;
+    uint16_t DEV_ID;
+}SS_PACKET, * P_SS_PACKET;
+
+
+
+typedef struct _INTERRUPT_PACKET{
+    uint8_t IPIN;
+    uint8_t ILINE;
+}INTERRUPT_PACKET, * P_INTERRUPT_PACKET;
+
+typedef struct _HTYPE_PACKET {
+    uint8_t HeaderLayout;
+    bool HBAStep;
+}HTYPE_PACKET, * P_HTYPE_PACKET;
+
+
+typedef struct _CC_PACKET {
+    uint8_t PI;
+    uint8_t SCC;
+    uint8_t BCC;
+}CC_PACKET, * P_CC_PACKET;
+
+typedef struct _BIST_PACKET {
+    uint8_t CC;
+    bool SB;
+    bool BC;
+}BIST_PACKET, * P_BIST_PACKET;
+
+typedef struct _CMD_PACKET {
+    bool IOSpaceEnabled;
+    bool MemorySpaceEnabled;
+    bool BusMasterEnable;
+    bool SpecialCycleEnable;
+    bool MemoryWriteInvalidateEnable;
+    bool VGAPaletteSnooping; //Really intell What Kind of stupid name is this...
+    bool ParityErrorResponseEnable;
+    bool WaitCycleEnable;
+    bool SSER;
+    bool FastBackToBackEnable;
+    bool InterruptDisable;
+    uint8_t Reserved;
+}CMD_PACKET, * P_CMD_PACKET;
+
+
+typedef struct _STS_PACKET {
+    uint8_t Reserved1;
+    bool InterruptStatus;
+    bool CapabilitiesList;
+    bool Mhz66Support;
+    bool Reserved2;
+    bool FastBackToBackCapable;
+    bool MasterDataPairyErrorDetected;
+    uint8_t DEVSEL;
+    bool STA;
+    bool RTA;
+    bool RMA;
+    bool SSE;
+    bool DPE;
+}STS_PACKET, * P_STS_PACKET;
+
 typedef struct _PCI_AHCI_HEADER {
     uint32_t ID; //Identifiers
-    //uint16_t VENDOR_ID; //most Significant
-    //uint16_t DEVICE_ID; //least significant
-    uint16_t CMD; //command register
-    uint16_t STS; //Device Status
+    P_CMD_PACKET CMD;
+    P_STS_PACKET STS;
     uint8_t RID; //Revision ID
-    uint64_t CC; //Class Code
+    P_CC_PACKET CC; //Class Code
     uint8_t CLS; //Clear Line Size
     uint8_t MLT; //Master Latency Timer
-    uint8_t HTYPE; //Header Type
-    uint8_t BIST; //built in self test
+    P_HTYPE_PACKET HTYPE; //Header Type
+    P_BIST_PACKET BIST; //built in self test
     uint32_t BAR0; //Base Address Register 0 
     uint32_t BAR1; //Base Address Register 1 
     uint32_t BAR2; //Base Address Register 2 
     uint32_t BAR3; //Base Address Register 3 
     uint32_t BAR4; //Base Address Register 4
     uint32_t ABAR; //AHCI Base Address Register
-    uint32_t SS; //Subsytem Identifiers
-    //uint16_t SS_DEVICE_ID;
-    //uint16_t SS_VENDOR_ID;
     uint32_t EROM; //Exspansion ROM Base Address Register
     uint8_t CAP; //Capabillity Pointer
-    uint16_t INTR; //Interrupt Information
-    //uint8_t INTERRUPT_PIN;
-    //uint8_t INTERRUPT_LINE;
+    P_INTERRUPT_PACKET INTR;
     uint8_t MGNT; //Min Grant 
     uint8_t MLANT; //Max Latency
 }PCI_AHCI_HEADER, * P_PCI_AHCI_HEADER;
@@ -53,6 +111,7 @@ typedef struct _HBA_DEVICE{
 
 
 
+
 //INTEL REGISTERS SUBJECT TO CHANGE
 typedef struct _INTEL_1_3_1_HBA_DEVICE {
     uint8_t INTEL_RESERVED[34];
@@ -65,20 +124,7 @@ typedef struct _INTEL_1_3_1_HBA_DEVICE {
     uint8_t INTEL_PORT31_REGISTERS[80];
 }INTEL_1_3_1_HBA_DEVICE, * P_INTEL_1_3_1_HBA_DEVICE;
 
-typedef struct _CMD_PACKET {
-    bool IOSpaceEnabled;
-    bool MemorySpaceEnabled;
-    bool BusMasterEnable;
-    bool SpecialCycleEnable;
-    bool MemoryWriteInvalidateEnable;
-    bool VGAPaletteSnooping; //Really intell What Kind of stupid name is this...
-    bool ParityErrorResponseEnable;
-    bool WaitCycleEnable;
-    bool SSER;
-    bool FastBackToBackEnable;
-    bool InterruptDisable;
-    uint8_t Reserved;
-}CMD_PACKET, * P_CMD_PACKET;
+
 
 typedef struct _SATA_PCI_DEVICE {
     uint8_t bus;
@@ -99,14 +145,6 @@ UNUSED static P_HBA_DEVICE HbaDevices[256];
 #define AHCI_REG_GHC          0x04  // Offset of AHCI global host control register
 #define AHCI_CAP_SSS          (1U << 27) // Staggered Spin-Up Supported bit in AHCI capabilities register
 #define AHCI_GHC_AE           (1U << 31) // AHCI Enable bit in AHCI global host control register
-
-#define IOS 1
-#define MSE 2
-#define MWIE 4
-#define PPE 6
-#define SERR 8
-#define FBE 9
-#define ID 10
 
 //PCI Header Ofsets
 #define DEVICE_ID_OFFSET 0x0
@@ -234,7 +272,8 @@ UNUSED static uint32_t ahci_mmio_base;
 LOUDDK_API_ENTRY void Sata_init(uint8_t bus, uint8_t slot,uint8_t func);
 LOUDDK_API_ENTRY void IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func);
 
-
+void GetSataCmdPacket(P_SATA_PCI_DEVICE SataObj, P_CMD_PACKET packet);
+void SendSataCmdPacket(P_SATA_PCI_DEVICE SataObj, P_CMD_PACKET packet);
 
 // Function to read a 32-bit value from an AHCI register
 uint32_t ReadAhciRegister(uint32_t Base, uint32_t offset);
