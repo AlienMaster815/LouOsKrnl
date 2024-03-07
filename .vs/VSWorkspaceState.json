@@ -1,12 +1,7 @@
 {
   "ExpandedNodes": [
-    "",
-    "\\drivers",
-    "\\drivers\\storage",
-    "\\drivers\\storage\\SATA",
-    "\\kernel",
-    "\\kernel\\Drivers"
+    ""
   ],
-  "SelectedNode": "\\drivers\\storage\\SATA\\AHCIDataHandleing.cpp",
+  "SelectedNode": "\\drivers",
   "PreviewInSolutionExplorer": false
 }

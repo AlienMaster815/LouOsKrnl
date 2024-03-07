@@ -272,18 +272,6 @@ UNUSED static uint32_t ahci_mmio_base;
 LOUDDK_API_ENTRY void Sata_init(uint8_t bus, uint8_t slot,uint8_t func);
 LOUDDK_API_ENTRY void IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func);
 
-void GetSataCmdPacket(P_SATA_PCI_DEVICE SataObj, P_CMD_PACKET packet);
-void SendSataCmdPacket(P_SATA_PCI_DEVICE SataObj, P_CMD_PACKET packet);
-
-// Function to read a 32-bit value from an AHCI register
-uint32_t ReadAhciRegister(uint32_t Base, uint32_t offset);
-// Function to write a 32-bit value to an AHCI register
-void WriteAhciRegister(uint32_t Base,uint32_t offset, uint32_t value);
-uint32_t FindAhciAddress(P_SATA_PCI_DEVICE devObj);
-bool SetAHCIMode(P_SATA_PCI_DEVICE DevObj);
-
-void get_ahci_pci_header(uint8_t bus, uint8_t device, uint8_t function, PCI_AHCI_HEADER* header);
-
 #endif
 
 #else
