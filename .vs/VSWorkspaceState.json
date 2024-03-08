@@ -1,7 +1,14 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\drivers\\storage",
+    "\\drivers\\storage\\SATA",
+    "\\include",
+    "\\include\\drivers",
+    "\\include\\drivers\\Vendors",
+    "\\kernel\\memory",
+    "\\kernel\\memory\\paging"
   ],
-  "SelectedNode": "\\drivers",
+  "SelectedNode": "\\include\\drivers\\Vendors\\IntelDictionary.h",
   "PreviewInSolutionExplorer": false
 }
