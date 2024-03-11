@@ -268,4 +268,15 @@ typedef struct tagHBA_CMD_TBL
 	HBA_PRDT_ENTRY	prdt_entry[1];	// Physical region descriptor table entries, 0 ~ 65535
 } HBA_CMD_TBL;
 
+typedef struct _SATA_PCI_DEVICE {
+	uint8_t bus;
+	uint8_t slot;
+	uint8_t function;
+	HBA_MEM* HBA;
+	uint8_t DevType;
+}SATA_PCI_DEVICE, * P_SATA_PCI_DEVICE;
+
+UNUSED static P_SATA_PCI_DEVICE SataDevices[256];
+
+
 #endif

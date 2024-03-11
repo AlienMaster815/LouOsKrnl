@@ -1,21 +1,56 @@
 #include <LouDDK.h>
 #include <kernel/exports.h>
+#include <NtAPI.h>
 Drives* DriveSystem;
 
 void PCI_Scan_Bus();
 
+PDRIVER_OBJECT IO_SYS;
+PUNICODE_STRING IO_SYS_STRING;
+uintptr_t IO_SYS_BASE;
+
+uintptr_t GET_IO_SYS_BASE() {
+    return IO_SYS_BASE;
+}
+
 extern "C" LOUSTATUS IO_Manager_Init(){
-    LouPrint("IO Manager Is Starting\n");
-    DriveSystem = (Drives*) Lou_Alloc_Mem(sizeof(Drives));
-    
-    if(DriveSystem == 0)return 1;
-    
+    LouPrint("IO Manager Is Starting\n");    
     DeclareExports();
     
+    UNUSED DOS_Header* IOManager = FindDriverFile();
+
+    IO_SYS_BASE = (uintptr_t)IOManager;
+
+    LouPrint("ADDRESS OF IO MANAGER IS:%h\n",IOManager);
+
+    //Create Driver Object
+    IO_SYS = (PDRIVER_OBJECT)Lou_Alloc_Mem(sizeof(DRIVER_OBJECT));
+    IO_SYS_STRING = (PUNICODE_STRING)Lou_Alloc_Mem(sizeof(UNICODE_STRING) * 4);
+
+    //IO_SYS_STRING =;
+
+    //Set Up Linkings
+
+    uintptr_t COFFOffset = IOManager->e_lfanew;
+
+    uintptr_t PE64_Offset = COFFOffset + sizeof(COFF_Header); //BUGBUG: SYSTEM NOT ALIGNED //UPDATE: NOW IT IS
+
+    PE64_Optional_Header* PE64_Address = (PE64_Optional_Header*)((uintptr_t)PE64_Offset + (uintptr_t)IOManager);
+   
+    // Find The Entry Point
+    UNUSED void (*DRIVER_ENTRY)(PDRIVER_OBJECT,PUNICODE_STRING) = (void(*)(PDRIVER_OBJECT,PUNICODE_STRING))((uintptr_t)(PE64_Address->addressOfEntryPoint + IOManager));
+
+    LouPrint("Driver Entry Function Linked At Address:%h\n",DRIVER_ENTRY);
+
+    UNUSED Import_Directory_Table* ITableAddress = (Import_Directory_Table*)(uintptr_t)(PE64_Address->importTableEntry.virtualAddress + IOManager);
+
+
     LouPrint("IO Manager Is Started\n");
     
     return 0;
 }
+
+
 
 void Register_Storage_DeviceA(uint8_t DriveType,uint8_t DriveNum){
     DriveSystem->RegisterStorageDeviceA(DriveType,DriveNum);

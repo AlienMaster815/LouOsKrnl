@@ -24,79 +24,105 @@ static inline void PageFlush(uint64_t addr) {
 
 
 
+void LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS) {
+    // Align addresses to 2MB boundary
+    PAddress &= 0xFFFFFFFFFFE00000;
+    VAddress &= 0xFFFFFFFFFFE00000;
 
-void LouMapAddress(uint64_t PAddress,uint64_t VAddress , uint64_t FLAGS) {
-    
-    PAddress = (uint64_t)align_memory((void*)PAddress, 2ULL * MEGABYTE);
-    VAddress = (uint64_t)align_memory((void*)VAddress, 2ULL * MEGABYTE);
+    uint64_t L4Entry = 0,L3Entry = 0, L2Entry = 0;
 
-
-    UNUSED uint64_t L4Entry = 0, L3Entry = 0, L2Entry = 0;
-    if (VAddress < GIGABYTE) {
+    // Calculate L3 and L2 entries based on the virtual address
+    if (VAddress >= GIGABYTE && VAddress < (GIGABYTE * 512LL)) {
+        L3Entry = (VAddress / GIGABYTE);
+        L2Entry = ((VAddress % GIGABYTE) / (2LL * MEGABYTE));
+    }
+    else {
         L2Entry = (VAddress / (2LL * MEGABYTE));
     }
-    else if ((VAddress >= GIGABYTE) && (VAddress < (GIGABYTE * 512LL))) {
-        L3Entry = (uint64_t)(VAddress / GIGABYTE);
-        L2Entry = (uint64_t)((VAddress % GIGABYTE) / (2LL * MEGABYTE));
+
+    // Obtain the PML4 table
+    PML* PML4 = GetPageBase();
+
+    // Map the physical address to the L2 entry
+    PML4->PML2[L3Entry].entries[L2Entry] = GetPageValue(PAddress, FLAGS);
+
+    // If virtual address falls within 1GB to 512GB range, also map to L3 entry
+    if (VAddress >= GIGABYTE && VAddress < (GIGABYTE * 512LL)) {
+        PML4->PML3[L4Entry].entries[L3Entry] = (uint64_t)GetPageValue((uint64_t)&PML4->PML2[L3Entry].entries[L2Entry], 0b11);
     }
 
-
-
-    UNUSED PML* PML4 = GetPageBase();
-
-
-
-    //LouPrint("Gig:%d\n", L3Entry);
-    //LouPrint("Meg by 2:%d\n", L2Entry);
-
-    PML4->PML2[L3Entry].entries[L2Entry] = GetPageValue(PAddress,FLAGS);
-    if ((VAddress >= GIGABYTE) && (VAddress < (GIGABYTE * 512LL))) {
-        PML4->PML3[L4Entry].entries[L3Entry] = (uint64_t) GetPageValue((uint64_t)PML4->PML2[L3Entry].entries[0],0b11);
-    }
-
-    //LouPrint("FOO:%d\n", PML4->PML2[L3Entry].entries[L2Entry]);
-    //LouPrint("FOO2:%d\n", PML4->PML3[L4Entry].entries[L3Entry]);
-
+    // Flush the modified page table entries
     PageFlush(PML4->PML2[L3Entry].entries[L2Entry]);
-    if ((VAddress >= GIGABYTE) && (VAddress < (GIGABYTE * 512LL))) {
-        PageFlush(PML4->PML3[L4Entry].entries[L3Entry]);
+    if (VAddress >= GIGABYTE && VAddress < (GIGABYTE * 512LL)) {
+        PageFlush(PML4->PML3[L4Entry].entries[L2Entry]);
     }
+
+    // Print debug information
+    //LouPrint("L3 Entry: %d\n", L3Entry);
+    //LouPrint("L2 Entry: %d\n", L2Entry);
+    //LouPrint("PML2 Entry: %d\n", PML4->PML2[L3Entry].entries[L2Entry]);
+    //LouPrint("PML3 Entry: %d\n", PML4->PML3[L4Entry].entries[L3Entry]);
+
+    //uint8_t* test = (uint8_t*)VAddress;
+
+    //uint8_t foo = *test;
+
+    //while (1);
+
 }
 
 
 void LouUnMapAddress(uint64_t VAddress) {
 
-    VAddress = (uint64_t)align_memory((void*)VAddress, 2ULL * MEGABYTE);
-    
-    UNUSED uint64_t L4Entry = 0, L3Entry = 0, L2Entry = 0;
-    if (VAddress < GIGABYTE) {
+    // Align addresses to 2MB boundary
+    //PAddress &= 0xFFFFFFFFFFE00000;
+    VAddress &= 0xFFFFFFFFFFE00000;
+
+    uint64_t L4Entry = 0, L3Entry = 0, L2Entry = 0;
+
+    // Calculate L3 and L2 entries based on the virtual address
+    if (VAddress >= GIGABYTE && VAddress < (GIGABYTE * 512LL)) {
+        L3Entry = (VAddress / GIGABYTE);
+        L2Entry = ((VAddress % GIGABYTE) / (2LL * MEGABYTE));
+    }
+    else {
         L2Entry = (VAddress / (2LL * MEGABYTE));
     }
-    else if ((VAddress >= GIGABYTE) && (VAddress < (GIGABYTE * 512LL))) {
-        L3Entry = (uint64_t)(VAddress / GIGABYTE);
-        L2Entry = (uint64_t)((VAddress % GIGABYTE) / (2LL * MEGABYTE));
+
+    // Obtain the PML4 table
+    PML* PML4 = GetPageBase();
+
+    // Map the physical address to the L2 entry
+    //PML4->PML2[L3Entry].entries[L2Entry] = GetPageValue(PAddress, FLAGS);
+
+    // If virtual address falls within 1GB to 512GB range, also map to L3 entry
+    if (VAddress >= GIGABYTE && VAddress < (GIGABYTE * 512LL)) {
+        PML4->PML3[L4Entry].entries[L3Entry] = 0;//(uint64_t)GetPageValue((uint64_t)&PML4->PML2[L3Entry].entries[L2Entry], 0b11);
     }
 
-
-    UNUSED PML* PML4 = GetPageBase();
-
-
-    PML4->PML2[L3Entry].entries[L2Entry] = 0;
-
-
+    // Flush the modified page table entries
     PageFlush(PML4->PML2[L3Entry].entries[L2Entry]);
-    PageFlush(PML4->PML3[L4Entry].entries[L3Entry]);
+    if (VAddress >= GIGABYTE && VAddress < (GIGABYTE * 512LL)) {
+        PageFlush(PML4->PML3[L4Entry].entries[L2Entry]);
+    }
 
 }
 
 uint64_t GetPageOfFaultValue(uint64_t VAddress) {
-    UNUSED uint64_t L4Entry = 0, L3Entry = 0, L2Entry = 0;
-    if (VAddress < GIGABYTE) {
-        L2Entry = (VAddress / (2LL * MEGABYTE));
+
+    // Align addresses to 2MB boundary
+    //PAddress &= 0xFFFFFFFFFFE00000;
+    VAddress &= 0xFFFFFFFFFFE00000;
+
+    uint64_t L4Entry = 0, L3Entry = 0, L2Entry = 0;
+
+    // Calculate L3 and L2 entries based on the virtual address
+    if (VAddress >= GIGABYTE && VAddress < (GIGABYTE * 512LL)) {
+        L3Entry = (VAddress / GIGABYTE);
+        L2Entry = ((VAddress % GIGABYTE) / (2LL * MEGABYTE));
     }
-    else if ((VAddress >= GIGABYTE) && (VAddress < (GIGABYTE * 512LL))) {
-        L3Entry = (uint64_t)(VAddress / GIGABYTE);
-        L2Entry = (uint64_t)((VAddress % GIGABYTE) / (2LL * MEGABYTE));
+    else {
+        L2Entry = (VAddress / (2LL * MEGABYTE));
     }
 
     UNUSED PML* PML4 = GetPageBase();

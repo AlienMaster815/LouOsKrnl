@@ -2,6 +2,11 @@
 #include "sata.h"
 
 
+#define HBA_PxCMD_ST    0x0001
+#define HBA_PxCMD_FRE   0x0010
+#define HBA_PxCMD_FR    0x4000
+#define HBA_PxCMD_CR    0x8000
+#define GHC_HR (1U << 0) // HBA reset bit in the GHC register
 
 
 LOUDDK_API_ENTRY void IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func) {
@@ -84,127 +89,20 @@ LOUDDK_API_ENTRY void IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func) {
 	}
 }
 
-uint32_t FindAhciAddress(uint8_t bus,uint8_t slot,uint8_t function) {
-	// Read the BAR5 register (assuming it contains the MMIO base address)
-	uint32_t bar5 = pci_read(bus, slot, function, AHCI_BAR_OFFSET); // Offset for BAR5 register
 
-	// Extract the MMIO base address from BAR5 (bits 31:4)
-	uint32_t mmio_base = bar5 & ~0xF;
-
-	return mmio_base;
+HBA_MEM* GetHBA(uint8_t bus ,uint8_t slot, uint8_t function) {
+	uint32_t ABAR = pci_read(bus, slot, function, 0x24);
+	uint32_t result = ABAR & 0xFFFFFFF0;
+	return (HBA_MEM*)(uintptr_t)result;
 }
 
-void probe_port(HBA_MEM* abar);
+
 
 LOUDDK_API_ENTRY void Sata_init(uint8_t bus, uint8_t slot, uint8_t func) {
 
+	/*
+	SataDevices[DeviceSelected] = (P_SATA_PCI_DEVICE)Lou_Alloc_Mem(sizeof(SATA_PCI_DEVICE));
 
-	// Read the current value of the PCI command register
-	uint16_t command_register = pciConfigReadWord(bus, slot, func, 0x04);
-
-	// Enable interrupts, DMA, and memory space access by setting the appropriate bits
-	command_register |= (1 << 0); // Enable Memory Space Access (bit 0)
-	command_register |= (1 << 2); // Enable Bus Master (DMA) (bit 2)
-	command_register |= (1 << 10); // Enable Interrupts (bit 10)
-
-	// Write the updated value back to the PCI command register
-	pciConfigWriteWord(bus, slot, func, 0x04, command_register);
-
-	uint32_t bar5_register = pci_read(bus, slot, func, 0x24);
-
-	// Set the uncacheable bit
-	bar5_register |= (1 << 3); // Assuming bit 3 indicates uncacheable
-
-	// Write the updated value back to the BAR 5 register
-	write_pci(bus, slot, func, 0x24, bar5_register);
-
-	UNUSED HBA_MEM* HBA = (HBA_MEM*)(uintptr_t)FindAhciAddress(bus, slot, func);
-
-
+	*/
 }
 
-LOUDDK_API_ENTRY void UnmountSataDevice(uint8_t Device) {
-
-
-}
-
-#define	SATA_SIG_ATA	0x00000101	// SATA drive
-#define	SATA_SIG_ATAPI	0xEB140101	// SATAPI drive
-#define	SATA_SIG_SEMB	0xC33C0101	// Enclosure management bridge
-#define	SATA_SIG_PM	0x96690101	// Port multiplier
-
-#define AHCI_DEV_NULL 0
-#define AHCI_DEV_SATA 1
-#define AHCI_DEV_SEMB 2
-#define AHCI_DEV_PM 3
-#define AHCI_DEV_SATAPI 4
-
-#define HBA_PORT_IPM_ACTIVE 1
-#define HBA_PORT_DET_PRESENT 3
-
-static int check_type(HBA_PORT* port);
-
-
-
-void probe_port(HBA_MEM* abar)
-{
-	// Search disk in implemented ports
-	uint32_t pi = abar->pi;
-	int i = 0;
-	while (i < 32)
-	{
-		if (pi & 1)
-		{
-			int dt = check_type(&abar->ports[i]);
-			if (dt == AHCI_DEV_SATA)
-			{
-				LouPrint("SATA drive found at port %d\n", i);
-			}
-			else if (dt == AHCI_DEV_SATAPI)
-			{
-				LouPrint("SATAPI drive found at port %d\n", i);
-			}
-			else if (dt == AHCI_DEV_SEMB)
-			{
-				LouPrint("SEMB drive found at port %d\n", i);
-			}
-			else if (dt == AHCI_DEV_PM)
-			{
-				LouPrint("PM drive found at port %d\n", i);
-			}
-			else
-			{
-				LouPrint("No drive found at port %d\n", i);
-			}
-		}
-
-		pi >>= 1;
-		i++;
-	}
-}
-
-// Check device type
-static int check_type(HBA_PORT* port)
-{
-	uint32_t ssts = port->ssts;
-
-	uint8_t ipm = (ssts >> 8) & 0x0F;
-	uint8_t det = ssts & 0x0F;
-
-	if (det != HBA_PORT_DET_PRESENT)	// Check drive status
-		return AHCI_DEV_NULL;
-	if (ipm != HBA_PORT_IPM_ACTIVE)
-		return AHCI_DEV_NULL;
-
-	switch (port->sig)
-	{
-	case SATA_SIG_ATAPI:
-		return AHCI_DEV_SATAPI;
-	case SATA_SIG_SEMB:
-		return AHCI_DEV_SEMB;
-	case SATA_SIG_PM:
-		return AHCI_DEV_PM;
-	default:
-		return AHCI_DEV_SATA;
-	}
-}

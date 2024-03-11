@@ -13,15 +13,18 @@ section .text
 
 global start
 
+ahci dd 0
 
 extern SetUpPages
 extern Lou_kernel_start
 extern enable_paging
 
 start:
-    mov eax, 5
-    mov [1073741824], eax;
-
+   
+    ;mov eax, [0xF0404000];
+    ;mov [ahci], eax
+    ;xor eax,eax
+    
     ;mov [multiboot_info_ptr], ebx
     mov esp, stack_top
 
@@ -125,6 +128,6 @@ long_mode_start:
     mov gs, ax 
     mov ss, ax 
 
-    ;mov rdi, [multiboot_info_ptr]
+    ;mov rdi, [ahci]
     call Lou_kernel_start
     jmp $ 

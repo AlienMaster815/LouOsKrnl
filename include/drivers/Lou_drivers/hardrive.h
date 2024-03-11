@@ -126,19 +126,7 @@ typedef struct _INTEL_1_3_1_HBA_DEVICE {
 
 
 
-typedef struct _SATA_PCI_DEVICE {
-    uint8_t bus;
-    uint8_t slot;
-    uint8_t function;
-    P_PCI_AHCI_HEADER Header;
-    uint32_t AHCI_Address;
-    P_HBA_DEVICE HBA_GENERIC;
-    P_INTEL_1_3_1_HBA_DEVICE HBA_INTEL;
-}SATA_PCI_DEVICE, * P_SATA_PCI_DEVICE;
 
-UNUSED static P_SATA_PCI_DEVICE SataDevices[256];
-UNUSED static P_PCI_AHCI_HEADER AhciPciHeaders[256];
-UNUSED static P_HBA_DEVICE HbaDevices[256];
 
 #define AHCI_BAR_OFFSET       0x10  // Offset of AHCI controller's BAR in PCI configuration space
 #define AHCI_REG_CAP          0x00  // Offset of AHCI capabilities register
@@ -264,10 +252,12 @@ class PATA{
 #define _SATA
 
 UNUSED static uint8_t DevSet = 0;
-UNUSED static uint8_t DeviceSelected;
+UNUSED static uint8_t DeviceSelected = 0;
 UNUSED static uint32_t ahci_mmio_base;
-
-
+#define SATA 1
+#define SATAPI 2
+#define SEMB 3
+#define PM 4
 
 LOUDDK_API_ENTRY void Sata_init(uint8_t bus, uint8_t slot,uint8_t func);
 LOUDDK_API_ENTRY void IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func);

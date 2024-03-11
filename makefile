@@ -84,8 +84,8 @@ CPPFLAGS = -c -fstack-protector -ffreestanding -O2 -Wall -fno-exceptions -fno-rt
 endif
 
 ifeq ($(TARGET_ARCH),x86)
-CFLAGS = -c -ffreestanding -Werror -I include
-CPPFLAGS = -c -ffreestanding -O2 -Wall -fno-exceptions -fno-rtti -Werror -Wno-write-strings -fno-use-cxa-atexit -I include
+CFLAGS = -c -ffreestanding -Werror -I include 
+CPPFLAGS = -c -ffreestanding -O2 -Wall -fno-exceptions -fno-rtti -Werror -Wno-write-strings -fno-use-cxa-atexit -I include 
 endif
 
 

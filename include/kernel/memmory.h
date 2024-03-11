@@ -83,9 +83,9 @@ void* align_memory(void* ptr, size_t alignment);
 
 #define KERNEL_PAGE_WRITE_PRESENT 0b10000011
 
-
-extern "C" void LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS);
-extern "C" void LouUnMapAddress(uint64_t VAddress);
+KERNEL_IMPORT void remove_padding(const void* struct_ptr, size_t struct_size, uint8_t* buffer);
+KERNEL_IMPORT void LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS);
+KERNEL_IMPORT void LouUnMapAddress(uint64_t VAddress);
 
 
 #endif

@@ -1,14 +1,17 @@
 {
   "ExpandedNodes": [
     "",
-    "\\drivers\\storage",
-    "\\drivers\\storage\\SATA",
+    "\\API",
+    "\\API\\LouAPI",
+    "\\API\\LouAPI\\KernelAPI",
+    "\\API\\LouAPI\\KernelAPI\\IOManager",
     "\\include",
-    "\\include\\drivers",
-    "\\include\\drivers\\Vendors",
+    "\\include\\kernel",
+    "\\include\\WDKSubsystem\\Types",
+    "\\kernel",
     "\\kernel\\memory",
-    "\\kernel\\memory\\paging"
+    "\\kernel\\processors\\x86_64"
   ],
-  "SelectedNode": "\\include\\drivers\\Vendors\\IntelDictionary.h",
+  "SelectedNode": "\\makefile",
   "PreviewInSolutionExplorer": false
 }

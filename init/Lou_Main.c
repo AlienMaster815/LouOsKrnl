@@ -60,7 +60,7 @@ LOUSTATUS Lou_kernel_early_initialization(){
     RegisterInterruptHandler(PageFault, INTERRUPT_SERVICE_ROUTINE_14);
     RegisterInterruptHandler(PS2KeyboardHandler, INTERRUPT_SERVICE_ROUTINE_33);
     RegisterInterruptHandler(Clock, INTERRUPT_SERVICE_ROUTINE_32);
-
+    
     //SetInterruptFlags();
 
     return LOUSTATUS_GOOD;
@@ -69,13 +69,13 @@ LOUSTATUS Lou_kernel_early_initialization(){
 LOUSTATUS Set_Up_Devices(){
     if(IO_Manager_Init() != LOUSTATUS_GOOD)LouPanic("IO Manager Failed To Start",BAD);
 
-    //SwitchVideoDevice(INTEGRATED_DEVICE,DEFAULT_DEVICE,DEFAULT_DRIVER);
+    DeterminCPU();
 
-    pata_device_scanc();
+    //pata_device_scanc();
 
-    FileSystemSetup();
+    //FileSystemSetup();
     
-    PCI_Setup();
+    //PCI_Setup();
 
     return LOUSTATUS_GOOD;
 }
@@ -94,6 +94,7 @@ LOUSTATUS User_Mode_Initialization(){
 
 KERNEL_ENTRY Lou_kernel_start(){
 	    
+
     setup_vga_systems();
 
 	//vga set for debug
@@ -101,6 +102,7 @@ KERNEL_ENTRY Lou_kernel_start(){
 	LouPrint("Lou Version %s %s\n", KERNEL_VERSION ,KERNEL_ARCH);
     LouPrint("Hello Im Lousine Getting Things Ready\n");
     
+
 
     //INITIALIZE IMPORTANT THINGS FOR US LATER
     if(Lou_kernel_early_initialization() != LOUSTATUS_GOOD)LouPanic("Early Initialization Failed",BAD);
