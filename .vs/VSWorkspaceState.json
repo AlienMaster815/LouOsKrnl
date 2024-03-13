@@ -2,16 +2,15 @@
   "ExpandedNodes": [
     "",
     "\\API",
-    "\\API\\LouAPI",
     "\\API\\LouAPI\\KernelAPI",
-    "\\API\\LouAPI\\KernelAPI\\IOManager",
+    "\\API\\WinAPI",
+    "\\API\\WinAPI\\KernelAPI",
+    "\\API\\WinAPI\\KernelAPI\\NTAPI",
+    "\\drivers\\WDKSubsystem",
+    "\\drivers\\WDKSubsystem\\Debuging",
     "\\include",
-    "\\include\\kernel",
-    "\\include\\WDKSubsystem\\Types",
-    "\\kernel",
-    "\\kernel\\memory",
-    "\\kernel\\processors\\x86_64"
+    "\\include\\kernel"
   ],
-  "SelectedNode": "\\makefile",
+  "SelectedNode": "\\include\\kernel\\exports.h",
   "PreviewInSolutionExplorer": false
 }

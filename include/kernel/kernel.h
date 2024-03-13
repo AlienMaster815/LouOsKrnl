@@ -25,6 +25,7 @@
 #include <kernel/Timers.h>
 #include <kernel/atomic.h>
 #include <kernel/SystemCalls.h>
+#include <kernel/Binarys.h>
 
 #define KERNEL_ENTRY extern void
 

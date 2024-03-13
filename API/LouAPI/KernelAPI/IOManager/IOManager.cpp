@@ -7,46 +7,50 @@ void PCI_Scan_Bus();
 
 PDRIVER_OBJECT IO_SYS;
 PUNICODE_STRING IO_SYS_STRING;
-uintptr_t IO_SYS_BASE;
+uint64_t IO_SYS_BASE;
+
+uint64_t DRIVER_ENTRY_ADDRESS;
+
+DOS_Header* IOManager;
+COFF_Header* IOManager_Coff;
+PE64_Optional_Header* IOManager_PE64;
+Import_Directory_Table* IOManager_ImportDirectoryTable;
+uint32_t ImportDirectoryTableSize;
+uint32_t TableSize;
+
 
 uintptr_t GET_IO_SYS_BASE() {
     return IO_SYS_BASE;
 }
 
+
 extern "C" LOUSTATUS IO_Manager_Init(){
     LouPrint("IO Manager Is Starting\n");    
     DeclareExports();
     
-    UNUSED DOS_Header* IOManager = FindDriverFile();
+    IOManager = FindDriverFile();
 
-    IO_SYS_BASE = (uintptr_t)IOManager;
+    IO_SYS_BASE = (uint64_t)(uintptr_t)IOManager;
 
-    LouPrint("ADDRESS OF IO MANAGER IS:%h\n",IOManager);
+    IOManager_Coff = FindCoffHeader(IOManager);
 
-    //Create Driver Object
-    IO_SYS = (PDRIVER_OBJECT)Lou_Alloc_Mem(sizeof(DRIVER_OBJECT));
-    IO_SYS_STRING = (PUNICODE_STRING)Lou_Alloc_Mem(sizeof(UNICODE_STRING) * 4);
+    LouPrint("Address Of IOManager:%h\n", IOManager);
+    LouPrint("Address Of IOManager COFF:%h\n", IOManager_Coff);
 
-    //IO_SYS_STRING =;
+    IOManager_PE64 = FindPE64Header(IOManager_Coff);
 
-    //Set Up Linkings
+    LouPrint("PE64 Address Is:%h\n", IOManager_PE64);
+    
+    if(!LinkIOManagerDriverEntryPoint(IOManager_PE64,IOManager,&DRIVER_ENTRY_ADDRESS)) return !LOUSTATUS_GOOD;
 
-    uintptr_t COFFOffset = IOManager->e_lfanew;
+    uint16_t* BAR = (uint16_t*)GetSysBinaryChunk(IO_SYS_BASE+2, sizeof(uint16_t));
 
-    uintptr_t PE64_Offset = COFFOffset + sizeof(COFF_Header); //BUGBUG: SYSTEM NOT ALIGNED //UPDATE: NOW IT IS
+    uint16_t FOO = *BAR;
 
-    PE64_Optional_Header* PE64_Address = (PE64_Optional_Header*)((uintptr_t)PE64_Offset + (uintptr_t)IOManager);
-   
-    // Find The Entry Point
-    UNUSED void (*DRIVER_ENTRY)(PDRIVER_OBJECT,PUNICODE_STRING) = (void(*)(PDRIVER_OBJECT,PUNICODE_STRING))((uintptr_t)(PE64_Address->addressOfEntryPoint + IOManager));
-
-    LouPrint("Driver Entry Function Linked At Address:%h\n",DRIVER_ENTRY);
-
-    UNUSED Import_Directory_Table* ITableAddress = (Import_Directory_Table*)(uintptr_t)(PE64_Address->importTableEntry.virtualAddress + IOManager);
-
+    LouPrint("%h\n",FOO);
 
     LouPrint("IO Manager Is Started\n");
-    
+
     return 0;
 }
 

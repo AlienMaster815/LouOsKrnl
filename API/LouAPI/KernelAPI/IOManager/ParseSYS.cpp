@@ -189,9 +189,12 @@ DOS_Header* FindDriverFile(uintptr_t MemmoryOffset) {
 		
 		if ((Header->e_magic[0] == 'M') && (Header->e_magic[1] == 'Z')) {
 			//MAYBE LETS SEE 
+            //LouPrint("FOO IS %c\n", Header->e_magic[0]);
+            //LouPrint("FOO2 IS %c\n", Header->e_magic[1]);
             UNUSED COFF_Header* COFF = (COFF_Header*)(i + Header->e_lfanew);
 
-            if (strncmp("PE", COFF->magic, 2) == 0) return (DOS_Header*)i;
+            //LouPrint("MAGIC IS:%s\n", COFF->magic);
+            if (strncmp("PE", COFF->magic, 2) == 0) return (DOS_Header*)Header;
 
 		}
 		else continue;
@@ -201,3 +204,53 @@ DOS_Header* FindDriverFile(uintptr_t MemmoryOffset) {
 	return 0;
 }
 
+COFF_Header* FindCoffHeader(DOS_Header* DOSHeader) {
+    uint64_t DosAddress = (uint64_t)DOSHeader;
+    uint64_t CoffAddress = DosAddress + DOSHeader->e_lfanew;
+    COFF_Header* Result = (COFF_Header*)CoffAddress;
+    //LouPrint("MAGIC IS:%h\n", DOSHeader->e_lfanew);// +DOSHeader);
+    if (strncmp(Result->magic, "PE", 2) == 0)return Result;
+    else return 0; 
+}
+
+
+PE64_Optional_Header* FindPE64Header(COFF_Header* Coff) {
+    PE64_Optional_Header* Result;
+    uint64_t CoffAddress = (uint64_t)Coff;
+    uint64_t PE64Address = CoffAddress + sizeof(COFF_Header);
+    Result = (PE64_Optional_Header*)PE64Address;
+    return Result;
+}
+
+bool LinkIOManagerDriverEntryPoint(PE64_Optional_Header* PE64,DOS_Header* DRV_Address, uint64_t* FOO) {
+
+    uint64_t EntryAddress = (uint64_t)(PE64->addressOfEntryPoint + DRV_Address);
+
+    *FOO = EntryAddress;
+
+    LouPrint("EntryAddress Is:%h\n", FOO);
+    if (FOO != 0)return true;
+    else return false;
+} 
+
+Import_Directory_Table* GetImportTableDirectories(PE64_Optional_Header* PE64, DOS_Header* DRV_Address, uint32_t* size){
+    uint64_t DRVAddress = (uint64_t)DRV_Address;
+    UNUSED uint64_t ImportDirectoryTableAddress = (uint64_t)PE64->importTableEntry.virtualAddress;
+    *size = PE64->importTableEntry.size;
+
+    //LouPrint("IMPORT OFFSET IS:%h\n",ImportDirectoryTableAddress);
+    //LouPrint("IMPORT SIZE IS:%h\n",*size);
+    //LouPrint("Address Of Table Is:%h\n",ImportDirectoryTableAddress + DRVAddress);
+
+    return (Import_Directory_Table*)(ImportDirectoryTableAddress + DRVAddress);
+}
+
+
+bool LinkExports(Import_Directory_Table* ImportTables,PE64_Optional_Header* PE64 ,uint32_t* TableSize) {
+    #define ObjectsToCreate (*TableSize / sizeof(Import_Directory_Table))
+
+    //LouPrint("%s",);
+
+    #undef ObjectsToCreate
+    return true;
+}

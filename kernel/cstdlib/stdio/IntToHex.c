@@ -12,7 +12,7 @@ void uintToHexString(uint64_t number, char* hexString) {
 
     do {
         int digit = number % 16;
-        tempString[i++] = (digit < 10) ? (digit + '0') : (digit - 10 + 'a');
+        tempString[i++] = (digit < 10) ? (digit + '0') : (digit - 10 + 'A');
         number /= 16;
     } while (number != 0);
 
@@ -50,7 +50,7 @@ void uintToHexString(uint32_t number, char* hexString) {
 
     do {
         int digit = number % 16;
-        tempString[i++] = (digit < 10) ? (digit + '0') : (digit - 10 + 'a');
+        tempString[i++] = (digit < 10) ? (digit + '0') : (digit - 10 + 'A');
         number /= 16;
     } while (number != 0);
 

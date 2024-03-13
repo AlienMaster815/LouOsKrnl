@@ -11,8 +11,9 @@
 #include <bootloader/grub/multiboot.h>
 
 
-#ifndef __cplusplus
 
+
+#ifndef __cplusplus
 // Section 1:1 RAM ADDRESS
 #define MAXMEM 0xFFFFFFFFFFFFFFFFULL
 #define RAMADD unsigned char*
@@ -25,7 +26,16 @@
 
 #define PAGE_TABLE_ALLIGNMENT 4096
 
+#include <LouAPI.h>
 
+extern void Write16BitValueToAddress(uint64_t Address, uint16_t Value);
+extern uint16_t Get16BitValueFromAddress(uint64_t Address);
+extern void Write8BitValueToAddress(uint64_t Address, uint8_t Value);
+extern uint8_t Get8BitValueFromAddress(uint64_t Address);
+extern void Write32BitValueFromAddress(uint64_t Address, uint32_t Value);
+extern uint32_t Get32BitValueFromAddress(uint64_t Address);
+extern void Write64BitValueToAddress(uint64_t Address, uint64_t Value);
+extern uint64_t Get64BitValueFromAddress(uint64_t Address);
 
 RAMADD Lou_Alloc_Mem(SIZE size);
 STATUS Lou_Free_Mem(RAMADD Addr, SIZE size);
@@ -77,6 +87,16 @@ void* align_memory(void* ptr, size_t alignment);
 
 // Initialize a page table
 #else
+#include <LouDDK.h>
+
+extern "C" void Write16BitValueToAddress(uint64_t Address, uint16_t Value);
+extern "C" uint16_t Get16BitValueFromAddress(uint64_t Address);
+extern "C" void Write8BitValueToAddress(uint64_t Address, uint8_t Value);
+extern "C" uint8_t Get8BitValueFromAddress(uint64_t Address);
+extern "C" void Write32BitValueFromAddress(uint64_t Address, uint32_t Value);
+extern "C" uint32_t Get32BitValueFromAddress(uint64_t Address);
+extern "C" void Write64BitValueToAddress(uint64_t Address, uint64_t Value);
+extern "C" uint64_t Get64BitValueFromAddress(uint64_t Address);
 
 #define GIGABYTE 0x40000000
 #define MEGABYTE 0x100000

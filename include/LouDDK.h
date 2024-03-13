@@ -15,6 +15,7 @@
 #include <string.h>
 #include <drivers/Vendors/VendorsDictionary.h>
 #include <kernel/memmory.h>
+#include <kernel/Binarys.h>
 
 #define RAMADD unsigned char*
 #define RAMADDDATA unsigned char *

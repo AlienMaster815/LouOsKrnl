@@ -1,6 +1,6 @@
 #ifndef SYS_H
 #define SYS_H
-
+#include <LouDDK.h>
 
 
 
@@ -360,16 +360,17 @@ typedef struct __attribute((packed)) {
 	uint16_t characteristics;
 }COFF_Header;
 
-#define magic1 50
-#define magic2 45
-#define magic3 00
-#define magic4 00
+
 
 
 #define MAGIC_SECURITY_COOKIE 0x2b992ddfa232
 
 
-
+PE64_Optional_Header* FindPE64Header(COFF_Header* Coff);
+bool LinkIOManagerDriverEntryPoint(PE64_Optional_Header* PE64, DOS_Header* DRV_Address, uint64_t* DRIVER_ENTRY);
+COFF_Header* FindCoffHeader(DOS_Header* DOSHeader);
 DOS_Header* FindDriverFile(uintptr_t MemmoryOffset = (10ULL * 1024 * 1024));
+Import_Directory_Table* GetImportTableDirectories(PE64_Optional_Header* PE64, DOS_Header* DRV_Address, uint32_t* size);
+bool LinkExports(Import_Directory_Table* ImporTables, PE64_Optional_Header* PE64,uint32_t* TableSize);
 
 #endif
