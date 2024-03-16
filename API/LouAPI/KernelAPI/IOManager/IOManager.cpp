@@ -30,24 +30,7 @@ extern "C" LOUSTATUS IO_Manager_Init(){
     
     IOManager = FindDriverFile();
 
-    IO_SYS_BASE = (uint64_t)(uintptr_t)IOManager;
 
-    IOManager_Coff = FindCoffHeader(IOManager);
-
-    LouPrint("Address Of IOManager:%h\n", IOManager);
-    LouPrint("Address Of IOManager COFF:%h\n", IOManager_Coff);
-
-    IOManager_PE64 = FindPE64Header(IOManager_Coff);
-
-    LouPrint("PE64 Address Is:%h\n", IOManager_PE64);
-    
-    if(!LinkIOManagerDriverEntryPoint(IOManager_PE64,IOManager,&DRIVER_ENTRY_ADDRESS)) return !LOUSTATUS_GOOD;
-
-    uint16_t* BAR = (uint16_t*)GetSysBinaryChunk(IO_SYS_BASE+2, sizeof(uint16_t));
-
-    uint16_t FOO = *BAR;
-
-    LouPrint("%h\n",FOO);
 
     LouPrint("IO Manager Is Started\n");
 

@@ -1,16 +1,17 @@
 {
   "ExpandedNodes": [
     "",
-    "\\API",
-    "\\API\\LouAPI\\KernelAPI",
-    "\\API\\WinAPI",
-    "\\API\\WinAPI\\KernelAPI",
-    "\\API\\WinAPI\\KernelAPI\\NTAPI",
-    "\\drivers\\WDKSubsystem",
-    "\\drivers\\WDKSubsystem\\Debuging",
-    "\\include",
-    "\\include\\kernel"
+    "\\SYS\\X64",
+    "\\SYS\\X64\\SRC",
+    "\\SYS\\X64\\SRC\\Include",
+    "\\SYS\\X64\\SRC\\IoManager",
+    "\\SYS\\X64\\SRC\\IoManager\\IoManager\\x64",
+    "\\SYS\\X64\\SRC\\IoManager\\IoManager\\x64\\Debug",
+    "\\SYS\\X64\\SRC\\IoManager\\IoManager\\x64\\Debug\\IoManager.tlog",
+    "\\SYS\\X64\\SRC\\IoManager\\x64",
+    "\\SYS\\X64\\SRC\\IoManager\\x64\\Debug",
+    "\\SYS\\X64\\SRC\\IoManager\\x64\\Release"
   ],
-  "SelectedNode": "\\include\\kernel\\exports.h",
+  "SelectedNode": "\\SYS",
   "PreviewInSolutionExplorer": false
 }
