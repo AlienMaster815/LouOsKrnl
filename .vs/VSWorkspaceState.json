@@ -2,15 +2,17 @@
   "ExpandedNodes": [
     "",
     "\\API",
-    "\\API\\WinAPI",
-    "\\API\\WinAPI\\KernelAPI",
-    "\\API\\WinAPI\\KernelAPI\\NTAPI",
-    "\\include",
-    "\\include\\WinAPI",
-    "\\include\\WinAPI\\NtAPI",
-    "\\include\\WinAPI\\WinAPITypes",
-    "\\init"
+    "\\API\\LouAPI",
+    "\\API\\LouAPI\\KernelAPI",
+    "\\API\\LouAPI\\KernelAPI\\IOManager",
+    "\\init",
+    "\\kernel\\acpi",
+    "\\kernel\\Interrupts\\ISR_JUNK\\SubRoutines\\Pagefault",
+    "\\kernel\\memory\\paging\\C",
+    "\\SYS\\X64",
+    "\\targets\\x86",
+    "\\targets\\x86_64"
   ],
-  "SelectedNode": "\\include\\WinAPI\\WinAPITypes\\CommonTypes.h",
+  "SelectedNode": "\\init\\Lou_Main.c",
   "PreviewInSolutionExplorer": false
 }

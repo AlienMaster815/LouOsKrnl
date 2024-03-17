@@ -61,7 +61,7 @@ LOUSTATUS Lou_kernel_early_initialization(){
     RegisterInterruptHandler(PS2KeyboardHandler, INTERRUPT_SERVICE_ROUTINE_33);
     RegisterInterruptHandler(Clock, INTERRUPT_SERVICE_ROUTINE_32);
     
-    //SetInterruptFlags();
+    SetInterruptFlags();
 
     return LOUSTATUS_GOOD;
 }

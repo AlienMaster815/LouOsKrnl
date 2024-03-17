@@ -95,8 +95,8 @@ global GetPageValue
 GetPageValue:
     ;rdi has the address
     ;rsi has the flags
-    mov rax, rdi ; rax now is address
-    or rax, rsi  ; bitwise by flags
+    mov rax, rcx ; rax now is address
+    or rax, rdx  ; bitwise by flags
     ret
     
 

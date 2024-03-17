@@ -36,15 +36,15 @@ Drivers64 := $(shell awk -F '[<>]' '/<DRIVERTOCPY64>/{print " " $$3 ";"}' $(Driv
 EXPORT := $(KernelEXPORTS) $(WDFLDRModuleEXPORTS)
 
 ifeq ($(HOST_ARCH),x86_64)
-    CC = gcc
+    CC = x86_64-w64-mingw32-gcc
     CP = g++
     LD = ld
 
 endif
 
 ifeq ($(HOST_ARCH),ARM)
-    CC = x86_64-elf-gcc
-    CP = x86_64-elf-g++
+    CC = x86_64-w64-mingw32-gcc
+    CP = x86_64-w64-mingw32-g++
     LD = x86_64-elf-ld
 endif
 

@@ -3,7 +3,7 @@ section .text
 global CheckPresent
 
 CheckPresent:
-	mov rcx, rdi ;mov cr3 value to rax
+	;mov rcx, rdi ;mov cr3 value to rax
 	and rcx, rcx
 	test rcx, rcx
 	jz .notEqu

@@ -72,9 +72,9 @@ extern PIC_sendEOI
 ;PIC_sendEOI(unsigned char irq)
 
 %macro Handle 0
-	mov rdi, [InterruptNum]
+	mov rcx, [InterruptNum]
 	call InterruptRouter
-	mov rdi, [InterruptNum]
+	mov rcx, [InterruptNum]
 	call PIC_sendEOI
 
 %endmacro
