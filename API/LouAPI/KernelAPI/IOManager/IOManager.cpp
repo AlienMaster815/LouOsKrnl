@@ -26,9 +26,7 @@ uintptr_t GET_IO_SYS_BASE() {
 
 extern "C" LOUSTATUS IO_Manager_Init(){
     LouPrint("IO Manager Is Starting\n");    
-    DeclareExports();
-    
-    IOManager = FindDriverFile();
+
 
 
 

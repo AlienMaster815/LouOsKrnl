@@ -67,7 +67,6 @@ LOUSTATUS Lou_kernel_early_initialization(){
 }
 
 LOUSTATUS Set_Up_Devices(){
-    if(IO_Manager_Init() != LOUSTATUS_GOOD)LouPanic("IO Manager Failed To Start",BAD);
 
     DeterminCPU();
 

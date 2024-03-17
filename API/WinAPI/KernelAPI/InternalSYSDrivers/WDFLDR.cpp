@@ -2,6 +2,9 @@
 #include <kernel/exports.h>
 
 
+
+
+
 NTSTATUS WdfLdrDiagnosticsValueByNameAsULONG(UNICODE_STRING const* arg1, uint32_t* arg2){
     
     return STATUS_SUCCESS;

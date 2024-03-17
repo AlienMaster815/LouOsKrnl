@@ -21,10 +21,16 @@
 
 //Fixed Percision Integers
 
+#define __stdcall __attribute__((stdcall))
+
+
 typedef uint32_t DWORD32, UINT32, ULONG32;
 typedef uint64_t DWORD64, UINT64, ULONG64;
-typedef int32_t INT32, LONG32;
+typedef int32_t INT32, LONG32, NTSTATUS;
 typedef int64_t INT64, LONG64;
+
+
+typedef unsigned long* PULONG;
 
 //Pointer Percision Integers
 typedef unsigned long *DWORD_PTR;
@@ -51,17 +57,17 @@ typedef int32_t POINTER_32;
 
 #define CONST const
 #define IRP_MJ_MAXIMUM_FUNCTION         0x1b
-#define SHORT short
-#define ULONG unsigned long
-#define LONG long
-#define PVOID void*
+typedef short SHORT;
+typedef unsigned long ULONG;
+typedef long LONG;
+typedef void* PVOID;
 #define VOID void
-#define CHAR char
-#define USHORT uint16_t
-#define WCHAR wchar_t
-#define UCHAR uint8_t
+typedef char CHAR;
+typedef unsigned short USHORT;
+typedef wchar_t WCHAR;
+typedef unsigned char UCHAR;
 
-#define BOOLEAN bool
+typedef bool BOOLEAN;
 
 #define RESTRICTED_POINTER __restrict
 

@@ -1,17 +1,16 @@
 {
   "ExpandedNodes": [
     "",
-    "\\SYS\\X64",
-    "\\SYS\\X64\\SRC",
-    "\\SYS\\X64\\SRC\\Include",
-    "\\SYS\\X64\\SRC\\IoManager",
-    "\\SYS\\X64\\SRC\\IoManager\\IoManager\\x64",
-    "\\SYS\\X64\\SRC\\IoManager\\IoManager\\x64\\Debug",
-    "\\SYS\\X64\\SRC\\IoManager\\IoManager\\x64\\Debug\\IoManager.tlog",
-    "\\SYS\\X64\\SRC\\IoManager\\x64",
-    "\\SYS\\X64\\SRC\\IoManager\\x64\\Debug",
-    "\\SYS\\X64\\SRC\\IoManager\\x64\\Release"
+    "\\API",
+    "\\API\\WinAPI",
+    "\\API\\WinAPI\\KernelAPI",
+    "\\API\\WinAPI\\KernelAPI\\NTAPI",
+    "\\include",
+    "\\include\\WinAPI",
+    "\\include\\WinAPI\\NtAPI",
+    "\\include\\WinAPI\\WinAPITypes",
+    "\\init"
   ],
-  "SelectedNode": "\\SYS",
+  "SelectedNode": "\\include\\WinAPI\\WinAPITypes\\CommonTypes.h",
   "PreviewInSolutionExplorer": false
 }
