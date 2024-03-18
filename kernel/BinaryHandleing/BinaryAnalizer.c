@@ -18,6 +18,7 @@
 
 */
 
+#ifdef __x86_64__
 
 uint64_t* ProbeBinary64Bit(uint64_t Address, uint64_t Buffer) {
 	#define BufferDataType uint64_t
@@ -106,3 +107,4 @@ int8_t* ProbeBinary8BitSigned(uint64_t Address, uint64_t Buffer) {
 	return ReturnBufferArray;
 	#undef BufferDataType
 }
+#endif

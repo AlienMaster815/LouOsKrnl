@@ -147,7 +147,7 @@ void SetPicIDTGate(int index, void (*handler)()) {
 
     idt[index].base_low = (uint16_t)(address & 0xFFFF);
 
-    idt[index].selector = KernelCodeSegment; // Kernel code segment selector
+    idt[index].selector = 0x38; // Interrupt code segment selector
 
     idt[index].always0 = 0;
 
@@ -179,7 +179,9 @@ LOUSTATUS SetBasicInterrupts(bool Init){
     #endif
     #ifdef __i386__
     if(Init){
-
+        for (uint8_t i = 0; i < 48; i++) {
+            SetPicIDTGate(i, Handler[i]);
+        }
         return 0;
     }
 

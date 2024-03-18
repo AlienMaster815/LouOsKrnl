@@ -21,16 +21,20 @@
 
 //Fixed Percision Integers
 
-#define __stdcall __attribute__((stdcall))
 
-
-typedef uint32_t DWORD32, UINT32, ULONG32;
-typedef uint64_t DWORD64, UINT64, ULONG64;
+typedef uint32_t DWORD32, UINT32, ULONG32,DWORD;
+typedef uint64_t DWORD64, UINT64, ULONG64,QWORD;
 typedef int32_t INT32, LONG32, NTSTATUS;
 typedef int64_t INT64, LONG64;
+typedef uint8_t BYTE;
 
 
-typedef unsigned long* PULONG;
+typedef unsigned long* PULONG,PQWORD;
+typedef unsigned char* PUCHAR,PBYTE;
+typedef unsigned short* PUWORD,PUSHORT;
+typedef long* PLONG;
+typedef short* PWORD;
+typedef char* PCHAR;
 
 //Pointer Percision Integers
 typedef unsigned long *DWORD_PTR;

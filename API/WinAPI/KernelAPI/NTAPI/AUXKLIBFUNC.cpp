@@ -1,7 +1,7 @@
 #include <NtAPI.h>
 
 NTSTATUS
-//__stdcall
+__stdcall
 AuxKlibEnumerateSystemFirmwareTables(
 	_In_ ULONG FirmwareTableProviderSignature,
 	_Out_writes_bytes_to_opt_(BufferLength, *ReturnLength) PVOID FirmwareTableBuffer,
@@ -15,15 +15,15 @@ AuxKlibEnumerateSystemFirmwareTables(
 }
 
 
-//NTSTATUS AuxKlibGetBugCheckData(
-//	_Out_ PKBUGCHECK_DATA BugCheckData
-//) {
+NTSTATUS AuxKlibGetBugCheckData(
+	_Out_ PKBUGCHECK_DATA BugCheckData
+) {
 
-//	return STATUS_SUCCESS;
-//}
+	return STATUS_SUCCESS;
+}
 
 //PIMAGE_EXPORT_DIRECTORY AuxKlibGetImageExportDirectory(
-//	[_In_] PVOID ImageBase
+//	_In_ PVOID ImageBase
 //) {
 
 

@@ -1,5 +1,7 @@
 #include <LouAPI.h>
 
+#ifdef __x86_64__
+
 void WriteBinary64Bit(uint64_t Address, uint64_t Data) {
 	#define DataType uint64_t
 	DataType* CastedAddress = (DataType*)Address;
@@ -55,3 +57,5 @@ void WriteBinary8BitSigned(uint64_t Address,int8_t Data) {
 	*CastedAddress = Data;
 	#undef DataType	
 }
+
+#endif

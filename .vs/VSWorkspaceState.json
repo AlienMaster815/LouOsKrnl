@@ -2,17 +2,15 @@
   "ExpandedNodes": [
     "",
     "\\API",
-    "\\API\\LouAPI",
-    "\\API\\LouAPI\\KernelAPI",
-    "\\API\\LouAPI\\KernelAPI\\IOManager",
-    "\\init",
-    "\\kernel\\acpi",
-    "\\kernel\\Interrupts\\ISR_JUNK\\SubRoutines\\Pagefault",
-    "\\kernel\\memory\\paging\\C",
-    "\\SYS\\X64",
-    "\\targets\\x86",
-    "\\targets\\x86_64"
+    "\\API\\WinAPI",
+    "\\API\\WinAPI\\KernelAPI",
+    "\\API\\WinAPI\\KernelAPI\\NTAPI",
+    "\\include",
+    "\\include\\WDKSubsystem\\Debuging",
+    "\\include\\WDKSubsystem\\Types",
+    "\\include\\WinAPI",
+    "\\include\\WinAPI\\NtAPI"
   ],
-  "SelectedNode": "\\init\\Lou_Main.c",
+  "SelectedNode": "\\include\\WinAPI\\NtAPI\\NtAPIFunc.h",
   "PreviewInSolutionExplorer": false
 }

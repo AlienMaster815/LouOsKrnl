@@ -27,8 +27,18 @@ struct RawSMBIOSData
 };
 
 
+typedef struct _KBUGCHECK_DATA {
+	ULONG     BugCheckDataSize;
+	ULONG     BugCheckCode;
+	ULONG_PTR Parameter1;
+	ULONG_PTR Parameter2;
+	ULONG_PTR Parameter3;
+	ULONG_PTR Parameter4;
+} KBUGCHECK_DATA, * PKBUGCHECK_DATA;
+
+
 NTSTATUS
-//__stdcall
+__stdcall
 AuxKlibEnumerateSystemFirmwareTables(
 	_In_ ULONG FirmwareTableProviderSignature,
 	_Out_writes_bytes_to_opt_(BufferLength, *ReturnLength) PVOID FirmwareTableBuffer,
@@ -36,12 +46,12 @@ AuxKlibEnumerateSystemFirmwareTables(
 	_Out_opt_ PULONG ReturnLength
 );
 
-//NTSTATUS AuxKlibGetBugCheckData(
-//	_Out_ PKBUGCHECK_DATA BugCheckData
-//);
+NTSTATUS AuxKlibGetBugCheckData(
+	_Out_ PKBUGCHECK_DATA BugCheckData
+);
 
 //PIMAGE_EXPORT_DIRECTORY AuxKlibGetImageExportDirectory(
-//	[_In_] PVOID ImageBase
+//	_In_ PVOID ImageBase
 //);
 
 NTSTATUS AuxKlibGetSystemFirmwareTable(
@@ -60,5 +70,7 @@ NTSTATUS AuxKlibQueryModuleInformation(
 	_In_            ULONG  ElementSize,
 	_Out_opt_		PVOID  QueryInfo
 );
+
+
 
 #endif

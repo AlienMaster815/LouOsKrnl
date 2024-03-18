@@ -1,6 +1,8 @@
 #ifndef _NTAPI_FUNC_H
 #define _NTAPI_FUNC_H
 #include <NtAPI.h>
+#include "aux_klib.h"
+#include "ioaccess.h"
 
 VOID RtlCopyUnicodeString(_Inout_ PUNICODE_STRING DestinationString, _In_opt_ PUNICODE_STRING SourceString);
 ULONG DbgPrint(_In_z_ _Printf_format_string_ PCSTR Format, ...);

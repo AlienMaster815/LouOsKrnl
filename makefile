@@ -37,7 +37,7 @@ EXPORT := $(KernelEXPORTS) $(WDFLDRModuleEXPORTS)
 
 ifeq ($(HOST_ARCH),x86_64)
     CC = x86_64-w64-mingw32-gcc
-    CP = g++
+    CP = x86_64-w64-mingw32-g++
     LD = ld
 
 endif
