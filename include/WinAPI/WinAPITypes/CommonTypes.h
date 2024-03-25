@@ -29,12 +29,14 @@ typedef int64_t INT64, LONG64;
 typedef uint8_t BYTE;
 
 
-typedef unsigned long* PULONG,PQWORD;
-typedef unsigned char* PUCHAR,PBYTE;
-typedef unsigned short* PUWORD,PUSHORT;
+typedef unsigned long* PULONG,* PQWORD;
+typedef unsigned char* PUCHAR,* PBYTE;
+typedef unsigned short* PUWORD,* PUSHORT;
 typedef long* PLONG;
 typedef short* PWORD;
 typedef char* PCHAR;
+
+
 
 //Pointer Percision Integers
 typedef unsigned long *DWORD_PTR;
@@ -89,7 +91,7 @@ typedef KSPIN_LOCK *PKSPIN_LOCK;
 typedef ULONG_PTR KAFFINITY;
 typedef KAFFINITY *PKAFFINITY;
 
-typedef wchar_t* PWSTR;
+typedef wchar_t* PWSTR,* PCWSTR;
 
 
 typedef int32_t NTSTATUS;
@@ -1042,3 +1044,4 @@ typedef struct _DRIVER_OBJECT {
 
 
 #endif
+

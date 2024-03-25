@@ -1,8 +1,0 @@
-﻿  Building 'IoManager' with toolset 'WindowsKernelModeDriver10.0' and the 'Universal' target platform.
-  Stamping x64\Release\IoManager.inf
-  Stamping [Version] section with DriverVer=03/15/2024,22.31.33.59
-  IoManager.cpp
-     Creating library C:\Users\Tyler\Documents\GitHub\LOUOSKRNL.EXE\SYS\X64\SRC\IoManager\x64\Release\IoManager.lib and object C:\Users\Tyler\Documents\GitHub\LOUOSKRNL.EXE\SYS\X64\SRC\IoManager\x64\Release\IoManager.exp
-IoManager.obj : error LNK2019: unresolved external symbol "__declspec(dllimport) long (__cdecl* LouPrint)(char *,...)" (__imp_?LouPrint@@3P6AJPEADZZEA) referenced in function "unsigned __int64 __cdecl LousineModuleEntry(unsigned __int64)" (?LousineModuleEntry@@YA_K_K@Z)
-WdfDriverEntry.lib(stub.obj) : error LNK2019: unresolved external symbol DriverEntry referenced in function FxDriverEntryWorker
-C:\Users\Tyler\Documents\GitHub\LOUOSKRNL.EXE\SYS\X64\SRC\IoManager\x64\Release\IoManager.sys : fatal error LNK1120: 2 unresolved externals

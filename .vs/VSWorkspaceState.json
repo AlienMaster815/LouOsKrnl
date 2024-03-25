@@ -6,11 +6,14 @@
     "\\API\\WinAPI\\KernelAPI",
     "\\API\\WinAPI\\KernelAPI\\NTAPI",
     "\\include",
-    "\\include\\WDKSubsystem\\Debuging",
-    "\\include\\WDKSubsystem\\Types",
+    "\\include\\drivers",
     "\\include\\WinAPI",
-    "\\include\\WinAPI\\NtAPI"
+    "\\include\\WinAPI\\NtAPI",
+    "\\include\\WinAPI\\WinAPITypes",
+    "\\kernel",
+    "\\kernel\\Interrupts\\ISR_JUNK",
+    "\\kernel\\Interrupts\\ISR_JUNK\\SubRoutines"
   ],
-  "SelectedNode": "\\include\\WinAPI\\NtAPI\\NtAPIFunc.h",
+  "SelectedNode": "\\kernel\\Interrupts",
   "PreviewInSolutionExplorer": false
 }

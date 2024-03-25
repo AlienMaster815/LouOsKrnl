@@ -1,6 +1,0 @@
-﻿  Building 'IoManager' with toolset 'WindowsKernelModeDriver10.0' and the 'Universal' target platform.
-  Stamping x64\Debug\IoManager.inf
-  Stamping [Version] section with DriverVer=03/15/2024,22.10.44.567
-  IoManager.cpp
-C:\Users\Tyler\Documents\GitHub\LOUOSKRNL.EXE\SYS\X64\SRC\IoManager\IoManager\IoManager.cpp(9,38): error C2220: the following warning is treated as an error
-C:\Users\Tyler\Documents\GitHub\LOUOSKRNL.EXE\SYS\X64\SRC\IoManager\IoManager\IoManager.cpp(9,38): warning C4100: 'IoManagerComand': unreferenced formal parameter
