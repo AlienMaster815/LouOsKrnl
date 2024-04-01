@@ -9,11 +9,8 @@
     "\\include\\drivers",
     "\\include\\WinAPI",
     "\\include\\WinAPI\\NtAPI",
-    "\\include\\WinAPI\\WinAPITypes",
-    "\\kernel",
-    "\\kernel\\Interrupts\\ISR_JUNK",
-    "\\kernel\\Interrupts\\ISR_JUNK\\SubRoutines"
+    "\\include\\WinAPI\\WinAPITypes"
   ],
-  "SelectedNode": "\\kernel\\Interrupts",
+  "SelectedNode": "\\API\\WinAPI\\KernelAPI\\NTAPI\\NtDDK.cpp",
   "PreviewInSolutionExplorer": false
 }

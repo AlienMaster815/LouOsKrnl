@@ -22,7 +22,7 @@ BOOLEAN WheaSignalHandlerOverrideCallback(
 
 void BootDriverCallbackFunction(
 	PVOID CallbackContext,
-	BDCB_CALLBACK_TYPE Classification,
+	//BDCB_CALLBACK_TYPE Classification,
 	PBDCB_IMAGE_INFORMATION ImageInformation
 ) {
 
@@ -138,8 +138,8 @@ void IoAllocateController(
 }
 
 void IoAssignArcName(
-	_In_  ArcName,
-	_In_  DeviceName
+	//_In_  ArcName,
+	//_In_  DeviceName
 ) {
 
 
@@ -169,3 +169,11 @@ void IoClearActivityIdThread(
 //){
 
 //}
+
+NTSTATUS IoDecrementKeepAliveCount(
+	//_In_ _Out_ PFILE_OBJECT FileObject,
+	//_In_ _Out_ PEPROCESS    Process
+) {
+
+	return STATUS_SUCCESS;
+}
