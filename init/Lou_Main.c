@@ -74,7 +74,7 @@ LOUSTATUS Set_Up_Devices(){
 
     //FileSystemSetup();
     
-    //PCI_Setup();
+    PCI_Setup();
 
     return LOUSTATUS_GOOD;
 }

@@ -3,6 +3,18 @@
   "WorkspaceRootPath": "C:\\Users\\Tyler\\Documents\\GitHub\\LOUOSKRNL.EXE\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Tyler\\Documents\\GitHub\\LOUOSKRNL.EXE\\init\\Lou_Main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:init\\Lou_Main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Tyler\\Documents\\GitHub\\LOUOSKRNL.EXE\\include\\WinAPI\\WinAPITypes\\CommonTypes.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\WinAPI\\WinAPITypes\\CommonTypes.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Tyler\\Documents\\GitHub\\LOUOSKRNL.EXE\\include\\WinAPI\\WinAPITypes\\WDFLDRTypes.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\WinAPI\\WinAPITypes\\WDFLDRTypes.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Tyler\\Documents\\GitHub\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\ntddk.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\WinAPI\\NtAPI\\ntddk.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
@@ -18,11 +30,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "ntddk.h",
               "DocumentMoniker": "C:\\Users\\Tyler\\Documents\\GitHub\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\ntddk.h",
               "RelativeDocumentMoniker": "include\\WinAPI\\NtAPI\\ntddk.h",
@@ -36,7 +48,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 4,
               "Title": "NtDDK.cpp",
               "DocumentMoniker": "C:\\Users\\Tyler\\Documents\\GitHub\\LOUOSKRNL.EXE\\API\\WinAPI\\KernelAPI\\NTAPI\\NtDDK.cpp",
               "RelativeDocumentMoniker": "API\\WinAPI\\KernelAPI\\NTAPI\\NtDDK.cpp",
@@ -45,7 +57,45 @@
               "ViewState": "AQIAAAQAAAAA0MzMzAwswBcAAAAXAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-03-25T22:14:53.442Z",
-              "IsPinned": true,
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Lou_Main.c",
+              "DocumentMoniker": "C:\\Users\\Tyler\\Documents\\GitHub\\LOUOSKRNL.EXE\\init\\Lou_Main.c",
+              "RelativeDocumentMoniker": "init\\Lou_Main.c",
+              "ToolTip": "C:\\Users\\Tyler\\Documents\\GitHub\\LOUOSKRNL.EXE\\init\\Lou_Main.c",
+              "RelativeToolTip": "init\\Lou_Main.c",
+              "ViewState": "AQIAADoAAADALzMzM7MiwEwAAAAEAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2024-04-02T01:37:31.668Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "CommonTypes.h",
+              "DocumentMoniker": "C:\\Users\\Tyler\\Documents\\GitHub\\LOUOSKRNL.EXE\\include\\WinAPI\\WinAPITypes\\CommonTypes.h",
+              "RelativeDocumentMoniker": "include\\WinAPI\\WinAPITypes\\CommonTypes.h",
+              "ToolTip": "C:\\Users\\Tyler\\Documents\\GitHub\\LOUOSKRNL.EXE\\include\\WinAPI\\WinAPITypes\\CommonTypes.h",
+              "RelativeToolTip": "include\\WinAPI\\WinAPITypes\\CommonTypes.h",
+              "ViewState": "AQIAADEAAACAm5mZmRkmwAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2024-04-02T01:37:21.622Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "WDFLDRTypes.h",
+              "DocumentMoniker": "C:\\Users\\Tyler\\Documents\\GitHub\\LOUOSKRNL.EXE\\include\\WinAPI\\WinAPITypes\\WDFLDRTypes.h",
+              "RelativeDocumentMoniker": "include\\WinAPI\\WinAPITypes\\WDFLDRTypes.h",
+              "ToolTip": "C:\\Users\\Tyler\\Documents\\GitHub\\LOUOSKRNL.EXE\\include\\WinAPI\\WinAPITypes\\WDFLDRTypes.h",
+              "RelativeToolTip": "include\\WinAPI\\WinAPITypes\\WDFLDRTypes.h",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2024-04-02T01:37:19.981Z",
               "EditorCaption": ""
             },
             {

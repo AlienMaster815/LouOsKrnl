@@ -9,8 +9,9 @@
     "\\include\\drivers",
     "\\include\\WinAPI",
     "\\include\\WinAPI\\NtAPI",
-    "\\include\\WinAPI\\WinAPITypes"
+    "\\include\\WinAPI\\WinAPITypes",
+    "\\init"
   ],
-  "SelectedNode": "\\API\\WinAPI\\KernelAPI\\NTAPI\\NtDDK.cpp",
+  "SelectedNode": "\\init\\Lou_Main.c",
   "PreviewInSolutionExplorer": false
 }
