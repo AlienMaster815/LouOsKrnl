@@ -1,17 +1,16 @@
 {
   "ExpandedNodes": [
     "",
-    "\\API",
-    "\\API\\WinAPI",
-    "\\API\\WinAPI\\KernelAPI",
-    "\\API\\WinAPI\\KernelAPI\\NTAPI",
+    "\\drivers",
+    "\\drivers\\AGP",
+    "\\drivers\\Audio",
+    "\\drivers\\ISA",
+    "\\drivers\\networking\\eithernet",
+    "\\drivers\\Video",
     "\\include",
     "\\include\\drivers",
-    "\\include\\WinAPI",
-    "\\include\\WinAPI\\NtAPI",
-    "\\include\\WinAPI\\WinAPITypes",
-    "\\init"
+    "\\include\\drivers\\Vendors"
   ],
-  "SelectedNode": "\\init\\Lou_Main.c",
+  "SelectedNode": "\\include\\drivers\\Vendors\\VendorsDictionary.h",
   "PreviewInSolutionExplorer": false
 }

@@ -1,6 +1,12 @@
 #include <LouDDK.h>
 
 void isUsb(uint8_t bus, uint8_t slot, uint8_t function);
+void IsVGA(uint8_t bus, uint8_t slot, uint8_t function);
+void IsSerial(uint8_t bus, uint8_t slot, uint8_t function);
+void IsEithernet(uint8_t bus, uint8_t slot, uint8_t function);
+void IsChipset(uint8_t bus, uint8_t slot, uint8_t function);
+void IsAudioDevice(uint8_t bus, uint8_t slot, uint8_t function);
+void IsAGPDevice(uint8_t bus, uint8_t slot, uint8_t function);
 
 //CPP Land
 DRIVER_IO_FUNCTION P_PCIBuffer PCI::PCI_Read(P_PCIDEV Device) {
@@ -41,7 +47,14 @@ LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device) {
                 else {
                     LouPrint("PCI Device Found Vedor Is: %h and Device Is: %h\n", vendorID, PciGetDeviceID(bus, device, function));
                     //Parse Funxtios and have fun
-
+                    IsSataCheck(bus, device, function);
+                    isUsb( bus,  device,  function);
+                    IsVGA( bus,  device,  function);
+                    IsSerial( bus,  device,  function);
+                    IsEithernet( bus,  device,  function);
+                    IsChipset( bus,  device,  function);
+                    IsAudioDevice( bus,  device, function);
+                    IsAGPDevice(bus,device, function);
                     //IsSataCheck(bus, device, function);
                 }
             }
@@ -49,8 +62,14 @@ LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device) {
     }
     else{
         //device is single function have fun
-        IsSataCheck(bus,  device, function);
+        IsSataCheck(bus, device, function);
         isUsb(bus, device, function);
+        IsVGA(bus, device, function);
+        IsSerial(bus, device, function);
+        IsEithernet(bus, device, function);
+        IsChipset(bus, device, function);
+        IsAudioDevice(bus, device, function);
+        IsAGPDevice(bus, device, function);
     }
 }
 

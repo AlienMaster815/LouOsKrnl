@@ -1,5 +1,6 @@
 #ifdef __x86_64__
 #include <LouAPI.h>
+#include <bootloader/grub/multiboot2.h>
 #endif
 #ifdef __i386__
 #include <kernel/errors.h>
@@ -91,8 +92,10 @@ LOUSTATUS User_Mode_Initialization(){
 }
 
 
+
 KERNEL_ENTRY Lou_kernel_start(){
-	    
+    
+
 
     setup_vga_systems();
 
@@ -114,7 +117,6 @@ KERNEL_ENTRY Lou_kernel_start(){
 
    // Initialize User Mode
    // if(User_Mode_Initialization() != LOUSTATUS_GOOD)LouPanic("User Mode Initialiation Failed",BAD);
-
 
     LouPrint("Hello World\n");
 

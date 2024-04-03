@@ -1,13 +1,34 @@
 bits 32
-;=======================================================
-;                 Multiboot Header
-section .boot
-    dd 0x1BADB002     ; Magic number
-    dd 0x00           ; Flags
-    dd - (0x1BADB002 + 0x00)  ; Checksum (magic + flags)
-;========================================================
+multiboot2_header: 
+align 8
+    dd 0xE85250D6                     ; Multiboot2 magic number
+    dd 0                              ; Architecture (0 for i386)
+    dd multiboot2_header_end - multiboot2_header ; Header length
+    dd -(0xE85250D6 + 0 + (multiboot2_header_end - multiboot2_header)) ; Checksum
+
+; Entry address tag (optional, remove if not needed)
+; Ensure your entry point is aligned as required by your architecture
+; dd 0x01                            ; Type: Entry address
+; dd 0x00                            ; Flags
+; dd 0x08                            ; Size
+; dd start                           ; Entry address
+
+; Console header tag (optional, uncomment to use)
+;dd 0x03                             ; Type: Console flags
+;dd 0x00                             ; Flags
+;dd 0x0C                             ; Size
+;dd 0x03                             ; Console flags: EGA text support, console required
+
+; Terminator tag
+dd 0x00                              ; Type: End of tags
+dd 0x00                              ; Flags
+dd 0x08                              ; Size
+
+align 8
+multiboot2_header_end:
+
 section .data
-;multiboot_info_ptr dd 0
+multiboot_info_ptr dd 0
 
 section .text
 
@@ -21,7 +42,7 @@ extern enable_paging
 
 start:
    
-    ;mov eax, [0xF0404000];
+    ;mov [multiboot_info_ptr], ebx;
     ;mov [ahci], eax
     ;xor eax,eax
     
@@ -128,6 +149,6 @@ long_mode_start:
     mov gs, ax 
     mov ss, ax 
 
-    ;mov rdi, [ahci]
+    ;mov rcx, [multiboot_info_ptr]
     call Lou_kernel_start
     jmp $ 
