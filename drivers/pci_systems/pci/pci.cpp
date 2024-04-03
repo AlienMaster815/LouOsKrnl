@@ -1,5 +1,7 @@
 #include <LouDDK.h>
 
+void isUsb(uint8_t bus, uint8_t slot, uint8_t function);
+
 //CPP Land
 DRIVER_IO_FUNCTION P_PCIBuffer PCI::PCI_Read(P_PCIDEV Device) {
     P_PCIBuffer PCIBuff = (P_PCIBuffer)Lou_Alloc_Mem(sizeof(PCIBuffer));
@@ -47,8 +49,8 @@ LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device) {
     }
     else{
         //device is single function have fun
-
         IsSataCheck(bus,  device, function);
+        isUsb(bus, device, function);
     }
 }
 

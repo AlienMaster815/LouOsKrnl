@@ -1,4 +1,5 @@
 #include <LouDDK.h>
+#include <NtAPI.h>
 #include "sata.h"
 
 
@@ -8,9 +9,17 @@
 #define HBA_PxCMD_CR    0x8000
 #define GHC_HR (1U << 0) // HBA reset bit in the GHC register
 
+BOOLEAN AhciInit = true;
+
+void setAhciInitializationBit(
+	BOOLEAN Initialization_Bit
+) {
+	AhciInit = Initialization_Bit;
+}
+
 
 LOUDDK_API_ENTRY void IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func) {
-	LouPrint("Checking PCI For Sata Controller\n");
+	//LouPrint("Checking PCI For Sata Controller\n");
 
 	uint16_t vendorID = PciGetVendorID(bus, slot);
 	uint16_t deviceID = PciGetDeviceID(bus, slot, func);
@@ -79,12 +88,31 @@ LOUDDK_API_ENTRY void IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func) {
 			break;
 
 		default:
-			LouPrint("Non Sata Intel Device\n");
+			//LouPrint("Non Sata Intel Device\n");
 			break;
 		}
 		break;
+	case AdvancedMicroDevices_1:
+	case AdvancedMicroDevices_2:
+		switch (deviceID) {
+
+		//some may be missing we will go back later
+
+		case KABINI_MULLINS_SATA_RAID_AHCI_MODE:
+		case FCH_SATA_CONTROLLER_AHCI_MODE_2:
+		case FCH_SATA_CONTROLLER_AHCI_MODE:
+		case FCH_SATA_CONTROLLER_AHCI_MODE_3:
+		case FCH_SATA_CONTROLLER_AHCI_MODE_4:
+		
+			LouPrint("Found An AMD Sata Controller\n");
+			Sata_init(bus,slot,func);
+			break;
+		default:
+			//not ahci
+			break;
+		}
 	default:
-		LouPrint("Not A Sata Device\n");
+		//not a supported company
 		break;
 	}
 }
