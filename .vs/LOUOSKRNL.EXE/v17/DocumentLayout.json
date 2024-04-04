@@ -3,20 +3,20 @@
   "WorkspaceRootPath": "E:\\LOUOSKRNL.EXE\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\Video\\vga.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\Video\\vga.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\AdvancedMicroControllers.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\drivers\\Vendors\\AdvancedMicroControllers.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\virtualMachines.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\drivers\\Vendors\\virtualMachines.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\zwire.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\drivers\\Vendors\\zwire.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\networking\\NetWorkingInit.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\networking\\NetWorkingInit.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\apple.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\drivers\\Vendors\\apple.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\VendorsDictionary.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\drivers\\Vendors\\VendorsDictionary.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\IntelDictionary.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\drivers\\Vendors\\IntelDictionary.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,7 +26,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Bookmark",
@@ -35,53 +35,50 @@
             {
               "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "VendorsDictionary.h",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\VendorsDictionary.h",
-              "RelativeDocumentMoniker": "include\\drivers\\Vendors\\VendorsDictionary.h",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\VendorsDictionary.h",
-              "RelativeToolTip": "include\\drivers\\Vendors\\VendorsDictionary.h",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAMAAAAcAAAA",
+              "Title": "IntelDictionary.h",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\IntelDictionary.h",
+              "RelativeDocumentMoniker": "include\\drivers\\Vendors\\IntelDictionary.h",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\IntelDictionary.h",
+              "RelativeToolTip": "include\\drivers\\Vendors\\IntelDictionary.h",
+              "ViewState": "AQIAADMAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-04-03T16:32:50.332Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "vga.cpp",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\Video\\vga.cpp",
-              "RelativeDocumentMoniker": "drivers\\Video\\vga.cpp",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\Video\\vga.cpp",
-              "RelativeToolTip": "drivers\\Video\\vga.cpp",
-              "ViewState": "AQIAAA0AAABAzczMzMwnwCkAAAAOAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-04-03T16:30:30.898Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-03T20:02:31.026Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "NetWorkingInit.cpp",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\networking\\NetWorkingInit.cpp",
-              "RelativeDocumentMoniker": "drivers\\networking\\NetWorkingInit.cpp",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\networking\\NetWorkingInit.cpp",
-              "RelativeToolTip": "drivers\\networking\\NetWorkingInit.cpp",
+              "Title": "apple.h",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\apple.h",
+              "RelativeDocumentMoniker": "include\\drivers\\Vendors\\apple.h",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\apple.h",
+              "RelativeToolTip": "include\\drivers\\Vendors\\apple.h",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-04-03T16:29:38.553Z",
-              "EditorCaption": ""
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2024-04-03T20:02:29.681Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "virtualMachines.h",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\virtualMachines.h",
-              "RelativeDocumentMoniker": "include\\drivers\\Vendors\\virtualMachines.h",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\virtualMachines.h",
-              "RelativeToolTip": "include\\drivers\\Vendors\\virtualMachines.h",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAAAGAAAA",
+              "Title": "zwire.h",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\zwire.h",
+              "RelativeDocumentMoniker": "include\\drivers\\Vendors\\zwire.h",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\zwire.h",
+              "RelativeToolTip": "include\\drivers\\Vendors\\zwire.h",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAgAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-04-03T16:24:03.614Z",
+              "WhenOpened": "2024-04-03T19:59:09.53Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "AdvancedMicroControllers.h",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\AdvancedMicroControllers.h",
+              "RelativeDocumentMoniker": "include\\drivers\\Vendors\\AdvancedMicroControllers.h",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\AdvancedMicroControllers.h",
+              "RelativeToolTip": "include\\drivers\\Vendors\\AdvancedMicroControllers.h",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAAAUAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2024-04-03T19:26:13.56Z",
               "EditorCaption": ""
             }
           ]

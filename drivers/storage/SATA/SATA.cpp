@@ -98,15 +98,11 @@ LOUDDK_API_ENTRY void IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func) {
 
 		//some may be missing we will go back later
 
-		case KABINI_MULLINS_SATA_RAID_AHCI_MODE:
-		case FCH_SATA_CONTROLLER_AHCI_MODE_2:
-		case FCH_SATA_CONTROLLER_AHCI_MODE:
-		case FCH_SATA_CONTROLLER_AHCI_MODE_3:
-		case FCH_SATA_CONTROLLER_AHCI_MODE_4:
+
 		
-			LouPrint("Found An AMD Sata Controller\n");
-			Sata_init(bus,slot,func);
-			break;
+			//LouPrint("Found An AMD Sata Controller\n");
+			//Sata_init(bus,slot,func);
+			//break;
 		default:
 			//not ahci
 			break;

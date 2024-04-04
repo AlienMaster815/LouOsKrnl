@@ -2,15 +2,14 @@
   "ExpandedNodes": [
     "",
     "\\drivers",
-    "\\drivers\\AGP",
-    "\\drivers\\Audio",
-    "\\drivers\\ISA",
-    "\\drivers\\networking\\eithernet",
-    "\\drivers\\Video",
+    "\\drivers\\storage",
+    "\\drivers\\storage\\SATA",
+    "\\drivers\\USB",
     "\\include",
     "\\include\\drivers",
-    "\\include\\drivers\\Vendors"
+    "\\include\\drivers\\Vendors",
+    "\\init"
   ],
-  "SelectedNode": "\\include\\drivers\\Vendors\\VendorsDictionary.h",
+  "SelectedNode": "\\Config",
   "PreviewInSolutionExplorer": false
 }

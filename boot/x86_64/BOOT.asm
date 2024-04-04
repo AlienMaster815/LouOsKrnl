@@ -1,32 +1,11 @@
 bits 32
-multiboot2_header: 
-align 8
-    dd 0xE85250D6                     ; Multiboot2 magic number
-    dd 0                              ; Architecture (0 for i386)
-    dd multiboot2_header_end - multiboot2_header ; Header length
-    dd -(0xE85250D6 + 0 + (multiboot2_header_end - multiboot2_header)) ; Checksum
-
-; Entry address tag (optional, remove if not needed)
-; Ensure your entry point is aligned as required by your architecture
-; dd 0x01                            ; Type: Entry address
-; dd 0x00                            ; Flags
-; dd 0x08                            ; Size
-; dd start                           ; Entry address
-
-; Console header tag (optional, uncomment to use)
-;dd 0x03                             ; Type: Console flags
-;dd 0x00                             ; Flags
-;dd 0x0C                             ; Size
-;dd 0x03                             ; Console flags: EGA text support, console required
-
-; Terminator tag
-dd 0x00                              ; Type: End of tags
-dd 0x00                              ; Flags
-dd 0x08                              ; Size
-
-align 8
-multiboot2_header_end:
-
+;=======================================================
+;                 Multiboot Header
+section .boot
+    dd 0x1BADB002     ; Magic number
+    dd 0x00           ; Flags
+    dd - (0x1BADB002 + 0x00)  ; Checksum (magic + flags)
+;========================================================
 section .data
 multiboot_info_ptr dd 0
 
