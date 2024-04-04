@@ -94,15 +94,43 @@ LOUDDK_API_ENTRY void IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func) {
 		break;
 	case AdvancedMicroDevices_1:
 	case AdvancedMicroDevices_2:
+	case AMD_3:
 		switch (deviceID) {
-
 		//some may be missing we will go back later
 
 
-		
-			//LouPrint("Found An AMD Sata Controller\n");
-			//Sata_init(bus,slot,func);
-			//break;
+		case SB7x0SB8x0SB9x0SATAControllerAHCImode_1:
+		case SB7x0SB8x0SB9x0SATAControllerAHCImode:
+		case FCHSATAControllerAHCImode:
+		case FCHSATAControllerAHCImode_3:
+		case KabiniMullinsSATARaidAHCIModeDotHilldriver:
+		case FCHSATAControllerAHCImode_2:
+		case SB600NonRaid5SATA:
+		case SB7x0SB8x0SB9x0SATAControllerIDEmode:
+		case SB7x0SB8x0SB9x0SATAControllerNonRAID5mode:
+		case SB8x0SB9x0SATAControllerStoragemode:
+		//case S5000PSLSATAServerBoard:
+		case X370SeriesChipsetSATAController:
+		case X399SeriesChipsetSATAController:
+		case A300SeriesChipsetSATAController:
+		case A400SeriesChipsetSATAController:
+		case A500SeriesChipsetSATAController:
+		case A600SeriesChipsetSATAController:
+		case FCHSATAControllerIDEmode:
+		//case FCHSATAControllerAHCImode:
+		//case KabiniMullinsSATARaidAHCIModeDotHilldriver:
+		case FCHSATAControllerIDEmode_1:
+		//case FCHSATAControllerAHCImode_2:
+		case FCHSATAControllerAHCImode_1:
+		case SB600SATAControllerRAID5mode:
+		case SB7x0SB8x0SB9x0SATAControllerRAID5mode:
+		case FCHSATAControllerRAIDmode_5:
+		case FCHSATAControllerRAIDmode_4:
+		case FCHSATAControllerRAIDmode_2:
+		case FCHSATAControllerRAIDmode_1:
+			LouPrint("Found An AMD Sata Controller\n");
+			Sata_init(bus,slot,func);
+			break;
 		default:
 			//not ahci
 			break;

@@ -37,10 +37,117 @@ void isUsb(uint8_t bus, uint8_t slot, uint8_t function) {
 		switch (deviceID) {
 
 
+		case FCHUSBEHCIController_1:
+		case FCHUSBXHCIController_1:
+		//case M4A89GTDPROUSB3Motherboard:
+		//case GA880GMAUSB3:
+		//case GA880GMAUSB3_eu3:
+		case EHCIUSBController:
+		case OHCIUSBController1:
+		case OHCIUSBController2:
+		case SB300USBControllerEHCI_3:
+		case SB300USBControllerEHCI_2:
+		case SB300USBControllerEHCI_1:
+		case IXPSB4x0USB2HostController:
+		case IXPSB4x0USBHostController:
+		case IXPSB4x0USBHostController_1:
+		case SB600USBControllerEHCI:
+		case SB600USBOHCI1:
+		case SB600USBOHCI2:
+		case SB600USBOHCI0:
+		case SB600USBOHCI3:
+		case SB600USBOHCI4:
+		case SB7x0SB8x0SB9x0USBEHCIController:
+		case SB7x0SB8x0SB9x0USBOHCI0Controller:
+		case SB7x0USBOHCI1Controller:
+		case SB7x0SB8x0SB9x0USBOHCI2Controller:
+		case Xilleon220USBforHDTV2:
+		case Xilleon215USBforX215:
+		case Xilleon225USBforX225:
+		case Xilleon210USBforX210:
+		case Xilleon226USBforX226:
+		case Xilleon240SUSBforX240S:
+		case Xilleon240HUSBforX240H:
+		case Xilleon250USB11forX250:
+		case Xilleon260USB11forX260:
+		case Xilleon234235USB11forX234X235:
+		case Xilleon244245USB11forX244X245:
+		case Xilleon242USB11forX242:
+		case Xilleon254USB11forX254:
+		case Xilleon255USB11forX255:
+		case Xilleon243USB11forX243:
+		case Xilleon233USB11forX233:
+		case Navi10USB:
+		case Navi21USB:
+		case Navi22USB:
+		case Navi23USB:
+		case Navi31USB:
+		case Theater506USB_2:
+		case Theater506USB_1:
+		case Theater506ExternalUSB_2:
+		case Theater506ExternalUSB_1:
+		case Theater506AUSB_2:
+		case Theater506AUSB_1:
+		case Theater506AExternalUSB_2:
+		case Theater506AExternalUSB_1:
+		case ArielInternalPCIeGPPBridge0toBusB:
+		case ArielUSB31TypeCGen2x1portDPAltMode:
+		case ArielUSB31TypeAGen2x2ports:
+		case Family17hModels00h0fhUSB30HostController:
+		case USB30Hostcontroller:
+		case StarshipUSB30HostController:
+		case MatisseUSB30HostController:
+		case Family19hUSB4ThunderboltPCIetunnel_2:
+		case Family19hUSB4ThunderboltPCIetunnel_1:
+		case PhoenixUSB4ThunderboltNHIcontroller1:
+		case PhoenixUSB4ThunderboltNHIcontroller2:
+		case FireFlightUSB31_2:
+		case FireFlightUSB31_1:
+		case RembrandtUSB4XHCIcontroller5:
+		case RembrandtUSB4XHCIcontroller6:
+		case RavenUSB31_2:
+		case RavenUSB31_1:
+		case Raven2USB31:
+		case RembrandtUSB4XHCIcontroller1:
+		case RembrandtUSB4XHCIcontroller2:
+		case RembrandtUSB4XHCIcontroller7:
+		case RembrandtUSB4XHCIcontroller3:
+		case RembrandtUSB4XHCIcontroller4:
+		case RembrandtUSB4XHCIcontroller8:
+		case VanGoghUSB2:
+		case RembrandtUSB4ThunderboltNHIcontroller1:
+		case RembrandtUSB4ThunderboltNHIcontroller2:
+		case RenoirUSB31:
+		case VanGoghUSB0:
+		case VanGoghUSB1:
+		case VanGoghSecUSB:
+		case PinkSardineUSB4ThunderboltNHIcontroller1:
+		case PinkSardineUSB4ThunderboltNHIcontroller2:
+		//case ASM1042AUSB30HostController:
+		case X370SeriesChipsetUSB31xHCIController:
+		case X399SeriesChipsetUSB31xHCIController:
+		case A300SeriesChipsetUSB31xHCIController:
+		case A400SeriesChipsetUSB31XHCIController:
+		case A500SeriesChipsetUSB31XHCIController:
+		case A600SeriesChipsetUSB32Controller:
+		case AMD755CobraUSB:
+		case AMD756ViperUSB:
+		case AMD766ViperPlusUSB:
+		case AMD768OpusUSB:
+		case AMD8111USB:
+		case AMD8111USBEHCI:
+		case AMD8111USBOHCI:
+		case FCHUSBOHCIController_3:
+		case FCHUSBEHCIController_3:
+		case FCHUSBOHCIController_4:
+		case FCHUSBXHCIController_3:
+		case FCHUSBXHCIController_2:
+		//case FCHUSBEHCIController_1:
+		//case FCHUSBXHCIController_1:
 
-			//LouPrint("AMD USB Host Found\n");
-			//USB_INIT(bus, slot, function);
-			//break;
+			LouPrint("AMD USB Host Found\n");
+			USB_INIT(bus, slot, function);
+			break;
 
 		default:
 			break;

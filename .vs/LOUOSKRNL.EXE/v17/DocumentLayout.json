@@ -3,20 +3,12 @@
   "WorkspaceRootPath": "E:\\LOUOSKRNL.EXE\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\Audio\\AudioDriver.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\Audio\\AudioDriver.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\AdvancedMicroControllers.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\drivers\\Vendors\\AdvancedMicroControllers.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\zwire.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\drivers\\Vendors\\zwire.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\apple.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\drivers\\Vendors\\apple.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\IntelDictionary.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\drivers\\Vendors\\IntelDictionary.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,7 +18,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Bookmark",
@@ -34,51 +26,28 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "IntelDictionary.h",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\IntelDictionary.h",
-              "RelativeDocumentMoniker": "include\\drivers\\Vendors\\IntelDictionary.h",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\IntelDictionary.h",
-              "RelativeToolTip": "include\\drivers\\Vendors\\IntelDictionary.h",
-              "ViewState": "AQIAADMAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-04-03T20:02:31.026Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "apple.h",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\apple.h",
-              "RelativeDocumentMoniker": "include\\drivers\\Vendors\\apple.h",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\apple.h",
-              "RelativeToolTip": "include\\drivers\\Vendors\\apple.h",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-04-03T20:02:29.681Z"
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "zwire.h",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\zwire.h",
-              "RelativeDocumentMoniker": "include\\drivers\\Vendors\\zwire.h",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\zwire.h",
-              "RelativeToolTip": "include\\drivers\\Vendors\\zwire.h",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAgAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-04-03T19:59:09.53Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
               "Title": "AdvancedMicroControllers.h",
               "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\AdvancedMicroControllers.h",
               "RelativeDocumentMoniker": "include\\drivers\\Vendors\\AdvancedMicroControllers.h",
               "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Vendors\\AdvancedMicroControllers.h",
               "RelativeToolTip": "include\\drivers\\Vendors\\AdvancedMicroControllers.h",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAAAUAAAA",
+              "ViewState": "AQIAAKMKAAAAAAAAAAAnwLwKAAAeAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-04-03T19:26:13.56Z",
+              "WhenOpened": "2024-04-04T21:28:23.899Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "AudioDriver.cpp",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\Audio\\AudioDriver.cpp",
+              "RelativeDocumentMoniker": "drivers\\Audio\\AudioDriver.cpp",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\Audio\\AudioDriver.cpp",
+              "RelativeToolTip": "drivers\\Audio\\AudioDriver.cpp",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAALMAAAAuAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-04-04T20:57:51.441Z",
               "EditorCaption": ""
             }
           ]

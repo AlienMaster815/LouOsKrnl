@@ -2,14 +2,12 @@
   "ExpandedNodes": [
     "",
     "\\drivers",
-    "\\drivers\\storage",
-    "\\drivers\\storage\\SATA",
-    "\\drivers\\USB",
+    "\\drivers\\Audio",
     "\\include",
     "\\include\\drivers",
     "\\include\\drivers\\Vendors",
     "\\init"
   ],
-  "SelectedNode": "\\Config",
+  "SelectedNode": "\\include\\drivers\\Vendors\\AdvancedMicroControllers.h",
   "PreviewInSolutionExplorer": false
 }
