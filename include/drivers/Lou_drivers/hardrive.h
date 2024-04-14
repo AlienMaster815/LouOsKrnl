@@ -91,25 +91,54 @@ typedef struct _PCI_AHCI_HEADER {
     uint8_t MGNT; //Min Grant 
     uint8_t MLANT; //Max Latency
 }PCI_AHCI_HEADER, * P_PCI_AHCI_HEADER;
-#pragma pack(pop)
 
 
 typedef struct _HBA_DEVICE{
-    uint32_t *CAP;
-    uint32_t *GHC;
-    uint32_t *IS;
-    uint32_t *PI;
-    uint32_t *VS;
-    uint32_t *CCC_CTL;
-    uint32_t *CCC_PORTS;
-    uint32_t *EM_LOC;
-    uint32_t *EM_CTL;
-    uint32_t *CAP2;
-    uint32_t *BOHC;
+    uint32_t CAP;
+    uint32_t GHC;
+    uint32_t IS;
+    uint32_t PI;
+    uint32_t VS;
+    uint32_t CCC_CTL;
+    uint32_t CCC_PORTS;
+    uint32_t EM_LOC;
+    uint32_t EM_CTL;
+    uint32_t CAP2;
+    uint32_t BOHC;
     uintptr_t VENDOR_SPECIFIC_MAP;
 }HBA_DEVICE, * P_HBA_DEVICE;
 
 
+
+typedef struct{
+    uint8_t S64A;
+    uint8_t SNCQ;
+    uint8_t SSNTF;
+    uint8_t SMPS;
+    uint8_t SSS;
+    uint8_t SALP;
+    uint8_t SAL;
+    uint8_t SCLO;
+    uint8_t ISS;
+    uint8_t RESERVED;
+    uint8_t SAM;
+    uint8_t SPM;
+    uint8_t FBSS;
+    uint8_t PMD;
+    uint8_t SSC;
+    uint8_t PSC;
+    uint8_t NCS;
+    uint8_t CCCS;
+    uint8_t EMS;
+    uint8_t SXS;
+    uint16_t NP;
+}CAP_Register;
+
+typedef struct _HBA_INFORMATION_PACKET {
+    CAP_Register CAP;
+}HBA_INFORMATION_PACKET, * P_HBA_INFORMATION_PACKET;
+
+#pragma pack(pop)
 
 
 //INTEL REGISTERS SUBJECT TO CHANGE
@@ -260,7 +289,7 @@ UNUSED static uint32_t ahci_mmio_base;
 #define PM 4
 
 LOUDDK_API_ENTRY void Sata_init(uint8_t bus, uint8_t slot,uint8_t func);
-LOUDDK_API_ENTRY void IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func);
+LOUDDK_API_ENTRY bool IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func);
 
 #endif
 

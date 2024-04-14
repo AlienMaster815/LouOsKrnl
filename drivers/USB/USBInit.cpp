@@ -4,7 +4,7 @@
 void USB_INIT(uint8_t bus, uint8_t slot, uint8_t function);
 
 
-void isUsb(uint8_t bus, uint8_t slot, uint8_t function) {
+bool isUsb(uint8_t bus, uint8_t slot, uint8_t function) {
 
 	uint16_t vendorID = PciGetVendorID(bus, slot);
 	uint16_t deviceID = PciGetDeviceID(bus, slot, function);
@@ -28,6 +28,7 @@ void isUsb(uint8_t bus, uint8_t slot, uint8_t function) {
 		case BluetoothUSBHostController:
 			LouPrint("Apple USB Host Found\n");
 			USB_INIT(bus, slot, function);
+			return true;
 			break;
 		}
 		break;
@@ -147,6 +148,7 @@ void isUsb(uint8_t bus, uint8_t slot, uint8_t function) {
 
 			LouPrint("AMD USB Host Found\n");
 			USB_INIT(bus, slot, function);
+			return true;
 			break;
 
 		default:
@@ -349,6 +351,7 @@ void isUsb(uint8_t bus, uint8_t slot, uint8_t function) {
 
 			LouPrint("Intel USB Host Found\n");
 			USB_INIT(bus, slot, function);
+			return true;
 			break;
 		default:
 			break;
@@ -357,6 +360,7 @@ void isUsb(uint8_t bus, uint8_t slot, uint8_t function) {
 		//vendor not supported
 		break;
 	}
+	return false;
 }
 
 void USB_INIT(uint8_t bus,uint8_t slot, uint8_t function) {

@@ -15,6 +15,9 @@
 #ifndef _PCI_H
 #define _PCI_H
 
+#include "pcireg.h"
+#include <kernel/atomic.h>
+
 //Define World Wide Constant
 
 typedef struct _PCIDev {
@@ -25,13 +28,29 @@ typedef struct _PCIBuffer {
 
 }PCIBuffer, * P_PCIBuffer;
 
+typedef int pci_power_t;
+
+
 typedef struct _PCI_DEVICE_OBJECT {
 	uint16_t VendorID;
 	uint16_t DeviceID;
 	uint8_t bus;
 	uint8_t slot;
 	uint8_t func;
+	pci_power_t CurrentState;
+	uint8_t PmCap;
+	atomic_t enable_cnt;
+	
+	//IO SPACES
+	uint32_t BAR0;
+	uint32_t BAR1;
+	uint32_t BAR2;
+	uint32_t BAR3;
+	uint32_t BAR4;
+	uint32_t BAR5;
+
 }PCI_DEVICE_OBJECT,*P_PCI_DEVICE_OBJECT;
+
 
 #define PCI_CONFIG_ADDRESS_PORT 0xCF8
 #define PCI_CONFIG_DATA_PORT    0xCFC
@@ -47,6 +66,13 @@ typedef struct _PCI_DEVICE_OBJECT {
 #define PCI_REVISION_ID    0x08
 #define PCI_CLASS_CODE     0x0B
 
+#define PCI_D0		((pci_power_t) 0)
+#define PCI_D1		((pci_power_t) 1)
+#define PCI_D2		((pci_power_t) 2)
+#define PCI_D3hot	((pci_power_t) 3)
+#define PCI_D3cold	((pci_power_t) 4)
+#define PCI_UNKNOWN	((pci_power_t) 5)
+#define PCI_POWER_ERROR	((pci_power_t) -1)
 
 #ifdef __cplusplus
 #include <LouDDK.h>

@@ -2,12 +2,15 @@
   "ExpandedNodes": [
     "",
     "\\drivers",
-    "\\drivers\\Audio",
+    "\\drivers\\pci_systems",
+    "\\drivers\\pci_systems\\pci",
+    "\\drivers\\storage",
     "\\include",
     "\\include\\drivers",
+    "\\include\\drivers\\Lou_drivers",
     "\\include\\drivers\\Vendors",
-    "\\init"
+    "\\include\\kernel"
   ],
-  "SelectedNode": "\\include\\drivers\\Vendors\\AdvancedMicroControllers.h",
+  "SelectedNode": "\\include\\kernel",
   "PreviewInSolutionExplorer": false
 }

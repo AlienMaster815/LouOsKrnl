@@ -1,6 +1,6 @@
 #include <LouDDK.h>
 
-void IsChipset(uint8_t bus, uint8_t slot, uint8_t function) {
+bool IsChipset(uint8_t bus, uint8_t slot, uint8_t function) {
 
 
 	uint16_t vendorID = PciGetVendorID(bus, slot);
@@ -11,6 +11,12 @@ void IsChipset(uint8_t bus, uint8_t slot, uint8_t function) {
 	case INTEL_PCI: {
 
 		switch (deviceID) {
+
+		case INTEL_440FX_82441FX_PMC_NATOMA:
+
+			LouPrint("Found Intel Chipset\n");
+			return true;
+			break;
 
 		default:
 			break;
@@ -35,5 +41,5 @@ void IsChipset(uint8_t bus, uint8_t slot, uint8_t function) {
 		break;
 
 	}
-
+	return false;
 }

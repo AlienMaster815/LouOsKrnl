@@ -18,7 +18,7 @@ void setAhciInitializationBit(
 }
 
 
-LOUDDK_API_ENTRY void IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func) {
+LOUDDK_API_ENTRY bool IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func) {
 	//LouPrint("Checking PCI For Sata Controller\n");
 
 	uint16_t vendorID = PciGetVendorID(bus, slot);
@@ -85,6 +85,7 @@ LOUDDK_API_ENTRY void IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func) {
 		case INTEL_400_SERIES_CHIPSET_FAMILY_SATA_AHCI_CONTROLLER:
 			LouPrint("Found An Intel Sata Controller\n");
 			Sata_init(bus, slot, func);
+			return true;
 			break;
 
 		default:
@@ -130,6 +131,7 @@ LOUDDK_API_ENTRY void IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func) {
 		case FCHSATAControllerRAIDmode_1:
 			LouPrint("Found An AMD Sata Controller\n");
 			Sata_init(bus,slot,func);
+			return true;
 			break;
 		default:
 			//not ahci
@@ -139,6 +141,7 @@ LOUDDK_API_ENTRY void IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func) {
 		//not a supported company
 		break;
 	}
+	return false;
 }
 
 
@@ -148,13 +151,18 @@ HBA_MEM* GetHBA(uint8_t bus ,uint8_t slot, uint8_t function) {
 	return (HBA_MEM*)(uintptr_t)result;
 }
 
-
+LOUSTATUS LouInitAhciDeviceEx(P_PCI_DEVICE_OBJECT PDEV);
+LOUSTATUS LouInitAhciDevice(P_PCI_DEVICE_OBJECT PDEV);
 
 LOUDDK_API_ENTRY void Sata_init(uint8_t bus, uint8_t slot, uint8_t func) {
+	PCI_DEVICE_OBJECT DEV;
 
-	/*
-	SataDevices[DeviceSelected] = (P_SATA_PCI_DEVICE)Lou_Alloc_Mem(sizeof(SATA_PCI_DEVICE));
+	DEV.bus = bus; DEV.slot = slot; DEV.func = func;
+	DEV.VendorID = PciGetVendorID(bus,slot);
+	DEV.DeviceID = PciGetDeviceID(bus, slot, func);
 
-	*/
+	LouPrint("Setting Up AHCI Device\n");
+	LouInitAhciDevice(&DEV);
+
 }
 

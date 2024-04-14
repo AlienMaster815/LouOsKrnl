@@ -174,13 +174,16 @@ uint16_t PciGetDeviceID(uint8_t bus ,uint8_t slot,uint8_t func) {
     return (data >> 16) & 0xFFFF;
 }
 
+#define PCI_COMMAND_OFFSET 0x04
+#define PCI_ENABLE_BIT     0x02
 
-bool PciEnableDevice(uint8_t bus, uint8_t slot, uint8_t function) {
+
+bool EnablePciDevice(P_PCI_DEVICE_OBJECT PDEV, unsigned long flags) {
     uint32_t address;
     uint16_t command;
 
     // Construct the configuration address
-    address = (1U << 31) | (bus << 16) | (slot << 11) | (function << 8);
+    address = (1U << 31) | (PDEV->bus << 16) | (PDEV->slot << 11) | (PDEV->func << 8) | PCI_COMMAND_OFFSET;
 
     // Write the configuration address to the address port
     outl(PCI_CONFIG_ADDRESS_PORT, address);
@@ -188,23 +191,23 @@ bool PciEnableDevice(uint8_t bus, uint8_t slot, uint8_t function) {
     // Read the device's command register
     command = inw(PCI_CONFIG_DATA_PORT);
 
-    // Enable the device by setting the enable bit
-    command |= (1 << 0); // Enable bit (bit 0)
+    // Set the enable bit if the corresponding flag is set
+    if (flags & PCI_ENABLE_BIT) {
+        command |= PCI_ENABLE_BIT;
+    }
 
-    // Write the updated command register back to the device
+    // Write the modified command register back to the device
     outw(PCI_CONFIG_DATA_PORT, command);
 
-    // Read the command register again to verify if the device is enabled
-    command = inw(PCI_CONFIG_DATA_PORT);
-
-    // Check if the enable bit is set
-    if (command & (1 << 0)) {
-        // Device successfully enabled
-        return true;
+    // Check if the device is enabled
+    if (flags & PCI_ENABLE_BIT) {
+        // Read the device's command register again
+        command = inw(PCI_CONFIG_DATA_PORT);
+        return (command & PCI_ENABLE_BIT) != 0;
     }
     else {
-        // Device not enabled
-        return false;
+        // If we didn't try to enable the device, consider it enabled
+        return true;
     }
 }
 
@@ -225,5 +228,51 @@ bool IsPciEnable(uint8_t bus, uint8_t slot, uint8_t func) {
     return (command & (1 << 0)) != 0;
 }
 
+LOUSTATUS LouEnablePciFlags(P_PCI_DEVICE_OBJECT PDEV, unsigned long Flags);
+void LouUpdatePciCurrentState(P_PCI_DEVICE_OBJECT PDEV, pci_power_t State);
+
+pci_power_t LouPciGetPowerState(P_PCI_DEVICE_OBJECT PDEV) {
+
+
+    
+}
+
+LOUSTATUS LouEnablePciDevice(P_PCI_DEVICE_OBJECT PDEV) {
+    return LouEnablePciFlags(PDEV, IORESOURCE_MEM | IORESOURCE_IO);
+}
+
+
+
+
+LOUSTATUS LouEnablePciFlags(P_PCI_DEVICE_OBJECT PDEV, unsigned long Flags ) {
+    UNUSED LOUSTATUS ERR;
+    int32_t i, bars = 0;
+
+    LouUpdatePciCurrentState(PDEV, PDEV->CurrentState);
+
+    if (IsPciEnable(PDEV->bus, PDEV->slot, PDEV->func))
+        return 0;//already enabled
+
+    if(EnablePciDevice(PDEV, Flags))LouPrint("PCI Device Enabled\n");
+
+    return 0;
+}
+
+void LouUpdatePciCurrentState(P_PCI_DEVICE_OBJECT PDEV, pci_power_t State) {
+
+    if (LouPciGetPowerState(PDEV) == PCI_D3cold) {
+        PDEV->CurrentState = PCI_D3cold;
+    }
+    else if(PDEV->PmCap){
+        if (pciConfigReadWord(PDEV->bus, PDEV->slot, PDEV->func, PDEV->PmCap + PCI_PM_CTRL) == 0xFFFF)
+            PDEV->CurrentState = PCI_D3cold;
+        else
+            PDEV->CurrentState = (pciConfigReadWord(PDEV->bus, PDEV->slot, PDEV->func, PDEV->PmCap + PCI_PM_CTRL)) & PCI_PM_CTRL_STATE_MASK;
+    }
+    else {
+        PDEV->CurrentState = State;
+    }
+
+}
 
 

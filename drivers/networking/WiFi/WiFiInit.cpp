@@ -1,6 +1,6 @@
 #include <LouDDK.h>
 
-void IsWifiChip(uint8_t bus, uint8_t slot, uint8_t function) {
+bool IsWifiChip(uint8_t bus, uint8_t slot, uint8_t function) {
 
 	uint16_t vendorID = PciGetVendorID(bus, slot);
 	uint16_t deviceID = PciGetDeviceID(bus, slot, function);
@@ -34,4 +34,5 @@ void IsWifiChip(uint8_t bus, uint8_t slot, uint8_t function) {
 		break;
 
 	}
+	return false;
 }

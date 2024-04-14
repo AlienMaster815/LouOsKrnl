@@ -1,12 +1,18 @@
 #include <LouDDK.h>
 
-void isUsb(uint8_t bus, uint8_t slot, uint8_t function);
-void IsVGA(uint8_t bus, uint8_t slot, uint8_t function);
-void IsSerial(uint8_t bus, uint8_t slot, uint8_t function);
-void IsEithernet(uint8_t bus, uint8_t slot, uint8_t function);
-void IsChipset(uint8_t bus, uint8_t slot, uint8_t function);
-void IsAudioDevice(uint8_t bus, uint8_t slot, uint8_t function);
-void IsAGPDevice(uint8_t bus, uint8_t slot, uint8_t function);
+#define NOT_A_PCI_DEVICE 0xFFFF 
+
+
+bool isUsb(uint8_t bus, uint8_t slot, uint8_t function);
+bool IsVGA(uint8_t bus, uint8_t slot, uint8_t function);
+bool IsSerial(uint8_t bus, uint8_t slot, uint8_t function);
+bool IsEithernet(uint8_t bus, uint8_t slot, uint8_t function);
+bool IsChipset(uint8_t bus, uint8_t slot, uint8_t function);
+bool IsAudioDevice(uint8_t bus, uint8_t slot, uint8_t function);
+bool IsAGPDevice(uint8_t bus, uint8_t slot, uint8_t function);
+bool isVirtualizationDevice(uint8_t bus, uint8_t slot, uint8_t function);
+
+void RegisterUnkownDevice(uint8_t bus,uint8_t device,uint8_t function);
 
 //CPP Land
 DRIVER_IO_FUNCTION P_PCIBuffer PCI::PCI_Read(P_PCIDEV Device) {
@@ -32,8 +38,10 @@ LOUDDK_API_ENTRY void checkBus(uint8_t bus) {
 LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device) {
     uint8_t function = 0;
 
+    bool DeviceIdentified = false;
+
     uint16_t vendorID = PciGetVendorID(bus, device);
-    if (vendorID == 0xFFFF) return; // Device doesn't exist
+    if (vendorID == NOT_A_PCI_DEVICE) return; // Device doesn't exist
     checkFunction(bus, device, function);
     LouPrint("PCI Device Found Vedor Is: %h and Device Is: %h\n", vendorID, PciGetDeviceID( bus , device, function));
     uint8_t headerType = getHeaderType(bus, device, function);
@@ -41,35 +49,40 @@ LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device) {
         LouPrint("Device Is MultiFunction\n");
         // It's a multi-function device, so check remaining functions
         for (function = 1; function < 8; function++) {
-            if (PciGetVendorID(bus, device) != 0xFFFF) {
+            if (PciGetVendorID(bus, device) != NOT_A_PCI_DEVICE) {
                 checkFunction(bus, device, function);
-                if (PciGetDeviceID(bus,device,function) == 0xffff) continue;
+                if (PciGetDeviceID(bus,device,function) == NOT_A_PCI_DEVICE) continue;
                 else {
                     LouPrint("PCI Device Found Vedor Is: %h and Device Is: %h\n", vendorID, PciGetDeviceID(bus, device, function));
                     //Parse Funxtios and have fun
-                    IsSataCheck(bus, device, function);
-                    isUsb( bus,  device,  function);
-                    IsVGA( bus,  device,  function);
-                    IsSerial( bus,  device,  function);
-                    IsEithernet( bus,  device,  function);
-                    IsChipset( bus,  device,  function);
-                    IsAudioDevice( bus,  device, function);
-                    IsAGPDevice(bus,device, function);
+                    if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
+                    if (!DeviceIdentified)DeviceIdentified = isUsb( bus,  device,  function);
+                    if (!DeviceIdentified)DeviceIdentified = IsVGA( bus,  device,  function);
+                    if (!DeviceIdentified)DeviceIdentified = IsSerial( bus,  device,  function);
+                    if (!DeviceIdentified)DeviceIdentified = IsEithernet( bus,  device,  function);
+                    if (!DeviceIdentified)DeviceIdentified = IsChipset( bus,  device,  function);
+                    if (!DeviceIdentified)DeviceIdentified = IsAudioDevice( bus,  device, function);
+                    if (!DeviceIdentified)DeviceIdentified = IsAGPDevice(bus,device, function);
+                    if (!DeviceIdentified)DeviceIdentified = isVirtualizationDevice( bus, device, function);
                     //IsSataCheck(bus, device, function);
+                    if (!DeviceIdentified)RegisterUnkownDevice(bus, device, function);
                 }
             }
         }
     }
     else{
         //device is single function have fun
-        IsSataCheck(bus, device, function);
-        isUsb(bus, device, function);
-        IsVGA(bus, device, function);
-        IsSerial(bus, device, function);
-        IsEithernet(bus, device, function);
-        IsChipset(bus, device, function);
-        IsAudioDevice(bus, device, function);
-        IsAGPDevice(bus, device, function);
+        if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
+        if (!DeviceIdentified)DeviceIdentified = isUsb(bus, device, function);
+        if (!DeviceIdentified)DeviceIdentified = IsVGA(bus, device, function);
+        if (!DeviceIdentified)DeviceIdentified = IsSerial(bus, device, function);
+        if (!DeviceIdentified)DeviceIdentified = IsEithernet(bus, device, function);
+        if (!DeviceIdentified)DeviceIdentified = IsChipset(bus, device, function);
+        if (!DeviceIdentified)DeviceIdentified = IsAudioDevice(bus, device, function);
+        if (!DeviceIdentified)DeviceIdentified = IsAGPDevice(bus, device, function);
+        if (!DeviceIdentified)DeviceIdentified = isVirtualizationDevice(bus, device, function);
+
+        if (!DeviceIdentified)RegisterUnkownDevice(bus, device, function);
     }
 }
 
@@ -104,7 +117,7 @@ LOUDDK_API_ENTRY void PCI_Scan_Bus(){
     else {
         // Multiple PCI host controllers
         for (function = 0; function < 8; function++) {
-            if (PciGetVendorID(0, 0) != 0xFFFF) break;
+            if (PciGetVendorID(0, 0) != NOT_A_PCI_DEVICE) break;
             bus = function;
             checkBus(bus);
         }

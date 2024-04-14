@@ -1,6 +1,6 @@
 #include <LouDDK.h>
 
-void IsAudioDevice(uint8_t bus, uint8_t slot, uint8_t function) {
+bool IsAudioDevice(uint8_t bus, uint8_t slot, uint8_t function) {
 
 	uint16_t vendorID = PciGetVendorID(bus, slot);
 	uint16_t deviceID = PciGetDeviceID(bus, slot, function);
@@ -95,6 +95,7 @@ void IsAudioDevice(uint8_t bus, uint8_t slot, uint8_t function) {
 		case INTEL_LUNAR_LAKE_M_HD_AUDIO_CONTROLLER:
 			
 				LouPrint("Intel Audio Controller Found\n");
+				return true;
 				break;
 		default:
 			break;
@@ -184,6 +185,7 @@ void IsAudioDevice(uint8_t bus, uint8_t slot, uint8_t function) {
 		case AMD8111AC97Audio:
 
 			LouPrint("Advanced Micro Devices Audio Device Found\n");
+			return true;
 			break;
 		default:
 			break;
@@ -199,6 +201,7 @@ void IsAudioDevice(uint8_t bus, uint8_t slot, uint8_t function) {
 		case AudioinLEDCinemaDisplay:
 		case ThunderboltDisplayAudio:
 			LouPrint("Apple Audio Device Found\n");
+			return true;
 			break;
 		default:
 			break;
@@ -212,4 +215,5 @@ void IsAudioDevice(uint8_t bus, uint8_t slot, uint8_t function) {
 		break;
 
 	}
+	return false;
 }

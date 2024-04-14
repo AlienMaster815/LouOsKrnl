@@ -1,7 +1,7 @@
 #include <LouDDK.h>
 
 
-void IsSerial(uint8_t bus,uint8_t slot, uint8_t function) {
+bool IsSerial(uint8_t bus,uint8_t slot, uint8_t function) {
 
 
 	uint16_t vendorID = PciGetVendorID(bus, slot);
@@ -35,4 +35,5 @@ void IsSerial(uint8_t bus,uint8_t slot, uint8_t function) {
 		break;
 
 	}
+	return false;
 }

@@ -1,6 +1,6 @@
 #include <LouDDK.h>
 
-void IsVGA(uint8_t bus,uint8_t slot,uint8_t function) {
+bool IsVGA(uint8_t bus,uint8_t slot,uint8_t function) {
 
 	uint16_t vendorID = PciGetVendorID(bus, slot);
 	uint16_t deviceID = PciGetDeviceID(bus, slot, function);
@@ -41,6 +41,7 @@ void IsVGA(uint8_t bus,uint8_t slot,uint8_t function) {
 		switch (deviceID) {
 		case VirtualBoxGraphicsAdapter:
 			LouPrint("Found A Virtualbox Video Adapter\n");
+			return true;
 			break;
 		default:
 			break;
@@ -51,5 +52,5 @@ void IsVGA(uint8_t bus,uint8_t slot,uint8_t function) {
 		break;
 
 	}
-
+	return false;
 }
