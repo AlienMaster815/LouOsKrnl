@@ -33,6 +33,11 @@
 #define CAP_SXS_MASK BITMASK(5)
 #define CAP_NP_MASK (0x1F)
 
+#define GHC_AE_BIT BITMASK(31)
+#define GHC_MRSM_BIT BITMASK(2)
+#define GHC_IE_BIT BITMASK(1)
+#define GHC_HR_BIT BITMASK(0)
+
 
 //Get ABAR
 
@@ -64,41 +69,6 @@ uint32_t GetAhciHba(P_PCI_DEVICE_OBJECT PDEV, uint8_t BAR) {
 
 
 
-void GetHbaCapabilities(P_HBA_DEVICE HBA, P_HBA_INFORMATION_PACKET HBA_PACKET) {
-
-	uint32_t CAP = HBA->CAP;
-
-	HBA_PACKET->CAP.S64A = (CAP & CAP_S64A_MASK) ? 1 : 0;
-	HBA_PACKET->CAP.SNCQ = (CAP & CAP_SNCQ_MASK) ? 1 : 0;
-	HBA_PACKET->CAP.SSNTF = (CAP & CAP_SSNTF_MASK) ? 1 : 0;
-	HBA_PACKET->CAP.SMPS = (CAP & CAP_SMPS_MASK) ? 1 : 0;
-	HBA_PACKET->CAP.SSS = (CAP & CAP_SSS_MASK) ? 1 : 0;
-	HBA_PACKET->CAP.SALP = (CAP & CAP_SALP_MASK) ? 1 : 0;
-	HBA_PACKET->CAP.SAL = (CAP & CAP_SAL_MASK) ? 1 : 0;
-	HBA_PACKET->CAP.SCLO = (CAP & CAP_SCLO_MASK) ? 1 : 0;
-	HBA_PACKET->CAP.ISS = (CAP & CAP_ISS_MASK) >> 20;
-	HBA_PACKET->CAP.RESERVED = (CAP & CAP_RESERVED_MASK) ? 1 : 0;
-	HBA_PACKET->CAP.SAM = CAP & (CAP_SAM_MASK) ? 1 : 0;
-	HBA_PACKET->CAP.SPM = CAP & (CAP_SPM_MASK) ? 1 : 0;
-	HBA_PACKET->CAP.FBSS = CAP & (CAP_FBSS_MASK) ? 1 : 0;
-	HBA_PACKET->CAP.PMD = CAP & (CAP_PMD_MASK) ? 1 : 0;
-	HBA_PACKET->CAP.SSC = CAP & (CAP_SSC_MASK) ? 1 : 0;
-	HBA_PACKET->CAP.PSC = CAP & (CAP_PSC_MASK) ? 1 : 0;
-	HBA_PACKET->CAP.NCS = CAP & (CAP_NCS_MASK) >> 8;
-	HBA_PACKET->CAP.CCCS = CAP & (CAP_CCCS_MASK) ? 1 : 0;
-	HBA_PACKET->CAP.EMS = CAP & (CAP_EMS_MASK) ? 1 : 0;
-	HBA_PACKET->CAP.SXS = CAP & (CAP_SXS_MASK) ? 1 : 0;
-	HBA_PACKET->CAP.NP = CAP & (CAP_NP_MASK);
-
-}
-
-void GetHbaDeviceInfo(P_HBA_DEVICE HBA,P_HBA_INFORMATION_PACKET HBA_PACKET) {
-
-	GetHbaCapabilities(HBA, HBA_PACKET);
-
-}
-
-
 //Later we will turn this into a win api driver stle for readability
 
 LOUSTATUS LouInitAhciDevice(P_PCI_DEVICE_OBJECT PDEV) {
@@ -121,34 +91,51 @@ LOUSTATUS LouInitAhciDevice(P_PCI_DEVICE_OBJECT PDEV) {
 		LouMapAddress(HbaAddress, HbaAddress, KERNEL_PAGE_WRITE_PRESENT);
 
 	P_HBA_DEVICE HBA = (P_HBA_DEVICE)(uintptr_t)HbaAddress;
-	HBA_INFORMATION_PACKET HBA_PACKET;
 
-	GetHbaDeviceInfo(HBA, &HBA_PACKET);
+	//Print Values Of HBA
+	LouPrint("CAP Values Are\n");
+	if (BIT_SET == HBA->CAP.S64A)	LouPrint("Device Supports 64 Bit Address\n");
+	if (BIT_SET == HBA->CAP.SNCQ)	LouPrint("Device Supports Native Queing\n");
+	if (BIT_SET == HBA->CAP.SSNTF)	LouPrint("Device Supports SNotification\n");
+	if (BIT_SET == HBA->CAP.SSNTF)	LouPrint("Device Supports SNotification\n");
+	if (BIT_SET == HBA->CAP.SMPS)	LouPrint("Device Supports Mechanical Presence Switch\n");
+	if (BIT_SET == HBA->CAP.SSS)	LouPrint("Device Supports Staggered Spin Up\n");
+	if (BIT_SET == HBA->CAP.SALP)	LouPrint("Device Supports Aggressive Link Power Management\n");
+	if (BIT_SET == HBA->CAP.SAL)	LouPrint("Device Supports Activity Light Emitting Diode\n");
+	if (BIT_SET == HBA->CAP.SCLO)	LouPrint("Device Supports Command List Overide\n");
+	if (1 == HBA->CAP.ISS)			LouPrint("Device Supports 1.5/Gbps Transfer Speed\n");
+	if (2 == HBA->CAP.ISS)			LouPrint("Device Supports 3.0/Gbps Transfer Speed\n");
+	if (3 == HBA->CAP.ISS)			LouPrint("Device Supports 6.0/Gbps Transfer Speed\n");
+	if (BIT_SET == HBA->CAP.SAM)	LouPrint("Device Supports Sata AHCI Only Mode\n");
+	if (BIT_SET == HBA->CAP.SPM)	LouPrint("Device Supports Sata Port Multiplyer\n");
+	if (BIT_SET == HBA->CAP.FBSS)	LouPrint("Device Supports Fis Based Switching\n");
+	if (BIT_SET == HBA->CAP.PMD)	LouPrint("Device Supports PIO Multiple DRQ Block\n");
+	if (BIT_SET == HBA->CAP.SSC)	LouPrint("Device Supports Slumber State\n");
+	if (BIT_SET == HBA->CAP.PSC)	LouPrint("Device Supports Partial State\n");
+	LouPrint("Number Of Command Slots Is:%d\n",HBA->CAP.NCS);
+	if (BIT_SET == HBA->CAP.CCCS)	LouPrint("Device Supports Command Completion Coalescing\n");
+	if (BIT_SET == HBA->CAP.EMS)	LouPrint("Device Supports Enclosure Management\n");
+	if (BIT_SET == HBA->CAP.SXS)	LouPrint("Device Supports External SATA\n");
+	LouPrint("Number Of Ports Is:%d\n",HBA->CAP.NP);
+	LouPrint("GHC Values Are\n");
 
+	LouPrint("AE Bit Is:");
+	if (HBA->GHC.AE)LouPrint("Enabled\n"); else LouPrint("Disabled\n");
+	LouPrint("Is MSI Panic:");
+	if (HBA->GHC.MSRM)LouPrint("YES\n"); else LouPrint("NO\n");
+	LouPrint("Is Interrupts Enabled:");
+	if (HBA->GHC.IE)LouPrint("YES\n"); else LouPrint("NO\n");
+	LouPrint("Is Controller Hard Reseting:");
+	if (HBA->GHC.HR)LouPrint("YES\n"); else LouPrint("NO\n");
 
-	if (HBA_PACKET.CAP.S64A == 1)LouPrint("Device Supports 64 Bit Addressing\n");
-	if (HBA_PACKET.CAP.SNCQ == 1)LouPrint("Device Supports Native Command Queing\n");
-	if (HBA_PACKET.CAP.SSNTF == 1)LouPrint("Device Supports SNotification Registers\n");
-	if (HBA_PACKET.CAP.SMPS == 1)LouPrint("Device Supports Mechanical Presence Switch\n");
-	if (HBA_PACKET.CAP.SSS == 1)LouPrint("Device Supports Stagered Spinup\n");
-	if (HBA_PACKET.CAP.SALP == 1)LouPrint("Device Supports Aggressive Link Power Management\n");
-	if (HBA_PACKET.CAP.SAL == 1)LouPrint("Device Supports Activity Light Emitting Diode\n");
-	if (HBA_PACKET.CAP.SCLO == 1)LouPrint("Device Supports Command List Overide\n");
-	if (HBA_PACKET.CAP.ISS == 1)LouPrint("Device Supports Speed 1.5/gbs\n");
-	else if (HBA_PACKET.CAP.ISS == 2)LouPrint("Device Supports Speed 3/gbs\n");
-	else if (HBA_PACKET.CAP.ISS == 3)LouPrint("Device Supports Speed 6/gbs\n");
-	if (HBA_PACKET.CAP.SAM == 1)LouPrint("Device Supports AHCI Mode Only\n");
-	if (HBA_PACKET.CAP.SPM == 1)LouPrint("Device Supports Port Multiplyer\n");
-	if (HBA_PACKET.CAP.FBSS == 1)LouPrint("Device Supports FIS-BASED Switching\n");
-	if (HBA_PACKET.CAP.PMD == 1)LouPrint("Device Supports PIO Multiple DRQ Block\n");
-	if (HBA_PACKET.CAP.SSC == 1)LouPrint("Device Supports Slumber State\n");
-	if (HBA_PACKET.CAP.PSC == 1)LouPrint("Device Supports Partial State\n");
-	LouPrint("Number Of Command Slots Is:%d\n",HBA_PACKET.CAP.NCS);
-	if (HBA_PACKET.CAP.CCCS == 1)LouPrint("Device Supports Command Completion Coalescing\n");
-	if (HBA_PACKET.CAP.EMS == 1)LouPrint("Device Supports Enclosure Management\n");
-	if (HBA_PACKET.CAP.SXS == 1)LouPrint("Device Supports External SATA\n");
-	LouPrint("Number Of Ports:%d\n");
+	LouPrint("Getting Port Information\n");
 
+	LouPrint("Port 0 %d\n", HBA->PI.Port0);
+	LouPrint("Port 1 %d\n", HBA->PI.Port1);
+	LouPrint("Port 2 %d\n", HBA->PI.Port2);
+	LouPrint("Port 3 %d\n", HBA->PI.Port3);
+
+	LouPrint("Version %d:%d\n",HBA->VS.MJR,HBA->VS.MNR);
 
 	//LouPrint("Address is:%h\n", HbaAddress);
 	//Enable PCI Device

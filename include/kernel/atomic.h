@@ -27,5 +27,7 @@ typedef struct {
 typedef atomic_t* p_atomic_t;
 
 #define BITMASK(bit) (1 << bit)
+#define BIT_SET 1
+#define BIT_NOT_SET 0
 
 #endif

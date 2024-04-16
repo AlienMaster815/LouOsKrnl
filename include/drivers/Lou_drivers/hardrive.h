@@ -92,13 +92,119 @@ typedef struct _PCI_AHCI_HEADER {
     uint8_t MLANT; //Max Latency
 }PCI_AHCI_HEADER, * P_PCI_AHCI_HEADER;
 
+typedef struct {
+    uint32_t PORT0 : 1;
+    uint32_t PORT1 : 1;
+    uint32_t PORT2 : 1;
+    uint32_t PORT3 : 1;
+    uint32_t PORT4 : 1;
+    uint32_t PORT5 : 1;
+    uint32_t PORT6 : 1;
+    uint32_t PORT7 : 1;
+    uint32_t PORT8 : 1;
+    uint32_t PORT9 : 1;
+    uint32_t PORT10 : 1;
+    uint32_t PORT11 : 1;
+    uint32_t PORT12 : 1;
+    uint32_t PORT13 : 1;
+    uint32_t PORT14 : 1;
+    uint32_t PORT15 : 1;
+    uint32_t PORT16 : 1;
+    uint32_t PORT17 : 1;
+    uint32_t PORT18 : 1;
+    uint32_t PORT19 : 1;
+    uint32_t PORT20 : 1;
+    uint32_t PORT21 : 1;
+    uint32_t PORT22 : 1;
+    uint32_t PORT23 : 1;
+    uint32_t PORT24 : 1;
+    uint32_t PORT25 : 1;
+    uint32_t PORT26 : 1;
+    uint32_t PORT27 : 1;
+    uint32_t PORT28 : 1;
+    uint32_t PORT29 : 1;
+    uint32_t PORT30 : 1;
+    uint32_t PORT31 : 1;
+}IS_Register;
+
+typedef struct {
+    uint32_t NP : 5;
+    uint32_t SXS : 1;
+    uint32_t EMS : 1;
+    uint32_t CCCS : 1;
+    uint32_t NCS : 5;
+    uint32_t PSC : 1;
+    uint32_t SSC : 1;
+    uint32_t PMD : 1;
+    uint32_t FBSS : 1;
+    uint32_t SPM : 1;
+    uint32_t SAM : 1;
+    uint32_t RESERVED : 1;
+    uint32_t ISS : 4;
+    uint32_t SCLO : 1;
+    uint32_t SAL : 1;
+    uint32_t SALP : 1;
+    uint32_t SSS : 1;
+    uint32_t SMPS : 1;
+    uint32_t SSNTF : 1;
+    uint32_t SNCQ : 1;
+    uint32_t S64A : 1;
+}CAP_Register, * P_CAP_Register;
+
+typedef struct {
+    uint32_t HR : 1;
+    uint32_t IE : 1;
+    uint32_t Reserved : 28;
+    uint32_t MSRM : 1;
+    uint32_t AE : 1;
+}GHC_Register, * P_GHC_Register;
+
+typedef struct {
+    uint32_t Port0 : 1;
+    uint32_t Port1 : 1;
+    uint32_t Port2 : 1;
+    uint32_t Port3 : 1;
+    uint32_t Port4 : 1;
+    uint32_t Port5 : 1;
+    uint32_t Port6 : 1;
+    uint32_t Port7 : 1;
+    uint32_t Port8 : 1;
+    uint32_t Port9 : 1;
+    uint32_t Port10 : 1;
+    uint32_t Port11 : 1;
+    uint32_t Port12 : 1;
+    uint32_t Port13 : 1;
+    uint32_t Port14 : 1;
+    uint32_t Port15 : 1;
+    uint32_t Port16 : 1;
+    uint32_t Port17 : 1;
+    uint32_t Port18 : 1;
+    uint32_t Port19 : 1;
+    uint32_t Port20 : 1;
+    uint32_t Port21 : 1;
+    uint32_t Port22 : 1;
+    uint32_t Port23 : 1;
+    uint32_t Port24 : 1;
+    uint32_t Port25 : 1;
+    uint32_t Port26 : 1;
+    uint32_t Port27 : 1;
+    uint32_t Port28 : 1;
+    uint32_t Port29 : 1;
+    uint32_t Port30 : 1;
+    uint32_t Port31 : 1;
+}PI_Register;
+
+typedef struct {
+    uint32_t MNR : 16;
+    uint32_t MJR : 16;
+}VS_Register;
 
 typedef struct _HBA_DEVICE{
-    uint32_t CAP;
-    uint32_t GHC;
-    uint32_t IS;
-    uint32_t PI;
-    uint32_t VS;
+    CAP_Register CAP;
+    GHC_Register GHC;
+    IS_Register  IS;
+    PI_Register  PI;
+    VS_Register VS;
     uint32_t CCC_CTL;
     uint32_t CCC_PORTS;
     uint32_t EM_LOC;
@@ -109,34 +215,6 @@ typedef struct _HBA_DEVICE{
 }HBA_DEVICE, * P_HBA_DEVICE;
 
 
-
-typedef struct{
-    uint8_t S64A;
-    uint8_t SNCQ;
-    uint8_t SSNTF;
-    uint8_t SMPS;
-    uint8_t SSS;
-    uint8_t SALP;
-    uint8_t SAL;
-    uint8_t SCLO;
-    uint8_t ISS;
-    uint8_t RESERVED;
-    uint8_t SAM;
-    uint8_t SPM;
-    uint8_t FBSS;
-    uint8_t PMD;
-    uint8_t SSC;
-    uint8_t PSC;
-    uint8_t NCS;
-    uint8_t CCCS;
-    uint8_t EMS;
-    uint8_t SXS;
-    uint16_t NP;
-}CAP_Register;
-
-typedef struct _HBA_INFORMATION_PACKET {
-    CAP_Register CAP;
-}HBA_INFORMATION_PACKET, * P_HBA_INFORMATION_PACKET;
 
 #pragma pack(pop)
 
