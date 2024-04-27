@@ -11,113 +11,17 @@
 
 #include <LouAPI.h>
 // define constants
+#include <bootloader/grub/multiboot2.h>
 
-
-// Define a memory bitmap (assuming each bit corresponds to a byte)
-#define MEMORY_SIZE (1024 * 1024 * 500)
-uint64_t memory_bitmap[MEMORY_SIZE / 8] = { 0 };
+void* LouMalloc(size_t BytesToAllocate);
 
 RAMADD Lou_Alloc_Mem(SIZE size) {
-    if (size == 0 || size > MEMORY_SIZE) {
-        return (RAMADD)MAXMEM; // Request is too large or zero, cannot allocate
-    }
-
-    // Calculate the number of blocks needed without dividing by sizeof(unsigned char)
-    SIZE blocks_needed = size; // Each bit in the bitmap represents a block
-
-#ifdef __x86_64__
-    // 64-bit version
-    for (uint64_t adrint = 0; adrint < MEMORY_SIZE - blocks_needed + 1; ++adrint) {
-        uint64_t byte_index = adrint / 8;
-        unsigned char mask = 1 << (adrint % 8);
-
-        // Check if the current block is free
-        if ((memory_bitmap[byte_index] & mask) == 0) {
-            SIZE contiguous_blocks = 0;
-            while (contiguous_blocks < blocks_needed && (adrint + contiguous_blocks) < MEMORY_SIZE) {
-                if ((memory_bitmap[(adrint + contiguous_blocks) / 8] & (1 << ((adrint + contiguous_blocks) % 8))) == 0) {
-                    contiguous_blocks++;
-                }
-                else {
-                    break; // Found a used block, stop checking
-                }
-            }
-
-            if (contiguous_blocks == blocks_needed) {
-                // Found sufficient contiguous blocks, mark them as used
-                for (SIZE i = 0; i < blocks_needed; ++i) {
-                    memory_bitmap[(adrint + i) / 8] |= (1 << ((adrint + i) % 8));
-                }
-                // Return the address as an example. In real use, convert this to a proper address.
-                return (RAMADD)(adrint);
-            }
-        }
-    }
-    #endif
-
-    #ifdef __i386__
-    for (uint32_t adrint = 0; adrint < MEMORY_SIZE; ++adrint) {
-        RAMADD adr = (RAMADD)adrint;
-        uint32_t byte_index = adrint / 8;
-        unsigned char mask = 1 << (adrint % 8);
-
-        // Check if the current block is free
-        if ((memory_bitmap[byte_index] & mask) == 0) {
-        // Allocate this block and the required number of contiguous blocks
-         SIZE contiguous_blocks = 0;
-         while (contiguous_blocks < blocks_needed) {
-             if ((memory_bitmap[(adrint + contiguous_blocks) / 8] & (1 << ((adrint + contiguous_blocks) % 8))) == 0)     {
-                    contiguous_blocks++;
-                }
-                else {
-                    break;  // Not enough contiguous free blocks
-                }
-            }
-    
-            if (contiguous_blocks >= blocks_needed) {
-                // Mark blocks as allocated in the bitmap
-                for (SIZE i = 0; i < blocks_needed; ++i) {
-                    memory_bitmap[(adrint + i) / 8] |= (1 << ((adrint + i) % 8));
-                }
-                adr = (uint8_t*)adrint;
-                return adr;
-            }
-        }
-    }
-
-    #endif
-
+    return (RAMADD)LouMalloc(size);
 }
 
 STATUS Lou_Free_Mem(RAMADD Addr, SIZE size) {
-    // Calculate the number of bytes needed for deallocation
-    SIZE blocks_to_free = size / sizeof(unsigned char);
-    #ifdef __x86_64__    
-    uint64_t Addrint = (uint64_t)Addr;
-    for (SIZE i = 0; i < blocks_to_free; ++i) {
-        uint64_t byte_index = (Addrint + i) / 8;
-        unsigned char mask = 1 << ((Addrint + i) % 8);
-
-        // Mark blocks as free in the bitmap
-        memory_bitmap[byte_index] &= ~mask;
-    }
-    #endif
-    #ifdef _i386_
-
-    uint32_t Addrint = (uint32_t)Addr; // Assuming 32-bit address
-    for (SIZE i = 0; i < blocks_to_free; ++i) {
-        uint32_t byte_index = Addrint / 8;
-        unsigned char mask = 1 << (Addrint % 8);
-
-        // Mark blocks as free in the bitmap
-        memory_bitmap[byte_index] &= ~mask;
-
-        Addrint++; // Move to the next block
-    }
-
-
-    #endif
-    return GOOD;
+    for (SIZE i = 0; i < size; i++) *(Addr + i) = 0;
+    return 0;
 }
 
 void* Lou_Calloc_Mem(size_t numElements, size_t sizeOfElement) {
@@ -164,3 +68,77 @@ RAMADD Lou_Alloc_Mem_Alligned(SIZE size, uint64_t allignment) {
 
     goto CHECK_AGAIN;
 }
+
+//void* malloc(size_t BytesToAllocate) {
+
+//}
+
+struct master_multiboot_mmap_entry* LousineMemoryMapTable;
+
+void SendMapToAllocation(struct master_multiboot_mmap_entry* mmap) {
+    LousineMemoryMapTable = mmap;
+}
+
+
+void LouFree(RAMADD Addr, SIZE size) {
+    for (SIZE i = 0; i < size; i++) *(Addr + i) = 0;
+}
+
+void* LouMalloc(size_t BytesToAllocate) {
+
+#ifdef IS_X86_64
+    uint16_t Number_Of_Entries = (LousineMemoryMapTable->tag.size - sizeof(struct master_multiboot_mmap_entry)) / LousineMemoryMapTable->entry_size;
+    if (LousineMemoryMapTable->entry_version == 0) {
+        struct multiboot_mmap_entry* mmap_entry;
+        for (uint16_t i = 0; i < Number_Of_Entries; i++) {
+            mmap_entry = (struct multiboot_mmap_entry*)(uintptr_t)((uint64_t)LousineMemoryMapTable + (uint64_t)sizeof(struct master_multiboot_mmap_entry) + (uint64_t)i * (uint64_t)LousineMemoryMapTable->entry_size);
+
+            uint64_t limit = mmap_entry->len;
+            uint64_t address = mmap_entry->addr;
+            if (mmap_entry->type == 0)continue;//dont touch shit
+            else if (mmap_entry->type == 1) {
+                //skip if system memory
+                if ((mmap_entry->addr + mmap_entry->len) < (500ULL * MEGABYTE))continue;
+                else if (mmap_entry->addr < (500ULL * MEGABYTE)) {
+                    limit = (mmap_entry->addr + mmap_entry->len) - (500 * MEGABYTE);
+                    address = (500 * MEGABYTE);
+                }
+                //LouPrint("Starting Address Is:%d\n", mmap_entry->addr);
+                //LouPrint("Address Buffer Is:%d\n", limit);
+                if ((address + limit) > limit)continue;
+
+                for (uint64_t i = address; i < limit;i+=PAGE_SIZE) {
+                    LouMapAddress(i, i, KERNEL_PAGE_WRITE_PRESENT);
+                }
+                
+                bool FoundAnAddress = true;
+                size_t i;
+                for (uint8_t* CurrentAddress = (uint8_t*)address; CurrentAddress < (CurrentAddress + limit); true) {
+                    FoundAnAddress = true;
+                    for (i = 0; i < BytesToAllocate;i++) {
+                        if (*(CurrentAddress + i) != 0) {
+                            FoundAnAddress = false;
+                            break;
+                        }
+                    }
+                    if (FoundAnAddress) {
+                        for (i = 0; i < BytesToAllocate;i++) {
+                            *(CurrentAddress + i) = 255;
+                        }
+                        return CurrentAddress;
+                    }
+                    else {
+                        CurrentAddress = (CurrentAddress + i + 1);
+                    }
+                }
+
+            }
+            else if (mmap_entry->type == 2) continue;
+            else if (mmap_entry->type == 3) continue;
+            else continue;
+        }
+    }
+    return 0x00000000;
+#endif
+}
+

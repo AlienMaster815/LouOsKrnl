@@ -32,7 +32,7 @@ uintptr_t RBP_Current;
 //      the code to add a 0 place where the char is to make it
 //      the right 10 place value
 
-char* KERNEL_VERSION = "0.0.00035 RSC-0";
+char* KERNEL_VERSION = "0.0.00036 RSC-1 Multiboot 2";
 
 
 #ifdef __x86_64__
@@ -50,6 +50,9 @@ void OpCode();
 void Clock();
 
 
+void ParseMBootTags(struct multiboot_tag* MBOOT);
+
+
 
 LOUSTATUS Lou_kernel_early_initialization(){
 
@@ -61,15 +64,16 @@ LOUSTATUS Lou_kernel_early_initialization(){
     RegisterInterruptHandler(PageFault, INTERRUPT_SERVICE_ROUTINE_14);
     RegisterInterruptHandler(PS2KeyboardHandler, INTERRUPT_SERVICE_ROUTINE_33);
     RegisterInterruptHandler(Clock, INTERRUPT_SERVICE_ROUTINE_32);
-    
-    SetInterruptFlags();
 
+    SetInterruptFlags();
+ 
+
+
+    DeterminCPU();
     return LOUSTATUS_GOOD;
 }
 
 LOUSTATUS Set_Up_Devices(){
-
-    DeterminCPU();
 
     //pata_device_scanc();
 
@@ -92,19 +96,20 @@ LOUSTATUS User_Mode_Initialization(){
 }
 
 
+void* LouMalloc(size_t BytesToAllocate);
 
-KERNEL_ENTRY Lou_kernel_start(){
+KERNEL_ENTRY Lou_kernel_start(uint32_t foo){
     
-
-
+    struct multiboot_tag* mboot = (struct multiboot_tag*)(uintptr_t)(foo + 8);
+    ParseMBootTags(mboot);
     setup_vga_systems();
 
 	//vga set for debug
 	
+
 	LouPrint("Lou Version %s %s\n", KERNEL_VERSION ,KERNEL_ARCH);
     LouPrint("Hello Im Lousine Getting Things Ready\n");
     
-
 
     //INITIALIZE IMPORTANT THINGS FOR US LATER
     if(Lou_kernel_early_initialization() != LOUSTATUS_GOOD)LouPanic("Early Initialization Failed",BAD);
@@ -120,6 +125,14 @@ KERNEL_ENTRY Lou_kernel_start(){
 
     LouPrint("Hello World\n");
 
+    //uint8_t* foo = (uint8_t*)LouMalloc(sizeof(uint8_t));
+    //uint8_t* bar = (uint8_t*)LouMalloc(sizeof(uint8_t));
+
+    //LouPrint("Foo Is:%d\n",foo);
+    //LouPrint("Bar Is:%d\n",bar);
+
+    
+
     while (1) {
         asm("hlt");
     }
@@ -129,4 +142,3 @@ KERNEL_ENTRY Lou_kernel_start(){
 	// IF the Kernel returns from this
 	// the whole thing crashes
 }
-

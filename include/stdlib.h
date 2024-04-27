@@ -16,4 +16,11 @@
 
 #define LOUSTATUS uint32_t
 
+#define IS_CPP __cplusplus
+#define IS_X86 __i386__
+#define IS_X86_64 __x86_64__
+
+
+
 #endif 
+

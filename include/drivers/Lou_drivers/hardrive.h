@@ -93,62 +93,62 @@ typedef struct _PCI_AHCI_HEADER {
 }PCI_AHCI_HEADER, * P_PCI_AHCI_HEADER;
 
 typedef struct {
-    uint32_t PORT0 : 1;
-    uint32_t PORT1 : 1;
-    uint32_t PORT2 : 1;
-    uint32_t PORT3 : 1;
-    uint32_t PORT4 : 1;
-    uint32_t PORT5 : 1;
-    uint32_t PORT6 : 1;
-    uint32_t PORT7 : 1;
-    uint32_t PORT8 : 1;
-    uint32_t PORT9 : 1;
-    uint32_t PORT10 : 1;
-    uint32_t PORT11 : 1;
-    uint32_t PORT12 : 1;
-    uint32_t PORT13 : 1;
-    uint32_t PORT14 : 1;
-    uint32_t PORT15 : 1;
-    uint32_t PORT16 : 1;
-    uint32_t PORT17 : 1;
-    uint32_t PORT18 : 1;
-    uint32_t PORT19 : 1;
-    uint32_t PORT20 : 1;
-    uint32_t PORT21 : 1;
-    uint32_t PORT22 : 1;
-    uint32_t PORT23 : 1;
-    uint32_t PORT24 : 1;
-    uint32_t PORT25 : 1;
-    uint32_t PORT26 : 1;
-    uint32_t PORT27 : 1;
-    uint32_t PORT28 : 1;
-    uint32_t PORT29 : 1;
-    uint32_t PORT30 : 1;
-    uint32_t PORT31 : 1;
+    uint8_t PORT0 : 1;
+    uint8_t PORT1 : 1;
+    uint8_t PORT2 : 1;
+    uint8_t PORT3 : 1;
+    uint8_t PORT4 : 1;
+    uint8_t PORT5 : 1;
+    uint8_t PORT6 : 1;
+    uint8_t PORT7 : 1;
+    uint8_t PORT8 : 1;
+    uint8_t PORT9 : 1;
+    uint8_t PORT10 : 1;
+    uint8_t PORT11 : 1;
+    uint8_t PORT12 : 1;
+    uint8_t PORT13 : 1;
+    uint8_t PORT14 : 1;
+    uint8_t PORT15 : 1;
+    uint8_t PORT16 : 1;
+    uint8_t PORT17 : 1;
+    uint8_t PORT18 : 1;
+    uint8_t PORT19 : 1;
+    uint8_t PORT20 : 1;
+    uint8_t PORT21 : 1;
+    uint8_t PORT22 : 1;
+    uint8_t PORT23 : 1;
+    uint8_t PORT24 : 1;
+    uint8_t PORT25 : 1;
+    uint8_t PORT26 : 1;
+    uint8_t PORT27 : 1;
+    uint8_t PORT28 : 1;
+    uint8_t PORT29 : 1;
+    uint8_t PORT30 : 1;
+    uint8_t PORT31 : 1;
 }IS_Register;
 
 typedef struct {
-    uint32_t NP : 5;
-    uint32_t SXS : 1;
-    uint32_t EMS : 1;
-    uint32_t CCCS : 1;
-    uint32_t NCS : 5;
-    uint32_t PSC : 1;
-    uint32_t SSC : 1;
-    uint32_t PMD : 1;
-    uint32_t FBSS : 1;
-    uint32_t SPM : 1;
-    uint32_t SAM : 1;
-    uint32_t RESERVED : 1;
-    uint32_t ISS : 4;
-    uint32_t SCLO : 1;
-    uint32_t SAL : 1;
-    uint32_t SALP : 1;
-    uint32_t SSS : 1;
-    uint32_t SMPS : 1;
-    uint32_t SSNTF : 1;
-    uint32_t SNCQ : 1;
-    uint32_t S64A : 1;
+    uint8_t NP : 5;
+    uint8_t SXS : 1;
+    uint8_t EMS : 1;
+    uint8_t CCCS : 1;
+    uint8_t NCS : 5;
+    uint8_t PSC : 1;
+    uint8_t SSC : 1;
+    uint8_t PMD : 1;
+    uint8_t FBSS : 1;
+    uint8_t SPM : 1;
+    uint8_t SAM : 1;
+    uint8_t RESERVED : 1;
+    uint8_t ISS : 4;
+    uint8_t SCLO : 1;
+    uint8_t SAL : 1;
+    uint8_t SALP : 1;
+    uint8_t SSS : 1;
+    uint8_t SMPS : 1;
+    uint8_t SSNTF : 1;
+    uint8_t SNCQ : 1;
+    uint8_t S64A : 1;
 }CAP_Register, * P_CAP_Register;
 
 typedef struct {
@@ -160,44 +160,128 @@ typedef struct {
 }GHC_Register, * P_GHC_Register;
 
 typedef struct {
-    uint32_t Port0 : 1;
-    uint32_t Port1 : 1;
-    uint32_t Port2 : 1;
-    uint32_t Port3 : 1;
-    uint32_t Port4 : 1;
-    uint32_t Port5 : 1;
-    uint32_t Port6 : 1;
-    uint32_t Port7 : 1;
-    uint32_t Port8 : 1;
-    uint32_t Port9 : 1;
-    uint32_t Port10 : 1;
-    uint32_t Port11 : 1;
-    uint32_t Port12 : 1;
-    uint32_t Port13 : 1;
-    uint32_t Port14 : 1;
-    uint32_t Port15 : 1;
-    uint32_t Port16 : 1;
-    uint32_t Port17 : 1;
-    uint32_t Port18 : 1;
-    uint32_t Port19 : 1;
-    uint32_t Port20 : 1;
-    uint32_t Port21 : 1;
-    uint32_t Port22 : 1;
-    uint32_t Port23 : 1;
-    uint32_t Port24 : 1;
-    uint32_t Port25 : 1;
-    uint32_t Port26 : 1;
-    uint32_t Port27 : 1;
-    uint32_t Port28 : 1;
-    uint32_t Port29 : 1;
-    uint32_t Port30 : 1;
-    uint32_t Port31 : 1;
+    uint8_t Port0 : 1;
+    uint8_t Port1 : 1;
+    uint8_t Port2 : 1;
+    uint8_t Port3 : 1;
+    uint8_t Port4 : 1;
+    uint8_t Port5 : 1;
+    uint8_t Port6 : 1;
+    uint8_t Port7 : 1;
+    uint8_t Port8 : 1;
+    uint8_t Port9 : 1;
+    uint8_t Port10 : 1;
+    uint8_t Port11 : 1;
+    uint8_t Port12 : 1;
+    uint8_t Port13 : 1;
+    uint8_t Port14 : 1;
+    uint8_t Port15 : 1;
+    uint8_t Port16 : 1;
+    uint8_t Port17 : 1;
+    uint8_t Port18 : 1;
+    uint8_t Port19 : 1;
+    uint8_t Port20 : 1;
+    uint8_t Port21 : 1;
+    uint8_t Port22 : 1;
+    uint8_t Port23 : 1;
+    uint8_t Port24 : 1;
+    uint8_t Port25 : 1;
+    uint8_t Port26 : 1;
+    uint8_t Port27 : 1;
+    uint8_t Port28 : 1;
+    uint8_t Port29 : 1;
+    uint8_t Port30 : 1;
+    uint8_t Port31 : 1;
 }PI_Register;
 
 typedef struct {
-    uint32_t MNR : 16;
-    uint32_t MJR : 16;
+    uint16_t MNR : 16;
+    uint16_t MJR : 16;
 }VS_Register;
+
+typedef struct {
+    uint16_t EN : 1;
+    uint16_t RESERVED : 2;
+    uint16_t Interrupt : 5;
+    uint16_t CC : 8;
+    uint16_t Timeout : 16;
+}CCC_CTL_Register;
+
+typedef struct {
+    uint8_t Port0 : 1;
+    uint8_t Port2 : 1;
+    uint8_t Port3 : 1;
+    uint8_t Port4 : 1;
+    uint8_t Port5 : 1;
+    uint8_t Port6 : 1;
+    uint8_t Port7 : 1;
+    uint8_t Port8 : 1;
+    uint8_t Port9 : 1;
+    uint8_t Port10 : 1;
+    uint8_t Port11 : 1;
+    uint8_t Port12 : 1;
+    uint8_t Port13 : 1;
+    uint8_t Port14 : 1;
+    uint8_t Port15 : 1;
+    uint8_t Port16 : 1;
+    uint8_t Port17 : 1;
+    uint8_t Port18 : 1;
+    uint8_t Port19 : 1;
+    uint8_t Port20 : 1;
+    uint8_t Port21 : 1;
+    uint8_t Port22 : 1;
+    uint8_t Port23 : 1;
+    uint8_t Port24 : 1;
+    uint8_t Port25 : 1;
+    uint8_t Port26 : 1;
+    uint8_t Port27 : 1;
+    uint8_t Port28 : 1;
+    uint8_t Port29 : 1;
+    uint8_t Port30 : 1;
+    uint8_t Port31 : 1;
+}CCC_PORTS_Register;
+
+typedef struct {
+    uint16_t BufferSize : 16;
+    uint16_t Offset : 16;
+}EM_LOC_Register;
+
+
+typedef struct {
+    uint8_t STS_MR : 1;
+    uint8_t RESERVED : 7;
+    uint8_t CTL_TM : 1;
+    uint8_t CTL_RST : 1;
+    uint8_t RESERVED2 : 6;
+    uint8_t SUPP_LED : 1;
+    uint8_t SUPP_SAFTE : 1;
+    uint8_t SUPP_SES2 : 1;
+    uint8_t SUPP_SGPIO : 1;
+    uint8_t RESERVED3 : 4;
+    uint8_t ATTR_SMB : 1;
+    uint8_t ATTR_ALHD : 1;
+    uint8_t ATTR_PM : 1;
+    uint8_t RESERVED4 : 4;
+}EM_CTL_Register;
+
+typedef struct {
+    uint32_t BOH : 1;
+    uint32_t NVMP : 1;
+    uint32_t APST : 1;
+    uint32_t SDS : 1;
+    uint32_t SADM : 1;
+    uint32_t DESO : 1;
+    uint32_t RESERVED : 26;
+}CAP2_Register;
+
+typedef struct {
+    uint32_t BOS : 1;
+    uint32_t OOS : 1;
+    uint32_t SOOE : 1;
+    uint32_t OOC : 1;
+    uint32_t BB : 1;
+    uint32_t RESERVED : 27;
+}BOHC_Register;
 
 typedef struct _HBA_DEVICE{
     CAP_Register CAP;
@@ -205,15 +289,182 @@ typedef struct _HBA_DEVICE{
     IS_Register  IS;
     PI_Register  PI;
     VS_Register VS;
-    uint32_t CCC_CTL;
-    uint32_t CCC_PORTS;
-    uint32_t EM_LOC;
-    uint32_t EM_CTL;
-    uint32_t CAP2;
-    uint32_t BOHC;
+    CCC_CTL_Register CCC_CTL;
+    CCC_PORTS_Register CCC_PORTS;
+    EM_LOC_Register EM_LOC;
+    EM_CTL_Register EM_CTL;
+    CAP2_Register CAP2;
+    BOHC_Register BOHC;
     uintptr_t VENDOR_SPECIFIC_MAP;
 }HBA_DEVICE, * P_HBA_DEVICE;
 
+typedef struct {
+    uint32_t RESERVED : 10;
+    uint32_t CLB : 22;
+}PxCLB_Register;
+
+typedef struct {
+    uint32_t CLBU;
+}PxCLBU_Register;
+
+typedef struct {
+    uint32_t RESERVED : 8;
+    uint32_t FB : 24;
+}PxFB_Register;
+
+typedef struct {
+    uint32_t FBU;
+}PxFBU_Register;
+
+typedef struct {
+    uint32_t DHRS : 1;
+    uint32_t PSS : 1;
+    uint32_t DSS : 1;
+    uint32_t SDBS : 1;
+    uint32_t UFS : 1;
+    uint32_t DPS : 1;
+    uint32_t PCS : 1;
+    uint32_t DMPS : 1;
+    uint32_t RESERVED : 14;
+    uint32_t PRCS : 1;
+    uint32_t IPMS : 1;
+    uint32_t OFS : 1;
+    uint32_t RESERVED2 : 1;
+    uint32_t INFS : 1;
+    uint32_t IFS : 1;
+    uint32_t HBDS : 1;
+    uint32_t HBFS : 1;
+    uint32_t TFES : 1;
+    uint32_t CPDS : 1;
+}PxIS_Register;
+
+typedef struct {
+    uint32_t DHRE : 1;
+    uint32_t PSE : 1;
+    uint32_t DSE : 1;
+    uint32_t SDBE : 1;
+    uint32_t UFE : 1;
+    uint32_t DPE : 1;
+    uint32_t PCE : 1;
+    uint32_t DMPE : 1;
+    uint32_t RESERVED : 14;
+    uint32_t PRCE : 1;
+    uint32_t IPME : 1;
+    uint32_t OFE : 1;
+    uint32_t RESERVED2 : 1;
+    uint32_t INFE : 1;
+    uint32_t IFE : 1;
+    uint32_t HBDE : 1;
+    uint32_t HBFE : 1;
+    uint32_t TFEE : 1;
+    uint32_t CPDE : 1;
+}PxIE_Register;
+
+typedef struct {
+    uint32_t ST : 1;
+    uint32_t SUD : 1;
+    uint32_t POD : 1;
+    uint32_t CLO : 1;
+    uint32_t FRE : 1;
+    uint32_t RESERVED : 3;
+    uint32_t CCS : 5;
+    uint32_t MPSS : 1;
+    uint32_t FR : 1;
+    uint32_t CR : 1;
+    uint32_t CPS : 1;
+    uint32_t PMA : 1;
+    uint32_t HPCP : 1;
+    uint32_t MPSP : 1;
+    uint32_t CPD : 1;
+    uint32_t ESP : 1;
+    uint32_t FBSCP : 1;
+    uint32_t APSTE : 1;
+    uint32_t ATAPI : 1;
+    uint32_t DLAE : 1;
+    uint32_t ALPE : 1;
+    uint32_t ASP : 1;
+    uint32_t ICC : 4;
+}PxCMD_Register;
+
+typedef struct {
+    uint32_t DET : 4;
+    uint32_t SPD : 4;
+    uint32_t IPM : 4;
+    uint32_t RESERVED : 20;
+}PxSSTS_Register;
+
+typedef struct {
+    uint32_t STS : 8;
+    uint32_t ERR : 8;
+    uint32_t RESERVED : 16;
+}PxTFD_Register;
+
+typedef struct {
+    uint32_t SIG;
+}PxSIG_Register;
+
+typedef struct {
+    uint32_t DET : 4;
+    uint32_t SPD : 4;
+    uint32_t IPM : 4;
+    uint32_t SPM : 4;
+    uint32_t PMP : 4;
+    uint32_t RESERVED : 12;
+}PxSCTL_Register;
+
+typedef struct {
+    uint32_t ERR : 16;
+    uint32_t DIAG : 16;
+}PxSERR_Register;
+
+typedef struct {
+
+
+}PxSACT_Register;
+
+typedef struct {
+    uint32_t CI;
+}PxCI_Register;
+
+typedef struct {
+
+}PxSNTF_Register;
+
+typedef struct {
+
+}PxFBS_Register;
+
+typedef struct {
+
+}PxDEVSLP_Register;
+
+typedef struct {
+    uint64_t RESERVED1; //8
+    uint32_t RESERVED2; //4 + 8 = 12
+    uint16_t RESERVED3; //2 + 12 14
+    uint8_t RESERVED4; //15
+}PxVS_Register;
+
+typedef struct {
+    PxCLB_Register PxCLB;
+    PxCLBU_Register PxCLBU;
+    PxFB_Register PxFB;
+    PxFBU_Register PxFBU;
+    PxIS_Register PxIS;
+    PxIE_Register PxIE;
+    PxCMD_Register PxCMD;
+    PxTFD_Register PxTFD;
+    PxSIG_Register PxSIG;
+    PxSSTS_Register PxSSTS;
+    PxSCTL_Register PxSCTL;
+    PxSERR_Register PxSERR;
+    PxSACT_Register PxSACT;
+    PxCI_Register PxCI;
+    PxSNTF_Register PxSNTF;
+    PxFBS_Register PxFBS;
+    PxDEVSLP_Register PxDEVSLP;
+    PxVS_Register PxVS;
+}HBA_PORTx, * P_HBA_PORTx;
 
 
 #pragma pack(pop)
@@ -230,6 +481,11 @@ typedef struct _INTEL_1_3_1_HBA_DEVICE {
     uint8_t INTEL_PORT30_REGISTERS[80];
     uint8_t INTEL_PORT31_REGISTERS[80];
 }INTEL_1_3_1_HBA_DEVICE, * P_INTEL_1_3_1_HBA_DEVICE;
+
+
+
+
+#pragma pack(1) // Ensure byte alignment
 
 
 

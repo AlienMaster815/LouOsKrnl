@@ -1,5 +1,5 @@
 #include <NtAPI.h>
-
+#include "SATA/sata.h"
 #include <LouDDK.h>
 
 /// Tyler Grenier 4/11/24 9:55 PM
@@ -48,12 +48,7 @@ void GetAllIoSpaces(P_PCI_DEVICE_OBJECT PDEV);
 
 #include <stdint.h>
 
-//well come back to this
-BOOLEAN IsMcp89Apple()
-{
 
-	return true;
-}
 
 
 uint32_t GetAhciHba(P_PCI_DEVICE_OBJECT PDEV, uint8_t BAR) {
@@ -67,30 +62,64 @@ uint32_t GetAhciHba(P_PCI_DEVICE_OBJECT PDEV, uint8_t BAR) {
 #define ICH_MAP 0x90
 #define ENODEV 19
 
+P_FIS_PACKET GetFisPacketBase(uint8_t PortNum, P_HBA_PORTx HbaPort,BOOLEAN S64A) {
+	if(!S64A){
+		 return (P_FIS_PACKET)(uintptr_t)(HbaPort[PortNum].PxFB.FB);
+	}
+	else {
+		 return (P_FIS_PACKET)(uintptr_t)(HbaPort[PortNum].PxFB.FB + HbaPort[PortNum].PxFBU.FBU);
+	}
+}
 
+void InitializeOnePort(uint8_t PortNum, P_HBA_PORTx HbaPort,BOOLEAN S64A) {
+	LouPrint("Initializing Port:%d\n",PortNum);
+	
+	UNUSED P_FIS_PACKET PF = GetFisPacketBase(PortNum, HbaPort, S64A);
+
+	LouPrint("Port:%d Initialized\n",PortNum);
+}
+
+void InitializePorts(P_HBA_DEVICE HBA,P_HBA_PORTx HbaPort) {//32 Port Array
+
+	if (HBA->PI.Port0 )InitializeOnePort(0,  HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port1 )InitializeOnePort(1,  HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port2 )InitializeOnePort(2,  HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port3 )InitializeOnePort(3,  HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port4 )InitializeOnePort(4,  HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port5 )InitializeOnePort(5,  HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port6 )InitializeOnePort(6,  HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port7 )InitializeOnePort(7,  HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port8 )InitializeOnePort(8,  HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port9 )InitializeOnePort(9,  HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port10)InitializeOnePort(10, HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port11)InitializeOnePort(11, HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port12)InitializeOnePort(12, HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port13)InitializeOnePort(13, HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port14)InitializeOnePort(14, HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port15)InitializeOnePort(15, HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port16)InitializeOnePort(16, HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port17)InitializeOnePort(17, HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port18)InitializeOnePort(18, HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port19)InitializeOnePort(19, HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port20)InitializeOnePort(20, HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port21)InitializeOnePort(21, HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port22)InitializeOnePort(22, HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port23)InitializeOnePort(23, HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port24)InitializeOnePort(24, HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port25)InitializeOnePort(25, HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port26)InitializeOnePort(26, HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port27)InitializeOnePort(27, HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port28)InitializeOnePort(28, HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port29)InitializeOnePort(29, HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port30)InitializeOnePort(30, HbaPort, HBA->CAP.S64A);
+	if (HBA->PI.Port31)InitializeOnePort(31, HbaPort, HBA->CAP.S64A);
+}
 
 //Later we will turn this into a win api driver stle for readability
 
-LOUSTATUS LouInitAhciDevice(P_PCI_DEVICE_OBJECT PDEV) {
 
-	UNUSED int32_t n_ports, i, rc;
 
-	//we dont have a defined kit yet as previously stated so well just do things manually
-	//uint8_t BAR; //Later we will get other bar types
-
-	LouPrint("Hello Driver World\n");
-
-	///
-	/// parse device ids to make sure the system dosen use
-	/// alternitive BARS
-	/// 
-
-	uint32_t HbaAddress = GetAhciHba(PDEV);
-
-	if (HbaAddress != 0x00000000)
-		LouMapAddress(HbaAddress, HbaAddress, KERNEL_PAGE_WRITE_PRESENT);
-
-	P_HBA_DEVICE HBA = (P_HBA_DEVICE)(uintptr_t)HbaAddress;
+void GetAhciFeatures(P_HBA_DEVICE HBA) {
 
 	//Print Values Of HBA
 	LouPrint("CAP Values Are\n");
@@ -112,11 +141,12 @@ LOUSTATUS LouInitAhciDevice(P_PCI_DEVICE_OBJECT PDEV) {
 	if (BIT_SET == HBA->CAP.PMD)	LouPrint("Device Supports PIO Multiple DRQ Block\n");
 	if (BIT_SET == HBA->CAP.SSC)	LouPrint("Device Supports Slumber State\n");
 	if (BIT_SET == HBA->CAP.PSC)	LouPrint("Device Supports Partial State\n");
-	LouPrint("Number Of Command Slots Is:%d\n",HBA->CAP.NCS);
+	LouPrint("Number Of Command Slots Is:%d\n", HBA->CAP.NCS);
 	if (BIT_SET == HBA->CAP.CCCS)	LouPrint("Device Supports Command Completion Coalescing\n");
 	if (BIT_SET == HBA->CAP.EMS)	LouPrint("Device Supports Enclosure Management\n");
 	if (BIT_SET == HBA->CAP.SXS)	LouPrint("Device Supports External SATA\n");
-	LouPrint("Number Of Ports Is:%d\n",HBA->CAP.NP);
+	LouPrint("Number Of Ports Is:%d\n", HBA->CAP.NP);
+
 	LouPrint("GHC Values Are\n");
 
 	LouPrint("AE Bit Is:");
@@ -128,14 +158,37 @@ LOUSTATUS LouInitAhciDevice(P_PCI_DEVICE_OBJECT PDEV) {
 	LouPrint("Is Controller Hard Reseting:");
 	if (HBA->GHC.HR)LouPrint("YES\n"); else LouPrint("NO\n");
 
-	LouPrint("Getting Port Information\n");
+	if (HBA->CAP2.DESO)LouPrint("Device Is DevSleep Entrance from Slumber Only\n");
+	if (HBA->CAP2.SADM)LouPrint("Device Supports Aggressive Device Sleep Management\n");
+	if (HBA->CAP2.SDS)LouPrint("Device Supports Device Sleep\n");
+	if (HBA->CAP2.APST)LouPrint("Device Supports Automatic Partial to Slumber Transitions\n");
+	if (HBA->CAP2.NVMP)LouPrint("Device Supports Automatic NVMHCI Present\n");
+	if (HBA->CAP2.BOH)LouPrint("Device Supports BIOS/OS Handoff\n");
+}
 
-	LouPrint("Port 0 %d\n", HBA->PI.Port0);
-	LouPrint("Port 1 %d\n", HBA->PI.Port1);
-	LouPrint("Port 2 %d\n", HBA->PI.Port2);
-	LouPrint("Port 3 %d\n", HBA->PI.Port3);
+LOUSTATUS LouInitAhciDevice(P_PCI_DEVICE_OBJECT PDEV) {
 
-	LouPrint("Version %d:%d\n",HBA->VS.MJR,HBA->VS.MNR);
+	UNUSED int32_t n_ports, i, rc;
+
+	//we dont have a defined kit yet as previously stated so well just do things manually
+	//uint8_t BAR; //Later we will get other bar types
+
+	LouPrint("Hello Driver World\n");
+
+	///
+	/// parse device ids to make sure the system dosen use
+	/// alternitive BARS
+	/// 
+
+	uint32_t HbaAddress = GetAhciHba(PDEV);
+
+	if (HbaAddress != 0x00000000)
+		LouMapAddress(HbaAddress, HbaAddress, KERNEL_PAGE_WRITE_PRESENT);
+	
+	P_HBA_DEVICE HBA = (P_HBA_DEVICE)(uintptr_t)HbaAddress;
+	P_HBA_PORTx  HbaPorts = 0x00000000;
+
+	HbaPorts = (P_HBA_PORTx)(HBA + 0x100);
 
 	//LouPrint("Address is:%h\n", HbaAddress);
 	//Enable PCI Device
@@ -157,9 +210,9 @@ LOUSTATUS LouInitAhciDevice(P_PCI_DEVICE_OBJECT PDEV) {
 
 	}
 
-	GetAllIoSpaces(PDEV);
+	GetAhciFeatures(HBA);
 
-
+	InitializePorts(HBA, HbaPorts);
 
 	return STATUS_SUCCESS;
 }

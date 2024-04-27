@@ -2,15 +2,14 @@
   "ExpandedNodes": [
     "",
     "\\drivers",
-    "\\drivers\\pci_systems",
-    "\\drivers\\pci_systems\\pci",
     "\\drivers\\storage",
+    "\\drivers\\storage\\SATA",
     "\\include",
     "\\include\\drivers",
     "\\include\\drivers\\Lou_drivers",
-    "\\include\\drivers\\Vendors",
-    "\\include\\kernel"
+    "\\kernel",
+    "\\kernel\\memory"
   ],
-  "SelectedNode": "\\Config",
+  "SelectedNode": "\\drivers\\storage\\SATA\\sata.h",
   "PreviewInSolutionExplorer": false
 }

@@ -11,20 +11,32 @@
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\drivers\\Lou_drivers\\hardrive.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\kernel\\atomic.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\kernel\\atomic.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\storage\\SATA\\sata.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\storage\\SATA\\sata.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\storage\\SATA\\SATA.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\storage\\SATA\\SATA.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\drivers\\Lou_drivers\\pci.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\drivers\\Lou_drivers\\pci.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\kernel\\memory\\allocation.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:kernel\\memory\\allocation.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\KernelAPI\\Drives.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\KernelAPI\\Drives.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\kernel\\memmory.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\kernel\\memmory.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\init\\Lou_Main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:init\\Lou_Main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\bootloader\\grub\\multiboot2.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\bootloader\\grub\\multiboot2.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\makefile||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:makefile||{3B902123-F8A7-4915-9F01-361F908088D0}"
     }
   ],
   "DocumentGroupContainers": [
@@ -34,25 +46,8 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 0,
           "Children": [
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{6324226f-61b6-4f28-92ee-18d4b5fe1e48}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "atomic.h",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\kernel\\atomic.h",
-              "RelativeDocumentMoniker": "include\\kernel\\atomic.h",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\kernel\\atomic.h",
-              "RelativeToolTip": "include\\kernel\\atomic.h",
-              "ViewState": "AQIAAAEAAABoMzMzM5MwwB0AAAARAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-04-14T00:03:41.263Z",
-              "EditorCaption": ""
-            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
@@ -61,10 +56,15 @@
               "RelativeDocumentMoniker": "drivers\\storage\\AHCI.cpp",
               "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\storage\\AHCI.cpp",
               "RelativeToolTip": "drivers\\storage\\AHCI.cpp",
-              "ViewState": "AQIAAGcAAAAAAAAAAAAQwIkAAAAzAAAA",
+              "ViewState": "AQIAAAoAAAAAADMzMzPrv08AAAABAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-04-13T22:45:09.198Z",
+              "WhenOpened": "2024-04-26T22:55:38.464Z",
+              "IsPinned": true,
               "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{6324226f-61b6-4f28-92ee-18d4b5fe1e48}"
             },
             {
               "$type": "Document",
@@ -74,22 +74,48 @@
               "RelativeDocumentMoniker": "include\\drivers\\Lou_drivers\\hardrive.h",
               "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Lou_drivers\\hardrive.h",
               "RelativeToolTip": "include\\drivers\\Lou_drivers\\hardrive.h",
-              "ViewState": "AQIAAKAAAAAAAAAAAAAgwMYAAAAWAAAA",
+              "ViewState": "AQIAAAoCAAAABDMzMzMbwOMBAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-04-13T20:04:15.391Z",
+              "WhenOpened": "2024-04-27T00:33:43.945Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "sata.h",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\storage\\SATA\\sata.h",
+              "RelativeDocumentMoniker": "drivers\\storage\\SATA\\sata.h",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\storage\\SATA\\sata.h",
+              "RelativeToolTip": "drivers\\storage\\SATA\\sata.h",
+              "ViewState": "AQIAACABAAAA9f////8ewCcBAAAVAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2024-04-27T00:10:25.273Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 4,
-              "Title": "pci.h",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Lou_drivers\\pci.h",
-              "RelativeDocumentMoniker": "include\\drivers\\Lou_drivers\\pci.h",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Lou_drivers\\pci.h",
-              "RelativeToolTip": "include\\drivers\\Lou_drivers\\pci.h",
-              "ViewState": "AQIAAA8AAADg/////38pwDAAAAAPAAAA",
+              "Title": "allocation.c",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\kernel\\memory\\allocation.c",
+              "RelativeDocumentMoniker": "kernel\\memory\\allocation.c",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\kernel\\memory\\allocation.c",
+              "RelativeToolTip": "kernel\\memory\\allocation.c",
+              "ViewState": "AQIAAFcAAACA7f////8AwGsAAAA3AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2024-04-27T00:07:01.261Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "memmory.h",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\kernel\\memmory.h",
+              "RelativeDocumentMoniker": "include\\kernel\\memmory.h",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\kernel\\memmory.h",
+              "RelativeToolTip": "include\\kernel\\memmory.h",
+              "ViewState": "AQIAACcAAACA9f////8LwDsAAAA8AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-04-13T16:36:44.409Z",
+              "WhenOpened": "2024-04-26T23:00:37.285Z",
               "EditorCaption": ""
             },
             {
@@ -100,22 +126,46 @@
               "RelativeDocumentMoniker": "drivers\\storage\\SATA\\SATA.cpp",
               "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\storage\\SATA\\SATA.cpp",
               "RelativeToolTip": "drivers\\storage\\SATA\\SATA.cpp",
-              "ViewState": "AQIAAC8AAACAm5mZmZkuwJ4AAAAAAAAA",
+              "ViewState": "AQIAAIoAAAAAnJmZmdkhwAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-04-12T01:49:54.924Z",
+              "WhenOpened": "2024-04-26T22:55:29.489Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "Drives.h",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\KernelAPI\\Drives.h",
-              "RelativeDocumentMoniker": "include\\KernelAPI\\Drives.h",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\KernelAPI\\Drives.h",
-              "RelativeToolTip": "include\\KernelAPI\\Drives.h",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "DocumentIndex": 6,
+              "Title": "Lou_Main.c",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\init\\Lou_Main.c",
+              "RelativeDocumentMoniker": "init\\Lou_Main.c",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\init\\Lou_Main.c",
+              "RelativeToolTip": "init\\Lou_Main.c",
+              "ViewState": "AQIAAGgAAAAQmZmZmRkmwAgAAAAeAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2024-04-21T22:14:18.58Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "multiboot2.h",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\bootloader\\grub\\multiboot2.h",
+              "RelativeDocumentMoniker": "include\\bootloader\\grub\\multiboot2.h",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\bootloader\\grub\\multiboot2.h",
+              "RelativeToolTip": "include\\bootloader\\grub\\multiboot2.h",
+              "ViewState": "AQIAALkAAAAQ+////z8lwM8AAAABAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-04-12T01:13:45.831Z"
+              "WhenOpened": "2024-04-22T00:17:03.435Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "makefile",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\makefile",
+              "RelativeDocumentMoniker": "makefile",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\makefile",
+              "RelativeToolTip": "makefile",
+              "ViewState": "AQIAAIkAAAAAl5mZmZkuwD4AAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2024-04-21T21:50:41.53Z"
             }
           ]
         }

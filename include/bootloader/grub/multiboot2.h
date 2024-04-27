@@ -124,6 +124,11 @@ struct multiboot_header_tag_information_request
     multiboot_uint32_t requests[0];
 };
 
+struct boot_info_tag {
+    uint32_t type;
+    uint32_t size;
+};
+
 struct multiboot_header_tag_address
 {
     multiboot_uint16_t type;
@@ -186,8 +191,22 @@ struct multiboot_color
     multiboot_uint8_t blue;
 };
 
+struct multiboot_tag
+{
+    multiboot_uint32_t type;
+    multiboot_uint32_t size;
+};
+
+struct master_multiboot_mmap_entry {
+    struct multiboot_tag tag;
+
+    uint32_t entry_size;
+    uint32_t entry_version;
+};
+
 struct multiboot_mmap_entry
 {
+
     multiboot_uint64_t addr;
     multiboot_uint64_t len;
 #define MULTIBOOT_MEMORY_AVAILABLE              1
@@ -200,11 +219,7 @@ struct multiboot_mmap_entry
 };
 typedef struct multiboot_mmap_entry multiboot_memory_map_t;
 
-struct multiboot_tag
-{
-    multiboot_uint32_t type;
-    multiboot_uint32_t size;
-};
+
 
 struct multiboot_tag_string
 {

@@ -131,3 +131,6 @@ uint64_t GetPageOfFaultValue(uint64_t VAddress) {
     return (uint64_t)PML4->PML2[L3Entry].entries[L2Entry];
 
 }
+
+
+

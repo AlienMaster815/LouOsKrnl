@@ -17,13 +17,11 @@ bool CheckIsSuccess = true;
 void PageFault() {
     
 
-
+    
     uint64_t VAddress = get_cr2();
     VAddress = (uint64_t)align_memory((void*)VAddress, 2ULL * MEGABYTE);
 
     LouPrint("Page Fault Detected At Address %h Handleing Now\n",VAddress);
-
-
 
 
     if (IsKernelMode) {
@@ -62,8 +60,10 @@ void PageFault() {
         while (1);
     }
     else {
-        FUCK:
-        LouPanic("Page Fault Detected", BAD);
+    FUCK:
+        LouPrint("Fuck\n");
+        while (1);
+        //LouPanic("Page Fault Detected", BAD);
     }
     
 }

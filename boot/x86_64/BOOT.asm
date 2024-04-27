@@ -1,10 +1,24 @@
 bits 32
 ;=======================================================
 ;                 Multiboot Header
-section .boot
-    dd 0x1BADB002     ; Magic number
-    dd 0x00           ; Flags
-    dd - (0x1BADB002 + 0x00)  ; Checksum (magic + flags)
+section .multiboot_header
+MBOOTHEADER:
+    dd 0xE85250D6             ;Magic number
+    dd 0                      ;ARCHITECTURE
+    dd MBOOTEND - MBOOTHEADER ;Header Length
+    dd 0x100000000 - (0xE85250D6 + 0x00 + (MBOOTEND - MBOOTHEADER)) 
+    ;TAGS
+    ;FrameBuffer Tag
+    ;dw 5 ;Framebuffer Type
+    ;dw 0 ;Reserved
+    ;dw 20 ;Tag Size
+    ;dd 480 ;V
+    ;dd 640 ;H
+    ;dd 32 ;D
+    dw 0
+    dw 0
+    dd 8
+MBOOTEND:
 ;========================================================
 section .data
 multiboot_info_ptr dd 0
@@ -13,7 +27,7 @@ section .text
 
 global start
 
-ahci dd 0
+MBoot dd 0
 
 extern SetUpPages
 extern Lou_kernel_start
@@ -21,8 +35,9 @@ extern enable_paging
 
 start:
    
-    ;mov [multiboot_info_ptr], ebx;
-    ;mov [ahci], eax
+    ;mov eax, [ebx]
+    ;mov [multiboot_info_ptr], eax
+    mov [multiboot_info_ptr], ebx
     ;xor eax,eax
     
     ;mov [multiboot_info_ptr], ebx
@@ -30,6 +45,7 @@ start:
 
     call check_cpuid
     call check_long_mode
+
 
     call SetUpPages
     call enable_paging
@@ -83,6 +99,8 @@ error:
     hlt
 
 
+
+
 section .bss
 
 
@@ -128,6 +146,6 @@ long_mode_start:
     mov gs, ax 
     mov ss, ax 
 
-    ;mov rcx, [multiboot_info_ptr]
+    mov rcx, [multiboot_info_ptr]
     call Lou_kernel_start
     jmp $ 

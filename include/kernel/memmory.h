@@ -25,6 +25,7 @@
 #define MEGABYTE 0x100000
 
 #define PAGE_TABLE_ALLIGNMENT 4096
+#define PAGE_SIZE 4096
 
 #include <LouAPI.h>
 
@@ -41,12 +42,14 @@ RAMADD Lou_Alloc_Mem(SIZE size);
 STATUS Lou_Free_Mem(RAMADD Addr, SIZE size);
 void* Lou_Calloc_Mem(size_t numElements, size_t sizeOfElement);
 RAMADD Lou_Alloc_Mem_Alligned(SIZE size,uint64_t allignment);
-
+void* LouMalloc(size_t BytesToAllocate);
+void LouFree(RAMADD Addr, SIZE size);
+void* LouMalloc(size_t BytesToAllocate);
 
 #include <stdint.h>
 
 #define MachineMemoryBase 0 
-
+#define Pack (__attribute__((packed)))
 
 //Paging Stub
 
@@ -89,14 +92,6 @@ void* align_memory(void* ptr, size_t alignment);
 #else
 #include <LouDDK.h>
 
-extern "C" void Write16BitValueToAddress(uint64_t Address, uint16_t Value);
-extern "C" uint16_t Get16BitValueFromAddress(uint64_t Address);
-extern "C" void Write8BitValueToAddress(uint64_t Address, uint8_t Value);
-extern "C" uint8_t Get8BitValueFromAddress(uint64_t Address);
-extern "C" void Write32BitValueFromAddress(uint64_t Address, uint32_t Value);
-extern "C" uint32_t Get32BitValueFromAddress(uint64_t Address);
-extern "C" void Write64BitValueToAddress(uint64_t Address, uint64_t Value);
-extern "C" uint64_t Get64BitValueFromAddress(uint64_t Address);
 
 #define GIGABYTE 0x40000000
 #define MEGABYTE 0x100000
@@ -106,6 +101,8 @@ extern "C" uint64_t Get64BitValueFromAddress(uint64_t Address);
 KERNEL_IMPORT void remove_padding(const void* struct_ptr, size_t struct_size, uint8_t* buffer);
 KERNEL_IMPORT void LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS);
 KERNEL_IMPORT void LouUnMapAddress(uint64_t VAddress);
+KERNEL_IMPORT void LouFree(uint8_t* Addr, uint32_t size);
+KERNEL_IMPORT void* LouMalloc(size_t BytesToAllocate);
 
 
 #endif

@@ -278,5 +278,47 @@ typedef struct _SATA_PCI_DEVICE {
 
 UNUSED static P_SATA_PCI_DEVICE SataDevices[256];
 
+typedef struct Packed{
+	// FIS Type - should be 0xA1 for Set Device Bits
+	uint8_t fis_type;
+
+	// Port Multiplier and Interrupt bit fields
+	uint8_t pmport : 4;      // Port Multiplier Port: 4 bits
+	uint8_t reserved : 3;     // Reserved bits: 3 bits
+	uint8_t interrupt : 1;   // Interrupt bit: 1 bit
+
+	// Status register (only bits 0-7)
+	uint8_t status;
+
+	// Error register (only bits 0-7)
+	uint8_t error;
+
+	// Protocol Specific
+	uint32_t protocol_specific;
+}FIS_DEV_BITS;
+
+typedef struct {
+	// 0x00
+	FIS_DMA_SETUP	dsfis;		// DMA Setup FIS
+	uint8_t         pad0[4];
+
+	// 0x20
+	FIS_PIO_SETUP	psfis;		// PIO Setup FIS
+	uint8_t         pad1[12];
+
+	// 0x40
+	FIS_REG_D2H	rfis;		// Register – Device to Host FIS
+	uint8_t         pad2[4];
+
+	// 0x58
+	FIS_DEV_BITS	sdbfis;		// Set Device Bit FIS
+
+	// 0x60
+	uint8_t         ufis[64];
+
+	// 0xA0
+	uint8_t   	rsv[0x100 - 0xA0];
+}FIS_PACKET, * P_FIS_PACKET;
+
 
 #endif
