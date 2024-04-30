@@ -74,6 +74,11 @@ typedef struct _PCI_DEVICE_OBJECT {
 #define PCI_UNKNOWN	((pci_power_t) 5)
 #define PCI_POWER_ERROR	((pci_power_t) -1)
 
+enum BaseAddressRegisterType {
+	MemoryMapping = 0,
+	InputOutPut = 1
+};
+
 #ifdef __cplusplus
 #include <LouDDK.h>
 
@@ -113,6 +118,19 @@ class PCI{
 };
 
 
+class BaseAddressRegister {
+public:
+	bool prefetchable[6];
+	uint8_t* address[6];
+	uint32_t size[6];
+	BaseAddressRegisterType type[6];
+
+	BaseAddressRegister(P_PCI_DEVICE_OBJECT PDEV);
+	~BaseAddressRegister();
+
+};
+
+BaseAddressRegister GetAllIoSpaces(P_PCI_DEVICE_OBJECT PDEV);
 
 #else
 

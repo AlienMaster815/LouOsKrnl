@@ -48,7 +48,7 @@ void GPF();
 void DoubleFault();
 void OpCode();
 void Clock();
-
+void INTERRUPT(uint8_t interrupt_number);
 
 void ParseMBootTags(struct multiboot_tag* MBOOT);
 
@@ -67,6 +67,7 @@ LOUSTATUS Lou_kernel_early_initialization(){
 
     SetInterruptFlags();
  
+    uint8_t* FO = LouMalloc(sizeof(uint8_t));
 
 
     DeterminCPU();
@@ -124,14 +125,6 @@ KERNEL_ENTRY Lou_kernel_start(uint32_t foo){
    // if(User_Mode_Initialization() != LOUSTATUS_GOOD)LouPanic("User Mode Initialiation Failed",BAD);
 
     LouPrint("Hello World\n");
-
-    //uint8_t* foo = (uint8_t*)LouMalloc(sizeof(uint8_t));
-    //uint8_t* bar = (uint8_t*)LouMalloc(sizeof(uint8_t));
-
-    //LouPrint("Foo Is:%d\n",foo);
-    //LouPrint("Bar Is:%d\n",bar);
-
-    
 
     while (1) {
         asm("hlt");

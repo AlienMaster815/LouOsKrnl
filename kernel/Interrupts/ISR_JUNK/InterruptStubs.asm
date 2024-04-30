@@ -76,7 +76,6 @@ extern PIC_sendEOI
 	call InterruptRouter
 	mov rcx, [InterruptNum]
 	call PIC_sendEOI
-
 %endmacro
 
 
@@ -132,6 +131,9 @@ global ISR44
 global ISR45
 global ISR46
 global ISR47
+global ISR48
+global ISR49
+global ISR50
 
 ISR0:
 	pusha
@@ -456,3 +458,23 @@ ISR47:
 	Handle
 	hlt
 
+ISR48:
+	pusha
+	mov ah, 48
+	mov [InterruptNum], ah
+	Handle
+	hlt
+
+ISR49:
+	pusha
+	mov ah, 49
+	mov [InterruptNum], ah
+	Handle
+	hlt
+
+ISR50:
+	pusha
+	mov ah, 50
+	mov [InterruptNum], ah
+	Handle
+	hlt

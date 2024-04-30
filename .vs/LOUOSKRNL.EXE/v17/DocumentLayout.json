@@ -7,36 +7,64 @@
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\storage\\AHCI.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\drivers\\Lou_drivers\\hardrive.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\drivers\\Lou_drivers\\hardrive.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\init\\Lou_Main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:init\\Lou_Main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\storage\\SATA\\sata.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\storage\\SATA\\sata.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\storage\\SATA\\SATA.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\storage\\SATA\\SATA.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\kernel\\Drivers\\Display\\VideoAPI.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:kernel\\Drivers\\Display\\VideoAPI.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\kernel\\memory\\allocation.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:kernel\\memory\\allocation.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\kernel\\Drivers\\Display\\vga.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:kernel\\Drivers\\Display\\vga.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\kernel\\memmory.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\kernel\\memmory.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\init\\Lou_Main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:init\\Lou_Main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\LouDDK.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\LouDDK.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\bootloader\\grub\\multiboot2.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\bootloader\\grub\\multiboot2.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\kernel\\Interrupts\\ISR_JUNK\\Routines\\Clock.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:kernel\\Interrupts\\ISR_JUNK\\Routines\\Clock.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\makefile||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:makefile||{3B902123-F8A7-4915-9F01-361F908088D0}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\kernel\\Timers\\ClockMinipulation.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:kernel\\Timers\\ClockMinipulation.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\kernel\\Interrupts\\ISR_JUNK\\InterruptStubs.asm||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:kernel\\Interrupts\\ISR_JUNK\\InterruptStubs.asm||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\kernel\\cstdlib\\Time\\sleep.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:kernel\\cstdlib\\Time\\sleep.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\kernel\\Interrupts\\ISR_JUNK\\InterruptRouter.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:kernel\\Interrupts\\ISR_JUNK\\InterruptRouter.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\kernel\\Counters\\Counters.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:kernel\\Counters\\Counters.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\storage\\ahci.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\storage\\ahci.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\drivers\\Lou_drivers\\pci.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\drivers\\Lou_drivers\\pci.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\pci_systems\\BARS.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\pci_systems\\BARS.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -56,53 +84,49 @@
               "RelativeDocumentMoniker": "drivers\\storage\\AHCI.cpp",
               "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\storage\\AHCI.cpp",
               "RelativeToolTip": "drivers\\storage\\AHCI.cpp",
-              "ViewState": "AQIAAAoAAAAAADMzMzPrv08AAAABAAAA",
+              "ViewState": "AQIAAGAAAAAAAAAAAAAAAJAAAAADAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-04-26T22:55:38.464Z",
               "IsPinned": true,
               "EditorCaption": ""
             },
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{6324226f-61b6-4f28-92ee-18d4b5fe1e48}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "hardrive.h",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Lou_drivers\\hardrive.h",
-              "RelativeDocumentMoniker": "include\\drivers\\Lou_drivers\\hardrive.h",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Lou_drivers\\hardrive.h",
-              "RelativeToolTip": "include\\drivers\\Lou_drivers\\hardrive.h",
-              "ViewState": "AQIAAAoCAAAABDMzMzMbwOMBAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-04-27T00:33:43.945Z",
-              "EditorCaption": ""
-            },
-            {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "sata.h",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\storage\\SATA\\sata.h",
-              "RelativeDocumentMoniker": "drivers\\storage\\SATA\\sata.h",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\storage\\SATA\\sata.h",
-              "RelativeToolTip": "drivers\\storage\\SATA\\sata.h",
-              "ViewState": "AQIAACABAAAA9f////8ewCcBAAAVAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-04-27T00:10:25.273Z",
+              "Title": "VideoAPI.c",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\kernel\\Drivers\\Display\\VideoAPI.c",
+              "RelativeDocumentMoniker": "kernel\\Drivers\\Display\\VideoAPI.c",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\kernel\\Drivers\\Display\\VideoAPI.c",
+              "RelativeToolTip": "kernel\\Drivers\\Display\\VideoAPI.c",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2024-04-30T18:38:48.826Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 4,
+              "Title": "vga.c",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\kernel\\Drivers\\Display\\vga.c",
+              "RelativeDocumentMoniker": "kernel\\Drivers\\Display\\vga.c",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\kernel\\Drivers\\Display\\vga.c",
+              "RelativeToolTip": "kernel\\Drivers\\Display\\vga.c",
+              "ViewState": "AQIAAEIAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2024-04-30T18:38:26.259Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "allocation.c",
               "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\kernel\\memory\\allocation.c",
               "RelativeDocumentMoniker": "kernel\\memory\\allocation.c",
               "ToolTip": "E:\\LOUOSKRNL.EXE\\kernel\\memory\\allocation.c",
               "RelativeToolTip": "kernel\\memory\\allocation.c",
-              "ViewState": "AQIAAFcAAACA7f////8AwGsAAAA3AAAA",
+              "ViewState": "AQIAAEwAAAAAAAAAAAAAAGAAAAAyAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
-              "WhenOpened": "2024-04-27T00:07:01.261Z",
+              "WhenOpened": "2024-04-30T17:10:46.987Z",
               "EditorCaption": ""
             },
             {
@@ -113,59 +137,147 @@
               "RelativeDocumentMoniker": "include\\kernel\\memmory.h",
               "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\kernel\\memmory.h",
               "RelativeToolTip": "include\\kernel\\memmory.h",
-              "ViewState": "AQIAACcAAACA9f////8LwDsAAAA8AAAA",
+              "ViewState": "AQIAAAwAAAAAAAAAAAAAACgAAAAgAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-04-26T23:00:37.285Z",
+              "WhenOpened": "2024-04-30T17:09:50.577Z",
               "EditorCaption": ""
             },
             {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "SATA.cpp",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\storage\\SATA\\SATA.cpp",
-              "RelativeDocumentMoniker": "drivers\\storage\\SATA\\SATA.cpp",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\storage\\SATA\\SATA.cpp",
-              "RelativeToolTip": "drivers\\storage\\SATA\\SATA.cpp",
-              "ViewState": "AQIAAIoAAAAAnJmZmdkhwAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-04-26T22:55:29.489Z",
-              "EditorCaption": ""
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{6324226f-61b6-4f28-92ee-18d4b5fe1e48}"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 8,
+              "Title": "ClockMinipulation.c",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\kernel\\Timers\\ClockMinipulation.c",
+              "RelativeDocumentMoniker": "kernel\\Timers\\ClockMinipulation.c",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\kernel\\Timers\\ClockMinipulation.c",
+              "RelativeToolTip": "kernel\\Timers\\ClockMinipulation.c",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2024-04-30T01:54:47.293Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "Lou_Main.c",
               "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\init\\Lou_Main.c",
               "RelativeDocumentMoniker": "init\\Lou_Main.c",
               "ToolTip": "E:\\LOUOSKRNL.EXE\\init\\Lou_Main.c",
               "RelativeToolTip": "init\\Lou_Main.c",
-              "ViewState": "AQIAAGgAAAAQmZmZmRkmwAgAAAAeAAAA",
+              "ViewState": "AQIAAGMAAAAAAAAAAAAAAH8AAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
-              "WhenOpened": "2024-04-21T22:14:18.58Z"
+              "WhenOpened": "2024-04-30T01:53:38.378Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "InterruptStubs.asm",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\kernel\\Interrupts\\ISR_JUNK\\InterruptStubs.asm",
+              "RelativeDocumentMoniker": "kernel\\Interrupts\\ISR_JUNK\\InterruptStubs.asm",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\kernel\\Interrupts\\ISR_JUNK\\InterruptStubs.asm",
+              "RelativeToolTip": "kernel\\Interrupts\\ISR_JUNK\\InterruptStubs.asm",
+              "ViewState": "AQIAACoAAAAAAAAAAAAAAE0AAAARAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2024-04-30T01:52:38.567Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "InterruptRouter.c",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\kernel\\Interrupts\\ISR_JUNK\\InterruptRouter.c",
+              "RelativeDocumentMoniker": "kernel\\Interrupts\\ISR_JUNK\\InterruptRouter.c",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\kernel\\Interrupts\\ISR_JUNK\\InterruptRouter.c",
+              "RelativeToolTip": "kernel\\Interrupts\\ISR_JUNK\\InterruptRouter.c",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2024-04-30T01:52:28.799Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "LouDDK.h",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\LouDDK.h",
+              "RelativeDocumentMoniker": "include\\LouDDK.h",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\LouDDK.h",
+              "RelativeToolTip": "include\\LouDDK.h",
+              "ViewState": "AQIAADkAAAAAAAAAAAAAAGcAAAAoAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2024-04-30T01:50:24.769Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "sleep.c",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\kernel\\cstdlib\\Time\\sleep.c",
+              "RelativeDocumentMoniker": "kernel\\cstdlib\\Time\\sleep.c",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\kernel\\cstdlib\\Time\\sleep.c",
+              "RelativeToolTip": "kernel\\cstdlib\\Time\\sleep.c",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAIAAAAWAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2024-04-30T01:50:13.299Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "Counters.c",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\kernel\\Counters\\Counters.c",
+              "RelativeDocumentMoniker": "kernel\\Counters\\Counters.c",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\kernel\\Counters\\Counters.c",
+              "RelativeToolTip": "kernel\\Counters\\Counters.c",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2024-04-30T01:50:08.007Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 7,
-              "Title": "multiboot2.h",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\bootloader\\grub\\multiboot2.h",
-              "RelativeDocumentMoniker": "include\\bootloader\\grub\\multiboot2.h",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\bootloader\\grub\\multiboot2.h",
-              "RelativeToolTip": "include\\bootloader\\grub\\multiboot2.h",
-              "ViewState": "AQIAALkAAAAQ+////z8lwM8AAAABAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-04-22T00:17:03.435Z"
+              "Title": "Clock.c",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\kernel\\Interrupts\\ISR_JUNK\\Routines\\Clock.c",
+              "RelativeDocumentMoniker": "kernel\\Interrupts\\ISR_JUNK\\Routines\\Clock.c",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\kernel\\Interrupts\\ISR_JUNK\\Routines\\Clock.c",
+              "RelativeToolTip": "kernel\\Interrupts\\ISR_JUNK\\Routines\\Clock.c",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAcAAAADAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2024-04-30T01:49:36.13Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "makefile",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\makefile",
-              "RelativeDocumentMoniker": "makefile",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\makefile",
-              "RelativeToolTip": "makefile",
-              "ViewState": "AQIAAIkAAAAAl5mZmZkuwD4AAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2024-04-21T21:50:41.53Z"
+              "DocumentIndex": 13,
+              "Title": "ahci.h",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\storage\\ahci.h",
+              "RelativeDocumentMoniker": "drivers\\storage\\ahci.h",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\storage\\ahci.h",
+              "RelativeToolTip": "drivers\\storage\\ahci.h",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAsAAAARAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2024-04-30T00:09:25.28Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "pci.h",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Lou_drivers\\pci.h",
+              "RelativeDocumentMoniker": "include\\drivers\\Lou_drivers\\pci.h",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Lou_drivers\\pci.h",
+              "RelativeToolTip": "include\\drivers\\Lou_drivers\\pci.h",
+              "ViewState": "AQIAAG4AAAAAYGZmZuYswIYAAAAFAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2024-04-29T22:39:08.666Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "BARS.cpp",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\pci_systems\\BARS.cpp",
+              "RelativeDocumentMoniker": "drivers\\pci_systems\\BARS.cpp",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\pci_systems\\BARS.cpp",
+              "RelativeToolTip": "drivers\\pci_systems\\BARS.cpp",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAACYAAAAQAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-04-29T22:37:12.217Z"
             }
           ]
         }

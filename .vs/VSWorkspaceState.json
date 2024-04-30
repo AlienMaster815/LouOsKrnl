@@ -1,15 +1,17 @@
 {
   "ExpandedNodes": [
     "",
-    "\\drivers",
-    "\\drivers\\storage",
-    "\\drivers\\storage\\SATA",
-    "\\include",
-    "\\include\\drivers",
-    "\\include\\drivers\\Lou_drivers",
     "\\kernel",
-    "\\kernel\\memory"
+    "\\kernel\\cstdlib",
+    "\\kernel\\cstdlib\\Time",
+    "\\kernel\\Drivers",
+    "\\kernel\\Drivers\\Display",
+    "\\kernel\\Interrupts",
+    "\\kernel\\Interrupts\\ISR_JUNK",
+    "\\kernel\\Interrupts\\ISR_JUNK\\Routines",
+    "\\kernel\\memory",
+    "\\kernel\\Timers"
   ],
-  "SelectedNode": "\\drivers\\storage\\SATA\\sata.h",
+  "SelectedNode": "\\kernel\\Drivers\\Display\\vga.c",
   "PreviewInSolutionExplorer": false
 }

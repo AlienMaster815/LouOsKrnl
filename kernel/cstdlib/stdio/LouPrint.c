@@ -13,7 +13,13 @@
 #include <stdint.h>
 #include <drivers/display/vga.h>
 
+
+
 #ifdef __x86_64__
+void print_binary64(uint64_t number);
+void print_binary32(uint32_t number);
+void print_binary16(uint16_t number);
+void print_binary8(uint8_t number);
 void intToString(uint64_t num, char* str);
 //void uintToLittleEndianHexString(uint64_t number, char* hexString);
 void uintToHexString(uint64_t number, char* hexString);
@@ -61,6 +67,36 @@ void uintToHexString(uint64_t number, char* hexString);
                 char hexString[21]; //Define A string To Print
                 uintToHexString((uint32_t)num,hexString); // Change The Integer To A Hex String
                 LouPrint("%s", hexString); // Print Hex String;
+                break;
+            }
+            case 'b': {
+                format++;
+                switch (*format) {
+                    case 'l' : {
+                        uint64_t num = va_arg(args, int64_t);  // Use int64_t instead of uint64_t
+                        print_binary64(num);
+                        break;
+                    }
+                    case 'i': {
+                        uint64_t num = va_arg(args, int64_t);
+                        print_binary32((uint32_t)num);
+                        break;
+                    }
+                    case 's' : {
+                        uint64_t num = va_arg(args, int64_t);
+                        print_binary16((uint16_t)num);
+                        break;
+                    }
+                    case 'c': {
+                        uint64_t num = va_arg(args, int64_t);
+                        print_binary8((uint8_t)num);
+                        break;
+                    }
+                    default: {
+                        format--;
+                        break;
+                    }
+                }
                 break;
             }
             default: {
@@ -134,6 +170,7 @@ void uintToHexString(uint32_t number, char* hexString);
                 LouPrint("%s", hexString); // Print Hex String;
                 break;
             }
+
             default: {
                 putchar('%');
                 putchar(*format);
@@ -154,3 +191,4 @@ void uintToHexString(uint32_t number, char* hexString);
 }
 
 #endif
+

@@ -93,6 +93,8 @@ LOUDDK_API_ENTRY void checkFunction(uint8_t bus, uint8_t device, uint8_t functio
     uint8_t subClass;
     uint8_t secondaryBus;
 
+
+
     baseClass = getBaseClass(bus, device, function);
     subClass = getSubClass(bus, device, function);
     if ((baseClass == 0x6) && (subClass == 0x4)) {
@@ -122,7 +124,7 @@ LOUDDK_API_ENTRY void PCI_Scan_Bus(){
             checkBus(bus);
         }
     }
-
+    
 }
 
 

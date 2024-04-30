@@ -98,6 +98,11 @@ KERNEL_IMPORT int strcmp(const char* str1, const char* str2);
 KERNEL_IMPORT int memcmp(const void* ptr1, const void* ptr2, size_t num);
 KERNEL_IMPORT char* strncpy(char* dest, const char* src, size_t n);
 
+void RegisterInterruptHandler(void(*HANDLER)(), uint8_t InterruptNumber);
+//KERNEL_IMPORT void INTERRUPT(uint8_t InterruptNumber);
+
+KERNEL_IMPORT void sleep(uint64_t Time);
+
 #else
 
 

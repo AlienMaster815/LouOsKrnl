@@ -198,8 +198,8 @@ typedef volatile struct tagHBA_MEM
 	uint32_t vs;		// 0x10, Version
 	uint32_t ccc_ctl;	// 0x14, Command completion coalescing control
 	uint32_t ccc_pts;	// 0x18, Command completion coalescing ports
-	uint32_t em_loc;		// 0x1C, Enclosure management location
-	uint32_t em_ctl;		// 0x20, Enclosure management control
+	uint32_t em_loc;	// 0x1C, Enclosure management location
+	uint32_t em_ctl;	// 0x20, Enclosure management control
 	uint32_t cap2;		// 0x24, Host capabilities extended
 	uint32_t bohc;		// 0x28, BIOS/OS handoff control and status
 

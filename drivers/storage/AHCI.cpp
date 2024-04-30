@@ -1,6 +1,7 @@
 #include <NtAPI.h>
 #include "SATA/sata.h"
 #include <LouDDK.h>
+#include "ahci.h"
 
 /// Tyler Grenier 4/11/24 9:55 PM
 /// Im back fuckers and its good to be back
@@ -41,130 +42,39 @@
 
 //Get ABAR
 
-uint32_t GetAhciHba(P_PCI_DEVICE_OBJECT PDEV, uint8_t BAR = 0x24);
 KERNEL_IMPORT LOUSTATUS LouEnablePciDevice(P_PCI_DEVICE_OBJECT PDEV);
 
-void GetAllIoSpaces(P_PCI_DEVICE_OBJECT PDEV);
 
 #include <stdint.h>
 
 
-
-
-uint32_t GetAhciHba(P_PCI_DEVICE_OBJECT PDEV, uint8_t BAR) {
-	uint32_t value = pci_read(PDEV->bus, PDEV->slot, PDEV->func, BAR);
-	// Mask out non-AHCI bits (assuming 64-bit addressing, and assuming ABAR is 32 bits)
-	value &= 0xFFFFFFF0; // Assuming the AHCI ABAR is aligned to 16 bytes
-
-	return value;
-}
-
 #define ICH_MAP 0x90
 #define ENODEV 19
 
-P_FIS_PACKET GetFisPacketBase(uint8_t PortNum, P_HBA_PORTx HbaPort,BOOLEAN S64A) {
-	if(!S64A){
-		 return (P_FIS_PACKET)(uintptr_t)(HbaPort[PortNum].PxFB.FB);
-	}
-	else {
-		 return (P_FIS_PACKET)(uintptr_t)(HbaPort[PortNum].PxFB.FB + HbaPort[PortNum].PxFBU.FBU);
-	}
-}
 
-void InitializeOnePort(uint8_t PortNum, P_HBA_PORTx HbaPort,BOOLEAN S64A) {
-	LouPrint("Initializing Port:%d\n",PortNum);
+
+LOUDDK_API_ENTRY void AhciInterruptHandler();
+
+#define ABAR 5
+
+
+LOUSTATUS ResetHba(P_HBA_Memory hba) {
+
+	//Set AHCI Mode If not already
+	if (!((hba->ghc >> 31) & 0x01)) { hba->ghc |= (1U << 31); }
 	
-	UNUSED P_FIS_PACKET PF = GetFisPacketBase(PortNum, HbaPort, S64A);
+	//Give HBA Reset Command
+	hba->ghc |= 1;
 
-	LouPrint("Port:%d Initialized\n",PortNum);
+	//check for reset to complete
+	while (hba->ghc & 0x01) {
+		sleep(100);
+	}
+
+
+	return LOUSTATUS_GOOD;
 }
 
-void InitializePorts(P_HBA_DEVICE HBA,P_HBA_PORTx HbaPort) {//32 Port Array
-
-	if (HBA->PI.Port0 )InitializeOnePort(0,  HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port1 )InitializeOnePort(1,  HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port2 )InitializeOnePort(2,  HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port3 )InitializeOnePort(3,  HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port4 )InitializeOnePort(4,  HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port5 )InitializeOnePort(5,  HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port6 )InitializeOnePort(6,  HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port7 )InitializeOnePort(7,  HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port8 )InitializeOnePort(8,  HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port9 )InitializeOnePort(9,  HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port10)InitializeOnePort(10, HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port11)InitializeOnePort(11, HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port12)InitializeOnePort(12, HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port13)InitializeOnePort(13, HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port14)InitializeOnePort(14, HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port15)InitializeOnePort(15, HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port16)InitializeOnePort(16, HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port17)InitializeOnePort(17, HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port18)InitializeOnePort(18, HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port19)InitializeOnePort(19, HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port20)InitializeOnePort(20, HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port21)InitializeOnePort(21, HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port22)InitializeOnePort(22, HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port23)InitializeOnePort(23, HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port24)InitializeOnePort(24, HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port25)InitializeOnePort(25, HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port26)InitializeOnePort(26, HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port27)InitializeOnePort(27, HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port28)InitializeOnePort(28, HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port29)InitializeOnePort(29, HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port30)InitializeOnePort(30, HbaPort, HBA->CAP.S64A);
-	if (HBA->PI.Port31)InitializeOnePort(31, HbaPort, HBA->CAP.S64A);
-}
-
-//Later we will turn this into a win api driver stle for readability
-
-
-
-void GetAhciFeatures(P_HBA_DEVICE HBA) {
-
-	//Print Values Of HBA
-	LouPrint("CAP Values Are\n");
-	if (BIT_SET == HBA->CAP.S64A)	LouPrint("Device Supports 64 Bit Address\n");
-	if (BIT_SET == HBA->CAP.SNCQ)	LouPrint("Device Supports Native Queing\n");
-	if (BIT_SET == HBA->CAP.SSNTF)	LouPrint("Device Supports SNotification\n");
-	if (BIT_SET == HBA->CAP.SSNTF)	LouPrint("Device Supports SNotification\n");
-	if (BIT_SET == HBA->CAP.SMPS)	LouPrint("Device Supports Mechanical Presence Switch\n");
-	if (BIT_SET == HBA->CAP.SSS)	LouPrint("Device Supports Staggered Spin Up\n");
-	if (BIT_SET == HBA->CAP.SALP)	LouPrint("Device Supports Aggressive Link Power Management\n");
-	if (BIT_SET == HBA->CAP.SAL)	LouPrint("Device Supports Activity Light Emitting Diode\n");
-	if (BIT_SET == HBA->CAP.SCLO)	LouPrint("Device Supports Command List Overide\n");
-	if (1 == HBA->CAP.ISS)			LouPrint("Device Supports 1.5/Gbps Transfer Speed\n");
-	if (2 == HBA->CAP.ISS)			LouPrint("Device Supports 3.0/Gbps Transfer Speed\n");
-	if (3 == HBA->CAP.ISS)			LouPrint("Device Supports 6.0/Gbps Transfer Speed\n");
-	if (BIT_SET == HBA->CAP.SAM)	LouPrint("Device Supports Sata AHCI Only Mode\n");
-	if (BIT_SET == HBA->CAP.SPM)	LouPrint("Device Supports Sata Port Multiplyer\n");
-	if (BIT_SET == HBA->CAP.FBSS)	LouPrint("Device Supports Fis Based Switching\n");
-	if (BIT_SET == HBA->CAP.PMD)	LouPrint("Device Supports PIO Multiple DRQ Block\n");
-	if (BIT_SET == HBA->CAP.SSC)	LouPrint("Device Supports Slumber State\n");
-	if (BIT_SET == HBA->CAP.PSC)	LouPrint("Device Supports Partial State\n");
-	LouPrint("Number Of Command Slots Is:%d\n", HBA->CAP.NCS);
-	if (BIT_SET == HBA->CAP.CCCS)	LouPrint("Device Supports Command Completion Coalescing\n");
-	if (BIT_SET == HBA->CAP.EMS)	LouPrint("Device Supports Enclosure Management\n");
-	if (BIT_SET == HBA->CAP.SXS)	LouPrint("Device Supports External SATA\n");
-	LouPrint("Number Of Ports Is:%d\n", HBA->CAP.NP);
-
-	LouPrint("GHC Values Are\n");
-
-	LouPrint("AE Bit Is:");
-	if (HBA->GHC.AE)LouPrint("Enabled\n"); else LouPrint("Disabled\n");
-	LouPrint("Is MSI Panic:");
-	if (HBA->GHC.MSRM)LouPrint("YES\n"); else LouPrint("NO\n");
-	LouPrint("Is Interrupts Enabled:");
-	if (HBA->GHC.IE)LouPrint("YES\n"); else LouPrint("NO\n");
-	LouPrint("Is Controller Hard Reseting:");
-	if (HBA->GHC.HR)LouPrint("YES\n"); else LouPrint("NO\n");
-
-	if (HBA->CAP2.DESO)LouPrint("Device Is DevSleep Entrance from Slumber Only\n");
-	if (HBA->CAP2.SADM)LouPrint("Device Supports Aggressive Device Sleep Management\n");
-	if (HBA->CAP2.SDS)LouPrint("Device Supports Device Sleep\n");
-	if (HBA->CAP2.APST)LouPrint("Device Supports Automatic Partial to Slumber Transitions\n");
-	if (HBA->CAP2.NVMP)LouPrint("Device Supports Automatic NVMHCI Present\n");
-	if (HBA->CAP2.BOH)LouPrint("Device Supports BIOS/OS Handoff\n");
-}
 
 LOUSTATUS LouInitAhciDevice(P_PCI_DEVICE_OBJECT PDEV) {
 
@@ -179,19 +89,11 @@ LOUSTATUS LouInitAhciDevice(P_PCI_DEVICE_OBJECT PDEV) {
 	/// parse device ids to make sure the system dosen use
 	/// alternitive BARS
 	/// 
-
-	uint32_t HbaAddress = GetAhciHba(PDEV);
-
-	if (HbaAddress != 0x00000000)
-		LouMapAddress(HbaAddress, HbaAddress, KERNEL_PAGE_WRITE_PRESENT);
 	
-	P_HBA_DEVICE HBA = (P_HBA_DEVICE)(uintptr_t)HbaAddress;
-	P_HBA_PORTx  HbaPorts = 0x00000000;
+	BaseAddressRegister Bars(PDEV);
 
-	HbaPorts = (P_HBA_PORTx)(HBA + 0x100);
+	LouMapAddress((uint64_t)Bars.address[ABAR], (uint64_t)Bars.address[ABAR], KERNEL_PAGE_WRITE_PRESENT);
 
-	//LouPrint("Address is:%h\n", HbaAddress);
-	//Enable PCI Device
 	rc = LouEnablePciDevice(PDEV);
 	if (rc)
 		return rc;
@@ -210,9 +112,47 @@ LOUSTATUS LouInitAhciDevice(P_PCI_DEVICE_OBJECT PDEV) {
 
 	}
 
-	GetAhciFeatures(HBA);
+	LouPrint("Setting up Ahci Device\n");
+	RegisterInterruptHandler(AhciInterruptHandler,50);
 
-	InitializePorts(HBA, HbaPorts);
+	//register the interrupt pin for 50
+	uint8_t iline = pciConfigReadByte(PDEV->bus, PDEV->slot, PDEV->func, 0x3C);
+	LouPrint("Current Interrupt Line Is|%d\n",iline);
+	iline = 50;
+	pciConfigWriteWord(PDEV->bus, PDEV->slot, PDEV->func, 0x3C, iline);
+	while (pciConfigReadByte(PDEV->bus, PDEV->slot, PDEV->func, 0x3C) != iline);
+	LouPrint("Interrupt Line Succeffuly Changed\n");
+
+
+	LouPrint("AHCI Abar Address Is:%h\n", Bars.address[ABAR]);
+	
+	//uint32_t FOOBAR = *(uint32_t*)(uintptr_t)Bars.address[ABAR];
+	
+	P_HBA_Memory hba = (P_HBA_Memory)(uintptr_t)Bars.address[ABAR];
+	/*
+	LouPrint("Cap Is:%bi\n", hba->cap);
+	LouPrint("ghc Is:%bi\n", hba->ghc);
+	LouPrint("IS Is:%bi\n", hba->is);
+	LouPrint("PI Is:%bi\n", hba->pi);
+	LouPrint("VS Is:%bi\n", hba->vs);
+	LouPrint("CCC_CTL Is:%bi\n", hba->ccc_ctl);
+	LouPrint("CCC_PORTS Is:%bi\n", hba->ccc_ports);
+	LouPrint("EM_LOC Is:%bi\n", hba->em_loc);
+	LouPrint("EM_LOC Is:%bi\n", hba->em_loc);
+	LouPrint("EM_CTL Is:%bi\n", hba->em_ctl);
+	LouPrint("cap2 Is:%bi\n", hba->cap2);
+	LouPrint("bohc Is:%bi\n", hba->bohc);
+	*/
+	//Reset System
+	ResetHba(hba);
+
+
 
 	return STATUS_SUCCESS;
+}
+
+
+LOUDDK_API_ENTRY void AhciInterruptHandler() {
+	LouPrint("AHCI INTERRUPT\n");
+	while (1);
 }

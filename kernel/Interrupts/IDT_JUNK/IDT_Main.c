@@ -67,8 +67,11 @@ extern void ISR44();
 extern void ISR45();
 extern void ISR46();
 extern void ISR47();
+extern void ISR48();
+extern void ISR49();
+extern void ISR50();
 
-void(*Handler[48])() = {
+void(*Handler[51])() = {
     ISR0,
     ISR1,
     ISR2,
@@ -116,7 +119,10 @@ void(*Handler[48])() = {
     ISR44,
     ISR45,
     ISR46,
-    ISR47
+    ISR47,
+    ISR48,
+    ISR49,
+    ISR50
 }; 
 
 #ifdef __x86_64__
@@ -167,7 +173,7 @@ LOUSTATUS SetBasicInterrupts(bool Init){
     #ifdef __x86_64__
     if(Init){
 
-        for (uint8_t i = 0; i < 48; i++ ) {
+        for (uint8_t i = 0; i <= 50; i++ ) {
             set_idt_gate(i, Handler[i], 0x38, 0, 0);
         }
         return 0;
@@ -179,7 +185,7 @@ LOUSTATUS SetBasicInterrupts(bool Init){
     #endif
     #ifdef __i386__
     if(Init){
-        for (uint8_t i = 0; i < 48; i++) {
+        for (uint8_t i = 0; i <= 50; i++) {
             SetPicIDTGate(i, Handler[i]);
         }
         return 0;

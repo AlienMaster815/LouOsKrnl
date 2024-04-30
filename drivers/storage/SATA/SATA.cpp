@@ -163,6 +163,6 @@ LOUDDK_API_ENTRY void Sata_init(uint8_t bus, uint8_t slot, uint8_t func) {
 
 	LouPrint("Setting Up AHCI Device\n");
 	LouInitAhciDevice(&DEV);
-
 }
+
 
