@@ -40,15 +40,6 @@ typedef struct _PCI_DEVICE_OBJECT {
 	pci_power_t CurrentState;
 	uint8_t PmCap;
 	atomic_t enable_cnt;
-	
-	//IO SPACES
-	uint32_t BAR0;
-	uint32_t BAR1;
-	uint32_t BAR2;
-	uint32_t BAR3;
-	uint32_t BAR4;
-	uint32_t BAR5;
-
 }PCI_DEVICE_OBJECT,*P_PCI_DEVICE_OBJECT;
 
 

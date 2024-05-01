@@ -31,6 +31,7 @@ BaseAddressRegister::BaseAddressRegister(P_PCI_DEVICE_OBJECT PDEV) {
 			// write back temp;
 			// device will cancel
 			// upper is how big the memory mapping is
+			LouPrint("Memory Map Is ");
 			switch ((Bar[BarNum] >> 1) & 0x03) {
 				case 0: { // 32 bit
 					LouPrint("32 Bit\n");

@@ -137,13 +137,7 @@ class PATA{
 #ifndef _SATA
 #define _SATA
 
-UNUSED static uint8_t DevSet = 0;
-UNUSED static uint8_t DeviceSelected = 0;
-UNUSED static uint32_t ahci_mmio_base;
-#define SATA 1
-#define SATAPI 2
-#define SEMB 3
-#define PM 4
+
 
 LOUDDK_API_ENTRY void Sata_init(uint8_t bus, uint8_t slot,uint8_t func);
 LOUDDK_API_ENTRY bool IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func);

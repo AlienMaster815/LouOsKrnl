@@ -1,17 +1,18 @@
 {
   "ExpandedNodes": [
     "",
+    "\\drivers",
+    "\\drivers\\storage",
+    "\\drivers\\storage\\SATA",
+    "\\include",
+    "\\include\\drivers",
+    "\\include\\drivers\\Lou_drivers",
     "\\kernel",
-    "\\kernel\\cstdlib",
-    "\\kernel\\cstdlib\\Time",
     "\\kernel\\Drivers",
     "\\kernel\\Drivers\\Display",
-    "\\kernel\\Interrupts",
-    "\\kernel\\Interrupts\\ISR_JUNK",
-    "\\kernel\\Interrupts\\ISR_JUNK\\Routines",
     "\\kernel\\memory",
     "\\kernel\\Timers"
   ],
-  "SelectedNode": "\\kernel\\Drivers\\Display\\vga.c",
+  "SelectedNode": "\\include\\drivers\\Lou_drivers\\pci.h",
   "PreviewInSolutionExplorer": false
 }
