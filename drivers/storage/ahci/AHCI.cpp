@@ -43,7 +43,10 @@
 //Get ABAR
 
 KERNEL_IMPORT LOUSTATUS LouEnablePciDevice(P_PCI_DEVICE_OBJECT PDEV);
-
+bool readSataDevice(P_HBA_Port port, uint32_t startl, uint32_t starth, uint32_t count, uint16_t* buf);
+bool writeSataDevice(P_HBA_Port port, uint32_t startl, uint32_t starth, uint32_t count, uint16_t* buf);
+bool ReadSatapiDevice(P_HBA_Port port, uint32_t startl, uint32_t starth, uint32_t count, uint16_t* buf);
+bool WriteSatapiDevice(P_HBA_Port port, uint32_t startl, uint32_t starth, uint32_t count, uint16_t* buf);
 
 #include <stdint.h>
 
@@ -99,6 +102,25 @@ LOUSTATUS ResetHba(P_HBA_Memory hba) {
 	return LOUSTATUS_GOOD;
 }
 
+int find_cmdslot(P_HBA_Port port) {
+	// slots will hold the combined status of SACT and CI
+	// Each bit corresponds to a slot; if a bit is set, the slot is busy.
+	uint32_t slots = (port->sact | port->ci);
+
+	// Assuming there are 32 slots, based on typical AHCI implementations
+	for (uint32_t i = 0; i < 32; i++) {
+		// Check if the slot is free by testing each bit.
+		if ((slots & (1 << i)) == 0) {
+			return i; // Return the index of the first free slot found
+		}
+	}
+
+	// If no free slot is found, print an error message and return -1.
+	LouPrint("Cannot find free command list entry\n");
+	return -1;
+}
+
+
 static inline int CheckType(P_HBA_Port Px) {
 
 	uint32_t ssts = Px->ssts;
@@ -151,10 +173,17 @@ static inline void port_rebase(P_HBA_Port Px,uint8_t PortNum) {
 
 void SataRegisterPort(P_HBA_Port Px, uint8_t PortNum, uint8_t DevType);
 
+uint16_t buffer[2048];  // Example buffer to hold one sector (if sector size is 1024 bytes)
+uint32_t startBlockL = 0;  // Starting LBA low part
+uint32_t startBlockH = 0;  // Starting LBA high part (if needed)
+uint32_t numBlocks = 1;  // Number of blocks to read
+
 void InitializePort(P_HBA_Port Px, uint8_t PortNum) {
 	port_rebase(Px, PortNum);
-
-
+	sleep(100);
+	//MarkAs Uncashable if not already
+	//Reset Port
+	//Start Interrupts
 
 }
 
@@ -170,6 +199,7 @@ static inline void ProbePort(P_HBA_Memory hba) {
 
 			if (dt == AHCI_DEV_SATA) {
 				LouPrint("Sata SATA Device Found On:%d\n",i);
+				//InitializePort((P_HBA_Port)((uint64_t)hba + 0x100 + (i * 0x80)), i);
 			}
 			else if (dt == AHCI_DEV_SATAPI) {
 				LouPrint("Sata SATAPI Device Found:%d\n",i);
@@ -262,7 +292,311 @@ LOUSTATUS LouInitAhciDevice(P_PCI_DEVICE_OBJECT PDEV) {
 	return STATUS_SUCCESS;
 }
 
+#define ATA_DEV_BUSY 0x80
+#define ATA_DEV_DRQ 0x08
+#define FIS_TYPE_REG_H2D 0x27
+#define ATA_CMD_READ_DMA_EX 0x25
+#define HBA_PxIS_TFES (1 << 30)
+
+
+bool readSataDevice(P_HBA_Port port, uint32_t startl, uint32_t starth, uint32_t count, uint16_t* buf)
+{
+	port->is = (uint32_t)-1;		// Clear pending interrupt bits
+	int spin = 0; // Spin lock timeout counter
+	int slot = find_cmdslot(port);
+	if (slot == -1)
+		return false;
+
+	HBA_CMD_HEADER* cmdheader = (HBA_CMD_HEADER*)(uintptr_t)port->clb;
+	cmdheader += slot;
+	cmdheader->cfl = sizeof(fis_reg_h2d) / sizeof(uint32_t);	// Command FIS size
+	cmdheader->w = 0;		// Read from device
+	cmdheader->prdtl = (uint16_t)((count - 1) >> 4) + 1;	// PRDT entries count
+
+	HBA_CMD_TBL* cmdtbl = (HBA_CMD_TBL*)(uintptr_t)(cmdheader->ctba);
+	memset(cmdtbl, 0, sizeof(HBA_CMD_TBL) +
+		(cmdheader->prdtl - 1) * sizeof(HBA_PRDT_ENTRY));
+	int i;
+	// 8K bytes (16 sectors) per PRDT
+	for (i = 0; i < cmdheader->prdtl - 1; i++)
+	{
+		cmdtbl->prdt_entry[i].dba = (uint32_t)(uintptr_t)buf;
+		cmdtbl->prdt_entry[i].dbc = 8 * 1024 - 1;	// 8K bytes (this value should always be set to 1 less than the actual value)
+		cmdtbl->prdt_entry[i].i = 1;
+		buf += 4 * 1024;	// 4K words
+		count -= 16;	// 16 sectors
+	}
+	// Last entry
+	cmdtbl->prdt_entry[i].dba = (uint32_t)(uintptr_t)buf;
+	cmdtbl->prdt_entry[i].dbc = (count << 9) - 1;	// 512 bytes per sector
+	cmdtbl->prdt_entry[i].i = 1;
+
+	// Setup command
+	fis_reg_h2d* cmdfis = (fis_reg_h2d*)(&cmdtbl->cfis);
+
+	cmdfis->fis_type = FIS_TYPE_REG_H2D;
+	cmdfis->c = 1;	// Command
+	cmdfis->command = ATA_CMD_READ_DMA_EX;
+
+	cmdfis->lba0 = (uint8_t)startl;
+	cmdfis->lba1 = (uint8_t)(startl >> 8);
+	cmdfis->lba2 = (uint8_t)(startl >> 16);
+	cmdfis->device = 1 << 6;	// LBA mode
+
+	cmdfis->lba3 = (uint8_t)(startl >> 24);
+	cmdfis->lba4 = (uint8_t)starth;
+	cmdfis->lba5 = (uint8_t)(starth >> 8);
+
+	cmdfis->countl = count & 0xFF;
+	cmdfis->counth = (count >> 8) & 0xFF;
+
+	// The below loop waits until the port is no longer busy before issuing a new command
+	while ((port->tfd & (ATA_DEV_BUSY | ATA_DEV_DRQ)) && spin < 1000000)
+	{
+		spin++;
+	}
+	if (spin == 1000000)
+	{
+		LouPrint("Port is hung\n");
+		return false;
+	}
+
+	port->ci = 1 << slot;	// Issue command
+
+	// Wait for completion
+	while (1)
+	{
+		sleep(100);
+		// In some longer duration reads, it may be helpful to spin on the DPS bit 
+		// in the PxIS port field as well (1 << 5)
+		if ((port->ci & (1 << slot)) == 0)
+			break;
+		if (port->is & HBA_PxIS_TFES)	// Task file error
+		{
+			LouPrint("Read disk error\n");
+			return false;
+		}
+	}
+
+	// Check again
+	if (port->is & HBA_PxIS_TFES)
+	{
+		LouPrint("Read disk error\n");
+		return false;
+	}
+
+	return true;
+}
+#define ATA_CMD_WRITE_DMA_EX 0x35
+
+bool writeSataDevice(P_HBA_Port port, uint32_t startl, uint32_t starth, uint32_t count, uint16_t* buf) {
+	port->is = (uint32_t)-1;  // Clear pending interrupt bits
+	int spin = 0;
+	int slot = find_cmdslot(port);
+	if (slot == -1)
+		return false;
+	HBA_CMD_HEADER* cmdheader = (HBA_CMD_HEADER*)(uintptr_t)port->clb;
+	cmdheader += slot;
+	cmdheader->cfl = sizeof(fis_reg_h2d) / sizeof(uint32_t);
+	cmdheader->w = 1;  // Write to device
+	cmdheader->prdtl = (uint16_t)((count - 1) >> 4) + 1;
+
+	HBA_CMD_TBL* cmdtbl = (HBA_CMD_TBL*)(uintptr_t)(cmdheader->ctba);
+	memset(cmdtbl, 0, sizeof(HBA_CMD_TBL) + (cmdheader->prdtl - 1) * sizeof(HBA_PRDT_ENTRY));
+	int i;
+	for (i = 0; i < cmdheader->prdtl; i++) {
+		cmdtbl->prdt_entry[i].dba = (uint32_t)(uintptr_t)buf;
+		cmdtbl->prdt_entry[i].dbc = 8 * 1024 - 1;
+		cmdtbl->prdt_entry[i].i = 1;
+		buf += 4 * 1024;
+		count -= 16;
+	}
+
+	fis_reg_h2d* cmdfis = (fis_reg_h2d*)(&cmdtbl->cfis);
+	cmdfis->fis_type = FIS_TYPE_REG_H2D;
+	cmdfis->c = 1;
+	cmdfis->command = ATA_CMD_WRITE_DMA_EX;
+
+	cmdfis->lba0 = (uint8_t)startl;
+	cmdfis->lba1 = (uint8_t)(startl >> 8);
+	cmdfis->lba2 = (uint8_t)(startl >> 16);
+	cmdfis->device = 1 << 6;
+
+	cmdfis->lba3 = (uint8_t)(startl >> 24);
+	cmdfis->lba4 = (uint8_t)starth;
+	cmdfis->lba5 = (uint8_t)(starth >> 8);
+
+	cmdfis->countl = count & 0xFF;
+	cmdfis->counth = (count >> 8) & 0xFF;
+
+	while ((port->tfd & (ATA_DEV_BUSY | ATA_DEV_DRQ)) && spin < 1000000) {
+		sleep(100);
+		spin++;
+	}
+	if (spin == 1000000) {
+		return false;
+	}
+
+
+	port->ci = 1 << slot;
+
+	while (1) {
+		sleep(500);
+		if ((port->ci & (1 << slot)) == 0)
+			break;
+		if (port->is & HBA_PxIS_TFES) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+
+#define ATA_CMD_PACKET 0xA0  // Typically used for ATAPI devices
+
+
+
+bool ReadSatapiDevice(P_HBA_Port port, uint32_t startl, uint32_t starth, uint32_t count, uint16_t* buf) {
+	port->is = (uint32_t)-1;  // Clear pending interrupt bits
+
+	int slot = find_cmdslot(port);
+	if (slot == -1)
+		return false;
+
+	HBA_CMD_HEADER* cmdheader = (HBA_CMD_HEADER*)(uintptr_t)port->clb;
+	cmdheader += slot;
+	cmdheader->cfl = sizeof(fis_reg_h2d) / sizeof(uint32_t);    // Command FIS size
+	cmdheader->w = 0;  // Read from device
+	cmdheader->prdtl = (uint16_t)((count - 1) >> 4) + 1;  // PRDT entries count
+
+	HBA_CMD_TBL* cmdtbl = (HBA_CMD_TBL*)(uintptr_t)(cmdheader->ctba);
+	memset(cmdtbl, 0, sizeof(HBA_CMD_TBL) +
+		(cmdheader->prdtl - 1) * sizeof(HBA_PRDT_ENTRY));
+	int i;
+	for (i = 0; i < cmdheader->prdtl - 1; i++) {
+		cmdtbl->prdt_entry[i].dba = (uint32_t)(uintptr_t)buf;
+		cmdtbl->prdt_entry[i].dbc = 8 * 1024 - 1;  // 8K bytes (this value should always be set to 1 less than the actual value)
+		cmdtbl->prdt_entry[i].i = 1;
+		buf += 4 * 1024;  // 4K words
+		count -= 16;  // 16 sectors
+	}
+	// Last entry
+	cmdtbl->prdt_entry[i].dba = (uint32_t)(uintptr_t)buf;
+	cmdtbl->prdt_entry[i].dbc = (count << 9) - 1;  // 512 bytes per sector
+	cmdtbl->prdt_entry[i].i = 1;
+
+	// Setup command
+	fis_reg_h2d* cmdfis = (fis_reg_h2d*)(&cmdtbl->cfis);
+	cmdfis->fis_type = FIS_TYPE_REG_H2D;
+	cmdfis->c = 1;  // Command
+	cmdfis->command = ATA_CMD_PACKET;  // Sending a packet command for ATAPI
+
+	cmdfis->lba0 = (uint8_t)startl;
+	cmdfis->lba1 = (uint8_t)(startl >> 8);
+	cmdfis->lba2 = (uint8_t)(startl >> 16);
+	cmdfis->device = 0x40;  // LBA mode set, master drive
+
+	cmdfis->lba3 = (uint8_t)(startl >> 24);
+	cmdfis->lba4 = (uint8_t)starth;
+	cmdfis->lba5 = (uint8_t)(starth >> 8);
+
+	cmdfis->countl = count & 0xFF;
+	cmdfis->counth = (count >> 8) & 0xFF;
+
+	int spin = 0;  // Declare spin here
+	// Check if the port is not busy before issuing the command
+	while ((port->tfd & (ATA_DEV_BUSY | ATA_DEV_DRQ)) && (spin++ < 1000000)) {
+		sleep(100);
+	}
+
+	if (spin >= 1000000) {
+		return false;  // Port is hung, return failure
+	}
+
+	port->ci = 1 << slot;  // Issue command
+
+
+	// Wait for completion
+	while (port->ci & (1 << slot)) {
+		sleep(100);
+		if (port->is & HBA_PxIS_TFES) {  // Check for task file error
+			return false;
+		}
+	}
+	return true;  // Success
+}
+
+bool WriteSatapiDevice(P_HBA_Port port, uint32_t startl, uint32_t starth, uint32_t count, uint16_t* buf) {
+	port->is = (uint32_t)-1;
+
+	int slot = find_cmdslot(port);
+	if (slot == -1)
+		return false;
+
+	HBA_CMD_HEADER* cmdheader = (HBA_CMD_HEADER*)(uintptr_t)port->clb;
+	cmdheader += slot;
+	cmdheader->cfl = sizeof(fis_reg_h2d) / sizeof(uint32_t);
+	cmdheader->w = 1;
+
+	HBA_CMD_TBL* cmdtbl = (HBA_CMD_TBL*)(uintptr_t)(cmdheader->ctba);
+	memset(cmdtbl, 0, sizeof(HBA_CMD_TBL) + (cmdheader->prdtl - 1) * sizeof(HBA_PRDT_ENTRY));
+	int i;
+	for (i = 0; i < cmdheader->prdtl; i++) {
+		cmdtbl->prdt_entry[i].dba = (uint32_t)(uintptr_t)buf;
+		cmdtbl->prdt_entry[i].dbc = 8 * 1024 - 1;
+		cmdtbl->prdt_entry[i].i = 1;
+		buf += 4 * 1024;
+		count -= 16;
+	}
+
+	fis_reg_h2d* cmdfis = (fis_reg_h2d*)(&cmdtbl->cfis);
+	cmdfis->fis_type = FIS_TYPE_REG_H2D;
+	cmdfis->c = 1;
+	cmdfis->command = ATA_CMD_PACKET;
+
+	cmdfis->lba0 = (uint8_t)startl;
+	cmdfis->lba1 = (uint8_t)(startl >> 8);
+	cmdfis->lba2 = (uint8_t)(startl >> 16);
+	cmdfis->device = 0x40;
+
+	cmdfis->lba3 = (uint8_t)(startl >> 24);
+	cmdfis->lba4 = (uint8_t)starth;
+	cmdfis->lba5 = (uint8_t)(starth >> 8);
+
+	cmdfis->countl = count & 0xFF;
+	cmdfis->counth = (count >> 8) & 0xFF;
+
+	int spin = 0;
+	while ((port->tfd & (ATA_DEV_BUSY | ATA_DEV_DRQ)) && (spin++ < 1000000)) {
+		sleep(100);
+	}
+
+	if (spin >= 1000000) {
+		return false;
+	}
+
+	port->ci = 1 << slot;
+
+	while (port->ci & (1 << slot)) {
+		sleep(100);
+		if (port->is & HBA_PxIS_TFES) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+
 LOUDDK_API_ENTRY void AhciInterruptHandler() {
 	LouPrint("AHCI INTERRUPT\n");
+	/*
+		Check global interrupt status.Write back its value.For all the ports that have a corresponding set bit...
+		Check the port interrupt status.Write back its value.If zero, continue to the next port.
+		If error bit set, reset port / retry commands as necessary.
+		Compare issued commands register to the commands you have recorded as issuing.For any bits where a command was issued but is no longer running, this means that the command has completed.
+		Once done, continue checking if any other devices sharing the IRQ also need servicing.
+	*/
 	while (1);
 }

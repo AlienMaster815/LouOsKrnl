@@ -79,33 +79,36 @@ void SendMapToAllocation(struct master_multiboot_mmap_entry* mmap) {
     LousineMemoryMapTable = mmap;
 }
 
+#define LongLongBitDemention 64
+#define BlockDemention 1024
 
 typedef struct __attribute__((packed)) {
-    uint64_t BitMap;
-    uint8_t DataBlock[64];
+    uint64_t BitMap[BlockDemention];
+    uint8_t DataBlock[LongLongBitDemention * BlockDemention];
 }BitMap, * P_BitMap;
 
-#define LongLongBitDemention 64
 
 
-static inline void InvalidateBlock(P_BitMap Map, size_t size,uint64_t MapTrace,uint8_t BitTrace) {
-    
+static inline void InvalidateBlock(P_BitMap Map, size_t size,uint64_t MapTrace,uint16_t BlockTrace,uint8_t BitTrace) {
+    /*
     size_t BytesInvalidated = 0;
     // Ensure we don't exceed the number of bits in uint64_t
     while (BytesInvalidated < size) {
         for (;BytesInvalidated < size; MapTrace++) {  // SOMELIMIT should be defined as the number of elements in Map
             for (; BitTrace < LongLongBitDemention && BytesInvalidated < size; BitTrace++) {
-                Map[MapTrace].BitMap &= ~(1ULL << BitTrace);  // Use 1ULL to ensure it's treated as a 64-bit number
+                Map[MapTrace].BitMap[BlockTrace] &= ~(1ULL << BitTrace);  // Use 1ULL to ensure it's treated as a 64-bit number
                 BytesInvalidated++;
             }
             BitTrace = 0;  // Reset BitTrace for the next bitmap
         }
         if (BytesInvalidated >= size) break;  // Break the outer loop if size condition is met
     }
+    */
 }
 
 
 void LouFree(RAMADD Addr, SIZE size) {
+    /*
     uint16_t Number_Of_Entries = (LousineMemoryMapTable->tag.size - sizeof(struct master_multiboot_mmap_entry)) / LousineMemoryMapTable->entry_size;
     if (LousineMemoryMapTable->entry_version == 0) {
         struct multiboot_mmap_entry* mmap_entry;
@@ -130,11 +133,12 @@ void LouFree(RAMADD Addr, SIZE size) {
                     P_BitMap RamMap = (P_BitMap)address;
 
                     for (uint64_t MapTrace = 0; MapTrace < limit; MapTrace++) {
-
-                        for (uint8_t BitTrace = 0; BitTrace < LongLongBitDemention; BitTrace++) {
-                            if (Addr == &RamMap[MapTrace].DataBlock[BitTrace]) {
-                                InvalidateBlock(RamMap, size,MapTrace,BitTrace);
-                                return;
+                        for (uint16_t BlockTrace = 1; BlockTrace < BlockDemention; BlockTrace++) {
+                            for (uint8_t BitTrace = 0; BitTrace < LongLongBitDemention; BitTrace++) {
+                                if (Addr == &RamMap[MapTrace].DataBlock[BlockTrace * BitTrace]) {
+                                    InvalidateBlock(RamMap, size, MapTrace,BlockTrace ,BitTrace);
+                                    return;
+                                }
                             }
                         }
                     }
@@ -147,19 +151,24 @@ void LouFree(RAMADD Addr, SIZE size) {
             else continue;
         }
     }
+    */   
 }
 
 
 static inline void UpdateBitmap(
 P_BitMap Map,
 uint64_t StartingMapTrace,
+uint16_t StartingBlockTrace,
 uint8_t StartingBitTrace,
 uint64_t CurrentMapTrace,
+uint16_t CurrentBlockTrace,
 uint8_t CurrentBitTrace
 ){
     for(StartingMapTrace; StartingMapTrace <= CurrentMapTrace; StartingMapTrace++) {
-        for (StartingBitTrace; StartingBitTrace <= CurrentBitTrace; StartingBitTrace++) {
-            Map[StartingMapTrace].BitMap |= (1 << StartingBitTrace);
+        for (StartingBlockTrace; StartingBlockTrace <= CurrentBlockTrace; StartingBlockTrace++) {
+            for (StartingBitTrace; StartingBitTrace <= CurrentBitTrace; StartingBitTrace++) {
+                Map[StartingMapTrace].BitMap[StartingBlockTrace * StartingBitTrace] |= (1 << StartingBitTrace);
+            }
         }
     }
 }
@@ -167,7 +176,8 @@ uint8_t CurrentBitTrace
 
 void* LouMalloc(size_t BytesToAllocate) {
 
-#ifdef IS_X86_64
+    if (BytesToAllocate >= (LongLongBitDemention * BlockDemention)) return NULL;
+
     uint16_t Number_Of_Entries = (LousineMemoryMapTable->tag.size - sizeof(struct master_multiboot_mmap_entry)) / LousineMemoryMapTable->entry_size;
     if (LousineMemoryMapTable->entry_version == 0) {
         struct multiboot_mmap_entry* mmap_entry;
@@ -202,28 +212,30 @@ void* LouMalloc(size_t BytesToAllocate) {
                 //Parse BitMap
 
                 uint64_t StartingMapTrace = 0;
+                uint16_t StartingBlockTrace = 0;
                 uint8_t StartingBitTrace = 0;
 
                 
 
                 for (uint64_t MapTrace = 0; MapTrace < MapLimit; MapTrace++) {
-
-                    for (uint8_t BitTrace = 0; BitTrace < LongLongBitDemention; BitTrace++) {
-                        if ((RamMap[MapTrace].BitMap >> BitTrace) & 0x01) {//not free
-                            CurrentAddress = &RamMap[MapTrace].DataBlock[BitTrace] + 1;
-                            StartingMapTrace = MapTrace; StartingBitTrace = BitTrace;
-                            CurrentCheck = 0;
-                        }
-                        else {
-                            if (CurrentCheck == (BytesToAllocate - 1)) {
-                                UpdateBitmap(RamMap, StartingMapTrace, StartingBitTrace, MapTrace, BitTrace);
-                                //LouPrint("Map Is Actually at:%d\n", &RamMap[StartingMapTrace]);
-                                return CurrentAddress;
+                    CurrentAddress = &RamMap[MapTrace].DataBlock[0];
+                    for (uint16_t BlockTrace = 1; BlockTrace < BlockDemention; BlockTrace++) {//we start at one to multiply
+                        for (uint8_t BitTrace = 0; BitTrace < LongLongBitDemention; BitTrace++) {
+                            if ((RamMap[MapTrace].BitMap[BlockTrace] >> BitTrace) & 0x01) {//not free
+                                CurrentAddress = &RamMap[MapTrace].DataBlock[BlockTrace * BitTrace] + 1;
+                                StartingMapTrace = MapTrace; StartingBlockTrace = BlockTrace; StartingBitTrace = BitTrace;
+                                CurrentCheck = 0;
                             }
-                            CurrentCheck++;
+                            else {
+                                if (CurrentCheck == (BytesToAllocate - 1)) {
+                                    UpdateBitmap(RamMap, StartingMapTrace,StartingBlockTrace, StartingBitTrace, MapTrace, BlockTrace, BitTrace);
+                                    //LouPrint("Map Is Actually at:%d\n", &RamMap[StartingMapTrace]);
+                                    return CurrentAddress;
+                                }
+                                CurrentCheck++;
+                            }
                         }
                     }
-
                 }
 
             }
@@ -233,6 +245,6 @@ void* LouMalloc(size_t BytesToAllocate) {
         }
     }
     return (void*)0x00000000;
-#endif
+
 }
 

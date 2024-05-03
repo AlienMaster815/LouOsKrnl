@@ -160,6 +160,7 @@ typedef struct __attribute__((packed)) _SataDevObject{
 	PCI_DEVICE_OBJECT DEV;
 	P_HBA_Memory hba;
 	P_HBA_Port Px[32];
+	uint8_t SDevNum;
 }SATA_DEVICE_OBJECT, * P_SATA_DEVICE_OBJECT;
 
 static P_SATA_DEVICE_OBJECT SPDEV[32];

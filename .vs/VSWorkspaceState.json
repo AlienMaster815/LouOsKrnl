@@ -3,16 +3,10 @@
     "",
     "\\drivers",
     "\\drivers\\storage",
+    "\\drivers\\storage\\ahci",
     "\\drivers\\storage\\SATA",
-    "\\include",
-    "\\include\\drivers",
-    "\\include\\drivers\\Lou_drivers",
-    "\\kernel",
-    "\\kernel\\Drivers",
-    "\\kernel\\Drivers\\Display",
-    "\\kernel\\memory",
-    "\\kernel\\Timers"
+    "\\SYS\\X64"
   ],
-  "SelectedNode": "\\include\\drivers\\Lou_drivers\\pci.h",
+  "SelectedNode": "\\drivers\\storage\\SATA\\SATA.cpp",
   "PreviewInSolutionExplorer": false
 }

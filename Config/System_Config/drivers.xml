@@ -3,4 +3,5 @@
 </Target32>
 <Target64>
     <DRIVERTOCPY64>cp SYS/X64/KModeDrvRevEng.sys ISO/Annya/System64/Drivers/KModeDrvRevEng.sys</DRIVERTOCPY64>
+    <DRIVERTOCPY64>cp SYS/X64/KernelDev.sys ISO/Annya/System64/Drivers/KernelDev.sys</DRIVERTOCPY64>
 </Target64>
