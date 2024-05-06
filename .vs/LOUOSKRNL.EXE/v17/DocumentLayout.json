@@ -3,24 +3,8 @@
   "WorkspaceRootPath": "E:\\LOUOSKRNL.EXE\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\storage\\ahci\\AHCI.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\storage\\ahci\\AHCI.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\storage\\SATA\\SATA.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\storage\\SATA\\SATA.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\Config\\System_Config\\drivers.xml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Config\\System_Config\\drivers.xml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\Config\\OSIMGBUILDX64.cfg||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Config\\OSIMGBUILDX64.cfg||{8B382828-6202-11D1-8870-0000F87579D2}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\kernel\\memory\\allocation.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:kernel\\memory\\allocation.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\init\\Lou_Main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:init\\Lou_Main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -30,7 +14,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
@@ -38,67 +22,15 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "SATA.cpp",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\storage\\SATA\\SATA.cpp",
-              "RelativeDocumentMoniker": "drivers\\storage\\SATA\\SATA.cpp",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\storage\\SATA\\SATA.cpp",
-              "RelativeToolTip": "drivers\\storage\\SATA\\SATA.cpp",
-              "ViewState": "AQIAAK4AAAAAHTMzM/MmwL0AAAAZAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-05-03T00:37:26.162Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "AHCI.cpp",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\storage\\ahci\\AHCI.cpp",
-              "RelativeDocumentMoniker": "drivers\\storage\\ahci\\AHCI.cpp",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\storage\\ahci\\AHCI.cpp",
-              "RelativeToolTip": "drivers\\storage\\ahci\\AHCI.cpp",
-              "ViewState": "AQIAAB8CAAAAMGZmZuYcwFECAAABAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-05-03T00:37:10.317Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "drivers.xml",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\Config\\System_Config\\drivers.xml",
-              "RelativeDocumentMoniker": "Config\\System_Config\\drivers.xml",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\Config\\System_Config\\drivers.xml",
-              "RelativeToolTip": "Config\\System_Config\\drivers.xml",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAUAAAAnAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003576|",
-              "WhenOpened": "2024-05-03T00:21:13.637Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "OSIMGBUILDX64.cfg",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\Config\\OSIMGBUILDX64.cfg",
-              "RelativeDocumentMoniker": "Config\\OSIMGBUILDX64.cfg",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\Config\\OSIMGBUILDX64.cfg",
-              "RelativeToolTip": "Config\\OSIMGBUILDX64.cfg",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAMAAAA6AAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2024-05-03T00:20:21.962Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "allocation.c",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\kernel\\memory\\allocation.c",
-              "RelativeDocumentMoniker": "kernel\\memory\\allocation.c",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\kernel\\memory\\allocation.c",
-              "RelativeToolTip": "kernel\\memory\\allocation.c",
-              "ViewState": "AQIAADMAAACAyMzMzEwmwMMAAAAiAAAA",
+              "Title": "Lou_Main.c",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\init\\Lou_Main.c",
+              "RelativeDocumentMoniker": "init\\Lou_Main.c",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\init\\Lou_Main.c",
+              "RelativeToolTip": "init\\Lou_Main.c",
+              "ViewState": "AQIAAHQAAAAAU2ZmZmYUwH4AAAA3AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
-              "WhenOpened": "2024-05-02T22:57:01.891Z",
+              "WhenOpened": "2024-05-06T18:41:04.152Z",
               "EditorCaption": ""
             }
           ]

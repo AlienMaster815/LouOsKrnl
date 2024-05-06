@@ -1,12 +1,16 @@
 {
   "ExpandedNodes": [
     "",
-    "\\drivers",
-    "\\drivers\\storage",
-    "\\drivers\\storage\\ahci",
-    "\\drivers\\storage\\SATA",
-    "\\SYS\\X64"
+    "\\boot",
+    "\\boot\\x86_64",
+    "\\include",
+    "\\include\\drivers",
+    "\\include\\drivers\\display",
+    "\\init",
+    "\\kernel",
+    "\\kernel\\Drivers",
+    "\\kernel\\Drivers\\Display"
   ],
-  "SelectedNode": "\\drivers\\storage\\SATA\\SATA.cpp",
+  "SelectedNode": "\\include\\drivers\\display\\vga.h",
   "PreviewInSolutionExplorer": false
 }

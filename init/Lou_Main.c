@@ -124,6 +124,10 @@ KERNEL_ENTRY Lou_kernel_start(uint32_t foo){
    // Initialize User Mode
    // if(User_Mode_Initialization() != LOUSTATUS_GOOD)LouPanic("User Mode Initialiation Failed",BAD);
 
+    uint8_t* fucky = (uint8_t*)LouMalloc(sizeof(uint8_t));
+
+    LouFree(fucky, sizeof(uint8_t));
+
     LouPrint("Hello World\n");
 
     while (1) {

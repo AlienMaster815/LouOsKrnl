@@ -23,6 +23,8 @@ MBOOTEND:
 section .data
 multiboot_info_ptr dd 0
 
+%define STACK_SIZE 2 * 1024 * 1024
+
 section .text
 
 global start
@@ -106,7 +108,7 @@ section .bss
 
 align 4096
 stack_bottom:
-    resb 24 * 1024 / 8  ; Allocate 24KB for the stack
+    resb STACK_SIZE; Allocate 2MB for the stack
 stack_top:
 
 section .rodata
@@ -149,3 +151,11 @@ long_mode_start:
     mov rcx, [multiboot_info_ptr]
     call Lou_kernel_start
     jmp $ 
+
+
+global LouKeGetStackSize
+
+LouKeGetStackSize:
+    mov rax, STACK_SIZE 
+    ret
+

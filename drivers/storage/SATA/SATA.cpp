@@ -1,7 +1,6 @@
 #include <LouDDK.h>
 #include <NtAPI.h>
 #include "sata.h"
-#include "../ahci/ahci.h"
 
 #define HBA_PxCMD_ST    0x0001
 #define HBA_PxCMD_FRE   0x0010
@@ -143,59 +142,8 @@ LOUDDK_API_ENTRY bool IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func) {
 	return false;
 }
 
-LOUSTATUS LouInitAhciDeviceEx(P_PCI_DEVICE_OBJECT PDEV);
-LOUSTATUS LouInitAhciDevice(P_PCI_DEVICE_OBJECT PDEV);
-
-
-typedef enum {
-	NONE = 0,
-	SATA = 1,
-	SATAPI = 2,
-	SEMB = 3,
-	PM = 4
-}SataDevType;
-
-typedef struct __attribute__((packed)) _SataDevObject{
-	SataDevType DevType[32];
-	PCI_DEVICE_OBJECT DEV;
-	P_HBA_Memory hba;
-	P_HBA_Port Px[32];
-	uint8_t SDevNum;
-}SATA_DEVICE_OBJECT, * P_SATA_DEVICE_OBJECT;
-
-static P_SATA_DEVICE_OBJECT SPDEV[32];
-
-uint8_t count = 0;
-
-static inline void RegisterSataPdev(P_PCI_DEVICE_OBJECT PDEV) {
-	SPDEV[count]->DEV.VendorID = PDEV->VendorID;
-	SPDEV[count]->DEV.DeviceID = PDEV->DeviceID;
-	SPDEV[count]->DEV.bus = PDEV->bus;
-	SPDEV[count]->DEV.slot = PDEV->slot;
-	SPDEV[count]->DEV.func = PDEV->func;
-}
 
 LOUDDK_API_ENTRY void Sata_init(uint8_t bus, uint8_t slot, uint8_t func) {
 
-	PCI_DEVICE_OBJECT DEV;
-
-
-	DEV.bus = bus; DEV.slot = slot; DEV.func = func;
-	DEV.VendorID = PciGetVendorID(bus,slot);
-	DEV.DeviceID = PciGetDeviceID(bus, slot, func);
-
-	SPDEV[count] = (P_SATA_DEVICE_OBJECT)LouMalloc(sizeof(SATA_DEVICE_OBJECT));
-	RegisterSataPdev(&DEV);
-	LouPrint("Setting Up AHCI Device\n");
-	LouInitAhciDevice(&DEV);
-	count++;
 }
 
-void SataRegisterPort(P_HBA_Port Px,uint8_t PortNum,uint8_t DevType) {
-	SPDEV[count]->Px[PortNum] = Px;
-	SPDEV[count]->DevType[PortNum] = (SataDevType)DevType;
-}
-
-void SataRegisterHBA(uintptr_t Address) {
-	SPDEV[count]->hba = (P_HBA_Memory)Address;
-}
