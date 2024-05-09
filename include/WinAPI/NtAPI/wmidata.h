@@ -1,0 +1,12 @@
+#ifndef WMIDATA_H
+#define WMIDATA_H
+
+/*
+
+typedef struct _WMI_CHANGER_PROBLEM_DEVICE_ERROR {
+  ULONG ChangerProblemType;
+} WMI_CHANGER_PROBLEM_DEVICE_ERROR, *PWMI_CHANGER_PROBLEM_DEVICE_ERROR;
+
+*/
+
+#endif

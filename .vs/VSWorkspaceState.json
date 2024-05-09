@@ -1,16 +1,18 @@
 {
   "ExpandedNodes": [
     "",
-    "\\boot",
+    "\\API\\LouAPI\\KernelAPI",
+    "\\API\\LouAPI\\KernelAPI\\IOManager",
+    "\\boot\\x86",
     "\\boot\\x86_64",
+    "\\drivers\\pci_systems\\pci",
     "\\include",
-    "\\include\\drivers",
-    "\\include\\drivers\\display",
-    "\\init",
+    "\\include\\WinAPI",
+    "\\include\\WinAPI\\NtAPI",
     "\\kernel",
     "\\kernel\\Drivers",
     "\\kernel\\Drivers\\Display"
   ],
-  "SelectedNode": "\\include\\drivers\\display\\vga.h",
+  "SelectedNode": "\\include\\WinAPI\\NtAPI\\wmistr.h",
   "PreviewInSolutionExplorer": false
 }
