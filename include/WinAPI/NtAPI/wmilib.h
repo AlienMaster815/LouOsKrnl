@@ -1,22 +1,26 @@
 #ifndef WMILIB_H
 #define WMILIB_H
 
-/*
+#include <NtAPI.h>
+#include "irp.h"
+
 
 NTSTATUS WmiCompleteRequest(
-  [in]      PDEVICE_OBJECT DeviceObject,
-  [in, out] PIRP           Irp,
-  [in]      NTSTATUS       Status,
-  [in]      ULONG          BufferUsed,
-  [in]      CCHAR          PriorityBoost
+  _In_       PDEVICE_OBJECT DeviceObject,
+  _In_ _Out_ PIRP           Irp,
+  _In_       NTSTATUS       Status,
+  _In_       ULONG          BufferUsed,
+  _In_       CCHAR          PriorityBoost
 );
 
+
+
 NTSTATUS WmiFireEvent(
-  [in]           PDEVICE_OBJECT DeviceObject,
-  [in]           LPCGUID        Guid,
-  [in]           ULONG          InstanceIndex,
-  [in]           ULONG          EventDataSize,
-  [in, optional] PVOID          EventData
+  _In_           PDEVICE_OBJECT DeviceObject,
+  _In_           LPCGUID        Guid,
+  _In_           ULONG          InstanceIndex,
+  _In_           ULONG          EventDataSize,
+  _In_opt_		 PVOID          EventData
 );
 
 typedef struct _WMIGUIDREGINFO {
@@ -37,14 +41,12 @@ typedef struct _WMILIB_CONTEXT {
 } WMILIB_CONTEXT, *PWMILIB_CONTEXT;
 
 NTSTATUS WmiSystemControl(
-  [in]      PWMILIB_CONTEXT         WmiLibInfo,
-  [in]      PDEVICE_OBJECT          DeviceObject,
-  [in, out] PIRP                    Irp,
-  [out]     PSYSCTL_IRP_DISPOSITION IrpDisposition
+  _In_      PWMILIB_CONTEXT         WmiLibInfo,
+  _In_      PDEVICE_OBJECT          DeviceObject,
+  _In_ _Out_ PIRP                    Irp,
+  _Out_     PSYSCTL_IRP_DISPOSITION IrpDisposition
 );
 
 
-
-*/
 
 #endif

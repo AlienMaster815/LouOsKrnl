@@ -1,9 +1,29 @@
 #ifndef WMISTR_H
 #define WMISTR_H
 
-/*
+#include <NtAPI.h>
 
-	typedef struct {
+typedef struct _WNODE_HEADER {
+    ULONG BufferSize;
+    ULONG ProviderId;
+    union {
+        ULONG64 HistoricalContext;
+        struct {
+            ULONG Version;
+            ULONG Linkage;
+        } DUMMYSTRUCTNAME;
+    } DUMMYUNIONNAME;
+    union {
+        ULONG         CountLost;
+        HANDLE        KernelHandle;
+        LARGE_INTEGER TimeStamp;
+    } DUMMYUNIONNAME2;
+    GUID  Guid;
+    ULONG ClientContext;
+    ULONG Flags;
+} WNODE_HEADER, * PWNODE_HEADER;
+
+typedef struct {
   GUID  Guid;
   ULONG Flags;
   ULONG InstanceCount;
@@ -31,7 +51,7 @@ typedef struct tagWNODE_ALL_DATA {
   ULONG                OffsetInstanceNameOffsets;
   union {
     ULONG                       FixedInstanceSize;
-    OFFSETINSTANCEDATAANDLENGTH OffsetInstanceDataAndLength[];
+    OFFSETINSTANCEDATAANDLENGTH* OffsetInstanceDataAndLength;
   } DUMMYUNIONNAME;
 } WNODE_ALL_DATA, *PWNODE_ALL_DATA;
 
@@ -45,29 +65,9 @@ typedef struct tagWNODE_EVENT_REFERENCE {
   ULONG                TargetDataBlockSize;
   union {
     ULONG TargetInstanceIndex;
-    WCHAR TargetInstanceName[];
+    WCHAR* TargetInstanceName;
   } DUMMYUNIONNAME;
 } WNODE_EVENT_REFERENCE, *PWNODE_EVENT_REFERENCE;
-
-typedef struct _WNODE_HEADER {
-  ULONG BufferSize;
-  ULONG ProviderId;
-  union {
-    ULONG64 HistoricalContext;
-    struct {
-      ULONG Version;
-      ULONG Linkage;
-    } DUMMYSTRUCTNAME;
-  } DUMMYUNIONNAME;
-  union {
-    ULONG         CountLost;
-    HANDLE        KernelHandle;
-    LARGE_INTEGER TimeStamp;
-  } DUMMYUNIONNAME2;
-  GUID  Guid;
-  ULONG ClientContext;
-  ULONG Flags;
-} WNODE_HEADER, *PWNODE_HEADER;
 
 typedef struct tagWNODE_METHOD_ITEM {
   struct _WNODE_HEADER WnodeHeader;
@@ -104,7 +104,5 @@ typedef struct tagWNODE_TOO_SMALL {
 } WNODE_TOO_SMALL, *PWNODE_TOO_SMALL;
 
 
-
-*/
 
 #endif

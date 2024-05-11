@@ -22,12 +22,12 @@ NTSTATUS AuxKlibGetBugCheckData(
 	return STATUS_SUCCESS;
 }
 
-//PIMAGE_EXPORT_DIRECTORY AuxKlibGetImageExportDirectory(
-//	_In_ PVOID ImageBase
-//) {
+PIMAGE_EXPORT_DIRECTORY AuxKlibGetImageExportDirectory(
+	_In_ PVOID ImageBase
+) {
 
-
-//}
+	return 0;
+}
 
 
 NTSTATUS AuxKlibGetSystemFirmwareTable(

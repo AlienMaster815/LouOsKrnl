@@ -1,4 +1,5 @@
 #include <LouDDK.h>
+#include <NtAPI.h>
 
 #ifndef _MINIPORT_H
 #define _MINIPORT_H
@@ -232,7 +233,7 @@ typedef enum {
 } PCI_EXPRESS_LINK_SUBSTATE;
 
 typedef struct _PCI_VENDOR_SPECIFIC_CAPABILITY {
-//	PCI_CAPABILITIES_HEADER Header;
+	PCI_CAPABILITIES_HEADER Header;
 	UCHAR                   VscLength;
 	UCHAR                   VendorSpecific;
 } PCI_VENDOR_SPECIFIC_CAPABILITY, * PPCI_VENDOR_SPECIFIC_CAPABILITY;
@@ -245,7 +246,7 @@ typedef struct _PROCESSOR_NUMBER {
 
 
 
-/*
+
 typedef struct _IO_RESOURCE_DESCRIPTOR {
 	UCHAR  Option;
 	UCHAR  Type;
@@ -255,28 +256,26 @@ typedef struct _IO_RESOURCE_DESCRIPTOR {
 	USHORT Spare2;
 	union {
 		struct {
-			ULONG            Length;
-			ULONG            Alignment;
+			ULONG Length;
+			ULONG Alignment;
 			PHYSICAL_ADDRESS MinimumAddress;
 			PHYSICAL_ADDRESS MaximumAddress;
 		} Port;
 		struct {
-			ULONG            Length;
-			ULONG            Alignment;
+			ULONG Length;
+			ULONG Alignment;
 			PHYSICAL_ADDRESS MinimumAddress;
 			PHYSICAL_ADDRESS MaximumAddress;
 		} Memory;
 		struct {
-			ULONG             MinimumVector;
-			ULONG             MaximumVector;
-#if ...
+			ULONG MinimumVector;
+			ULONG MaximumVector;
+
 			IRQ_DEVICE_POLICY AffinityPolicy;
-			USHORT            Group;
-#else
-			IRQ_DEVICE_POLICY AffinityPolicy;
-#endif
-			IRQ_PRIORITY      PriorityPolicy;
-			KAFFINITY         TargetedProcessors;
+			USHORT Group;
+
+			IRQ_PRIORITY PriorityPolicy;
+			KAFFINITY TargetedProcessors;
 		} Interrupt;
 		struct {
 			ULONG MinimumChannel;
@@ -289,8 +288,8 @@ typedef struct _IO_RESOURCE_DESCRIPTOR {
 			ULONG TransferWidth;
 		} DmaV3;
 		struct {
-			ULONG            Length;
-			ULONG            Alignment;
+			ULONG Length;
+			ULONG Alignment;
 			PHYSICAL_ADDRESS MinimumAddress;
 			PHYSICAL_ADDRESS MaximumAddress;
 		} Generic;
@@ -309,20 +308,20 @@ typedef struct _IO_RESOURCE_DESCRIPTOR {
 			ULONG Reserved2;
 		} ConfigData;
 		struct {
-			ULONG            Length40;
-			ULONG            Alignment40;
+			ULONG Length40;
+			ULONG Alignment40;
 			PHYSICAL_ADDRESS MinimumAddress;
 			PHYSICAL_ADDRESS MaximumAddress;
 		} Memory40;
 		struct {
-			ULONG            Length48;
-			ULONG            Alignment48;
+			ULONG Length48;
+			ULONG Alignment48;
 			PHYSICAL_ADDRESS MinimumAddress;
 			PHYSICAL_ADDRESS MaximumAddress;
 		} Memory48;
 		struct {
-			ULONG            Length64;
-			ULONG            Alignment64;
+			ULONG Length64;
+			ULONG Alignment64;
 			PHYSICAL_ADDRESS MinimumAddress;
 			PHYSICAL_ADDRESS MaximumAddress;
 		} Memory64;
@@ -337,47 +336,131 @@ typedef struct _IO_RESOURCE_DESCRIPTOR {
 	} u;
 } IO_RESOURCE_DESCRIPTOR, * PIO_RESOURCE_DESCRIPTOR;
 
+
+typedef struct _IO_RESOURCE_DESCRIPTORV2 {
+	UCHAR  Option;
+	UCHAR  Type;
+	UCHAR  ShareDisposition;
+	UCHAR  Spare1;
+	USHORT Flags;
+	USHORT Spare2;
+	union {
+		struct {
+			ULONG Length;
+			ULONG Alignment;
+			PHYSICAL_ADDRESS MinimumAddress;
+			PHYSICAL_ADDRESS MaximumAddress;
+		} Port;
+		struct {
+			ULONG Length;
+			ULONG Alignment;
+			PHYSICAL_ADDRESS MinimumAddress;
+			PHYSICAL_ADDRESS MaximumAddress;
+		} Memory;
+		struct {
+			ULONG MinimumVector;
+			ULONG MaximumVector;
+			IRQ_DEVICE_POLICY AffinityPolicy;
+			IRQ_PRIORITY PriorityPolicy;
+			KAFFINITY TargetedProcessors;
+		} Interrupt;
+		struct {
+			ULONG MinimumChannel;
+			ULONG MaximumChannel;
+		} Dma;
+		struct {
+			ULONG RequestLine;
+			ULONG Reserved;
+			ULONG Channel;
+			ULONG TransferWidth;
+		} DmaV3;
+		struct {
+			ULONG Length;
+			ULONG Alignment;
+			PHYSICAL_ADDRESS MinimumAddress;
+			PHYSICAL_ADDRESS MaximumAddress;
+		} Generic;
+		struct {
+			ULONG Data[3];
+		} DevicePrivate;
+		struct {
+			ULONG Length;
+			ULONG MinBusNumber;
+			ULONG MaxBusNumber;
+			ULONG Reserved;
+		} BusNumber;
+		struct {
+			ULONG Priority;
+			ULONG Reserved1;
+			ULONG Reserved2;
+		} ConfigData;
+		struct {
+			ULONG Length40;
+			ULONG Alignment40;
+			PHYSICAL_ADDRESS MinimumAddress;
+			PHYSICAL_ADDRESS MaximumAddress;
+		} Memory40;
+		struct {
+			ULONG Length48;
+			ULONG Alignment48;
+			PHYSICAL_ADDRESS MinimumAddress;
+			PHYSICAL_ADDRESS MaximumAddress;
+		} Memory48;
+		struct {
+			ULONG Length64;
+			ULONG Alignment64;
+			PHYSICAL_ADDRESS MinimumAddress;
+			PHYSICAL_ADDRESS MaximumAddress;
+		} Memory64;
+		struct {
+			UCHAR Class;
+			UCHAR Type;
+			UCHAR Reserved1;
+			UCHAR Reserved2;
+			ULONG IdLowPart;
+			ULONG IdHighPart;
+		} Connection;
+	} u;
+} IO_RESOURCE_DESCRIPTORV2, * PIO_RESOURCE_DESCRIPTORV2;
+
 typedef struct _IO_RESOURCE_LIST {
-  USHORT                 Version;
-  USHORT                 Revision;
-  ULONG                  Count;
+  USHORT Version;
+  USHORT Revision;
+  ULONG Count;
   IO_RESOURCE_DESCRIPTOR Descriptors[1];
 } IO_RESOURCE_LIST, *PIO_RESOURCE_LIST;
 
 typedef struct _IO_RESOURCE_REQUIREMENTS_LIST {
-  ULONG            ListSize;
-  INTERFACE_TYPE   InterfaceType;
-  ULONG            BusNumber;
-  ULONG            SlotNumber;
-  ULONG            Reserved[3];
-  ULONG            AlternativeLists;
+  ULONG ListSize;
+  INTERFACE_TYPE InterfaceType;
+  ULONG BusNumber;
+  ULONG SlotNumber;
+  ULONG Reserved[3];
+  ULONG AlternativeLists;
   IO_RESOURCE_LIST List[1];
 } IO_RESOURCE_REQUIREMENTS_LIST, *PIO_RESOURCE_REQUIREMENTS_LIST;
 
 typedef struct _INTERFACE {
-	USHORT                 Size;
-	USHORT                 Version;
-	PVOID                  Context;
-	PINTERFACE_REFERENCE   InterfaceReference;
+	USHORT Size;
+	USHORT Version;
+	PVOID Context;
+	PINTERFACE_REFERENCE InterfaceReference;
 	PINTERFACE_DEREFERENCE InterfaceDereference;
 } INTERFACE, * PINTERFACE;
 
 
-void FIELD_OFFSET(
-	type,
-	field
-);
+#define FIELD_OFFSET(type, field) ((LONG_PTR)(&((type *)0)->field))
 
 
 typedef struct _EMULATOR_ACCESS_ENTRY {
-	ULONG                     BasePort;
-	ULONG                     NumConsecutivePorts;
+	ULONG BasePort;
+	ULONG NumConsecutivePorts;
 	EMULATOR_PORT_ACCESS_TYPE AccessType;
-	UCHAR                     AccessMode;
-	UCHAR                     StringSupport;
-	PVOID                     Routine;
+	UCHAR AccessMode;
+	UCHAR StringSupport;
+	PVOID Routine;
 } EMULATOR_ACCESS_ENTRY, * PEMULATOR_ACCESS_ENTRY;
-*/
+
 typedef struct _CM_MCA_POS_DATA {
 	USHORT AdapterId;
 	UCHAR  PosData1;
@@ -397,7 +480,7 @@ typedef struct _CM_EISA_SLOT_INFORMATION {
 	ULONG  CompressedId;
 } CM_EISA_SLOT_INFORMATION, * PCM_EISA_SLOT_INFORMATION;
 
-/*
+
 typedef struct _EISA_MEMORY_CONFIGURATION {
 	EISA_MEMORY_TYPE ConfigurationByte;
 	UCHAR DataSize;
@@ -437,7 +520,7 @@ typedef struct _CM_EISA_FUNCTION_INFORMATION {
 	EISA_PORT_CONFIGURATION   EisaPort[20];
 	UCHAR                     InitializationData[60];
 } CM_EISA_FUNCTION_INFORMATION, * PCM_EISA_FUNCTION_INFORMATION;
-*/
+
 
 unsigned char _BitTest64(
 	__int64 const* Base,

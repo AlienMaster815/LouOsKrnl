@@ -2,6 +2,17 @@
 #define AUX_KLIB_H
 #include <NtAPI.h>
 
+
+typedef struct _GUID {
+	unsigned long  Data1;
+	unsigned short Data2;
+	unsigned short Data3;
+	unsigned char  Data4[8];
+} GUID,* LPGUID;
+
+typedef const GUID* LPCGUID;
+
+
 #define AUX_KLIB_MODULE_PATH_LEN 256
 
 typedef struct _AUX_MODULE_BASIC_INFO {
@@ -50,9 +61,9 @@ NTSTATUS AuxKlibGetBugCheckData(
 	_Out_ PKBUGCHECK_DATA BugCheckData
 );
 
-//PIMAGE_EXPORT_DIRECTORY AuxKlibGetImageExportDirectory(
-//	_In_ PVOID ImageBase
-//);
+PIMAGE_EXPORT_DIRECTORY AuxKlibGetImageExportDirectory(
+	_In_ PVOID ImageBase
+);
 
 NTSTATUS AuxKlibGetSystemFirmwareTable(
 	_In_      ULONG  FirmwareTableProviderSignature,

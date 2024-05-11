@@ -22,40 +22,53 @@
 //Fixed Percision Integers
 
 
-typedef uint32_t DWORD32, UINT32, ULONG32,DWORD;
+typedef uint32_t DWORD32, UINT32, ULONG32,DWORD, UINT;
 typedef uint64_t DWORD64, UINT64, ULONG64,QWORD;
-typedef int32_t INT32, LONG32, NTSTATUS;
+typedef int32_t INT32, LONG32, NTSTATUS,HRESULT, NTSTRSAFEDDI, INT;
 typedef int64_t INT64, LONG64;
-typedef uint8_t BYTE;
+typedef uint16_t UWORD, USHORT,UINT16;
+typedef uint16_t WORD;
+typedef int16_t INT16;
+typedef uint8_t BYTE, UCHAR,UINT8;
+typedef const char CCHAR;
+typedef char INT8;
 
+typedef wchar_t WCHAR, * PWCHAR;
+
+typedef const short CSHORT;
+
+typedef unsigned long long ULONGLONG, * PULONGLONG;
+typedef long long LONGLONG, * PLONGLONG;
 
 typedef unsigned long* PULONG,* PQWORD;
 typedef unsigned char* PUCHAR,* PBYTE;
 typedef unsigned short* PUWORD,* PUSHORT;
 typedef long* PLONG;
-typedef short* PWORD;
+typedef unsigned short* PWORD;
 typedef char* PCHAR;
 
+typedef void* PVOID;
 
+typedef unsigned long** PULONG_PTR;
 
 //Pointer Percision Integers
 typedef unsigned long *DWORD_PTR;
 
-typedef int32_t HALF_PTR;//16 bit int 32 bit systems
-typedef int INT_PTR; //32 bit for 32 bit systems
-typedef long LONG_PTR;
+typedef int32_t* HALF_PTR;//16 bit int 32 bit systems
+typedef int* INT_PTR; //32 bit for 32 bit systems
+typedef long* LONG_PTR;
 typedef uint64_t SIZE_T;
 typedef int64_t SSIZE_T;
-typedef uint32_t UHALF_PTR;
-typedef unsigned int UINT_PTR;
-typedef unsigned long ULONG_PTR;
+typedef uint32_t* UHALF_PTR;
+typedef unsigned int* UINT_PTR;
+typedef unsigned long* ULONG_PTR;
 
 //FIXED PRECISION POINTER TYPES
 //#ifdef __x86_64__
-typedef int64_t POINTER_64; // 32 in 32 bit
+typedef int64_t* POINTER_64; // 32 in 32 bit
 
-#define ULONGLONG unsigned long long
-#define LONGLONG long long
+typedef unsigned long long ULONGLONG;
+typedef long long LONGLONG;
 
 
 //#endif
@@ -349,6 +362,8 @@ typedef struct _UNICODE_STRING {
     PWSTR  Buffer;
 } UNICODE_STRING, *PUNICODE_STRING;
 
+typedef const PUNICODE_STRING PCUNICODE_STRING;
+typedef const UNICODE_STRING CUNICODE_STRING;
 
 typedef
 NTSTATUS

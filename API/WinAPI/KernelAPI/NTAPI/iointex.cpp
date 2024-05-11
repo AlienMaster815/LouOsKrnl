@@ -1,7 +1,8 @@
 #include <NtAPI.h>
+#include <LouDDK.h>
 
 NTSTATUS WdmlibIoConnectInterruptEx(
-	//_In_out_ PIO_CONNECT_INTERRUPT_PARAMETERS Parameters
+	_In_ _Out_ PIO_CONNECT_INTERRUPT_PARAMETERS Parameters
 ) {
 
 
@@ -9,7 +10,7 @@ NTSTATUS WdmlibIoConnectInterruptEx(
 }
 
 NTSTATUS WdmlibIoDisconnectInterruptEx(
-	//_In_out_ PIO_DISCONNECT_INTERRUPT_PARAMETERS Parameters
+	_In_ _Out_ PIO_DISCONNECT_INTERRUPT_PARAMETERS Parameters
 ) {
 
 	return STATUS_SUCCESS;
@@ -17,8 +18,8 @@ NTSTATUS WdmlibIoDisconnectInterruptEx(
 
 
 NTSTATUS WdmlibIoGetAffinityInterrupt(
-	//_In_  PKINTERRUPT     InterruptObject,
-	//_Out_ PGROUP_AFFINITY GroupAffinity
+	_In_  PKINTERRUPT     InterruptObject,
+	_Out_ PGROUP_AFFINITY GroupAffinity
 ) {
 
 

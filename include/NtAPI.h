@@ -1,5 +1,9 @@
+#pragma once
+
 #ifndef _NTAPI_H
 #define _NTAPI_H
+
+#define KERNEL_ENTRY extern "C"
 
 #include <WDKSubsystem/Debuging/debuging.h>
 #include <WDKSubsystem/Types/DebugTypes.h>

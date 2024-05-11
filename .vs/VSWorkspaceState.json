@@ -1,18 +1,13 @@
 {
   "ExpandedNodes": [
     "",
-    "\\API\\LouAPI\\KernelAPI",
-    "\\API\\LouAPI\\KernelAPI\\IOManager",
-    "\\boot\\x86",
-    "\\boot\\x86_64",
-    "\\drivers\\pci_systems\\pci",
+    "\\drivers",
+    "\\drivers\\WDKSubsystem",
+    "\\drivers\\WDKSubsystem\\Debuging",
     "\\include",
     "\\include\\WinAPI",
-    "\\include\\WinAPI\\NtAPI",
-    "\\kernel",
-    "\\kernel\\Drivers",
-    "\\kernel\\Drivers\\Display"
+    "\\include\\WinAPI\\NtAPI"
   ],
-  "SelectedNode": "\\include\\WinAPI\\NtAPI\\wmistr.h",
+  "SelectedNode": "\\API",
   "PreviewInSolutionExplorer": false
 }

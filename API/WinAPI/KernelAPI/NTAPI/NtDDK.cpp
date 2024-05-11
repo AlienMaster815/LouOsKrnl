@@ -1,8 +1,8 @@
 #include <NtAPI.h>
-
+#include <LouDDK.h>
 
 NTSTATUS IoAllocateAdapterChannel(
-	//PADAPTER_OBJECT AdapterObject,
+	PADAPTER_OBJECT AdapterObject,
 	PDEVICE_OBJECT  DeviceObject,
 	ULONG           NumberOfMapRegisters,
 	PDRIVER_CONTROL ExecutionRoutine,
@@ -22,7 +22,7 @@ BOOLEAN WheaSignalHandlerOverrideCallback(
 
 void BootDriverCallbackFunction(
 	PVOID CallbackContext,
-	//BDCB_CALLBACK_TYPE Classification,
+	BDCB_CALLBACK_TYPE Classification,
 	PBDCB_IMAGE_INFORMATION ImageInformation
 ) {
 
@@ -68,7 +68,7 @@ void ExRaiseDatatypeMisalignment() {
 }
 
 NTSTATUS ExUuidCreate(
-	//_Out_ UUID* Uuid
+	_Out_ UUID* Uuid
 ) {
 
 	return STATUS_SUCCESS;
@@ -76,9 +76,9 @@ NTSTATUS ExUuidCreate(
 
 NTSTATUS HalAllocateHardwareCounters(
 	PGROUP_AFFINITY                 GroupAffinty,
-	_In_  ULONG                           GroupCount//,
-	//_In_  PPHYSICAL_COUNTER_RESOURCE_LIST ResourceList,
-	//_Out_ PHANDLE                         CounterSetHandle
+	_In_  ULONG                           GroupCount,
+	_In_  PPHYSICAL_COUNTER_RESOURCE_LIST ResourceList,
+	_Out_ PHANDLE                         CounterSetHandle
 ) {
 
 	return STATUS_SUCCESS;
@@ -95,7 +95,7 @@ void HalExamineMBR(
 }
 
 NTSTATUS HalFreeHardwareCounters(
-	//_In_ HANDLE CounterSetHandle
+	_In_ HANDLE CounterSetHandle
 ) {
 
 	return STATUS_SUCCESS;
@@ -136,27 +136,29 @@ void IoAllocateController(
 
 
 }
-
+/*
 void IoAssignArcName(
-	//_In_  ArcName,
-	//_In_  DeviceName
+	_In_  ArcName,
+	_In_  DeviceName
 ) {
 
 
 }
+*/
 
 void IoClearActivityIdThread(
-	//_In_ LPCGUID OriginalId
+	_In_ LPCGUID OriginalId
 ) {
 
 
 }
 
-//PCONTROLLER_OBJECT IoCreateController(
-//	[in] ULONG Size
-//) {
+PCONTROLLER_OBJECT IoCreateController(
+	_In_ ULONG Size
+) {
 
-//}
+	return 0;
+}
 
 //void IoDeassignArcName(
 //	_In_  ArcName
@@ -171,8 +173,8 @@ void IoClearActivityIdThread(
 //}
 
 NTSTATUS IoDecrementKeepAliveCount(
-	//_In_ _Out_ PFILE_OBJECT FileObject,
-	//_In_ _Out_ PEPROCESS    Process
+	_In_ _Out_ PFILE_OBJECT FileObject,
+	_In_ _Out_ PEPROCESS    Process
 ) {
 
 	return STATUS_SUCCESS;

@@ -3,48 +3,12 @@
   "WorkspaceRootPath": "E:\\LOUOSKRNL.EXE\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\wmistr.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\WinAPI\\NtAPI\\wmistr.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\wmilib.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\WinAPI\\NtAPI\\wmilib.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\wmidata.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\WinAPI\\NtAPI\\wmidata.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\wdmsec.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\WinAPI\\NtAPI\\wdmsec.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\wdm.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\WinAPI\\NtAPI\\wdm.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\procgrp.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\WinAPI\\NtAPI\\procgrp.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\pepfx.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\WinAPI\\NtAPI\\pepfx.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\pep_x.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\WinAPI\\NtAPI\\pep_x.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\ntstrsafe.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\WinAPI\\NtAPI\\ntstrsafe.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\ntoapi.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\WinAPI\\NtAPI\\ntoapi.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\init\\Lou_Main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:init\\Lou_Main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\NtAPIFunc.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\WinAPI\\NtAPI\\NtAPIFunc.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -63,144 +27,27 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "wmistr.h",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\wmistr.h",
-              "RelativeDocumentMoniker": "include\\WinAPI\\NtAPI\\wmistr.h",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\wmistr.h",
-              "RelativeToolTip": "include\\WinAPI\\NtAPI\\wmistr.h",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAABQAAAAbAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-05-09T02:18:48.034Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "wmilib.h",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\wmilib.h",
-              "RelativeDocumentMoniker": "include\\WinAPI\\NtAPI\\wmilib.h",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\wmilib.h",
-              "RelativeToolTip": "include\\WinAPI\\NtAPI\\wmilib.h",
-              "ViewState": "AQIAAA4AAAAAAAAAAAAIwC0AAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-05-09T02:16:54.691Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "wmidata.h",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\wmidata.h",
-              "RelativeDocumentMoniker": "include\\WinAPI\\NtAPI\\wmidata.h",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\wmidata.h",
-              "RelativeToolTip": "include\\WinAPI\\NtAPI\\wmidata.h",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAcAAABHAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-05-09T02:15:38.987Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "wdmsec.h",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\wdmsec.h",
-              "RelativeDocumentMoniker": "include\\WinAPI\\NtAPI\\wdmsec.h",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\wdmsec.h",
-              "RelativeToolTip": "include\\WinAPI\\NtAPI\\wdmsec.h",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAACAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-05-09T02:14:06.707Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
               "Title": "wdm.h",
               "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\wdm.h",
               "RelativeDocumentMoniker": "include\\WinAPI\\NtAPI\\wdm.h",
               "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\wdm.h",
               "RelativeToolTip": "include\\WinAPI\\NtAPI\\wdm.h",
-              "ViewState": "AQIAAHAhAAAAcJmZmZkcwIshAAAAAAAA",
+              "ViewState": "AQIAAJsHAAAAAGCZmZmZv68HAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-05-08T22:48:14.259Z",
+              "WhenOpened": "2024-05-10T21:25:47.225Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "procgrp.h",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\procgrp.h",
-              "RelativeDocumentMoniker": "include\\WinAPI\\NtAPI\\procgrp.h",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\procgrp.h",
-              "RelativeToolTip": "include\\WinAPI\\NtAPI\\procgrp.h",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAUAAAAGAAAA",
+              "DocumentIndex": 1,
+              "Title": "NtAPIFunc.h",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\NtAPIFunc.h",
+              "RelativeDocumentMoniker": "include\\WinAPI\\NtAPI\\NtAPIFunc.h",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\NtAPIFunc.h",
+              "RelativeToolTip": "include\\WinAPI\\NtAPI\\NtAPIFunc.h",
+              "ViewState": "AQIAAGwBAAAAZGZmZmYUwGkBAAAjAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-05-08T22:45:46.438Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "pepfx.h",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\pepfx.h",
-              "RelativeDocumentMoniker": "include\\WinAPI\\NtAPI\\pepfx.h",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\pepfx.h",
-              "RelativeToolTip": "include\\WinAPI\\NtAPI\\pepfx.h",
-              "ViewState": "AQIAAFEEAAAAAAAAAAAIwHAEAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-05-08T22:23:25.668Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "pep_x.h",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\pep_x.h",
-              "RelativeDocumentMoniker": "include\\WinAPI\\NtAPI\\pep_x.h",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\pep_x.h",
-              "RelativeToolTip": "include\\WinAPI\\NtAPI\\pep_x.h",
-              "ViewState": "AQIAAK8EAAAAAAAAAAAIwM4EAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-05-08T21:44:48.423Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "ntoapi.h",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\ntoapi.h",
-              "RelativeDocumentMoniker": "include\\WinAPI\\NtAPI\\ntoapi.h",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\ntoapi.h",
-              "RelativeToolTip": "include\\WinAPI\\NtAPI\\ntoapi.h",
-              "ViewState": "AQIAAAIAAAAAZ2ZmZmb0vwAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-05-08T21:25:34.274Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "ntstrsafe.h",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\ntstrsafe.h",
-              "RelativeDocumentMoniker": "include\\WinAPI\\NtAPI\\ntstrsafe.h",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\ntstrsafe.h",
-              "RelativeToolTip": "include\\WinAPI\\NtAPI\\ntstrsafe.h",
-              "ViewState": "AQIAAKECAAAACAAAAEArwJECAAAvAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-05-08T21:22:51.893Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "Lou_Main.c",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\init\\Lou_Main.c",
-              "RelativeDocumentMoniker": "init\\Lou_Main.c",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\init\\Lou_Main.c",
-              "RelativeToolTip": "init\\Lou_Main.c",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAHwAAABlAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
-              "WhenOpened": "2024-05-06T18:41:04.152Z",
+              "WhenOpened": "2024-05-09T02:32:08.957Z",
               "EditorCaption": ""
             }
           ]

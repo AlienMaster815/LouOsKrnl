@@ -6,13 +6,13 @@
 typedef struct _SYSENV_VALUE {
 	ULONG Attributes;
 	ULONG ValueLength;
-	//UCHAR ValueData[ANYSIZE_ARRAY];
+	UCHAR* ValueData;
 } SYSENV_VALUE, * PSYSENV_VALUE;
 
 typedef struct _SYSENV_VARIABLE {
-	//GUID  VendorGuid;
+	GUID  VendorGuid;
 	ULONG VariableNameLength;
-	//WCHAR VariableName[ANYSIZE_ARRAY];
+	WCHAR* VariableName;
 } SYSENV_VARIABLE, * PSYSENV_VARIABLE;
 
 typedef struct _SYSENV_VARIABLE_INFO {
@@ -23,8 +23,8 @@ typedef struct _SYSENV_VARIABLE_INFO {
 
 typedef struct _XVARIABLE_NAME {
 	ULONG NextEntryOffset;
-	//GUID  VendorGuid;
-	//WCHAR Name[ANYSIZE_ARRAY];
+	GUID  VendorGuid;
+	WCHAR* Name;
 } XVARIABLE_NAME, * PXVARIABLE_NAME;
 
 typedef struct _XVARIABLE_NAME_AND_VALUE {
@@ -32,8 +32,8 @@ typedef struct _XVARIABLE_NAME_AND_VALUE {
 	ULONG ValueOffset;
 	ULONG ValueLength;
 	ULONG Attributes;
-	//GUID  VendorGuid;
-	//WCHAR Name[ANYSIZE_ARRAY];
+	GUID  VendorGuid;
+	WCHAR* Name;
 } XVARIABLE_NAME_AND_VALUE, * PXVARIABLE_NAME_AND_VALUE;
 
 #endif

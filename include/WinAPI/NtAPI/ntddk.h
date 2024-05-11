@@ -1,9 +1,39 @@
 
-#include <NtAPI.h>
 
 #ifndef _NTDDK_H
 #define _NTDDK_H
-/*
+
+#include <NtAPI.h>
+#include "irp.h"
+#include "ntoapi.h"
+#include "wdm.h"
+
+typedef struct _SIGNAL_REG_VALUE {
+	UINT8* RegName;
+	UINT32 MsrAddr;
+	UINT64 Value;
+} SIGNAL_REG_VALUE, * PSIGNAL_REG_VALUE;
+
+
+typedef struct _WHEA_ACPI_HEADER {
+	UINT32 Signature;
+	UINT32 Length;
+	UINT8  Revision;
+	UINT8  Checksum;
+	UINT8  OemId[6];
+	UINT64 OemTableId;
+	UINT32 OemRevision;
+	UINT32 CreatorId;
+	UINT32 CreatorRevision;
+} WHEA_ACPI_HEADER, * PWHEA_ACPI_HEADER;
+
+typedef enum _STATE_LOCATION_TYPE {
+	LocationTypeRegistry,
+	LocationTypeFileSystem,
+	LocationTypeMaximum
+} STATE_LOCATION_TYPE;
+
+
 typedef enum _BDCB_CALLBACK_TYPE {
 	BdCbStatusUpdate,
 	BdCbInitializeImage
@@ -79,54 +109,6 @@ typedef enum _HAL_QUERY_INFORMATION_CLASS {
 	HalQueryProfileCounterOwnership
 } HAL_QUERY_INFORMATION_CLASS, * PHAL_QUERY_INFORMATION_CLASS;
 
-typedef enum {
-	L0sAndL1EntryDisabled,
-	L0sEntryEnabled,
-	L1EntryEnabled,
-	L0sAndL1EntryEnabled
-} PCI_EXPRESS_ASPM_CONTROL;
-
-typedef enum {
-	NoAspmSupport,
-	L0sEntrySupport,
-	L1EntrySupport,
-	L0sAndL1EntrySupport
-} PCI_EXPRESS_ASPM_SUPPORT;
-
-typedef enum {
-	SlotEmpty,
-	CardPresent
-} PCI_EXPRESS_CARD_PRESENCE;
-
-typedef enum {
-	PciExpressEndpoint,
-	PciExpressLegacyEndpoint,
-	PciExpressRootPort,
-	PciExpressUpstreamSwitchPort,
-	PciExpressDownstreamSwitchPort,
-	PciExpressToPciXBridge,
-	PciXToExpressBridge,
-	PciExpressRootComplexIntegratedEndpoint,
-	PciExpressRootComplexEventCollector
-} PCI_EXPRESS_DEVICE_TYPE;
-*/
-//typedef enum {
-//	IndicatorOn,
-//	IndicatorBlink,
-//	IndicatorOff
-//} PCI_EXPRESS_INDICATOR_STATE;
-
-//typedef enum {
-//	L0s_Below64ns,
-//	L0s_64ns_128ns,
-//	L0s_128ns_256ns,
-//	L0s_256ns_512ns,
-//	L0s_512ns_1us,
-//	L0s_1us_2us,
-//	L0s_2us_4us,
-//	L0s_Above4us
-//} PCI_EXPRESS_L0s_EXIT_LATENCY;
-
 typedef enum _HAL_SET_INFORMATION_CLASS {
 	HalProfileSourceInterval,
 	HalProfileSourceInterruptHandler,
@@ -154,14 +136,12 @@ typedef enum _HAL_SET_INFORMATION_CLASS {
 	HalSetClockTimerMinimumInterval
 } HAL_SET_INFORMATION_CLASS, * PHAL_SET_INFORMATION_CLASS;
 
-
 typedef enum {
 	ApicDestinationModePhysical,
 	ApicDestinationModeLogicalFlat,
 	ApicDestinationModeLogicalClustered,
 	ApicDestinationModeUnknown
 } HAL_APIC_DESTINATION_MODE, * PHAL_APIC_DESTINATION_MODE;
-
 
 typedef enum {
 	KdConfigureDeviceAndContinue,
@@ -178,44 +158,8 @@ typedef enum {
 	KdNameSpaceMax
 } KD_NAMESPACE_ENUM, * PKD_NAMESPACE_ENUM;
 
-//typedef enum {
-//	BusWidth32Bits,
-//	BusWidth64Bits
-//} PCI_BUS_WIDTH;
-
-//typedef enum {
-//	PciDeviceD3Cold_State_Disabled_BitIndex,
-//	PciDeviceD3Cold_State_Enabled_BitIndex,
-//	PciDeviceD3Cold_State_ParentRootPortS0WakeSupported_BitIndex,
-//	PciDeviceD3Cold_State_Disabled_Bridge_HackFlags_BitIndex,
-//	PciDeviceD3Cold_Reason_Default_State_BitIndex,
-//	PciDeviceD3Cold_Reason_INF_BitIndex,
-//	PciDeviceD3Cold_Reason_Interface_Api_BitIndex
-//} PCI_DEVICE_D3COLD_STATE_REASON;
-
-//typedef enum {
-//	L1_Below1us,
-//	L1_1us_2us,
-//	L1_2us_4us,
-//	L1_4us_8us,
-//	L1_8us_16us,
-//	L1_16us_32us,
-//	L1_32us_64us,
-//	L1_Above64us
-//} PCI_EXPRESS_L1_EXIT_LATENCY;
-
-
-//typedef union _PCI_EXPRESS_LINK_CAPABILITIES_2_REGISTER {
-//	struct {
-//		ULONG Rsvd0 : 1;
-//		ULONG SupportedLinkSpeedsVector : 7;
-//		ULONG Rsvd8_31 : 24;
-//	} DUMMYSTRUCTNAME;
-//	ULONG  AsULONG;
-//} PCI_EXPRESS_LINK_CAPABILITIES_2_REGISTER, * PPCI_EXPRESS_LINK_CAPABILITIES_2_REGISTER;
-
 typedef struct _BDCB_IMAGE_INFORMATION {
-	//BDCB_CLASSIFICATION Classification;
+	BDCB_CLASSIFICATION Classification;
 	ULONG               ImageFlags;
 	UNICODE_STRING      ImageName;
 	UNICODE_STRING      RegistryPath;
@@ -263,7 +207,7 @@ typedef struct _CONFIGURATION_INFORMATION {
 	ULONG   MediumChangerCount;
 } CONFIGURATION_INFORMATION, * PCONFIGURATION_INFORMATION;
 
-/*
+
 typedef struct _BDCB_STATUS_UPDATE_CONTEXT {
 	BDCB_STATUS_UPDATE_TYPE StatusType;
 } BDCB_STATUS_UPDATE_CONTEXT, * PBDCB_STATUS_UPDATE_CONTEXT;
@@ -294,9 +238,9 @@ typedef struct _CONTEXT {
 	ULONG              EFlags;
 	ULONG              Esp;
 	ULONG              SegSs;
-	UCHAR              ExtendedRegisters[MAXIMUM_SUPPORTED_EXTENSION];
+	UCHAR*              ExtendedRegisters;
 } CONTEXT;
-*/
+
 
 
 typedef struct _CONTROLLER_OBJECT {
@@ -307,12 +251,12 @@ typedef struct _CONTROLLER_OBJECT {
 	ULONG         Spare1;
 	LARGE_INTEGER Spare2;
 } CONTROLLER_OBJECT, * PCONTROLLER_OBJECT;
-/*
+
 typedef struct CORRELATION_VECTOR {
 	CHAR Version;
-	CHAR Vector[RTL_CORRELATION_VECTOR_STRING_LENGTH];
+	CHAR* Vector;
 } CORRELATION_VECTOR;
-*/
+
 
 typedef struct _CUSTOM_SYSTEM_EVENT_TRIGGER_CONFIG {
 	ULONG  Size;
@@ -332,7 +276,7 @@ typedef struct {
 	PUCHAR  TranslatedAddress;
 	ULONG   Length;
 } DEBUG_DEVICE_ADDRESS, * PDEBUG_DEVICE_ADDRESS;
-/*
+
 typedef struct {
 	PHYSICAL_ADDRESS Start;
 	PHYSICAL_ADDRESS MaxEnd;
@@ -345,9 +289,9 @@ typedef struct {
 typedef struct _EFI_ACPI_RAS_SIGNAL_TABLE {
 	WHEA_ACPI_HEADER Header;
 	UINT32           NumberRecord;
-	SIGNAL_REG_VALUE Entries[ANY_SIZE];
+	SIGNAL_REG_VALUE* Entries;
 } EFI_ACPI_RAS_SIGNAL_TABLE, * PEFI_ACPI_RAS_SIGNAL_TABLE;
-*/
+
 
 typedef struct _FILE_ALIGNMENT_INFORMATION {
 	ULONG AlignmentRequirement;
@@ -374,7 +318,38 @@ typedef struct _FILE_NAME_INFORMATION {
 typedef struct _FILE_VALID_DATA_LENGTH_INFORMATION {
 	LARGE_INTEGER ValidDataLength;
 } FILE_VALID_DATA_LENGTH_INFORMATION, * PFILE_VALID_DATA_LENGTH_INFORMATION;
-/*
+
+
+void HalExamineMBR(
+	_In_  PDEVICE_OBJECT DeviceObject,
+	_In_  ULONG          SectorSize,
+	_In_  ULONG          MBRTypeIdentifier,
+	_Out_ PVOID* Buffer
+);
+
+
+typedef HalQuerySystemInformation* pHalQuerySystemInformation;
+typedef HalSetSystemInformation* pHalSetSystemInformation;
+typedef HalQueryBusSlots* pHalQueryBusSlots;
+typedef void (*pHalExamineMBR)(_In_ PDEVICE_OBJECT,_In_ ULONG, _In_ ULONG, _In_ PVOID*);
+typedef HalIoReadPartitionTable* pHalIoReadPartitionTable;
+typedef HalIoSetPartitionInformation* pHalIoSetPartitionInformation;
+typedef HalIoWritePartitionTable* pHalIoWritePartitionTable;
+typedef HalHandlerForBus* pHalHandlerForBus;
+typedef HalReferenceBusHandler* pHalReferenceBusHandler;
+typedef HalInitPnpDriver* pHalInitPnpDriver;
+typedef HalInitPowerManagement* pHalInitPowerManagement;
+typedef HalGetDmaAdapter* pHalGetDmaAdapter;
+typedef HalGetInterruptTranslator* pHalGetInterruptTranslator;
+typedef HalStartMirroring* pHalStartMirroring;
+typedef HalEndMirroring* pHalEndMirroring;
+typedef HalMirrorPhysicalMemory* pHalMirrorPhysicalMemory;
+typedef HalEndOfBoot* pHalEndOfBoot;
+typedef HalMirrorVerify* pHalMirrorVerify;
+typedef HalGetAcpiTable* pHalGetAcpiTable;
+typedef HalSetPciErrorHandlerCallback* pHalSetPciErrorHandlerCallback;
+typedef HalGetPrmCache* pHalGetPrmCache;
+
 typedef struct {
 	ULONG                          Version;
 	pHalQuerySystemInformation     HalQuerySystemInformation;
@@ -496,7 +471,7 @@ typedef struct _KUSER_SHARED_DATA {
 	USHORT                        NativeProcessorArchitecture;
 	ULONG                         NtMajorVersion;
 	ULONG                         NtMinorVersion;
-	BOOLEAN                       ProcessorFeatures[PROCESSOR_FEATURE_MAX];
+	BOOLEAN*                       ProcessorFeatures;
 	ULONG                         Reserved1;
 	ULONG                         Reserved3;
 	ULONG                         TimeSlip;
@@ -597,35 +572,13 @@ typedef struct _KUSER_SHARED_DATA {
 	ULONG64                       UserPointerAuthMask;
 } KUSER_SHARED_DATA, * PKUSER_SHARED_DATA;
 
+
 typedef struct _MM_COPY_ADDRESS {
 	union {
 		PVOID            VirtualAddress;
 		PHYSICAL_ADDRESS PhysicalAddress;
 	};
 } MM_COPY_ADDRESS, * PMMCOPY_ADDRESS;
-
-
-typedef union _PCI_EXPRESS_LINK_CONTROL_2_REGISTER {
-  struct {
-	USHORT TargetLinkSpeed : 4;
-	USHORT Rsvd4_15 : 12;
-  } DUMMYSTRUCTNAME;
-  USHORT AsUSHORT;
-} PCI_EXPRESS_LINK_CONTROL_2_REGISTER, *PPCI_EXPRESS_LINK_CONTROL_2_REGISTER;
-
-typedef union _PCI_EXPRESS_LINK_STATUS_2_REGISTER {
-  struct {
-	USHORT Rsvd0_15 : 16;
-  } DUMMYSTRUCTNAME;
-  USHORT AsUSHORT;
-} PCI_EXPRESS_LINK_STATUS_2_REGISTER, *PPCI_EXPRESS_LINK_STATUS_2_REGISTER;
-
-typedef enum {
-  PciExpressPciPmLinkSubState_L11_BitIndex,
-  PciExpressPciPmLinkSubState_L12_BitIndex,
-  PciExpressASPMLinkSubState_L11_BitIndex,
-  PciExpressASPMLinkSubState_L12_BitIndex
-} PCI_EXPRESS_LINK_SUBSTATE;
 
 typedef enum {
   MaxPayload128Bytes,
@@ -637,29 +590,23 @@ typedef enum {
 } PCI_EXPRESS_MAX_PAYLOAD_SIZE;
 
 typedef enum {
-  MRLClosed,
-  MRLOpen
-} PCI_EXPRESS_MRL_STATE;
-
-typedef enum {
-  PowerOn,
-  PowerOff
-} PCI_EXPRESS_POWER_STATE;
-
-typedef enum {
-  RCB64Bytes,
-  RCB128Bytes
-} PCI_EXPRESS_RCB;
-
-typedef enum PCR_BTI_VBAR_INDEX {
   BtiVbarNone,
   BtiVbarTrapHvc,
   BtiVbarTrapSmc,
   BtiVbarBhbDsbIsb,
   BtiVbarBhbSb,
   BtiVbarBhbClr
-} ;
+} PCR_BTI_VBAR_INDEX;
 
+typedef enum _PHYSICAL_COUNTER_RESOURCE_DESCRIPTOR_TYPE {
+	ResourceTypeSingle,
+	ResourceTypeRange,
+	ResourceTypeExtendedCounterConfiguration,
+	ResourceTypeOverflow,
+	ResourceTypeEventBuffer,
+	ResourceTypeIdenitificationTag,
+	ResourceTypeMax
+} PHYSICAL_COUNTER_RESOURCE_DESCRIPTOR_TYPE;
 
 typedef struct _PHYSICAL_COUNTER_EVENT_BUFFER_CONFIGURATION {
   PPHYSICAL_COUNTER_EVENT_BUFFER_OVERFLOW_HANDLER OverflowHandler;
@@ -682,24 +629,15 @@ typedef struct _PHYSICAL_COUNTER_RESOURCE_DESCRIPTOR {
   } u;
 } PHYSICAL_COUNTER_RESOURCE_DESCRIPTOR, *PPHYSICAL_COUNTER_RESOURCE_DESCRIPTOR;
 
-typedef enum _PHYSICAL_COUNTER_RESOURCE_DESCRIPTOR_TYPE {
-  ResourceTypeSingle,
-  ResourceTypeRange,
-  ResourceTypeExtendedCounterConfiguration,
-  ResourceTypeOverflow,
-  ResourceTypeEventBuffer,
-  ResourceTypeIdenitificationTag,
-  ResourceTypeMax
-} PHYSICAL_COUNTER_RESOURCE_DESCRIPTOR_TYPE;
 
 typedef struct _PHYSICAL_COUNTER_RESOURCE_LIST {
   ULONG                                Count;
-  PHYSICAL_COUNTER_RESOURCE_DESCRIPTOR Descriptors[ANYSIZE_ARRAY];
+  PHYSICAL_COUNTER_RESOURCE_DESCRIPTOR* Descriptors;
 } PHYSICAL_COUNTER_RESOURCE_LIST, *PPHYSICAL_COUNTER_RESOURCE_LIST;
 
-*/
+
 NTSTATUS IoAllocateAdapterChannel(
-	//PADAPTER_OBJECT AdapterObject,
+	PADAPTER_OBJECT AdapterObject,
 	PDEVICE_OBJECT  DeviceObject,
 	ULONG           NumberOfMapRegisters,
 	PDRIVER_CONTROL ExecutionRoutine,
@@ -712,7 +650,7 @@ BOOLEAN WheaSignalHandlerOverrideCallback(
 
 void BootDriverCallbackFunction(
 	PVOID CallbackContext,
-	//BDCB_CALLBACK_TYPE Classification,
+	BDCB_CALLBACK_TYPE Classification,
 	PBDCB_IMAGE_INFORMATION ImageInformation
 );
 
@@ -742,25 +680,19 @@ void ExRaiseDatatypeMisalignment();
 void ExRaiseAccessViolation();
 
 NTSTATUS ExUuidCreate(
-	//_Out_ UUID* Uuid
+	_Out_ UUID* Uuid
 );
 
 NTSTATUS HalAllocateHardwareCounters(
 	PGROUP_AFFINITY                 GroupAffinty,
-	_In_  ULONG                           GroupCount//,
-	//_In_  PPHYSICAL_COUNTER_RESOURCE_LIST ResourceList,
-	//_Out_ PHANDLE                         CounterSetHandle
+	_In_  ULONG                           GroupCount,
+	_In_  PPHYSICAL_COUNTER_RESOURCE_LIST ResourceList,
+	_Out_ PHANDLE                         CounterSetHandle
 );
 
-void HalExamineMBR(
-	_In_  PDEVICE_OBJECT DeviceObject,
-	_In_  ULONG          SectorSize,
-	_In_  ULONG          MBRTypeIdentifier,
-	_Out_ PVOID* Buffer
-);
 
 NTSTATUS HalFreeHardwareCounters(
-	//_In_HANDLE CounterSetHandle
+	_In_ HANDLE CounterSetHandle
 );
 
 
@@ -790,18 +722,18 @@ void IoAllocateController(
 	_In_opt_ PVOID              Context
 );
 
-void IoAssignArcName(
-	//_In_  ArcName,
-	//_In_  DeviceName
-);
+//void IoAssignArcName(
+//	_In_  ArcName,
+//	_In_  DeviceName
+//);
 
 void IoClearActivityIdThread(
-	//_In_ LPCGUID OriginalId
+	_In_ LPCGUID OriginalId
 );
 
-//PCONTROLLER_OBJECT IoCreateController(
-//	[in] ULONG Size
-//);
+PCONTROLLER_OBJECT IoCreateController(
+	_In_ ULONG Size
+);
 
 //void IoDeassignArcName(
 //	_In_  ArcName
@@ -812,11 +744,10 @@ void IoClearActivityIdThread(
 //);
 
 NTSTATUS IoDecrementKeepAliveCount(
-	//_In_ _Out_ PFILE_OBJECT FileObject,
-	//_In_ _Out_ PEPROCESS    Process
+	_In_ _Out_ PFILE_OBJECT FileObject,
+	_In_ _Out_ PEPROCESS    Process
 );
 
-//COPY HERE
 
 void IoDeleteController(
 	_In_ PCONTROLLER_OBJECT ControllerObject
@@ -827,154 +758,154 @@ void IoFreeController(
 );
 
 NTSTATUS IoGetActivityIdIrp(
-	//[in]  PIRP   Irp,
-	//[out] LPGUID Guid
+	_In_  PIRP   Irp,
+	_Out_ LPGUID Guid
 );
 
-//LPCGUID IoGetActivityIdThread();
+LPCGUID IoGetActivityIdThread();
 
 PCONFIGURATION_INFORMATION IoGetConfigurationInformation();
 
-//PGENERIC_MAPPING IoGetFileObjectGenericMapping();
+PGENERIC_MAPPING IoGetFileObjectGenericMapping();
 
-//PEPROCESS IoGetInitiatorProcess(
-	//[in] PFILE_OBJECT FileObject
-//);
-
-//IO_PAGING_PRIORITY IoGetPagingIoPriority(
-//	[in] PIRP Irp
-//);
-
-//PIO_FOEXT_SHADOW_FILE IoGetShadowFileInformation(
-	//[in] PFILE_OBJECT FileObject
-//);
-
-NTSTATUS IoIncrementKeepAliveCount(
-	//[in, out] PFILE_OBJECT FileObject,
-	//[in, out] PEPROCESS    Process
+PEPROCESS IoGetInitiatorProcess(
+	_In_ PFILE_OBJECT FileObject
 );
 
-//LOGICAL IoIsValidIrpStatus(
-	//[in] IN NTSTATUS Status
-//);
+IO_PAGING_PRIORITY IoGetPagingIoPriority(
+	_In_ PIRP Irp
+);
 
-//PIRP IoMakeAssociatedIrp(
-	//[in] PIRP  Irp,
-	//[in] CCHAR StackSize
-//);
+PIO_FOEXT_SHADOW_FILE IoGetShadowFileInformation(
+	_In_ PFILE_OBJECT FileObject
+);
+
+NTSTATUS IoIncrementKeepAliveCount(
+	_In_ _Out_ PFILE_OBJECT FileObject,
+	_In_ _Out_ PEPROCESS    Process
+);
+
+LOGICAL IoIsValidIrpStatus(
+	_In_ NTSTATUS Status
+);
+
+PIRP IoMakeAssociatedIrp(
+	_In_ PIRP  Irp,
+	_In_ CCHAR StackSize
+);
 
 NTSTATUS IoPropagateActivityIdToThread(
-	//[in]  PIRP    Irp,
-	//[out] LPGUID  PropagatedId,
-	//LPCGUID* OriginalId
+	_In_  PIRP    Irp,
+	_Out_ LPGUID  PropagatedId,
+	LPCGUID* OriginalId
 );
 
 NTSTATUS IoQueryFullDriverPath(
-	//[in]  PDRIVER_OBJECT  DriverObject,
-	//[out] PUNICODE_STRING FullPath
+	_In_  PDRIVER_OBJECT  DriverObject,
+	_Out_ PUNICODE_STRING FullPath
 );
 
 void IoRaiseHardError(
-	//[in]           PIRP           Irp,
-	//[in, optional] PVPB           Vpb,
-	//[in]           PDEVICE_OBJECT RealDeviceObject
+	_In_           PIRP           Irp,
+	_In_opt_ PVPB           Vpb,
+	_In_           PDEVICE_OBJECT RealDeviceObject
 );
 
 BOOLEAN IoRaiseInformationalHardError(
-	//[in]           NTSTATUS        ErrorStatus,
-	//[in, optional] PUNICODE_STRING String,
-	//[in, optional] PKTHREAD        Thread
+	_In_           NTSTATUS        ErrorStatus,
+	_In_opt_ PUNICODE_STRING String,
+	_In_opt_ PKTHREAD        Thread
 );
 
 PVOID IoRegisterBootDriverCallback(
-	//[in]           PBOOT_DRIVER_CALLBACK_FUNCTION CallbackFunction,
-	//[in, optional] PVOID                          CallbackContext
+	_In_           PBOOT_DRIVER_CALLBACK_FUNCTION CallbackFunction,
+	_In_opt_ PVOID                          CallbackContext
 );
 
 void IoRegisterBootDriverReinitialization(
-	//[in]           PDRIVER_OBJECT       DriverObject,
-	//[in]           PDRIVER_REINITIALIZE DriverReinitializationRoutine,
-	//[in, optional] PVOID                Context
+	_In_           PDRIVER_OBJECT       DriverObject,
+	_In_           PDRIVER_REINITIALIZE DriverReinitializationRoutine,
+	_In_opt_ PVOID                Context
 );
 
 void IoRegisterDriverReinitialization(
-	//[in]           PDRIVER_OBJECT       DriverObject,
-	//[in]           PDRIVER_REINITIALIZE DriverReinitializationRoutine,
-	//[in, optional] PVOID                Context
+	_In_           PDRIVER_OBJECT       DriverObject,
+	_In_           PDRIVER_REINITIALIZE DriverReinitializationRoutine,
+	_In_opt_ PVOID                Context
 );
 
 NTSTATUS IoReportDetectedDevice(
-	//[in]           PDRIVER_OBJECT                 DriverObject,
-	//[in]           INTERFACE_TYPE                 LegacyBusType,
-	//[in]           ULONG                          BusNumber,
-	//[in]           ULONG                          SlotNumber,
-	//[in, optional] PCM_RESOURCE_LIST              ResourceList,
-	//[in, optional] PIO_RESOURCE_REQUIREMENTS_LIST ResourceRequirements,
-	//[in]           BOOLEAN                        ResourceAssigned,
-	//[in, out]      PDEVICE_OBJECT* DeviceObject
+	_In_           PDRIVER_OBJECT                 DriverObject,
+	_In_           INTERFACE_TYPE                 LegacyBusType,
+	_In_           ULONG                          BusNumber,
+	_In_           ULONG                          SlotNumber,
+	_In_opt_ PCM_RESOURCE_LIST              ResourceList,
+	_In_opt_ PIO_RESOURCE_REQUIREMENTS_LIST ResourceRequirements,
+	_In_           BOOLEAN                        ResourceAssigned,
+	_In_ _Out_      PDEVICE_OBJECT* DeviceObject
 );
 
 NTSTATUS IoReportResourceForDetection(
-	//[in]           PDRIVER_OBJECT    DriverObject,
-	//[in, optional] PCM_RESOURCE_LIST DriverList,
-	//[in, optional] ULONG             DriverListSize,
-	//[in, optional] PDEVICE_OBJECT    DeviceObject,
-	//[in, optional] PCM_RESOURCE_LIST DeviceList,
-	//[in, optional] ULONG             DeviceListSize,
-	//[out]          PBOOLEAN          ConflictDetected
+	_In_           PDRIVER_OBJECT    DriverObject,
+	_In_opt_ PCM_RESOURCE_LIST DriverList,
+	_In_opt_ ULONG             DriverListSize,
+	_In_opt_ PDEVICE_OBJECT    DeviceObject,
+	_In_opt_ PCM_RESOURCE_LIST DeviceList,
+	_In_opt_ ULONG             DeviceListSize,
+	_Out_          PBOOLEAN          ConflictDetected
 );
 
 NTSTATUS IoReportRootDevice(
-	//[in] PDRIVER_OBJECT DriverObject
+	_In_ PDRIVER_OBJECT DriverObject
 );
 NTSTATUS IoSetActivityIdIrp(
-	//[in]           PIRP    Irp,
-	//[in, optional] LPCGUID Guid
+	_In_           PIRP    Irp,
+	_In_opt_ LPCGUID Guid
 );
-/*
+
 LPCGUID IoSetActivityIdThread(
 	LPCGUID ActivityId
 );
 void IoSetHardErrorOrVerifyDevice(
-	[in] PIRP           Irp,
-	[in] PDEVICE_OBJECT DeviceObject
+	_In_ PIRP           Irp,
+	_In_ PDEVICE_OBJECT DeviceObject
 );
 void IoSetMasterIrpStatus(
-	[in, out] PIRP     MasterIrp,
-	[in]      NTSTATUS Status
+	_In_ _Out_ PIRP     MasterIrp,
+	_In_      NTSTATUS Status
 );
 NTSTATUS IoSetShadowFileInformation(
-	[in] PFILE_OBJECT FileObject,
-	[in] PFILE_OBJECT BackingFileObject,
-	[in] PVOID        BackingFltInstance
+	_In_ PFILE_OBJECT FileObject,
+	_In_ PFILE_OBJECT BackingFileObject,
+	_In_ PVOID        BackingFltInstance
 );
 NTSTATUS IoSetSystemPartition(
-	[in] PUNICODE_STRING VolumeNameString
+	_In_ PUNICODE_STRING VolumeNameString
 );
 BOOLEAN IoSetThreadHardErrorMode(
-	[in] BOOLEAN EnableHardErrors
+	_In_ BOOLEAN EnableHardErrors
 );
 void IoTransferActivityId(
-	[in] LPCGUID ActivityId,
-	[in] LPCGUID RelatedActivityId
+	_In_ LPCGUID ActivityId,
+	_In_ LPCGUID RelatedActivityId
 );
 
 void IoUnregisterBootDriverCallback(
-	[in] PVOID CallbackHandle
+	_In_ PVOID CallbackHandle
 );
 NTSTATUS IoVerifyPartitionTable(
-	[in] PDEVICE_OBJECT DeviceObject,
-	[in] BOOLEAN        FixErrors
+	_In_ PDEVICE_OBJECT DeviceObject,
+	_In_ BOOLEAN        FixErrors
 );
 NTSTATUS IoVolumeDeviceToDosName(
-	[in]  PVOID           VolumeDeviceObject,
-	[out] PUNICODE_STRING DosName
+	_In_  PVOID           VolumeDeviceObject,
+	_Out_ PUNICODE_STRING DosName
 );
 
 BOOLEAN KeAreApcsDisabled();
 
 void KeBugCheck(
-	[in] ULONG BugCheckCode
+	_In_ ULONG BugCheckCode
 );
 void KeEnterCriticalRegion();
 
@@ -999,15 +930,15 @@ USHORT KeGetCurrentNodeNumber();
 ULONG KeGetCurrentProcessorNumber();
 
 ULONG KeGetCurrentProcessorNumberEx(
-	[out, optional] PPROCESSOR_NUMBER ProcNumber
+	_Out_ PPROCESSOR_NUMBER ProcNumber
 );
 
 NTSTATUS KeInitializeCrashDumpHeader(
-	[in]            ULONG  DumpType,
-	[in]            ULONG  Flags,
-	[out]           PVOID  Buffer,
-	[in]            ULONG  BufferSize,
-	[out, optional] PULONG BufferNeeded
+	_In_            ULONG  DumpType,
+	_In_            ULONG  Flags,
+	_Out_           PVOID  Buffer,
+	_In_            ULONG  BufferSize,
+	_Out_ PULONG BufferNeeded
 );
 
 BOOLEAN KeInvalidateAllCaches();
@@ -1022,28 +953,28 @@ void KeLeaveCriticalRegion();
 void KeLeaveGuardedRegion();
 
 LONG KePulseEvent(
-	[in, out] PRKEVENT  Event,
-	[in]      KPRIORITY Increment,
-	[in]      BOOLEAN   Wait
+	_In_ _Out_ PRKEVENT  Event,
+	_In_      KPRIORITY Increment,
+	_In_      BOOLEAN   Wait
 );
 
 USHORT KeQueryActiveGroupCount();
 
 ULONG KeQueryActiveProcessorCount(
-	[out, optional] PKAFFINITY ActiveProcessors
+	_Out_ PKAFFINITY ActiveProcessors
 );
 
 ULONG KeQueryActiveProcessorCountEx(
-	[in] USHORT GroupNumber
+	_In_ USHORT GroupNumber
 );
 KAFFINITY KeQueryActiveProcessors();
 
 KAFFINITY KeQueryGroupAffinity(
-	[in] USHORT GroupNumber
+	_In_ USHORT GroupNumber
 );
 
 KAFFINITY KeQueryGroupAffinity(
-	[in] USHORT GroupNumber
+	_In_ USHORT GroupNumber
 );
 USHORT KeQueryHighestNodeNumber();
 
@@ -1052,103 +983,106 @@ USHORT KeQueryMaximumGroupCount();
 ULONG KeQueryMaximumProcessorCount();
 
 ULONG KeQueryMaximumProcessorCountEx(
-	[in] USHORT GroupNumber
+	_In_ USHORT GroupNumber
 );
 
 USHORT KeQueryNodeMaximumProcessorCount(
-	[in] USHORT NodeNumber
+	_In_ USHORT NodeNumber
 );
 VOID
 KeQueryTickCount(
 	_Out_ PLARGE_INTEGER CurrentCount
 );
-_DECL_HAL_KE_IMPORT KIRQL KeRaiseIrqlToDpcLevel();
+
+KERNEL_ENTRY KIRQL KeRaiseIrqlToDpcLevel();
 
 LONG KeSetBasePriorityThread(
-	[in, out] PKTHREAD Thread,
-	[in]      LONG     Increment
+	_In_ _Out_ PKTHREAD Thread,
+	_In_      LONG     Increment
 );
 
 NTSTATUS KeSetHardwareCounterConfiguration(
-	[in] PHARDWARE_COUNTER CounterArray,
-	[in] ULONG             Count
+	_In_ PHARDWARE_COUNTER CounterArray,
+	_In_ ULONG             Count
 );
 
 void KeSetImportanceDpc(
-	[in, out] PRKDPC          Dpc,
-	[in]      KDPC_IMPORTANCE Importance
+	_In_ _Out_ PRKDPC          Dpc,
+	_In_      KDPC_IMPORTANCE Importance
 );
 
 void KeSetTargetProcessorDpc(
-	[in, out] PRKDPC Dpc,
-	[in]      CCHAR  Number
+	_In_ _Out_ PRKDPC Dpc,
+	_In_      CCHAR  Number
 );
 
+typedef PHYSICAL_ADDRESS* PPHYSICAL_ADDRESS;
+
 NTSTATUS MmAddPhysicalMemory(
-	[in] PPHYSICAL_ADDRESS StartAddress,
-	[in] PLARGE_INTEGER    NumberOfBytes
+	_In_ PPHYSICAL_ADDRESS StartAddress,
+	_In_ PLARGE_INTEGER    NumberOfBytes
 );
 
 PVOID MmAllocateContiguousMemory(
-	[in] SIZE_T           NumberOfBytes,
-	[in] PHYSICAL_ADDRESS HighestAcceptableAddress
+	_In_ SIZE_T           NumberOfBytes,
+	_In_ PHYSICAL_ADDRESS HighestAcceptableAddress
 );
 
 PVOID MmAllocateContiguousMemorySpecifyCache(
-	[in]           SIZE_T              NumberOfBytes,
-	[in]           PHYSICAL_ADDRESS    LowestAcceptableAddress,
-	[in]           PHYSICAL_ADDRESS    HighestAcceptableAddress,
-	[in, optional] PHYSICAL_ADDRESS    BoundaryAddressMultiple,
-	[in]           MEMORY_CACHING_TYPE CacheType
+	_In_           SIZE_T              NumberOfBytes,
+	_In_           PHYSICAL_ADDRESS    LowestAcceptableAddress,
+	_In_           PHYSICAL_ADDRESS    HighestAcceptableAddress,
+	_In_opt_ PHYSICAL_ADDRESS    BoundaryAddressMultiple,
+	_In_           MEMORY_CACHING_TYPE CacheType
 );
 
 PVOID MmAllocateContiguousMemorySpecifyCacheNode(
-	[in]           SIZE_T              NumberOfBytes,
-	[in]           PHYSICAL_ADDRESS    LowestAcceptableAddress,
-	[in]           PHYSICAL_ADDRESS    HighestAcceptableAddress,
-	[in, optional] PHYSICAL_ADDRESS    BoundaryAddressMultiple,
-	[in]           MEMORY_CACHING_TYPE CacheType,
-	[in]           NODE_REQUIREMENT    PreferredNode
+	_In_           SIZE_T              NumberOfBytes,
+	_In_           PHYSICAL_ADDRESS    LowestAcceptableAddress,
+	_In_           PHYSICAL_ADDRESS    HighestAcceptableAddress,
+	_In_opt_ PHYSICAL_ADDRESS    BoundaryAddressMultiple,
+	_In_           MEMORY_CACHING_TYPE CacheType,
+	_In_           NODE_REQUIREMENT    PreferredNode
 );
 
 PVOID MmAllocateContiguousNodeMemory(
-	[in]           SIZE_T           NumberOfBytes,
-	[in]           PHYSICAL_ADDRESS LowestAcceptableAddress,
-	[in]           PHYSICAL_ADDRESS HighestAcceptableAddress,
-	[in, optional] PHYSICAL_ADDRESS BoundaryAddressMultiple,
-	[in]           ULONG            Protect,
-	[in]           NODE_REQUIREMENT PreferredNode
+	_In_           SIZE_T           NumberOfBytes,
+	_In_           PHYSICAL_ADDRESS LowestAcceptableAddress,
+	_In_           PHYSICAL_ADDRESS HighestAcceptableAddress,
+	_In_opt_ PHYSICAL_ADDRESS BoundaryAddressMultiple,
+	_In_           ULONG            Protect,
+	_In_           NODE_REQUIREMENT PreferredNode
 );
 
 PVOID MmAllocateNonCachedMemory(
-	[in] SIZE_T NumberOfBytes
+	_In_ SIZE_T NumberOfBytes
 );
 
 NTSTATUS MmCopyMemory(
-	[in]  PVOID           TargetAddress,
-	[in]  MM_COPY_ADDRESS SourceAddress,
-	[in]  SIZE_T          NumberOfBytes,
-	[in]  ULONG           Flags,
-	[out] PSIZE_T         NumberOfBytesTransferred
+	_In_  PVOID           TargetAddress,
+	_In_  MM_COPY_ADDRESS SourceAddress,
+	_In_  SIZE_T          NumberOfBytes,
+	_In_  ULONG           Flags,
+	_Out_ PSIZE_T         NumberOfBytesTransferred
 );
 
 void MmFreeContiguousMemory(
-	[in] PVOID BaseAddress
+	_In_ PVOID BaseAddress
 );
 
 void MmFreeContiguousMemorySpecifyCache(
-	[in] PVOID               BaseAddress,
-	[in] SIZE_T              NumberOfBytes,
-	[in] MEMORY_CACHING_TYPE CacheType
+	_In_ PVOID               BaseAddress,
+	_In_ SIZE_T              NumberOfBytes,
+	_In_ MEMORY_CACHING_TYPE CacheType
 );
 
 void MmFreeNonCachedMemory(
-	[in] PVOID  BaseAddress,
-	[in] SIZE_T NumberOfBytes
+	_In_ PVOID  BaseAddress,
+	_In_ SIZE_T NumberOfBytes
 );
 
 PHYSICAL_ADDRESS MmGetPhysicalAddress(
-	[in] PVOID BaseAddress
+	_In_ PVOID BaseAddress
 );
 
 PPHYSICAL_MEMORY_RANGE MmGetPhysicalMemoryRangesEx2(
@@ -1158,13 +1092,13 @@ PPHYSICAL_MEMORY_RANGE MmGetPhysicalMemoryRangesEx2(
 
 //Not A Recomended Function
 BOOLEAN MmIsAddressValid(
-	[in] PVOID VirtualAddress
+	_In_ PVOID VirtualAddress
 );
 
 BOOLEAN MmIsThisAnNtAsSystem();
 
 void MmLockPagableSectionByHandle(
-	[in] PVOID ImageSectionHandle
+	_In_ PVOID ImageSectionHandle
 );
 
 NTSTATUS MmMapViewInSystemSpace(
@@ -1175,9 +1109,9 @@ NTSTATUS MmMapViewInSystemSpace(
 
 
 HANDLE MmSecureVirtualMemory(
-	[in] PVOID  Address,
-	[in] SIZE_T Size,
-	[in] ULONG  ProbeMode
+	_In_ PVOID  Address,
+	_In_ SIZE_T Size,
+	_In_ ULONG  ProbeMode
 );
 
 HANDLE MmSecureVirtualMemoryEx(
@@ -1193,68 +1127,53 @@ NTSTATUS MmUnmapViewInSystemSpace(
 );
 
 void MmUnsecureVirtualMemory(
-  [in] HANDLE SecureHandle
+  _In_ HANDLE SecureHandle
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtOpenProcess(
-  [out]          PHANDLE            ProcessHandle,
-  [in]           ACCESS_MASK        DesiredAccess,
-  [in]           POBJECT_ATTRIBUTES ObjectAttributes,
-  [in, optional] PCLIENT_ID         ClientId
+KERNEL_ENTRY NTSYSCALLAPI NTSTATUS NtOpenProcess(
+  _Out_          PHANDLE            ProcessHandle,
+  _In_           ACCESS_MASK        DesiredAccess,
+  _In_           POBJECT_ATTRIBUTES ObjectAttributes,
+  _In_opt_ PCLIENT_ID         ClientId
 );
 
 
 void PcreateProcessNotifyRoutine(
-  [in] HANDLE ParentId,
-  [in] HANDLE ProcessId,
-  [in] BOOLEAN Create
-);
-
-
-void PcreateProcessNotifyRoutineEx(
-  [_Inout_]           PEPROCESS Process,
-  [in]                HANDLE ProcessId,
-  [in, out, optional] PPS_CREATE_NOTIFY_INFO CreateInfo
+  _In_ HANDLE ParentId,
+  _In_ HANDLE ProcessId,
+  _In_ BOOLEAN Create
 );
 
 void PcreateThreadNotifyRoutine(
-  [in] HANDLE ProcessId,
-  [in] HANDLE ThreadId,
-  [in] BOOLEAN Create
+  _In_ HANDLE ProcessId,
+  _In_ HANDLE ThreadId,
+  _In_ BOOLEAN Create
 );
 
 NTSTATUS PgetLocationString(
-  [in, out] PVOID Context,
-  [out]     PZZWSTR *LocationStrings
+  _In_ _Out_ PVOID Context,
+  _Out_     PZZWSTR *LocationStrings
 );
 
 void Phalexaminembr(
-  [in]  PDEVICE_OBJECT DeviceObject,
-  [in]  ULONG SectorSize,
-  [in]  ULONG MBRTypeIdentifier,
-  [out] PVOID *Buffer
+  _In_  PDEVICE_OBJECT DeviceObject,
+  _In_  ULONG SectorSize,
+  _In_  ULONG MBRTypeIdentifier,
+  _Out_ PVOID *Buffer
 );
 
 
 NTSTATUS Phalquerysysteminformation(
-  [in]  HAL_QUERY_INFORMATION_CLASS InformationClass,
-  [in]  ULONG BufferSize,
-  [out] PVOID Buffer,
-  [out] PULONG ReturnedLength
+  _In_  HAL_QUERY_INFORMATION_CLASS InformationClass,
+  _In_  ULONG BufferSize,
+  _Out_ PVOID Buffer,
+  _Out_ PULONG ReturnedLength
 );
 
 NTSTATUS Phalsetsysteminformation(
-  [in]  HAL_SET_INFORMATION_CLASS InformationClass,
-  [in]  ULONG BufferSize,
-  [out] PVOID Buffer
-)
-
-PLOAD_IMAGE_NOTIFY_ROUTINE PloadImageNotifyRoutine;
-
-void PloadImageNotifyRoutine(
-  [in, optional] PUNICODE_STRING FullImageName,
-  [in]           HANDLE ProcessId,
-  [in]           PIMAGE_INFO ImageInfo
+	_In_  HAL_SET_INFORMATION_CLASS InformationClass,
+	_In_  ULONG BufferSize,
+	_Out_ PVOID Buffer
 );
 
 typedef struct _PNP_LOCATION_INTERFACE {
@@ -1416,13 +1335,20 @@ typedef struct _PS_CREATE_NOTIFY_INFO {
   NTSTATUS            CreationStatus;
 } PS_CREATE_NOTIFY_INFO, *PPS_CREATE_NOTIFY_INFO;
 
+void PcreateProcessNotifyRoutineEx(
+	_In_ _Out_          PEPROCESS Process,
+	_In_                HANDLE ProcessId,
+	_In_ _Out_ PPS_CREATE_NOTIFY_INFO CreateInfo
+);
+
+
 NTSTATUS PsAllocSiloContextSlot(
-  [in]  ULONG_PTR Reserved,
-  [out] ULONG     *ReturnedContextSlot
+  _In_  ULONG_PTR Reserved,
+  _Out_ ULONG     *ReturnedContextSlot
 );
 
 PESILO PsAttachSiloToCurrentThread(
-  [in] PESILO Silo
+  _In_ PESILO Silo
 );
 
 typedef enum _PSCREATEPROCESSNOTIFYTYPE {
@@ -1430,10 +1356,10 @@ typedef enum _PSCREATEPROCESSNOTIFYTYPE {
 } PSCREATEPROCESSNOTIFYTYPE;
 
 NTSTATUS PsCreateSiloContext(
-  [in]           PESILO                        Silo,
-  [in]           ULONG                         Size,
-  [in]           POOL_TYPE                     PoolType,
-  [in, optional] SILO_CONTEXT_CLEANUP_CALLBACK ContextCleanupCallback,
+  _In_           PESILO                        Silo,
+  _In_           ULONG                         Size,
+  _In_           POOL_TYPE                     PoolType,
+  _In_opt_ SILO_CONTEXT_CLEANUP_CALLBACK ContextCleanupCallback,
 				 PVOID                         *ReturnedSiloContext
 );
 
@@ -1443,15 +1369,15 @@ typedef enum _PSCREATETHREADNOTIFYTYPE {
 } PSCREATETHREADNOTIFYTYPE;
 
 void PsDereferenceSiloContext(
-  [in] PVOID SiloContext
+  _In_ PVOID SiloContext
 );
 
 void PsDetachSiloFromCurrentThread(
-  [in] PESILO PreviousSilo
+  _In_ PESILO PreviousSilo
 );
 
 NTSTATUS PsFreeSiloContextSlot(
-  [in] ULONG ContextSlot
+  _In_ ULONG ContextSlot
 );
 
 HANDLE PsGetCurrentProcessId();
@@ -1467,45 +1393,45 @@ HANDLE PsGetCurrentThreadId();
 PVOID PsGetCurrentThreadTeb();
 
 PESILO PsGetEffectiveServerSilo(
-  [in] PESILO Silo
+  _In_ PESILO Silo
 );
 
 PESILO PsGetHostSilo();
 
 NTSTATUS PsGetJobServerSilo(
-  [in, optional] PEJOB  Job,
-  [out]          PESILO *ServerSilo
+  _In_opt_ PEJOB  Job,
+  _Out_          PESILO *ServerSilo
 );
 
 NTSTATUS PsGetJobSilo(
-  [in]  PEJOB  Job,
-  [out] PESILO *Silo
+  _In_  PEJOB  Job,
+  _Out_ PESILO *Silo
 );
 
 PESILO PsGetParentSilo(
-  [in, optional] PEJOB Job
+  _In_opt_ PEJOB Job
 );
 
 NTSTATUS PsGetPermanentSiloContext(
-  [in] PESILO Silo,
-  [in] ULONG  ContextSlot,
+  _In_ PESILO Silo,
+  _In_ ULONG  ContextSlot,
 	   PVOID  *ReturnedSiloContext
 );
 
 LONGLONG PsGetProcessCreateTimeQuadPart(
-  [in] PEPROCESS Process
+  _In_ PEPROCESS Process
 );
 
 NTSTATUS PsGetProcessExitStatus(
-  [in] PEPROCESS Process
+  _In_ PEPROCESS Process
 );
 
 HANDLE PsGetProcessId(
-  [in] PEPROCESS Process
+  _In_ PEPROCESS Process
 );
 
 ULONGLONG PsGetProcessStartKey(
-  [in] PEPROCESS Process
+  _In_ PEPROCESS Process
 );
 
 ULONG PsGetServerSiloActiveConsoleId(
@@ -1513,29 +1439,29 @@ ULONG PsGetServerSiloActiveConsoleId(
 );
 
 GUID * PsGetSiloContainerId(
-  [in] PESILO Silo
+  _In_ PESILO Silo
 );
 
 NTSTATUS PsGetSiloContext(
-  [in] PESILO Silo,
-  [in] ULONG  ContextSlot,
+  _In_ PESILO Silo,
+  _In_ ULONG  ContextSlot,
 	   PVOID  *ReturnedSiloContext
 );
 
 ULONG PsGetSiloMonitorContextSlot(
-  [in] PSILO_MONITOR Monitor
+  _In_ PSILO_MONITOR Monitor
 );
 
 LONGLONG PsGetThreadCreateTime(
-  [in] PETHREAD Thread
+  _In_ PETHREAD Thread
 );
 
 NTSTATUS PsGetThreadExitStatus(
-  [in] PETHREAD Thread
+  _In_ PETHREAD Thread
 );
 
 HANDLE PsGetThreadId(
-  [in] PETHREAD Thread
+  _In_ PETHREAD Thread
 );
 
 HANDLE PsGetThreadProcessId(
@@ -1543,158 +1469,158 @@ HANDLE PsGetThreadProcessId(
 );
 
 PESILO PsGetThreadServerSilo(
-  [In] PETHREAD Thread
+  _In_ PETHREAD Thread
 );
 
 NTSTATUS PsInsertPermanentSiloContext(
-  [in] PESILO Silo,
-  [in] ULONG  ContextSlot,
-  [in] PVOID  SiloContext
+  _In_ PESILO Silo,
+  _In_ ULONG  ContextSlot,
+  _In_ PVOID  SiloContext
 );
 
 NTSTATUS PsInsertSiloContext(
-  [in] PESILO Silo,
-  [in] ULONG  ContextSlot,
-  [in] PVOID  SiloContext
+  _In_ PESILO Silo,
+  _In_ ULONG  ContextSlot,
+  _In_ PVOID  SiloContext
 );
 
 BOOLEAN PsIsHostSilo(
-  [in] PESILO Silo
+  _In_ PESILO Silo
 );
 
 NTSTATUS PsMakeSiloContextPermanent(
-  [in] PESILO Silo,
-  [in] ULONG  ContextSlot
+  _In_ PESILO Silo,
+  _In_ ULONG  ContextSlot
 );
 
 void PsReferenceSiloContext(
-  [in] PVOID SiloContext
+  _In_ PVOID SiloContext
 );
 
 NTSTATUS PsRemoveCreateThreadNotifyRoutine(
-  [in] PCREATE_THREAD_NOTIFY_ROUTINE NotifyRoutine
+  _In_ PCREATE_THREAD_NOTIFY_ROUTINE NotifyRoutine
 );
 
 NTSTATUS PsRemoveLoadImageNotifyRoutine(
-  [in] PLOAD_IMAGE_NOTIFY_ROUTINE NotifyRoutine
+  _In_ PLOAD_IMAGE_NOTIFY_ROUTINE NotifyRoutine
 );
 
 NTSTATUS PsRemoveSiloContext(
-  [in] PESILO Silo,
-  [in] ULONG  ContextSlot,
+  _In_ PESILO Silo,
+  _In_ ULONG  ContextSlot,
 	   PVOID  *RemovedSiloContext
 );
 
 NTSTATUS PsReplaceSiloContext(
-  [in]       PESILO Silo,
-  [in]       ULONG  ContextSlot,
-  [in]       PVOID  NewSiloContext,
-  [optional] PVOID  *OldSiloContext
+  _In_       PESILO Silo,
+  _In_       ULONG  ContextSlot,
+  _In_       PVOID  NewSiloContext,
+  PVOID  *OldSiloContext
 );
 
 NTSTATUS PsSetCreateProcessNotifyRoutine(
-  [in] PCREATE_PROCESS_NOTIFY_ROUTINE NotifyRoutine,
-  [in] BOOLEAN                        Remove
+  _In_ PCREATE_PROCESS_NOTIFY_ROUTINE NotifyRoutine,
+  _In_ BOOLEAN                        Remove
 );
 
 NTSTATUS PsSetCreateProcessNotifyRoutineEx(
-  [in] PCREATE_PROCESS_NOTIFY_ROUTINE_EX NotifyRoutine,
-  [in] BOOLEAN                           Remove
+  _In_ PCREATE_PROCESS_NOTIFY_ROUTINE_EX NotifyRoutine,
+  _In_ BOOLEAN                           Remove
 );
 
 NTSTATUS PsSetCreateProcessNotifyRoutineEx2(
-  [in] PSCREATEPROCESSNOTIFYTYPE NotifyType,
-  [in] PVOID                     NotifyInformation,
-  [in] BOOLEAN                   Remove
+  _In_ PSCREATEPROCESSNOTIFYTYPE NotifyType,
+  _In_ PVOID                     NotifyInformation,
+  _In_ BOOLEAN                   Remove
 );
 
 NTSTATUS PsSetCreateThreadNotifyRoutine(
-  [in] PCREATE_THREAD_NOTIFY_ROUTINE NotifyRoutine
+  _In_ PCREATE_THREAD_NOTIFY_ROUTINE NotifyRoutine
 );
 
 NTSTATUS PsSetCreateThreadNotifyRoutineEx(
-  [in] PSCREATETHREADNOTIFYTYPE NotifyType,
-  [in] PVOID                    NotifyInformation
+  _In_ PSCREATETHREADNOTIFYTYPE NotifyType,
+  _In_ PVOID                    NotifyInformation
 );
 
 NTSTATUS PsSetLoadImageNotifyRoutine(
-  [in] PLOAD_IMAGE_NOTIFY_ROUTINE NotifyRoutine
+  _In_ PLOAD_IMAGE_NOTIFY_ROUTINE NotifyRoutine
 );
 
 NTSTATUS PsSetLoadImageNotifyRoutineEx(
-  [in] PLOAD_IMAGE_NOTIFY_ROUTINE NotifyRoutine,
-  [in] ULONG_PTR                  Flags
+  _In_ PLOAD_IMAGE_NOTIFY_ROUTINE NotifyRoutine,
+  _In_ ULONG_PTR                  Flags
 );
 
 NTSTATUS PsStartSiloMonitor(
-  [in] PSILO_MONITOR Monitor
+  _In_ PSILO_MONITOR Monitor
 );
 
 void PsTerminateServerSilo(
-  [in] PESILO   ServerSilo,
+  _In_ PESILO   ServerSilo,
 	   NTSTATUS ExitStatus
 );
 
 void PsUnregisterSiloMonitor(
-  [in] PSILO_MONITOR Monitor
+  _In_ PSILO_MONITOR Monitor
 );
 
-RTL_RUN_ONCE_INIT_FN (
-	_Inout_ PRTL_RUN_ONCE RunOnce,
-	_Inout_opt_ PVOID Parameter,
-	_Inout_opt_ PVOID *Context
-  );
+//RTL_RUN_ONCE_INIT_FN (
+//	_Inout_ PRTL_RUN_ONCE RunOnce,
+//	_Inout_opt_ PVOID Parameter,
+//	_Inout_opt_ PVOID *Context
+//);
 
-  NTSYSAPI NTSTATUS RtlCharToInteger(
-  [in]           PCSZ   String,
-  [in, optional] ULONG  Base,
-  [out]          PULONG Value
+NTSYSAPI NTSTATUS RtlCharToInteger(
+  _In_           PCSZ   String,
+  _In_opt_ ULONG  Base,
+  _Out_          PULONG Value
 );
 
 LONG RtlCompareString(
-  [in] const STRING *String1,
-  [in] const STRING *String2,
-  [in] BOOLEAN      CaseInSensitive
+  _In_ const STRING *String1,
+  _In_ const STRING *String2,
+  _In_ BOOLEAN      CaseInSensitive
 );
 
 NTAPI_INLINE RtlConvertUlongToLuid(
-  [in] ULONG Ulong
+  _In_ ULONG Ulong
 );
 
 VOID RtlCopyString(
-  [out]          PSTRING      DestinationString,
-  [in, optional] const STRING *SourceString
+  _Out_          PSTRING      DestinationString,
+  _In_opt_ const STRING *SourceString
 );
 
 BOOLEAN RtlEqualString(
-  [in] const STRING *String1,
-  [in] const STRING *String2,
-  [in] BOOLEAN      CaseInSensitive
+  _In_ const STRING *String1,
+  _In_ const STRING *String2,
+  _In_ BOOLEAN      CaseInSensitive
 );
 
 NTSYSAPI ULONG64 RtlGetEnabledExtendedFeatures(
-  [in] ULONG64 FeatureMask
+  _In_ ULONG64 FeatureMask
 );
 
 NTSYSAPI NTSTATUS RtlGetPersistedStateLocation(
-  [_In_]      PCWSTR              SourceID,
-  [_In_opt_]  PCWSTR              CustomValue,
-  [_In_opt_]  PCWSTR              DefaultPath,
-  [_In_]      STATE_LOCATION_TYPE StateLocationType,
-  [_In_]      PWCHAR              TargetPath,
-  [_In_]      ULONG               BufferLengthIn,
-  [_Out_opt_] PULONG              BufferLengthOut
+  _In_      PCWSTR              SourceID,
+  _In_opt_  PCWSTR              CustomValue,
+  _In_opt_  PCWSTR              DefaultPath,
+  _In_      STATE_LOCATION_TYPE StateLocationType,
+  _In_      PWCHAR              TargetPath,
+  _In_      ULONG               BufferLengthIn,
+  _Out_opt_ PULONG              BufferLengthOut
 );
 
 
 NTSYSAPI NTSTATUS RtlIncrementCorrelationVector(
-  [in, out] PCORRELATION_VECTOR CorrelationVector
+  _In_ _Out_ PCORRELATION_VECTOR CorrelationVector
 );
 
 NTSYSAPI NTSTATUS RtlInitializeCorrelationVector(
-  [in, out] PCORRELATION_VECTOR CorrelationVector,
-  [in]      int                 Version,
-  [in]      const GUID          *Guid
+  _In_ _Out_ PCORRELATION_VECTOR CorrelationVector,
+  _In_      int                 Version,
+  _In_      const GUID          *Guid
 );
 
 NTSYSAPI BOOLEAN RtlIsStateSeparationEnabled();
@@ -1705,8 +1631,8 @@ NTSYSAPI BOOLEAN RtlIsZeroMemory(
 );
 
 NTSYSAPI VOID RtlMapGenericMask(
-  [in, out] PACCESS_MASK          AccessMask,
-  [in]      const GENERIC_MAPPING *GenericMapping
+  _In_ _Out_ PACCESS_MASK          AccessMask,
+  _In_      const GENERIC_MAPPING *GenericMapping
 );
 
 NTSYSAPI BOOLEAN RtlNormalizeSecurityDescriptor(
@@ -1718,35 +1644,35 @@ NTSYSAPI BOOLEAN RtlNormalizeSecurityDescriptor(
 );
 
 NTSYSAPI BOOLEAN RtlPrefixUnicodeString(
-  [in] PCUNICODE_STRING String1,
-  [in] PCUNICODE_STRING String2,
-  [in] BOOLEAN          CaseInSensitive
+  _In_ PCUNICODE_STRING String1,
+  _In_ PCUNICODE_STRING String2,
+  _In_ BOOLEAN          CaseInSensitive
 );
 
 NTSYSAPI NTSTATUS RtlQueryRegistryValueWithFallback(
-  [in]  HANDLE          PrimaryHandle,
-  [in]  HANDLE          FallbackHandle,
-  [in]  PUNICODE_STRING ValueName,
-  [in]  ULONG           ValueLength,
-  [Out] PULONG          ValueType,
-  [out] PVOID           ValueData,
-  [out] PULONG          ResultLength
+  _In_  HANDLE          PrimaryHandle,
+  _In_  HANDLE          FallbackHandle,
+  _In_  PUNICODE_STRING ValueName,
+  _In_  ULONG           ValueLength,
+  _Out_ PULONG          ValueType,
+  _Out_ PVOID           ValueData,
+  _Out_ PULONG          ResultLength
 );
 
 NTSTATUS RtlRaiseCustomSystemEventTrigger(
-  [_In_] PCUSTOM_SYSTEM_EVENT_TRIGGER_CONFIG TriggerConfig
+  _In_ PCUSTOM_SYSTEM_EVENT_TRIGGER_CONFIG TriggerConfig
 );
 
 NTSYSAPI NTSTATUS RtlRunOnceBeginInitialize(
-  [in, out] PRTL_RUN_ONCE RunOnce,
-  [in]      ULONG         Flags,
-  [out]     PVOID         *Context
+  _In_ _Out_ PRTL_RUN_ONCE RunOnce,
+  _In_      ULONG         Flags,
+  _Out_     PVOID         *Context
 );
 
 NTSYSAPI NTSTATUS RtlRunOnceComplete(
-  [in, out]      PRTL_RUN_ONCE RunOnce,
-  [in]           ULONG         Flags,
-  [in, optional] PVOID         Context
+  _In_ _Out_      PRTL_RUN_ONCE RunOnce,
+  _In_           ULONG         Flags,
+  _In_opt_ PVOID         Context
 );
 
 NTSYSAPI NTSTATUS RtlRunOnceExecuteOnce(
@@ -1757,22 +1683,22 @@ NTSYSAPI NTSTATUS RtlRunOnceExecuteOnce(
 );
 
 NTSYSAPI VOID RtlRunOnceInitialize(
-  [out] PRTL_RUN_ONCE RunOnce
+  _Out_ PRTL_RUN_ONCE RunOnce
 );
 
 NTSYSAPI NTSTATUS RtlUpcaseUnicodeString(
-  [in, out] PUNICODE_STRING  DestinationString,
-  [in]      PCUNICODE_STRING SourceString,
-  [in]      BOOLEAN          AllocateDestinationString
+  _In_ _Out_ PUNICODE_STRING  DestinationString,
+  _In_      PCUNICODE_STRING SourceString,
+  _In_      BOOLEAN          AllocateDestinationString
 );
 
 NTSYSAPI CHAR RtlUpperChar(
-  [in] CHAR Character
+  _In_ CHAR Character
 );
 
 NTSYSAPI VOID RtlUpperString(
-  [in, out] PSTRING      DestinationString,
-  [in]      const STRING *SourceString
+  _In_ _Out_ PSTRING      DestinationString,
+  _In_      const STRING *SourceString
 );
 
 NTSYSAPI NTSTATUS RtlValidateCorrelationVector(
@@ -1780,31 +1706,19 @@ NTSYSAPI NTSTATUS RtlValidateCorrelationVector(
 );
 
 NTSYSAPI NTSTATUS RtlVolumeDeviceToDosName(
-  [in]  PVOID           VolumeDeviceObject,
-  [out] PUNICODE_STRING DosName
+  _In_  PVOID           VolumeDeviceObject,
+  _Out_ PUNICODE_STRING DosName
 );
 
 BOOLEAN SeSinglePrivilegeCheck(
-  [in] LUID            PrivilegeValue,
-  [in] KPROCESSOR_MODE PreviousMode
+  _In_ LUID            PrivilegeValue,
+  _In_ KPROCESSOR_MODE PreviousMode
 );
-
-typedef struct _SIGNAL_REG_VALUE {
-  UINT8  RegName[WCS_RAS_REGISTER_NAME_MAX_LENGTH];
-  UINT32 MsrAddr;
-  UINT64 Value;
-} SIGNAL_REG_VALUE, *PSIGNAL_REG_VALUE;
 
 void SiloContextCleanupCallback(
-  [in] PVOID SiloContext
+  _In_ PVOID SiloContext
 );
 
-SILO_MONITOR_CREATE_CALLBACK SiloMonitorCreateCallback;
-
-NTSTATUS SiloMonitorCreateCallback(
-  [in] PESILO Silo
-)
-{...}
 
 typedef struct _SILO_MONITOR_REGISTRATION {
   UCHAR                           Version;
@@ -1820,14 +1734,9 @@ typedef struct _SILO_MONITOR_REGISTRATION {
 } SILO_MONITOR_REGISTRATION, *PSILO_MONITOR_REGISTRATION;
 
 void SiloMonitorTerminateCallback(
-  [in] PESILO Silo
+  _In_ PESILO Silo
 );
 
-typedef enum _STATE_LOCATION_TYPE {
-  LocationTypeRegistry,
-  LocationTypeFileSystem,
-  LocationTypeMaximum
-} STATE_LOCATION_TYPE;
 
 typedef enum _SUBSYSTEM_INFORMATION_TYPE {
   SubsystemInformationTypeWin32,
@@ -1835,17 +1744,7 @@ typedef enum _SUBSYSTEM_INFORMATION_TYPE {
   MaxSubsystemInformationType
 } SUBSYSTEM_INFORMATION_TYPE, *PSUBSYSTEM_INFORMATION_TYPE;
 
-typedef struct _WHEA_ACPI_HEADER {
-  UINT32 Signature;
-  UINT32 Length;
-  UINT8  Revision;
-  UINT8  Checksum;
-  UINT8  OemId[6];
-  UINT64 OemTableId;
-  UINT32 OemRevision;
-  UINT32 CreatorId;
-  UINT32 CreatorRevision;
-} WHEA_ACPI_HEADER, *PWHEA_ACPI_HEADER;
+
 
 typedef struct _WHEA_ERROR_SOURCE_OVERRIDE_SETTINGS {
   WHEA_ERROR_SOURCE_TYPE Type;
@@ -1906,7 +1805,7 @@ typedef struct _WHEA_SRAS_TABLE_ENTRIES_EVENT {
   WHEA_EVENT_LOG_ENTRY WheaEventLogEntry;
   UINT32               LogNumber;
   UINT32               NumberSignals;
-  UINT8                Data[ANY_SIZE];
+  UINT8*               Data;
 } WHEA_SRAS_TABLE_ENTRIES_EVENT, *PWHEA_SRAS_TABLE_ENTRIES_EVENT;
 
 typedef struct _WHEA_SRAS_TABLE_ERROR {
@@ -1917,24 +1816,24 @@ typedef struct _WHEA_SRAS_TABLE_NOT_FOUND {
   WHEA_EVENT_LOG_ENTRY WheaEventLogEntry;
 } WHEA_SRAS_TABLE_NOT_FOUND, *PWHEA_SRAS_TABLE_NOT_FOUND;
 
-void WheaAdd2Ptr(
-   P,
-   I
-);
+//void WheaAdd2Ptr(
+//   P,
+//   I
+//);
 
 PVOID WheaErrorRecordBuilderAddPacket(
-  [in, out] PWHEA_ERROR_RECORD    Record,
-  [in, out] PWHEA_ERROR_PACKET_V2 Packet,
-  [in]      UINT32                MaxSectionCount
+  _In_ _Out_ PWHEA_ERROR_RECORD    Record,
+  _In_ _Out_ PWHEA_ERROR_PACKET_V2 Packet,
+  _In_      UINT32                MaxSectionCount
 );
 
 PVOID WheaErrorRecordBuilderAddSection(
-  [in, out]           PWHEA_ERROR_RECORD                         Record,
-  [in]                UINT32                                     MaxSectionCount,
-  [in]                UINT32                                     SectionLength,
-  [in]                WHEA_ERROR_RECORD_SECTION_DESCRIPTOR_FLAGS Flags,
-  [in]                GUID                                       SectionType,
-  [in, out, optional] PVOID                                      DescriptorOut
+  _In_ _Out_           PWHEA_ERROR_RECORD                         Record,
+  _In_                UINT32                                     MaxSectionCount,
+  _In_                UINT32                                     SectionLength,
+  _In_                WHEA_ERROR_RECORD_SECTION_DESCRIPTOR_FLAGS Flags,
+  _In_                GUID                                       SectionType,
+  _In_ _Out_ PVOID                                      DescriptorOut
 );
 
 void WheaErrorRecordBuilderInit(
@@ -1961,15 +1860,6 @@ typedef struct _WHEAP_DPC_ERROR_EVENT {
   USHORT                     VendorId;
 } WHEAP_DPC_ERROR_EVENT, *PWHEAP_DPC_ERROR_EVENT;
 
-typedef enum _WHEAP_DPC_ERROR_EVENT_TYPE {
-  WheapDpcErrNoErr,
-  WheapDpcErrBusNotFound,
-  WheapDpcErrDpcedSubtree,
-  WheapDpcErrDeviceIdBad,
-  WheapDpcErrResetFailed,
-  WheapDpcErrNoChildren
-} WHEAP_DPC_ERROR_EVENT_TYPE, *PWHEAP_DPC_ERROR_EVENT_TYPE;
-
 typedef struct _WHEAP_PLUGIN_DEFECT_LIST_CORRUPT {
   WHEA_EVENT_LOG_ENTRY WheaEventLogEntry;
 } WHEAP_PLUGIN_DEFECT_LIST_CORRUPT, *PWHEAP_PLUGIN_DEFECT_LIST_CORRUPT;
@@ -1989,19 +1879,19 @@ typedef struct _WHEAP_ROW_FAILURE_EVENT {
 } WHEAP_ROW_FAILURE_EVENT, *PWHEAP_ROW_FAILURE_EVENT;
 
 NTSTATUS WheaRegisterErrorSourceOverride(
-  [in] WHEA_ERROR_SOURCE_OVERRIDE_SETTINGS   OverrideSettings,
-  [in] PWHEA_ERROR_SOURCE_CONFIGURATION      OverrideConfig,
-  [in] WHEA_SIGNAL_HANDLER_OVERRIDE_CALLBACK OverrideCallback
+  _In_ WHEA_ERROR_SOURCE_OVERRIDE_SETTINGS   OverrideSettings,
+  _In_ PWHEA_ERROR_SOURCE_CONFIGURATION      OverrideConfig,
+  _In_ WHEA_SIGNAL_HANDLER_OVERRIDE_CALLBACK OverrideCallback
 );
 
 BOOLEAN WheaSignalHandlerOverride(
-  [in]                WHEA_ERROR_SOURCE_TYPE SourceType,
-  [in, out, optional] UINT_PTR               Context
+  _In_                WHEA_ERROR_SOURCE_TYPE SourceType,
+  _In_ _Out_ UINT_PTR               Context
 );
 
 void WheaUnregisterErrorSourceOverride(
-  [in] WHEA_ERROR_SOURCE_TYPE Type,
-  [in] ULONG32                OverrideErrorSourceId
+  _In_ WHEA_ERROR_SOURCE_TYPE Type,
+  _In_ ULONG32                OverrideErrorSourceId
 );
 
 NTSYSAPI NTSTATUS ZwAllocateLocallyUniqueId(
@@ -2010,52 +1900,52 @@ NTSYSAPI NTSTATUS ZwAllocateLocallyUniqueId(
 
 
 NTSYSAPI NTSTATUS ZwDeviceIoControlFile(
-  [in]            HANDLE           FileHandle,
-  [in, optional]  HANDLE           Event,
-  [in, optional]  PIO_APC_ROUTINE  ApcRoutine,
-  [in, optional]  PVOID            ApcContext,
-  [out]           PIO_STATUS_BLOCK IoStatusBlock,
-  [in]            ULONG            IoControlCode,
-  [in, optional]  PVOID            InputBuffer,
-  [in]            ULONG            InputBufferLength,
-  [out, optional] PVOID            OutputBuffer,
-  [in]            ULONG            OutputBufferLength
+  _In_            HANDLE           FileHandle,
+  _In_opt_  HANDLE           Event,
+  _In_opt_  PIO_APC_ROUTINE  ApcRoutine,
+  _In_opt_  PVOID            ApcContext,
+  _Out_           PIO_STATUS_BLOCK IoStatusBlock,
+  _In_            ULONG            IoControlCode,
+  _In_opt_  PVOID            InputBuffer,
+  _In_            ULONG            InputBufferLength,
+  _Out_ PVOID            OutputBuffer,
+  _In_            ULONG            OutputBufferLength
 );
 
 NTSYSAPI NTSTATUS ZwOpenProcess(
-  [out]          PHANDLE            ProcessHandle,
-  [in]           ACCESS_MASK        DesiredAccess,
-  [in]           POBJECT_ATTRIBUTES ObjectAttributes,
-  [in, optional] PCLIENT_ID         ClientId
+  _Out_          PHANDLE            ProcessHandle,
+  _In_           ACCESS_MASK        DesiredAccess,
+  _In_           POBJECT_ATTRIBUTES ObjectAttributes,
+  _In_opt_ PCLIENT_ID         ClientId
 );
 
 NTSYSAPI NTSTATUS ZwPowerInformation(
-  [in]            POWER_INFORMATION_LEVEL InformationLevel,
-  [in, optional]  PVOID                   InputBuffer,
-  [in]            ULONG                   InputBufferLength,
-  [out, optional] PVOID                   OutputBuffer,
-  [in]            ULONG                   OutputBufferLength
+  _In_            POWER_INFORMATION_LEVEL InformationLevel,
+  _In_opt_  PVOID                   InputBuffer,
+  _In_            ULONG                   InputBufferLength,
+  _Out_ PVOID                   OutputBuffer,
+  _In_            ULONG                   OutputBufferLength
 );
 
 NTSYSAPI NTSTATUS ZwQueryVolumeInformationFile(
-  [in]  HANDLE               FileHandle,
-  [out] PIO_STATUS_BLOCK     IoStatusBlock,
-  [out] PVOID                FsInformation,
-  [in]  ULONG                Length,
-  [in]  FS_INFORMATION_CLASS FsInformationClass
+  _In_  HANDLE               FileHandle,
+  _Out_ PIO_STATUS_BLOCK     IoStatusBlock,
+  _Out_ PVOID                FsInformation,
+  _In_  ULONG                Length,
+  _In_  FS_INFORMATION_CLASS FsInformationClass
 );
 
 NTSYSAPI NTSTATUS ZwSetInformationThread(
-  [in] HANDLE          ThreadHandle,
-  [in] THREADINFOCLASS ThreadInformationClass,
-  [in] PVOID           ThreadInformation,
-  [in] ULONG           ThreadInformationLength
+  _In_ HANDLE          ThreadHandle,
+  _In_ THREADINFOCLASS ThreadInformationClass,
+  _In_ PVOID           ThreadInformation,
+  _In_ ULONG           ThreadInformationLength
 );
 
 
 NTSYSAPI NTSTATUS ZwTerminateProcess(
-  [in, optional] HANDLE   ProcessHandle,
-  [in]           NTSTATUS ExitStatus
+  _In_opt_ HANDLE   ProcessHandle,
+  _In_           NTSTATUS ExitStatus
 );
-*/
+
 #endif
