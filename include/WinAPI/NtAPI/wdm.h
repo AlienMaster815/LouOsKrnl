@@ -1,6 +1,1203 @@
 #ifndef WDM_H
 #define WDM_H
 
+#include "irp.h"
+#include "ntoapi.h"
+#include <NtAPI.h>
+
+typedef enum _IO_NOTIFICATION_EVENT_CATEGORY {
+    EventCategoryReserved,
+    EventCategoryHardwareProfileChange,
+    EventCategoryDeviceInterfaceChange,
+    EventCategoryTargetDeviceChange,
+    EventCategoryKernelSoftRestart
+} IO_NOTIFICATION_EVENT_CATEGORY;
+
+typedef enum _POOL_TYPE {
+    NonPagedPool,
+    NonPagedPoolExecute = NonPagedPool,
+    PagedPool,
+    NonPagedPoolMustSucceed = NonPagedPool + 2,
+    DontUseThisType,
+    NonPagedPoolCacheAligned = NonPagedPool + 4,
+    PagedPoolCacheAligned,
+    NonPagedPoolCacheAlignedMustS = NonPagedPool + 6,
+    MaxPoolType,
+    NonPagedPoolBase = 0,
+    NonPagedPoolBaseMustSucceed = NonPagedPoolBase + 2,
+    NonPagedPoolBaseCacheAligned = NonPagedPoolBase + 4,
+    NonPagedPoolBaseCacheAlignedMustS = NonPagedPoolBase + 6,
+    NonPagedPoolSession = 32,
+    PagedPoolSession = NonPagedPoolSession + 1,
+    NonPagedPoolMustSucceedSession = PagedPoolSession + 1,
+    DontUseThisTypeSession = NonPagedPoolMustSucceedSession + 1,
+    NonPagedPoolCacheAlignedSession = DontUseThisTypeSession + 1,
+    PagedPoolCacheAlignedSession = NonPagedPoolCacheAlignedSession + 1,
+    NonPagedPoolCacheAlignedMustSSession = PagedPoolCacheAlignedSession + 1,
+    NonPagedPoolNx = 512,
+    NonPagedPoolNxCacheAligned = NonPagedPoolNx + 4,
+    NonPagedPoolSessionNx = NonPagedPoolNx + 32,
+
+} POOL_TYPE;
+
+
+typedef enum _IOMMU_MAP_PHYSICAL_ADDRESS_TYPE {
+  MapPhysicalAddressTypeMdl,
+  MapPhysicalAddressTypeContiguousRange,
+  MapPhysicalAddressTypePfn,
+  MapPhysicalAddressTypeMax
+} IOMMU_MAP_PHYSICAL_ADDRESS_TYPE, *PIOMMU_MAP_PHYSICAL_ADDRESS_TYPE;
+
+typedef struct _IOMMU_DMA_LOGICAL_ADDRESS_TOKEN {
+    IOMMU_DMA_LOGICAL_ADDRESS LogicalAddressBase;
+    SIZE_T                    Size;
+} IOMMU_DMA_LOGICAL_ADDRESS_TOKEN, * PIOMMU_DMA_LOGICAL_ADDRESS_TOKEN;
+
+typedef enum _KEY_SET_INFORMATION_CLASS {
+    KeyWriteTimeInformation,
+    KeyWow64FlagsInformation,
+    KeyControlFlagsInformation,
+    KeySetVirtualizationInformation,
+    KeySetDebugInformation,
+    KeySetHandleTagsInformation,
+    KeySetLayerInformation,
+    MaxKeySetInfoClass
+} KEY_SET_INFORMATION_CLASS;
+
+
+typedef _Enum_is_bitflag_ enum _EX_POOL_PRIORITY {
+    LowPoolPriority,
+    LowPoolPrioritySpecialPoolOverrun = 8,
+    LowPoolPrioritySpecialPoolUnderrun = 9,
+    NormalPoolPriority = 16,
+    NormalPoolPrioritySpecialPoolOverrun = 24,
+    NormalPoolPrioritySpecialPoolUnderrun = 25,
+    HighPoolPriority = 32,
+    HighPoolPrioritySpecialPoolOverrun = 40,
+    HighPoolPrioritySpecialPoolUnderrun = 41
+} EX_POOL_PRIORITY;
+
+typedef enum _KEY_VALUE_INFORMATION_CLASS {
+    KeyValueBasicInformation,
+    KeyValueFullInformation,
+    KeyValuePartialInformation,
+    KeyValueFullInformationAlign64,
+    KeyValuePartialInformationAlign64,
+    KeyValueLayerInformation,
+    MaxKeyValueInfoClass
+} KEY_VALUE_INFORMATION_CLASS;
+
+
+typedef enum _IO_PAGING_PRIORITY {
+    IoPagingPriorityInvalid,
+    IoPagingPriorityNormal,
+    IoPagingPriorityHigh,
+    IoPagingPriorityReserved1,
+    IoPagingPriorityReserved2
+} IO_PAGING_PRIORITY;
+
+typedef enum _IO_PRIORITY_HINT {
+    IoPriorityVeryLow,
+    IoPriorityLow,
+    IoPriorityNormal,
+    IoPriorityHigh,
+    IoPriorityCritical,
+    MaxIoPriorityTypes
+} IO_PRIORITY_HINT;
+typedef struct _XSAVE_CET_U_FORMAT {
+    ULONG64 Ia32CetUMsr;
+    ULONG64 Ia32Pl3SspMsr;
+} XSAVE_CET_U_FORMAT, * PXSAVE_CET_U_FORMAT;
+
+typedef enum _KEY_INFORMATION_CLASS {
+    KeyBasicInformation,
+    KeyNodeInformation,
+    KeyFullInformation,
+    KeyNameInformation,
+    KeyCachedInformation,
+    KeyFlagsInformation,
+    KeyVirtualizationInformation,
+    KeyHandleTagsInformation,
+    KeyTrustInformation,
+    KeyLayerInformation,
+    MaxKeyInfoClass
+} KEY_INFORMATION_CLASS;
+
+
+typedef enum _WORK_QUEUE_TYPE {
+    CriticalWorkQueue,
+    DelayedWorkQueue,
+    HyperCriticalWorkQueue,
+    NormalWorkQueue,
+    BackgroundWorkQueue,
+    RealTimeWorkQueue,
+    SuperCriticalWorkQueue,
+    MaximumWorkQueue,
+    CustomPriorityWorkQueue
+} WORK_QUEUE_TYPE;
+typedef enum _TRACE_INFORMATION_CLASS {
+    TraceIdClass,
+    TraceHandleClass,
+    TraceEnableFlagsClass,
+    TraceEnableLevelClass,
+    GlobalLoggerHandleClass,
+    EventLoggerHandleClass,
+    AllLoggerHandlesClass,
+    TraceHandleByNameClass,
+    LoggerEventsLostClass,
+    TraceSessionSettingsClass,
+    LoggerEventsLoggedClass,
+    DiskIoNotifyRoutinesClass,
+    TraceInformationClassReserved1,
+    FltIoNotifyRoutinesClass,
+    TraceInformationClassReserved2,
+    WdfNotifyRoutinesClass,
+    MaxTraceInformationClass
+} TRACE_INFORMATION_CLASS;
+
+typedef enum _IOMMU_DMA_LOGICAL_ALLOCATOR_TYPE {
+    IommuDmaLogicalAllocatorNone,
+    IommuDmaLogicalAllocatorBuddy,
+    IommuDmaLogicalAllocatorMax
+} IOMMU_DMA_LOGICAL_ALLOCATOR_TYPE, * PIOMMU_DMA_LOGICAL_ALLOCATOR_TYPE;
+
+
+typedef struct _TRANSACTION_BASIC_INFORMATION {
+    GUID  TransactionId;
+    ULONG State;
+    ULONG Outcome;
+} TRANSACTION_BASIC_INFORMATION, * PTRANSACTION_BASIC_INFORMATION;
+
+typedef struct _TRANSACTION_ENLISTMENT_PAIR {
+    GUID EnlistmentId;
+    GUID ResourceManagerId;
+} TRANSACTION_ENLISTMENT_PAIR, * PTRANSACTION_ENLISTMENT_PAIR;
+
+typedef struct _TRANSACTION_ENLISTMENTS_INFORMATION {
+    ULONG                       NumberOfEnlistments;
+    TRANSACTION_ENLISTMENT_PAIR EnlistmentPair[1];
+} TRANSACTION_ENLISTMENTS_INFORMATION, * PTRANSACTION_ENLISTMENTS_INFORMATION;
+
+typedef enum _TRANSACTION_INFORMATION_CLASS {
+    TransactionBasicInformation,
+    TransactionPropertiesInformation,
+    TransactionEnlistmentInformation,
+    TransactionSuperiorEnlistmentInformation
+} TRANSACTION_INFORMATION_CLASS;
+
+typedef enum _TRANSACTION_OUTCOME {
+    TransactionOutcomeUndetermined,
+    TransactionOutcomeCommitted,
+    TransactionOutcomeAborted
+} TRANSACTION_OUTCOME;
+
+typedef struct _TRANSACTION_PROPERTIES_INFORMATION {
+    ULONG         IsolationLevel;
+    ULONG         IsolationFlags;
+    LARGE_INTEGER Timeout;
+    ULONG         Outcome;
+    ULONG         DescriptionLength;
+    WCHAR         Description[1];
+} TRANSACTION_PROPERTIES_INFORMATION, * PTRANSACTION_PROPERTIES_INFORMATION;
+
+typedef struct _KEY_VALUE_ENTRY {
+    PUNICODE_STRING ValueName;
+    ULONG           DataLength;
+    ULONG           DataOffset;
+    ULONG           Type;
+} KEY_VALUE_ENTRY, * PKEY_VALUE_ENTRY;
+
+typedef struct _RESOURCEMANAGER_BASIC_INFORMATION {
+    GUID  ResourceManagerId;
+    ULONG DescriptionLength;
+    WCHAR Description[1];
+} RESOURCEMANAGER_BASIC_INFORMATION, * PRESOURCEMANAGER_BASIC_INFORMATION;
+
+typedef struct _RESOURCEMANAGER_COMPLETION_INFORMATION {
+    HANDLE    IoCompletionPortHandle;
+    ULONG_PTR CompletionKey;
+} RESOURCEMANAGER_COMPLETION_INFORMATION, * PRESOURCEMANAGER_COMPLETION_INFORMATION;
+
+typedef enum _RESOURCEMANAGER_INFORMATION_CLASS {
+    ResourceManagerBasicInformation,
+    ResourceManagerCompletionInformation
+} RESOURCEMANAGER_INFORMATION_CLASS;
+
+typedef struct _SLIST_ENTRY {
+    struct _SLIST_ENTRY* Next;
+} SLIST_ENTRY, * PSLIST_ENTRY;
+
+
+typedef struct _SYSTEM_POOL_ZEROING_INFORMATION {
+    BOOLEAN PoolZeroingSupportPresent;
+} SYSTEM_POOL_ZEROING_INFORMATION, * PSYSTEM_POOL_ZEROING_INFORMATION;
+
+
+typedef enum {
+    PoAc,
+    PoDc,
+    PoHot,
+    PoConditionMaximum
+} SYSTEM_POWER_CONDITION;
+
+
+typedef struct _FILE_OBJECT {
+    CSHORT                            Type;
+    CSHORT                            Size;
+    PDEVICE_OBJECT                    DeviceObject;
+    PVPB                              Vpb;
+    PVOID                             FsContext;
+    PVOID                             FsContext2;
+    PSECTION_OBJECT_POINTERS          SectionObjectPointer;
+    PVOID                             PrivateCacheMap;
+    NTSTATUS                          FinalStatus;
+    struct _FILE_OBJECT* RelatedFileObject;
+    BOOLEAN                           LockOperation;
+    BOOLEAN                           DeletePending;
+    BOOLEAN                           ReadAccess;
+    BOOLEAN                           WriteAccess;
+    BOOLEAN                           DeleteAccess;
+    BOOLEAN                           SharedRead;
+    BOOLEAN                           SharedWrite;
+    BOOLEAN                           SharedDelete;
+    ULONG                             Flags;
+    UNICODE_STRING                    FileName;
+    LARGE_INTEGER                     CurrentByteOffset;
+    ULONG                  Waiters;
+    ULONG                  Busy;
+    PVOID                             LastLock;
+    KEVENT                            Lock;
+    KEVENT                            Event;
+    PIO_COMPLETION_CONTEXT CompletionContext;
+    KSPIN_LOCK                        IrpListLock;
+    LIST_ENTRY                        IrpList;
+    PVOID                  FileObjectExtension;
+} FILE_OBJECT, * PFILE_OBJECT;
+
+typedef struct _TARGET_DEVICE_CUSTOM_NOTIFICATION {
+    USHORT       Version;
+    USHORT       Size;
+    GUID         Event;
+    PFILE_OBJECT FileObject;
+    LONG         NameBufferOffset;
+    UCHAR        CustomDataBuffer[1];
+} TARGET_DEVICE_CUSTOM_NOTIFICATION, * PTARGET_DEVICE_CUSTOM_NOTIFICATION;
+
+typedef struct _TARGET_DEVICE_REMOVAL_NOTIFICATION {
+    USHORT       Version;
+    USHORT       Size;
+    GUID         Event;
+    PFILE_OBJECT FileObject;
+} TARGET_DEVICE_REMOVAL_NOTIFICATION, * PTARGET_DEVICE_REMOVAL_NOTIFICATION;
+
+
+typedef struct _TIME_FIELDS {
+    CSHORT Year;
+    CSHORT Month;
+    CSHORT Day;
+    CSHORT Hour;
+    CSHORT Minute;
+    CSHORT Second;
+    CSHORT Milliseconds;
+    CSHORT Weekday;
+} TIME_FIELDS;
+
+typedef struct {
+    ULONG                  Version;
+    GUID                   Guid;
+    SYSTEM_POWER_CONDITION PowerCondition;
+    ULONG                  DataLength;
+    UCHAR*                  Data;
+} SET_POWER_SETTING_VALUE, * PSET_POWER_SETTING_VALUE;
+
+typedef struct _POOL_CREATE_EXTENDED_PARAMS {
+    ULONG Version;
+} POOL_CREATE_EXTENDED_PARAMS, * PPOOL_CREATE_EXTENDED_PARAMS;
+
+
+
+typedef struct _POOL_EXTENDED_PARAMETER {
+    struct {
+        ULONG64 Type : POOL_EXTENDED_PARAMETER_TYPE_BITS;
+        ULONG64 Optional : POOL_EXTENDED_PARAMETER_REQUIRED_FIELD_BITS;
+        ULONG64 Reserved : POOL_EXTENDED_PARAMETER_RESERVED_BITS;
+    } DUMMYSTRUCTNAME;
+    union {
+        ULONG64                          Reserved2;
+        PVOID                            Reserved3;
+        EX_POOL_PRIORITY                 Priority;
+        POOL_EXTENDED_PARAMS_SECURE_POOL* SecurePoolParams;
+        POOL_NODE_REQUIREMENT            PreferredNode;
+    } DUMMYUNIONNAME;
+} POOL_EXTENDED_PARAMETER, * PPOOL_EXTENDED_PARAMETER;
+
+typedef enum POOL_EXTENDED_PARAMETER_TYPE {
+    PoolExtendedParameterInvalidType = 0,
+    PoolExtendedParameterPriority,
+    PoolExtendedParameterSecurePool,
+    PoolExtendedParameterNumaNode,
+    PoolExtendedParameterMax
+}  *PPOOL_EXTENDED_PARAMETER_TYPE;
+
+
+
+
+typedef struct _SCATTER_GATHER_LIST {
+    ULONG                  NumberOfElements;
+    ULONG_PTR              Reserved;
+    SCATTER_GATHER_ELEMENT Elements[];
+} SCATTER_GATHER_LIST, * PSCATTER_GATHER_LIST;
+
+typedef struct _SDEV_IDENTIFIER_INTERFACE {
+    INTERFACE            InterfaceHeader;
+    PGET_SDEV_IDENTIFIER GetIdentifier;
+} SDEV_IDENTIFIER_INTERFACE, * PSDEV_IDENTIFIER_INTERFACE;
+
+typedef enum _SE_IMAGE_TYPE {
+    SeImageTypeElamDriver,
+    SeImageTypeDriver,
+    SeImageTypePlatformSecureFile,
+    SeImageTypeDynamicCodeFile,
+    SeImageTypeMax,
+} SE_IMAGE_TYPE, * PSE_IMAGE_TYPE;
+
+
+typedef struct _SECTION_OBJECT_POINTERS {
+    PVOID DataSectionObject;
+    PVOID SharedCacheMap;
+    PVOID ImageSectionObject;
+} SECTION_OBJECT_POINTERS;
+
+typedef struct _REENUMERATE_SELF_INTERFACE_STANDARD {
+    USHORT                 Size;
+    USHORT                 Version;
+    PVOID                  Context;
+    PINTERFACE_REFERENCE   InterfaceReference;
+    PINTERFACE_DEREFERENCE InterfaceDereference;
+    PREENUMERATE_SELF      SurpriseRemoveAndReenumerateSelf;
+} REENUMERATE_SELF_INTERFACE_STANDARD, * PREENUMERATE_SELF_INTERFACE_STANDARD;
+
+typedef struct _REG_CALLBACK_CONTEXT_CLEANUP_INFORMATION {
+    PVOID Object;
+    PVOID ObjectContext;
+    PVOID Reserved;
+} REG_CALLBACK_CONTEXT_CLEANUP_INFORMATION, * PREG_CALLBACK_CONTEXT_CLEANUP_INFORMATION;
+
+typedef struct _REG_CREATE_KEY_INFORMATION {
+    PUNICODE_STRING CompleteName;
+    PVOID           RootObject;
+    PVOID           ObjectType;
+    ULONG           CreateOptions;
+    PUNICODE_STRING Class;
+    PVOID           SecurityDescriptor;
+    PVOID           SecurityQualityOfService;
+    ACCESS_MASK     DesiredAccess;
+    ACCESS_MASK     GrantedAccess;
+    PULONG          Disposition;
+    PVOID* ResultObject;
+    PVOID           CallContext;
+    PVOID           RootObjectContext;
+    PVOID           Transaction;
+    PVOID           Reserved;
+} REG_CREATE_KEY_INFORMATION, REG_OPEN_KEY_INFORMATION, * PREG_CREATE_KEY_INFORMATION, * PREG_OPEN_KEY_INFORMATION;
+
+typedef struct _REG_CREATE_KEY_INFORMATION_V1 {
+    PUNICODE_STRING CompleteName;
+    PVOID           RootObject;
+    PVOID           ObjectType;
+    ULONG           Options;
+    PUNICODE_STRING Class;
+    PVOID           SecurityDescriptor;
+    PVOID           SecurityQualityOfService;
+    ACCESS_MASK     DesiredAccess;
+    ACCESS_MASK     GrantedAccess;
+    PULONG          Disposition;
+    PVOID* ResultObject;
+    PVOID           CallContext;
+    PVOID           RootObjectContext;
+    PVOID           Transaction;
+    ULONG_PTR       Version;
+    PUNICODE_STRING RemainingName;
+    ULONG           Wow64Flags;
+    ULONG           Attributes;
+    KPROCESSOR_MODE CheckAccessMode;
+} REG_CREATE_KEY_INFORMATION_V1, REG_OPEN_KEY_INFORMATION_V1, * PREG_CREATE_KEY_INFORMATION_V1, * PREG_OPEN_KEY_INFORMATION_V1;
+
+typedef struct _REG_DELETE_KEY_INFORMATION {
+    PVOID Object;
+    PVOID CallContext;
+    PVOID ObjectContext;
+    PVOID Reserved;
+} REG_DELETE_KEY_INFORMATION, * PREG_DELETE_KEY_INFORMATION, REG_FLUSH_KEY_INFORMATION, * PREG_FLUSH_KEY_INFORMATION;
+
+typedef struct _REG_DELETE_VALUE_KEY_INFORMATION {
+    PVOID           Object;
+    PUNICODE_STRING ValueName;
+    PVOID           CallContext;
+    PVOID           ObjectContext;
+    PVOID           Reserved;
+} REG_DELETE_VALUE_KEY_INFORMATION, * PREG_DELETE_VALUE_KEY_INFORMATION;
+
+typedef struct _REG_ENUMERATE_KEY_INFORMATION {
+    PVOID                 Object;
+    ULONG                 Index;
+    KEY_INFORMATION_CLASS KeyInformationClass;
+    PVOID                 KeyInformation;
+    ULONG                 Length;
+    PULONG                ResultLength;
+    PVOID                 CallContext;
+    PVOID                 ObjectContext;
+    PVOID                 Reserved;
+} REG_ENUMERATE_KEY_INFORMATION, * PREG_ENUMERATE_KEY_INFORMATION;
+
+typedef struct _REG_ENUMERATE_VALUE_KEY_INFORMATION {
+    PVOID                       Object;
+    ULONG                       Index;
+    KEY_VALUE_INFORMATION_CLASS KeyValueInformationClass;
+    PVOID                       KeyValueInformation;
+    ULONG                       Length;
+    PULONG                      ResultLength;
+    PVOID                       CallContext;
+    PVOID                       ObjectContext;
+    PVOID                       Reserved;
+} REG_ENUMERATE_VALUE_KEY_INFORMATION, * PREG_ENUMERATE_VALUE_KEY_INFORMATION;
+
+typedef struct _REG_KEY_HANDLE_CLOSE_INFORMATION {
+    PVOID Object;
+    PVOID CallContext;
+    PVOID ObjectContext;
+    PVOID Reserved;
+} REG_KEY_HANDLE_CLOSE_INFORMATION, * PREG_KEY_HANDLE_CLOSE_INFORMATION;
+
+typedef struct _REG_LOAD_KEY_INFORMATION {
+    PVOID           Object;
+    PUNICODE_STRING KeyName;
+    PUNICODE_STRING SourceFile;
+    ULONG           Flags;
+    PVOID           TrustClassObject;
+    PVOID           UserEvent;
+    ACCESS_MASK     DesiredAccess;
+    PHANDLE         RootHandle;
+    PVOID           CallContext;
+    PVOID           ObjectContext;
+    PVOID           Reserved;
+} REG_LOAD_KEY_INFORMATION, * PREG_LOAD_KEY_INFORMATION;
+
+typedef struct _REG_LOAD_KEY_INFORMATION_V2 {
+    PVOID           Object;
+    PUNICODE_STRING KeyName;
+    PUNICODE_STRING SourceFile;
+    ULONG           Flags;
+    PVOID           TrustClassObject;
+    PVOID           UserEvent;
+    ACCESS_MASK     DesiredAccess;
+    PHANDLE         RootHandle;
+    PVOID           CallContext;
+    PVOID           ObjectContext;
+    ULONG_PTR       Version;
+    PVOID           FileAccessToken;
+} REG_LOAD_KEY_INFORMATION_V2, * PREG_LOAD_KEY_INFORMATION_V2;
+
+typedef enum _REG_NOTIFY_CLASS {
+    RegNtDeleteKey,
+    RegNtPreDeleteKey,
+    RegNtSetValueKey,
+    RegNtPreSetValueKey,
+    RegNtDeleteValueKey,
+    RegNtPreDeleteValueKey,
+    RegNtSetInformationKey,
+    RegNtPreSetInformationKey,
+    RegNtRenameKey,
+    RegNtPreRenameKey,
+    RegNtEnumerateKey,
+    RegNtPreEnumerateKey,
+    RegNtEnumerateValueKey,
+    RegNtPreEnumerateValueKey,
+    RegNtQueryKey,
+    RegNtPreQueryKey,
+    RegNtQueryValueKey,
+    RegNtPreQueryValueKey,
+    RegNtQueryMultipleValueKey,
+    RegNtPreQueryMultipleValueKey,
+    RegNtPreCreateKey,
+    RegNtPostCreateKey,
+    RegNtPreOpenKey,
+    RegNtPostOpenKey,
+    RegNtKeyHandleClose,
+    RegNtPreKeyHandleClose,
+    RegNtPostDeleteKey,
+    RegNtPostSetValueKey,
+    RegNtPostDeleteValueKey,
+    RegNtPostSetInformationKey,
+    RegNtPostRenameKey,
+    RegNtPostEnumerateKey,
+    RegNtPostEnumerateValueKey,
+    RegNtPostQueryKey,
+    RegNtPostQueryValueKey,
+    RegNtPostQueryMultipleValueKey,
+    RegNtPostKeyHandleClose,
+    RegNtPreCreateKeyEx,
+    RegNtPostCreateKeyEx,
+    RegNtPreOpenKeyEx,
+    RegNtPostOpenKeyEx,
+    RegNtPreFlushKey,
+    RegNtPostFlushKey,
+    RegNtPreLoadKey,
+    RegNtPostLoadKey,
+    RegNtPreUnLoadKey,
+    RegNtPostUnLoadKey,
+    RegNtPreQueryKeySecurity,
+    RegNtPostQueryKeySecurity,
+    RegNtPreSetKeySecurity,
+    RegNtPostSetKeySecurity,
+    RegNtCallbackObjectContextCleanup,
+    RegNtPreRestoreKey,
+    RegNtPostRestoreKey,
+    RegNtPreSaveKey,
+    RegNtPostSaveKey,
+    RegNtPreReplaceKey,
+    RegNtPostReplaceKey,
+    RegNtPreQueryKeyName,
+    RegNtPostQueryKeyName,
+    RegNtPreSaveMergedKey,
+    RegNtPostSaveMergedKey,
+    MaxRegNtNotifyClass
+} REG_NOTIFY_CLASS;
+
+typedef struct _REG_POST_CREATE_KEY_INFORMATION {
+    PUNICODE_STRING CompleteName;
+    PVOID           Object;
+    NTSTATUS        Status;
+} REG_POST_CREATE_KEY_INFORMATION, REG_POST_OPEN_KEY_INFORMATION, * PREG_POST_CREATE_KEY_INFORMATION, * PREG_POST_OPEN_KEY_INFORMATION;
+
+typedef struct _REG_POST_OPERATION_INFORMATION {
+    PVOID    Object;
+    NTSTATUS Status;
+    PVOID    PreInformation;
+    NTSTATUS ReturnStatus;
+    PVOID    CallContext;
+    PVOID    ObjectContext;
+    PVOID    Reserved;
+} REG_POST_OPERATION_INFORMATION, * PREG_POST_OPERATION_INFORMATION;
+
+typedef struct _REG_PRE_CREATE_KEY_INFORMATION {
+    PUNICODE_STRING CompleteName;
+} REG_PRE_CREATE_KEY_INFORMATION, REG_PRE_OPEN_KEY_INFORMATION, * PREG_PRE_CREATE_KEY_INFORMATION, * PREG_PRE_OPEN_KEY_INFORMATION;
+
+typedef enum {
+    LT_DONT_CARE,
+    LT_LOWEST_LATENCY
+} LATENCY_TIME;
+
+typedef struct _LINK_SHARE_ACCESS {
+    ULONG OpenCount;
+    ULONG Deleters;
+    ULONG SharedDelete;
+} LINK_SHARE_ACCESS, * PLINK_SHARE_ACCESS;
+
+typedef struct _MAILSLOT_CREATE_PARAMETERS {
+    ULONG         MailslotQuota;
+    ULONG         MaximumMessageSize;
+    LARGE_INTEGER ReadTimeout;
+    BOOLEAN       TimeoutSpecified;
+} MAILSLOT_CREATE_PARAMETERS, * PMAILSLOT_CREATE_PARAMETERS;
+
+
+typedef struct MEM_EXTENDED_PARAMETER {
+    struct {
+        ULONG64 Type : MEM_EXTENDED_PARAMETER_TYPE_BITS;
+        ULONG64 Reserved : 64 - MEM_EXTENDED_PARAMETER_TYPE_BITS;
+    } DUMMYSTRUCTNAME;
+    union {
+        ULONG64 ULong64;
+        PVOID   Pointer;
+        SIZE_T  Size;
+        HANDLE  Handle;
+        ULONG   ULong;
+    } DUMMYUNIONNAME;
+} MEM_EXTENDED_PARAMETER, * PMEM_EXTENDED_PARAMETER;
+
+typedef enum MEM_EXTENDED_PARAMETER_TYPE {
+    MemExtendedParameterInvalidType = 0,
+    MemExtendedParameterAddressRequirements = 1,
+    MemExtendedParameterNumaNode = 2,
+    MemExtendedParameterPartitionHandle = 3,
+    MemExtendedParameterUserPhysicalHandle = 4,
+    MemExtendedParameterAttributeFlags = 5,
+    MemExtendedParameterImageMachine = 6,
+    MemExtendedParameterMax
+}  *PMEM_EXTENDED_PARAMETER_TYPE;
+
+
+typedef struct _MEMORY_PARTITION_DEDICATED_MEMORY_OPEN_INFORMATION {
+    ULONG64     DedicatedMemoryTypeId;
+    ULONG       HandleAttributes;
+    ACCESS_MASK DesiredAccess;
+    HANDLE      DedicatedMemoryPartitionHandle;
+} MEMORY_PARTITION_DEDICATED_MEMORY_OPEN_INFORMATION, * PMEMORY_PARTITION_DEDICATED_MEMORY_OPEN_INFORMATION;
+
+typedef struct _MM_PHYSICAL_ADDRESS_LIST {
+    PHYSICAL_ADDRESS PhysicalAddress;
+    SIZE_T           NumberOfBytes;
+} MM_PHYSICAL_ADDRESS_LIST, * PMM_PHYSICAL_ADDRESS_LIST;
+
+
+typedef struct _REG_QUERY_KEY_INFORMATION {
+    PVOID                 Object;
+    KEY_INFORMATION_CLASS KeyInformationClass;
+    PVOID                 KeyInformation;
+    ULONG                 Length;
+    PULONG                ResultLength;
+    PVOID                 CallContext;
+    PVOID                 ObjectContext;
+    PVOID                 Reserved;
+} REG_QUERY_KEY_INFORMATION, * PREG_QUERY_KEY_INFORMATION;
+
+
+typedef struct _REG_QUERY_KEY_NAME {
+    PVOID                    Object;
+    POBJECT_NAME_INFORMATION ObjectNameInfo;
+    ULONG                    Length;
+    PULONG                   ReturnLength;
+    PVOID                    CallContext;
+    PVOID                    ObjectContext;
+    PVOID                    Reserved;
+} REG_QUERY_KEY_NAME, * PREG_QUERY_KEY_NAME;
+
+typedef struct _REG_QUERY_KEY_SECURITY_INFORMATION {
+    PVOID                 Object;
+    PSECURITY_INFORMATION SecurityInformation;
+    PSECURITY_DESCRIPTOR  SecurityDescriptor;
+    PULONG                Length;
+    PVOID                 CallContext;
+    PVOID                 ObjectContext;
+    PVOID                 Reserved;
+} REG_QUERY_KEY_SECURITY_INFORMATION, * PREG_QUERY_KEY_SECURITY_INFORMATION;
+
+typedef struct _REG_QUERY_MULTIPLE_VALUE_KEY_INFORMATION {
+    PVOID            Object;
+    PKEY_VALUE_ENTRY ValueEntries;
+    ULONG            EntryCount;
+    PVOID            ValueBuffer;
+    PULONG           BufferLength;
+    PULONG           RequiredBufferLength;
+    PVOID            CallContext;
+    PVOID            ObjectContext;
+    PVOID            Reserved;
+} REG_QUERY_MULTIPLE_VALUE_KEY_INFORMATION, * PREG_QUERY_MULTIPLE_VALUE_KEY_INFORMATION;
+
+typedef struct _REG_QUERY_VALUE_KEY_INFORMATION {
+    PVOID                       Object;
+    PUNICODE_STRING             ValueName;
+    KEY_VALUE_INFORMATION_CLASS KeyValueInformationClass;
+    PVOID                       KeyValueInformation;
+    ULONG                       Length;
+    PULONG                      ResultLength;
+    PVOID                       CallContext;
+    PVOID                       ObjectContext;
+    PVOID                       Reserved;
+} REG_QUERY_VALUE_KEY_INFORMATION, * PREG_QUERY_VALUE_KEY_INFORMATION;
+
+typedef struct _REG_RENAME_KEY_INFORMATION {
+    PVOID           Object;
+    PUNICODE_STRING NewName;
+    PVOID           CallContext;
+    PVOID           ObjectContext;
+    PVOID           Reserved;
+} REG_RENAME_KEY_INFORMATION, * PREG_RENAME_KEY_INFORMATION;
+
+typedef struct _REG_REPLACE_KEY_INFORMATION {
+    PVOID           Object;
+    PUNICODE_STRING OldFileName;
+    PUNICODE_STRING NewFileName;
+    PVOID           CallContext;
+    PVOID           ObjectContext;
+    PVOID           Reserved;
+} REG_REPLACE_KEY_INFORMATION, * PREG_REPLACE_KEY_INFORMATION;
+
+typedef struct _REG_RESTORE_KEY_INFORMATION {
+    PVOID  Object;
+    HANDLE FileHandle;
+    ULONG  Flags;
+    PVOID  CallContext;
+    PVOID  ObjectContext;
+    PVOID  Reserved;
+} REG_RESTORE_KEY_INFORMATION, * PREG_RESTORE_KEY_INFORMATION;
+
+typedef struct _REG_SAVE_KEY_INFORMATION {
+    PVOID  Object;
+    HANDLE FileHandle;
+    ULONG  Format;
+    PVOID  CallContext;
+    PVOID  ObjectContext;
+    PVOID  Reserved;
+} REG_SAVE_KEY_INFORMATION, * PREG_SAVE_KEY_INFORMATION;
+
+typedef struct _REG_SAVE_MERGED_KEY_INFORMATION {
+    PVOID  Object;
+    HANDLE FileHandle;
+    PVOID  HighKeyObject;
+    PVOID  LowKeyObject;
+    PVOID  CallContext;
+    PVOID  ObjectContext;
+    PVOID  Reserved;
+} REG_SAVE_MERGED_KEY_INFORMATION, * PREG_SAVE_MERGED_KEY_INFORMATION;
+
+
+typedef struct _REG_SET_INFORMATION_KEY_INFORMATION {
+    PVOID                     Object;
+    KEY_SET_INFORMATION_CLASS KeySetInformationClass;
+    PVOID                     KeySetInformation;
+    ULONG                     KeySetInformationLength;
+    PVOID                     CallContext;
+    PVOID                     ObjectContext;
+    PVOID                     Reserved;
+} REG_SET_INFORMATION_KEY_INFORMATION, * PREG_SET_INFORMATION_KEY_INFORMATION;
+
+typedef struct _REG_SET_KEY_SECURITY_INFORMATION {
+    PVOID                 Object;
+    PSECURITY_INFORMATION SecurityInformation;
+    PSECURITY_DESCRIPTOR  SecurityDescriptor;
+    PVOID                 CallContext;
+    PVOID                 ObjectContext;
+    PVOID                 Reserved;
+} REG_SET_KEY_SECURITY_INFORMATION, * PREG_SET_KEY_SECURITY_INFORMATION;
+
+typedef struct _REG_SET_VALUE_KEY_INFORMATION {
+    PVOID           Object;
+    PUNICODE_STRING ValueName;
+    ULONG           TitleIndex;
+    ULONG           Type;
+    PVOID           Data;
+    ULONG           DataSize;
+    PVOID           CallContext;
+    PVOID           ObjectContext;
+    PVOID           Reserved;
+} REG_SET_VALUE_KEY_INFORMATION, * PREG_SET_VALUE_KEY_INFORMATION;
+
+
+typedef struct _REG_UNLOAD_KEY_INFORMATION {
+    PVOID Object;
+    PVOID UserEvent;
+    PVOID CallContext;
+    PVOID ObjectContext;
+    PVOID Reserved;
+} REG_UNLOAD_KEY_INFORMATION, * PREG_UNLOAD_KEY_INFORMATION;
+
+typedef struct _KEY_BASIC_INFORMATION {
+    LARGE_INTEGER LastWriteTime;
+    ULONG         TitleIndex;
+    ULONG         NameLength;
+    WCHAR         Name[1];
+} KEY_BASIC_INFORMATION, * PKEY_BASIC_INFORMATION;
+
+typedef struct _KEY_FULL_INFORMATION {
+    LARGE_INTEGER LastWriteTime;
+    ULONG         TitleIndex;
+    ULONG         ClassOffset;
+    ULONG         ClassLength;
+    ULONG         SubKeys;
+    ULONG         MaxNameLen;
+    ULONG         MaxClassLen;
+    ULONG         Values;
+    ULONG         MaxValueNameLen;
+    ULONG         MaxValueDataLen;
+    WCHAR         Class[1];
+} KEY_FULL_INFORMATION, * PKEY_FULL_INFORMATION;
+
+
+typedef struct _KEY_NODE_INFORMATION {
+    LARGE_INTEGER LastWriteTime;
+    ULONG         TitleIndex;
+    ULONG         ClassOffset;
+    ULONG         ClassLength;
+    ULONG         NameLength;
+    WCHAR         Name[1];
+} KEY_NODE_INFORMATION, * PKEY_NODE_INFORMATION;
+
+
+typedef struct _KEY_VALUE_BASIC_INFORMATION {
+    ULONG TitleIndex;
+    ULONG Type;
+    ULONG NameLength;
+    WCHAR Name[1];
+} KEY_VALUE_BASIC_INFORMATION, * PKEY_VALUE_BASIC_INFORMATION;
+
+
+
+typedef struct _KEY_VALUE_FULL_INFORMATION {
+    ULONG TitleIndex;
+    ULONG Type;
+    ULONG DataOffset;
+    ULONG DataLength;
+    ULONG NameLength;
+    WCHAR Name[1];
+} KEY_VALUE_FULL_INFORMATION, * PKEY_VALUE_FULL_INFORMATION;
+
+
+
+typedef struct _KEY_VALUE_PARTIAL_INFORMATION {
+    ULONG TitleIndex;
+    ULONG Type;
+    ULONG DataLength;
+    UCHAR Data[1];
+} KEY_VALUE_PARTIAL_INFORMATION, * PKEY_VALUE_PARTIAL_INFORMATION;
+
+typedef struct _KEY_WRITE_TIME_INFORMATION {
+    LARGE_INTEGER LastWriteTime;
+} KEY_WRITE_TIME_INFORMATION, * PKEY_WRITE_TIME_INFORMATION;
+
+
+
+typedef struct _KMUTANT {
+    DISPATCHER_HEADER Header;
+    LIST_ENTRY        MutantListEntry;
+    struct _KTHREAD* OwnerThread;
+    union {
+        UCHAR MutantFlags;
+        struct {
+            UCHAR Abandoned : 1;
+            UCHAR Spare1 : 7;
+        } DUMMYSTRUCTNAME;
+    } DUMMYUNIONNAME;
+    UCHAR             ApcDisable;
+} KMUTANT, * PKMUTANT, * PRKMUTANT, KMUTEX, * PKMUTEX, * PRKMUTEX;
+
+typedef struct _KTMOBJECT_CURSOR {
+    GUID  LastQuery;
+    ULONG ObjectIdCount;
+    GUID  ObjectIds[1];
+} KTMOBJECT_CURSOR, * PKTMOBJECT_CURSOR;
+
+typedef enum _KTMOBJECT_TYPE {
+    KTMOBJECT_TRANSACTION,
+    KTMOBJECT_TRANSACTION_MANAGER,
+    KTMOBJECT_RESOURCE_MANAGER,
+    KTMOBJECT_ENLISTMENT,
+    KTMOBJECT_INVALID
+} KTMOBJECT_TYPE, * PKTMOBJECT_TYPE;
+
+typedef struct _OB_OPERATION_REGISTRATION {
+    POBJECT_TYPE* ObjectType;
+    OB_OPERATION                Operations;
+    POB_PRE_OPERATION_CALLBACK  PreOperation;
+    POB_POST_OPERATION_CALLBACK PostOperation;
+} OB_OPERATION_REGISTRATION, * POB_OPERATION_REGISTRATION;
+
+typedef struct _OB_CALLBACK_REGISTRATION {
+    USHORT                    Version;
+    USHORT                    OperationRegistrationCount;
+    UNICODE_STRING            Altitude;
+    PVOID                     RegistrationContext;
+    OB_OPERATION_REGISTRATION* OperationRegistration;
+} OB_CALLBACK_REGISTRATION, * POB_CALLBACK_REGISTRATION;
+
+
+typedef struct _OB_POST_CREATE_HANDLE_INFORMATION {
+    ACCESS_MASK GrantedAccess;
+} OB_POST_CREATE_HANDLE_INFORMATION, * POB_POST_CREATE_HANDLE_INFORMATION;
+
+typedef struct _OB_POST_DUPLICATE_HANDLE_INFORMATION {
+    ACCESS_MASK GrantedAccess;
+} OB_POST_DUPLICATE_HANDLE_INFORMATION, * POB_POST_DUPLICATE_HANDLE_INFORMATION;
+
+typedef struct _OB_PRE_CREATE_HANDLE_INFORMATION {
+    ACCESS_MASK DesiredAccess;
+    ACCESS_MASK OriginalDesiredAccess;
+} OB_PRE_CREATE_HANDLE_INFORMATION, * POB_PRE_CREATE_HANDLE_INFORMATION;
+
+typedef struct _OB_PRE_DUPLICATE_HANDLE_INFORMATION {
+    ACCESS_MASK DesiredAccess;
+    ACCESS_MASK OriginalDesiredAccess;
+    PVOID       SourceProcess;
+    PVOID       TargetProcess;
+} OB_PRE_DUPLICATE_HANDLE_INFORMATION, * POB_PRE_DUPLICATE_HANDLE_INFORMATION;
+
+typedef union _OB_POST_OPERATION_PARAMETERS {
+    OB_POST_CREATE_HANDLE_INFORMATION    CreateHandleInformation;
+    OB_POST_DUPLICATE_HANDLE_INFORMATION DuplicateHandleInformation;
+} OB_POST_OPERATION_PARAMETERS, * POB_POST_OPERATION_PARAMETERS;
+
+typedef struct _OB_POST_OPERATION_INFORMATION {
+    OB_OPERATION                  Operation;
+    union {
+        ULONG Flags;
+        struct {
+            ULONG KernelHandle : 1;
+            ULONG Reserved : 31;
+        };
+    };
+    PVOID                         Object;
+    POBJECT_TYPE                  ObjectType;
+    PVOID                         CallContext;
+    NTSTATUS                      ReturnStatus;
+    POB_POST_OPERATION_PARAMETERS Parameters;
+} OB_POST_OPERATION_INFORMATION, * POB_POST_OPERATION_INFORMATION;
+
+
+typedef union _OB_PRE_OPERATION_PARAMETERS {
+    OB_PRE_CREATE_HANDLE_INFORMATION    CreateHandleInformation;
+    OB_PRE_DUPLICATE_HANDLE_INFORMATION DuplicateHandleInformation;
+} OB_PRE_OPERATION_PARAMETERS, * POB_PRE_OPERATION_PARAMETERS;
+
+
+
+typedef struct _OB_PRE_OPERATION_INFORMATION {
+    OB_OPERATION                 Operation;
+    union {
+        ULONG Flags;
+        struct {
+            ULONG KernelHandle : 1;
+            ULONG Reserved : 31;
+        };
+    };
+    PVOID                        Object;
+    POBJECT_TYPE                 ObjectType;
+    PVOID                        CallContext;
+    POB_PRE_OPERATION_PARAMETERS Parameters;
+} OB_PRE_OPERATION_INFORMATION, * POB_PRE_OPERATION_INFORMATION;
+
+
+
+
+
+typedef struct {
+    GUID Guid;
+} NOTIFY_USER_POWER_SETTING, * PNOTIFY_USER_POWER_SETTING;
+
+typedef struct _OSVERSIONINFOEXW {
+    ULONG  dwOSVersionInfoSize;
+    ULONG  dwMajorVersion;
+    ULONG  dwMinorVersion;
+    ULONG  dwBuildNumber;
+    ULONG  dwPlatformId;
+    WCHAR  szCSDVersion[128];
+    USHORT wServicePackMajor;
+    USHORT wServicePackMinor;
+    USHORT wSuiteMask;
+    UCHAR  wProductType;
+    UCHAR  wReserved;
+} OSVERSIONINFOEXW, * POSVERSIONINFOEXW, * LPOSVERSIONINFOEXW, RTL_OSVERSIONINFOEXW, * PRTL_OSVERSIONINFOEXW;
+
+
+
+typedef struct _OSVERSIONINFOW {
+    ULONG dwOSVersionInfoSize;
+    ULONG dwMajorVersion;
+    ULONG dwMinorVersion;
+    ULONG dwBuildNumber;
+    ULONG dwPlatformId;
+    WCHAR szCSDVersion[128];
+} OSVERSIONINFOW, * POSVERSIONINFOW, * LPOSVERSIONINFOW, RTL_OSVERSIONINFOW, * PRTL_OSVERSIONINFOW;
+
+typedef struct _PCI_ATS_INTERFACE {
+    USHORT                 Size;
+    USHORT                 Version;
+    PVOID                  Context;
+    PINTERFACE_REFERENCE   InterfaceReference;
+    PINTERFACE_DEREFERENCE InterfaceDereference;
+    PPCI_SET_ATS           SetAddressTranslationServices;
+    UCHAR                  InvalidateQueueDepth;
+} PCI_ATS_INTERFACE, * PPCI_ATS_INTERFACE;
+
+typedef struct _PO_FX_PERF_STATE {
+    ULONGLONG Value;
+    PVOID     Context;
+} PO_FX_PERF_STATE, * PPO_FX_PERF_STATE;
+
+typedef struct _PCI_MSIX_TABLE_CONFIG_INTERFACE {
+    USHORT                     Size;
+    USHORT                     Version;
+    PVOID                      Context;
+    PINTERFACE_REFERENCE       InterfaceReference;
+    PINTERFACE_DEREFERENCE     InterfaceDereference;
+    PPCI_MSIX_SET_ENTRY        SetTableEntry;
+    PPCI_MSIX_MASKUNMASK_ENTRY MaskTableEntry;
+    PPCI_MSIX_MASKUNMASK_ENTRY UnmaskTableEntry;
+    PPCI_MSIX_GET_ENTRY        GetTableEntry;
+    PPCI_MSIX_GET_TABLE_SIZE   GetTableSize;
+} PCI_MSIX_TABLE_CONFIG_INTERFACE, * PPCI_MSIX_TABLE_CONFIG_INTERFACE;
+
+typedef struct _PCI_SECURITY_INTERFACE2 {
+    USHORT                 Size;
+    USHORT                 Version;
+    PVOID                  Context;
+    PINTERFACE_REFERENCE   InterfaceReference;
+    PINTERFACE_DEREFERENCE InterfaceDereference;
+    ULONG                  Flags;
+    ULONG                  SupportedScenarios;
+    PPCI_SET_ACS2          SetAccessControlServices;
+} PCI_SECURITY_INTERFACE2, * PPCI_SECURITY_INTERFACE2;
+
+typedef struct _PCI_SEGMENT_BUS_NUMBER {
+    union {
+        struct {
+            ULONG BusNumber : 8;
+            ULONG SegmentNumber : 16;
+            ULONG Reserved : 8;
+        } bits;
+        ULONG AsULONG;
+    } u;
+} PCI_SEGMENT_BUS_NUMBER, * PPCI_SEGMENT_BUS_NUMBER;
+
+
+typedef struct _PLUGPLAY_NOTIFICATION_HEADER {
+    USHORT Version;
+    USHORT Size;
+    GUID   Event;
+} PLUGPLAY_NOTIFICATION_HEADER, * PPLUGPLAY_NOTIFICATION_HEADER;
+
+
+typedef enum _PO_FX_PERF_STATE_TYPE {
+    PoFxPerfStateTypeDiscrete,
+    PoFxPerfStateTypeRange,
+    PoFxPerfStateTypeMaximum
+} PO_FX_PERF_STATE_TYPE, * PPO_FX_PERF_STATE_TYPE;
+
+typedef enum _PO_FX_PERF_STATE_UNIT {
+    PoFxPerfStateUnitOther,
+    PoFxPerfStateUnitFrequency,
+    PoFxPerfStateUnitBandwidth,
+    PoFxPerfStateUnitMaximum
+} PO_FX_PERF_STATE_UNIT, * PPO_FX_PERF_STATE_UNIT;
+
+typedef enum _TRANSACTION_STATE {
+    TransactionStateNormal,
+    TransactionStateIndoubt,
+    TransactionStateCommittedNotify
+} TRANSACTION_STATE;
+
+typedef struct _PNP_BUS_INFORMATION {
+    GUID           BusTypeGuid;
+    INTERFACE_TYPE LegacyBusType;
+    ULONG          BusNumber;
+} PNP_BUS_INFORMATION, * PPNP_BUS_INFORMATION;
+
+typedef struct _PO_FX_COMPONENT_IDLE_STATE {
+    ULONGLONG TransitionLatency;
+    ULONGLONG ResidencyRequirement;
+    ULONG     NominalPower;
+} PO_FX_COMPONENT_IDLE_STATE, * PPO_FX_COMPONENT_IDLE_STATE;
+
+typedef struct _PO_FX_COMPONENT_PERF_SET {
+    UNICODE_STRING        Name;
+    ULONGLONG             Flags;
+    PO_FX_PERF_STATE_UNIT Unit;
+    PO_FX_PERF_STATE_TYPE Type;
+    union {
+        struct {
+            ULONG             Count;
+            PPO_FX_PERF_STATE States;
+        } Discrete;
+        struct {
+            ULONGLONG Minimum;
+            ULONGLONG Maximum;
+        } Range;
+    };
+} PO_FX_COMPONENT_PERF_SET, * PPO_FX_COMPONENT_PERF_SET;
+
+typedef struct _PO_FX_COMPONENT_PERF_INFO {
+    ULONG                    PerfStateSetsCount;
+    PO_FX_COMPONENT_PERF_SET* PerfStateSets;
+} PO_FX_COMPONENT_PERF_INFO, * PPO_FX_COMPONENT_PERF_INFO;
+
+
+typedef struct _PO_FX_COMPONENT_V1 {
+    GUID                        Id;
+    ULONG                       IdleStateCount;
+    ULONG                       DeepestWakeableIdleState;
+    PPO_FX_COMPONENT_IDLE_STATE IdleStates;
+} PO_FX_COMPONENT_V1, * PPO_FX_COMPONENT_V1;
+
+typedef struct _PO_FX_COMPONENT_V2 {
+    GUID                        Id;
+    ULONGLONG                   Flags;
+    ULONG                       DeepestWakeableIdleState;
+    ULONG                       IdleStateCount;
+    PPO_FX_COMPONENT_IDLE_STATE IdleStates;
+    ULONG                       ProviderCount;
+    PULONG                      Providers;
+} PO_FX_COMPONENT_V2, * PPO_FX_COMPONENT_V2;
+
+typedef struct _PO_FX_DEVICE_V1 {
+    ULONG                                      Version;
+    ULONG                                      ComponentCount;
+    PPO_FX_COMPONENT_ACTIVE_CONDITION_CALLBACK ComponentActiveConditionCallback;
+    PPO_FX_COMPONENT_IDLE_CONDITION_CALLBACK   ComponentIdleConditionCallback;
+    PPO_FX_COMPONENT_IDLE_STATE_CALLBACK       ComponentIdleStateCallback;
+    PPO_FX_DEVICE_POWER_REQUIRED_CALLBACK      DevicePowerRequiredCallback;
+    PPO_FX_DEVICE_POWER_NOT_REQUIRED_CALLBACK  DevicePowerNotRequiredCallback;
+    PPO_FX_POWER_CONTROL_CALLBACK              PowerControlCallback;
+    PVOID                                      DeviceContext;
+    PO_FX_COMPONENT_V1*                         Components;
+} PO_FX_DEVICE_V1, * PPO_FX_DEVICE_V1;
+
+typedef struct _PO_FX_DEVICE_V2 {
+    ULONG                                      Version;
+    ULONGLONG                                  Flags;
+    PPO_FX_COMPONENT_ACTIVE_CONDITION_CALLBACK ComponentActiveConditionCallback;
+    PPO_FX_COMPONENT_IDLE_CONDITION_CALLBACK   ComponentIdleConditionCallback;
+    PPO_FX_COMPONENT_IDLE_STATE_CALLBACK       ComponentIdleStateCallback;
+    PPO_FX_DEVICE_POWER_REQUIRED_CALLBACK      DevicePowerRequiredCallback;
+    PPO_FX_DEVICE_POWER_NOT_REQUIRED_CALLBACK  DevicePowerNotRequiredCallback;
+    PPO_FX_POWER_CONTROL_CALLBACK              PowerControlCallback;
+    PVOID                                      DeviceContext;
+    ULONG                                      ComponentCount;
+    PO_FX_COMPONENT_V2*                         Components;
+} PO_FX_DEVICE_V2, * PPO_FX_DEVICE_V2;
+
+typedef struct _PO_FX_DEVICE_V3 {
+    ULONG                                      Version;
+    ULONGLONG                                  Flags;
+    PPO_FX_COMPONENT_ACTIVE_CONDITION_CALLBACK ComponentActiveConditionCallback;
+    PPO_FX_COMPONENT_IDLE_CONDITION_CALLBACK   ComponentIdleConditionCallback;
+    PPO_FX_COMPONENT_IDLE_STATE_CALLBACK       ComponentIdleStateCallback;
+    PPO_FX_DEVICE_POWER_REQUIRED_CALLBACK      DevicePowerRequiredCallback;
+    PPO_FX_DEVICE_POWER_NOT_REQUIRED_CALLBACK  DevicePowerNotRequiredCallback;
+    PPO_FX_POWER_CONTROL_CALLBACK              PowerControlCallback;
+    PPO_FX_DIRECTED_POWER_UP_CALLBACK          DirectedPowerUpCallback;
+    PPO_FX_DIRECTED_POWER_DOWN_CALLBACK        DirectedPowerDownCallback;
+    ULONG                                      DirectedFxTimeoutInSeconds;
+    PVOID                                      DeviceContext;
+    ULONG                                      ComponentCount;
+    PO_FX_COMPONENT_V2*                         Components;
+} PO_FX_DEVICE_V3, * PPO_FX_DEVICE_V3;
+
+
+
+typedef struct _PO_FX_PERF_STATE_CHANGE {
+    ULONG Set;
+    union {
+        ULONG     StateIndex;
+        ULONGLONG StateValue;
+    };
+} PO_FX_PERF_STATE_CHANGE, * PPO_FX_PERF_STATE_CHANGE;
+
+
+
+
+
+
+typedef struct _TRANSACTIONMANAGER_BASIC_INFORMATION {
+    GUID          TmIdentity;
+    LARGE_INTEGER VirtualClock;
+} TRANSACTIONMANAGER_BASIC_INFORMATION, * PTRANSACTIONMANAGER_BASIC_INFORMATION;
+
+typedef struct _TRANSACTIONMANAGER_LOG_INFORMATION {
+    GUID LogIdentity;
+} TRANSACTIONMANAGER_LOG_INFORMATION, * PTRANSACTIONMANAGER_LOG_INFORMATION;
+
+typedef struct _TRANSACTIONMANAGER_LOGPATH_INFORMATION {
+    ULONG LogPathLength;
+    WCHAR LogPath[1];
+} TRANSACTIONMANAGER_LOGPATH_INFORMATION, * PTRANSACTIONMANAGER_LOGPATH_INFORMATION;
+
+typedef struct _TRANSACTIONMANAGER_RECOVERY_INFORMATION {
+    ULONGLONG LastRecoveredLsn;
+} TRANSACTIONMANAGER_RECOVERY_INFORMATION, * PTRANSACTIONMANAGER_RECOVERY_INFORMATION;
+
+
+
 typedef struct _CLS_LSN {
     ULONGLONG Internal;
 } CLS_LSN, * PCLS_LSN, PPCLS_LSN;
@@ -894,6 +2091,151 @@ NTSTATUS CmUnRegisterCallback(
   _In_ LARGE_INTEGER Cookie
 );
 
+typedef struct _FILE_FS_DEVICE_INFORMATION {
+    DEVICE_TYPE DeviceType;
+    ULONG       Characteristics;
+} FILE_FS_DEVICE_INFORMATION, * PFILE_FS_DEVICE_INFORMATION;
+
+typedef struct _FILE_FULL_EA_INFORMATION {
+    ULONG  NextEntryOffset;
+    UCHAR  Flags;
+    UCHAR  EaNameLength;
+    USHORT EaValueLength;
+    CHAR   EaName[1];
+} FILE_FULL_EA_INFORMATION, * PFILE_FULL_EA_INFORMATION;
+
+typedef struct _FILE_IO_PRIORITY_HINT_INFORMATION {
+    IO_PRIORITY_HINT PriorityHint;
+} FILE_IO_PRIORITY_HINT_INFORMATION, * PFILE_IO_PRIORITY_HINT_INFORMATION;
+
+typedef struct _FILE_IS_REMOTE_DEVICE_INFORMATION {
+    BOOLEAN IsRemote;
+} FILE_IS_REMOTE_DEVICE_INFORMATION, * PFILE_IS_REMOTE_DEVICE_INFORMATION;
+
+
+
+
+typedef struct _FILE_POSITION_INFORMATION {
+    LARGE_INTEGER CurrentByteOffset;
+} FILE_POSITION_INFORMATION, * PFILE_POSITION_INFORMATION;
+
+
+typedef struct _FILE_STANDARD_INFORMATION_EX {
+    LARGE_INTEGER AllocationSize;
+    LARGE_INTEGER EndOfFile;
+    ULONG         NumberOfLinks;
+    BOOLEAN       DeletePending;
+    BOOLEAN       Directory;
+    BOOLEAN       AlternateStream;
+    BOOLEAN       MetadataAttribute;
+} FILE_STANDARD_INFORMATION_EX, * PFILE_STANDARD_INFORMATION_EX;
+
+
+PSLIST_ENTRY FirstEntrySList(
+    _In_ PSLIST_HEADER SListHead
+);
+
+typedef struct _FPGA_CONTROL_INTERFACE {
+    USHORT                        Size;
+    USHORT                        Version;
+    PVOID                         Context;
+    PINTERFACE_REFERENCE          InterfaceReference;
+    PINTERFACE_DEREFERENCE        InterfaceDereference;
+    PFPGA_BUS_SCAN                BusScan;
+    PFPGA_CONTROL_LINK            ControlLink;
+    PFPGA_CONTROL_CONFIG_SPACE    ControlConfigSpace;
+    PFPGA_CONTROL_ERROR_REPORTING ControlErrorReporting;
+} FPGA_CONTROL_INTERFACE, * PFPGA_CONTROL_INTERFACE;
+
+
+typedef
+VOID
+(*PDEVICE_RESET_COMPLETION)(
+    _In_ NTSTATUS Status,
+    _Inout_opt_ PVOID Context
+    );
+
+
+typedef enum _IMAGE_POLICY_ENTRY_TYPE {
+    ImagePolicyEntryTypeNone,
+    ImagePolicyEntryTypeBool,
+    ImagePolicyEntryTypeInt8,
+    ImagePolicyEntryTypeUInt8,
+    ImagePolicyEntryTypeInt16,
+    ImagePolicyEntryTypeUInt16,
+    ImagePolicyEntryTypeInt32,
+    ImagePolicyEntryTypeUInt32,
+    ImagePolicyEntryTypeInt64,
+    ImagePolicyEntryTypeUInt64,
+    ImagePolicyEntryTypeAnsiString,
+    ImagePolicyEntryTypeUnicodeString,
+    ImagePolicyEntryTypeOverride,
+    ImagePolicyEntryTypeMaximum
+} IMAGE_POLICY_ENTRY_TYPE;
+
+typedef enum _IMAGE_POLICY_ID {
+    ImagePolicyIdNone,
+    ImagePolicyIdEtw,
+    ImagePolicyIdDebug,
+    ImagePolicyIdCrashDump,
+    ImagePolicyIdCrashDumpKey,
+    ImagePolicyIdCrashDumpKeyGuid,
+    ImagePolicyIdParentSd,
+    ImagePolicyIdParentSdRev,
+    ImagePolicyIdSvn,
+    ImagePolicyIdDeviceId,
+    ImagePolicyIdCapability,
+    ImagePolicyIdScenarioId,
+    ImagePolicyIdMaximum
+} IMAGE_POLICY_ID;
+
+typedef struct _FUNCTION_LEVEL_DEVICE_RESET_PARAMETERS {
+    ULONG                    Size;
+    PDEVICE_RESET_COMPLETION DeviceResetCompletion;
+    PVOID                    CompletionContext;
+} FUNCTION_LEVEL_DEVICE_RESET_PARAMETERS, * PFUNCTION_LEVEL_DEVICE_RESET_PARAMETERS;
+
+
+typedef struct _GENERIC_MAPPING {
+    ACCESS_MASK GenericRead;
+    ACCESS_MASK GenericWrite;
+    ACCESS_MASK GenericExecute;
+    ACCESS_MASK GenericAll;
+} GENERIC_MAPPING;
+
+typedef struct _HWPROFILE_CHANGE_NOTIFICATION {
+    USHORT Version;
+    USHORT Size;
+    GUID   Event;
+} HWPROFILE_CHANGE_NOTIFICATION, * PHWPROFILE_CHANGE_NOTIFICATION;
+
+typedef struct _IMAGE_POLICY_ENTRY {
+    IMAGE_POLICY_ENTRY_TYPE Type;
+    IMAGE_POLICY_ID         PolicyId;
+    union {
+        const VOID* None;
+        BOOLEAN    BoolValue;
+        INT8       Int8Value;
+        UINT8      UInt8Value;
+        INT16      Int16Value;
+        UINT16     UInt16Value;
+        INT32      Int32Value;
+        UINT32     UInt32Value;
+        INT64      Int64Value;
+        UINT64     UInt64Value;
+        PCSTR      AnsiStringValue;
+        PCWSTR     UnicodeStringValue;
+    } u;
+} IMAGE_POLICY_ENTRY;
+
+
+typedef struct _IMAGE_POLICY_METADATA {
+    UCHAR              Version;
+    UCHAR              Reserved0[7];
+    ULONGLONG          ApplicationId;
+    IMAGE_POLICY_ENTRY* Policies;
+} IMAGE_POLICY_METADATA;
+
 
 typedef struct _D3COLD_AUX_POWER_AND_TIMING_INTERFACE {
   USHORT                          Size;
@@ -1153,17 +2495,7 @@ typedef enum _ENLISTMENT_INFORMATION_CLASS {
 
 
 
-typedef _Enum_is_bitflag_ enum _EX_POOL_PRIORITY {
-    LowPoolPriority,
-    LowPoolPrioritySpecialPoolOverrun = 8,
-    LowPoolPrioritySpecialPoolUnderrun = 9,
-    NormalPoolPriority = 16,
-    NormalPoolPrioritySpecialPoolOverrun = 24,
-    NormalPoolPrioritySpecialPoolUnderrun = 25,
-    HighPoolPriority = 32,
-    HighPoolPrioritySpecialPoolOverrun = 40,
-    HighPoolPrioritySpecialPoolUnderrun = 41
-} EX_POOL_PRIORITY;
+
 
 
 typedef struct _DMA_IOMMU_INTERFACE_V2 {
@@ -1966,211 +3298,10 @@ void ExWaitForRundownProtectionReleaseCacheAware(
 //  _In_  field
 //);
 
-/*
-typedef struct _FILE_BASIC_INFORMATION {
-  LARGE_INTEGER CreationTime;
-  LARGE_INTEGER LastAccessTime;
-  LARGE_INTEGER LastWriteTime;
-  LARGE_INTEGER ChangeTime;
-  ULONG         FileAttributes;
-} FILE_BASIC_INFORMATION, *PFILE_BASIC_INFORMATION;
 
-typedef struct _FILE_FS_DEVICE_INFORMATION {
-  DEVICE_TYPE DeviceType;
-  ULONG       Characteristics;
-} FILE_FS_DEVICE_INFORMATION, *PFILE_FS_DEVICE_INFORMATION;
-
-typedef struct _FILE_FULL_EA_INFORMATION {
-  ULONG  NextEntryOffset;
-  UCHAR  Flags;
-  UCHAR  EaNameLength;
-  USHORT EaValueLength;
-  CHAR   EaName[1];
-} FILE_FULL_EA_INFORMATION, *PFILE_FULL_EA_INFORMATION;
-
-typedef struct _FILE_IO_PRIORITY_HINT_INFORMATION {
-  IO_PRIORITY_HINT PriorityHint;
-} FILE_IO_PRIORITY_HINT_INFORMATION, *PFILE_IO_PRIORITY_HINT_INFORMATION;
-
-typedef struct _FILE_IS_REMOTE_DEVICE_INFORMATION {
-  BOOLEAN IsRemote;
-} FILE_IS_REMOTE_DEVICE_INFORMATION, *PFILE_IS_REMOTE_DEVICE_INFORMATION;
-
-typedef struct _FILE_NETWORK_OPEN_INFORMATION {
-  LARGE_INTEGER CreationTime;
-  LARGE_INTEGER LastAccessTime;
-  LARGE_INTEGER LastWriteTime;
-  LARGE_INTEGER ChangeTime;
-  LARGE_INTEGER AllocationSize;
-  LARGE_INTEGER EndOfFile;
-  ULONG         FileAttributes;
-} FILE_NETWORK_OPEN_INFORMATION, *PFILE_NETWORK_OPEN_INFORMATION;
-
-typedef struct _FILE_OBJECT {
-  CSHORT                            Type;
-  CSHORT                            Size;
-  PDEVICE_OBJECT                    DeviceObject;
-  PVPB                              Vpb;
-  PVOID                             FsContext;
-  PVOID                             FsContext2;
-  PSECTION_OBJECT_POINTERS          SectionObjectPointer;
-  PVOID                             PrivateCacheMap;
-  NTSTATUS                          FinalStatus;
-  struct _FILE_OBJECT               *RelatedFileObject;
-  BOOLEAN                           LockOperation;
-  BOOLEAN                           DeletePending;
-  BOOLEAN                           ReadAccess;
-  BOOLEAN                           WriteAccess;
-  BOOLEAN                           DeleteAccess;
-  BOOLEAN                           SharedRead;
-  BOOLEAN                           SharedWrite;
-  BOOLEAN                           SharedDelete;
-  ULONG                             Flags;
-  UNICODE_STRING                    FileName;
-  LARGE_INTEGER                     CurrentByteOffset;
-  __volatile ULONG                  Waiters;
-  __volatile ULONG                  Busy;
-  PVOID                             LastLock;
-  KEVENT                            Lock;
-  KEVENT                            Event;
-  __volatile PIO_COMPLETION_CONTEXT CompletionContext;
-  KSPIN_LOCK                        IrpListLock;
-  LIST_ENTRY                        IrpList;
-  __volatile PVOID                  FileObjectExtension;
-} FILE_OBJECT, *PFILE_OBJECT;
-
-typedef struct _FILE_POSITION_INFORMATION {
-  LARGE_INTEGER CurrentByteOffset;
-} FILE_POSITION_INFORMATION, *PFILE_POSITION_INFORMATION;
-
-typedef struct _FILE_STANDARD_INFORMATION {
-  LARGE_INTEGER AllocationSize;
-  LARGE_INTEGER EndOfFile;
-  ULONG         NumberOfLinks;
-  BOOLEAN       DeletePending;
-  BOOLEAN       Directory;
-} FILE_STANDARD_INFORMATION, *PFILE_STANDARD_INFORMATION;
-
-typedef struct _FILE_STANDARD_INFORMATION_EX {
-  LARGE_INTEGER AllocationSize;
-  LARGE_INTEGER EndOfFile;
-  ULONG         NumberOfLinks;
-  BOOLEAN       DeletePending;
-  BOOLEAN       Directory;
-  BOOLEAN       AlternateStream;
-  BOOLEAN       MetadataAttribute;
-} FILE_STANDARD_INFORMATION_EX, *PFILE_STANDARD_INFORMATION_EX;
-
-
-PSLIST_ENTRY FirstEntrySList(
-  _In_ PSLIST_HEADER SListHead
-);
-
-typedef struct _FPGA_CONTROL_INTERFACE {
-  USHORT                        Size;
-  USHORT                        Version;
-  PVOID                         Context;
-  PINTERFACE_REFERENCE          InterfaceReference;
-  PINTERFACE_DEREFERENCE        InterfaceDereference;
-  PFPGA_BUS_SCAN                BusScan;
-  PFPGA_CONTROL_LINK            ControlLink;
-  PFPGA_CONTROL_CONFIG_SPACE    ControlConfigSpace;
-  PFPGA_CONTROL_ERROR_REPORTING ControlErrorReporting;
-} FPGA_CONTROL_INTERFACE, *PFPGA_CONTROL_INTERFACE;
-
-
-typedef
-VOID
-(*PDEVICE_RESET_COMPLETION)(
-    _In_ NTSTATUS Status,
-    _Inout_opt_ PVOID Context
-    );
-
-
-
-
-typedef struct _FUNCTION_LEVEL_DEVICE_RESET_PARAMETERS {
-  ULONG                    Size;
-  PDEVICE_RESET_COMPLETION DeviceResetCompletion;
-  PVOID                    CompletionContext;
-} FUNCTION_LEVEL_DEVICE_RESET_PARAMETERS, *PFUNCTION_LEVEL_DEVICE_RESET_PARAMETERS;
-
-
-typedef struct _GENERIC_MAPPING {
-  ACCESS_MASK GenericRead;
-  ACCESS_MASK GenericWrite;
-  ACCESS_MASK GenericExecute;
-  ACCESS_MASK GenericAll;
-} GENERIC_MAPPING;
-
-typedef struct _HWPROFILE_CHANGE_NOTIFICATION {
-  USHORT Version;
-  USHORT Size;
-  GUID   Event;
-} HWPROFILE_CHANGE_NOTIFICATION, *PHWPROFILE_CHANGE_NOTIFICATION;
-
-typedef struct _IMAGE_POLICY_ENTRY {
-  IMAGE_POLICY_ENTRY_TYPE Type;
-  IMAGE_POLICY_ID         PolicyId;
-  union {
-    const VOID *None;
-    BOOLEAN    BoolValue;
-    INT8       Int8Value;
-    UINT8      UInt8Value;
-    INT16      Int16Value;
-    UINT16     UInt16Value;
-    INT32      Int32Value;
-    UINT32     UInt32Value;
-    INT64      Int64Value;
-    UINT64     UInt64Value;
-    PCSTR      AnsiStringValue;
-    PCWSTR     UnicodeStringValue;
-  } u;
-} IMAGE_POLICY_ENTRY;
-
-typedef enum _IMAGE_POLICY_ENTRY_TYPE {
-  ImagePolicyEntryTypeNone,
-  ImagePolicyEntryTypeBool,
-  ImagePolicyEntryTypeInt8,
-  ImagePolicyEntryTypeUInt8,
-  ImagePolicyEntryTypeInt16,
-  ImagePolicyEntryTypeUInt16,
-  ImagePolicyEntryTypeInt32,
-  ImagePolicyEntryTypeUInt32,
-  ImagePolicyEntryTypeInt64,
-  ImagePolicyEntryTypeUInt64,
-  ImagePolicyEntryTypeAnsiString,
-  ImagePolicyEntryTypeUnicodeString,
-  ImagePolicyEntryTypeOverride,
-  ImagePolicyEntryTypeMaximum
-} IMAGE_POLICY_ENTRY_TYPE;
-
-typedef enum _IMAGE_POLICY_ID {
-  ImagePolicyIdNone,
-  ImagePolicyIdEtw,
-  ImagePolicyIdDebug,
-  ImagePolicyIdCrashDump,
-  ImagePolicyIdCrashDumpKey,
-  ImagePolicyIdCrashDumpKeyGuid,
-  ImagePolicyIdParentSd,
-  ImagePolicyIdParentSdRev,
-  ImagePolicyIdSvn,
-  ImagePolicyIdDeviceId,
-  ImagePolicyIdCapability,
-  ImagePolicyIdScenarioId,
-  ImagePolicyIdMaximum
-} IMAGE_POLICY_ID;
-
-typedef struct _IMAGE_POLICY_METADATA {
-  UCHAR              Version;
-  UCHAR              Reserved0[7];
-  ULONGLONG          ApplicationId;
-  IMAGE_POLICY_ENTRY Policies[];
-} IMAGE_POLICY_METADATA;
-
-void IMAGE_POLICY_OVERRIDE(
-   _PolicyId_
-);
+//void IMAGE_POLICY_OVERRIDE(
+//   _PolicyId_
+//);
 
 void InitializeListHead(
   _Out_ PLIST_ENTRY ListHead
@@ -2187,51 +3318,21 @@ typedef struct _INPUT_MAPPING_ELEMENT {
 
 void InsertHeadList(
    PLIST_ENTRY                  ListHead,
-   __drv_aliasesMem PLIST_ENTRY Entry
+   PLIST_ENTRY Entry
 );
 
 void InsertTailList(
    PLIST_ENTRY                  ListHead,
-   __drv_aliasesMem PLIST_ENTRY Entry
+   PLIST_ENTRY Entry
 );
 
-typedef struct _INTERFACE {
-  USHORT                 Size;
-  USHORT                 Version;
-  PVOID                  Context;
-  PINTERFACE_REFERENCE   InterfaceReference;
-  PINTERFACE_DEREFERENCE InterfaceDereference;
-} INTERFACE, *PINTERFACE;
-
-typedef enum _INTERFACE_TYPE {
-  InterfaceTypeUndefined,
-  Internal,
-  Isa,
-  Eisa,
-  MicroChannel,
-  TurboChannel,
-  PCIBus,
-  VMEBus,
-  NuBus,
-  PCMCIABus,
-  CBus,
-  MPIBus,
-  MPSABus,
-  ProcessorInternal,
-  InternalPowerBus,
-  PNPISABus,
-  PNPBus,
-  Vmcs,
-  ACPIBus,
-  MaximumInterfaceType
-} INTERFACE_TYPE, *PINTERFACE_TYPE;
 
 LONG InterlockedAnd(
    LONG volatile *Destination,
   _In_      LONG          Value
 );
 
-LONG CDECL_NON_WVMPURE InterlockedCompareExchange(
+LONG InterlockedCompareExchange(
    LONG volatile *Destination,
   _In_      LONG          ExChange,
   _In_      LONG          Comperand
@@ -2243,7 +3344,7 @@ PVOID InterlockedCompareExchangePointer(
   _In_      PVOID          Comperand
 );
 
-LONG CDECL_NON_WVMPURE InterlockedDecrement(
+LONG  InterlockedDecrement(
    LONG volatile *Addend
 );
 
@@ -2262,7 +3363,7 @@ PVOID InterlockedExchangePointer(
   _In_opt_ PVOID          Value
 );
 
-LONG CDECL_NON_WVMPURE InterlockedIncrement(
+LONG  InterlockedIncrement(
    LONG volatile *Addend
 );
 
@@ -2276,22 +3377,6 @@ LONG InterlockedXor(
   _In_      LONG          Value
 );
 
-typedef enum _IO_ACCESS_MODE {
-  SequentialAccess,
-  RandomAccess
-} IO_ACCESS_MODE;
-
-typedef enum _IO_ACCESS_TYPE {
-  ReadAccess,
-  WriteAccess,
-  ModifyAccess
-} IO_ACCESS_TYPE;
-
-typedef enum _IO_ALLOCATION_ACTION {
-  KeepObject,
-  DeallocateObject,
-  DeallocateObjectKeepRegisters
-} IO_ALLOCATION_ACTION, *PIO_ALLOCATION_ACTION;
 
 typedef struct _IO_CONNECT_INTERRUPT_PARAMETERS {
   ULONG Version;
@@ -2312,14 +3397,6 @@ typedef enum _IO_CONTAINER_NOTIFICATION_CLASS {
   IoMaxContainerNotificationClass
 } IO_CONTAINER_NOTIFICATION_CLASS;
 
-typedef struct _IO_DISCONNECT_INTERRUPT_PARAMETERS {
-  ULONG Version;
-  union {
-    PVOID                      Generic;
-    PKINTERRUPT                InterruptObject;
-    PIO_INTERRUPT_MESSAGE_INFO InterruptMessageTable;
-  } ConnectionContext;
-} IO_DISCONNECT_INTERRUPT_PARAMETERS, *PIO_DISCONNECT_INTERRUPT_PARAMETERS;
 
 typedef struct _IO_ERROR_LOG_PACKET {
   UCHAR         MajorFunctionCode;
@@ -2337,11 +3414,6 @@ typedef struct _IO_ERROR_LOG_PACKET {
   ULONG         DumpData[1];
 } IO_ERROR_LOG_PACKET, *PIO_ERROR_LOG_PACKET;
 
-typedef struct _IO_INTERRUPT_MESSAGE_INFO {
-  KIRQL                           UnifiedIrql;
-  ULONG                           MessageCount;
-  IO_INTERRUPT_MESSAGE_INFO_ENTRY MessageInfo[1];
-} IO_INTERRUPT_MESSAGE_INFO, *PIO_INTERRUPT_MESSAGE_INFO;
 
 typedef struct _IO_INTERRUPT_MESSAGE_INFO_ENTRY {
   PHYSICAL_ADDRESS    MessageAddress;
@@ -2354,30 +3426,11 @@ typedef struct _IO_INTERRUPT_MESSAGE_INFO_ENTRY {
   KINTERRUPT_POLARITY Polarity;
 } IO_INTERRUPT_MESSAGE_INFO_ENTRY, *PIO_INTERRUPT_MESSAGE_INFO_ENTRY;
 
-typedef enum _IO_NOTIFICATION_EVENT_CATEGORY {
-  EventCategoryReserved,
-  EventCategoryHardwareProfileChange,
-  EventCategoryDeviceInterfaceChange,
-  EventCategoryTargetDeviceChange,
-  EventCategoryKernelSoftRestart
-} IO_NOTIFICATION_EVENT_CATEGORY;
-
-typedef enum _IO_PAGING_PRIORITY {
-  IoPagingPriorityInvalid,
-  IoPagingPriorityNormal,
-  IoPagingPriorityHigh,
-  IoPagingPriorityReserved1,
-  IoPagingPriorityReserved2
-} IO_PAGING_PRIORITY;
-
-typedef enum _IO_PRIORITY_HINT {
-  IoPriorityVeryLow,
-  IoPriorityLow,
-  IoPriorityNormal,
-  IoPriorityHigh,
-  IoPriorityCritical,
-  MaxIoPriorityTypes
-} IO_PRIORITY_HINT;
+typedef struct _IO_INTERRUPT_MESSAGE_INFO {
+    KIRQL                           UnifiedIrql;
+    ULONG                           MessageCount;
+    IO_INTERRUPT_MESSAGE_INFO_ENTRY MessageInfo[1];
+} IO_INTERRUPT_MESSAGE_INFO, * PIO_INTERRUPT_MESSAGE_INFO;
 
 typedef struct _IO_REPORT_INTERRUPT_ACTIVE_STATE_PARAMETERS {
   ULONG Version;
@@ -2388,113 +3441,14 @@ typedef struct _IO_REPORT_INTERRUPT_ACTIVE_STATE_PARAMETERS {
   } ConnectionContext;
 } IO_REPORT_INTERRUPT_ACTIVE_STATE_PARAMETERS, *PIO_REPORT_INTERRUPT_ACTIVE_STATE_PARAMETERS;
 
-typedef struct _IO_RESOURCE_DESCRIPTOR {
-  UCHAR  Option;
-  UCHAR  Type;
-  UCHAR  ShareDisposition;
-  UCHAR  Spare1;
-  USHORT Flags;
-  USHORT Spare2;
-  union {
-    struct {
-      ULONG            Length;
-      ULONG            Alignment;
-      PHYSICAL_ADDRESS MinimumAddress;
-      PHYSICAL_ADDRESS MaximumAddress;
-    } Port;
-    struct {
-      ULONG            Length;
-      ULONG            Alignment;
-      PHYSICAL_ADDRESS MinimumAddress;
-      PHYSICAL_ADDRESS MaximumAddress;
-    } Memory;
-    struct {
-      ULONG             MinimumVector;
-      ULONG             MaximumVector;
-#if ...
-      IRQ_DEVICE_POLICY AffinityPolicy;
-      USHORT            Group;
-#else
-      IRQ_DEVICE_POLICY AffinityPolicy;
-#endif
-      IRQ_PRIORITY      PriorityPolicy;
-      KAFFINITY         TargetedProcessors;
-    } Interrupt;
-    struct {
-      ULONG MinimumChannel;
-      ULONG MaximumChannel;
-    } Dma;
-    struct {
-      ULONG RequestLine;
-      ULONG Reserved;
-      ULONG Channel;
-      ULONG TransferWidth;
-    } DmaV3;
-    struct {
-      ULONG            Length;
-      ULONG            Alignment;
-      PHYSICAL_ADDRESS MinimumAddress;
-      PHYSICAL_ADDRESS MaximumAddress;
-    } Generic;
-    struct {
-      ULONG Data[3];
-    } DevicePrivate;
-    struct {
-      ULONG Length;
-      ULONG MinBusNumber;
-      ULONG MaxBusNumber;
-      ULONG Reserved;
-    } BusNumber;
-    struct {
-      ULONG Priority;
-      ULONG Reserved1;
-      ULONG Reserved2;
-    } ConfigData;
-    struct {
-      ULONG            Length40;
-      ULONG            Alignment40;
-      PHYSICAL_ADDRESS MinimumAddress;
-      PHYSICAL_ADDRESS MaximumAddress;
-    } Memory40;
-    struct {
-      ULONG            Length48;
-      ULONG            Alignment48;
-      PHYSICAL_ADDRESS MinimumAddress;
-      PHYSICAL_ADDRESS MaximumAddress;
-    } Memory48;
-    struct {
-      ULONG            Length64;
-      ULONG            Alignment64;
-      PHYSICAL_ADDRESS MinimumAddress;
-      PHYSICAL_ADDRESS MaximumAddress;
-    } Memory64;
-    struct {
-      UCHAR Class;
-      UCHAR Type;
-      UCHAR Reserved1;
-      UCHAR Reserved2;
-      ULONG IdLowPart;
-      ULONG IdHighPart;
-    } Connection;
-  } u;
-} IO_RESOURCE_DESCRIPTOR, *PIO_RESOURCE_DESCRIPTOR;
-
-typedef struct _IO_RESOURCE_LIST {
-  USHORT                 Version;
-  USHORT                 Revision;
-  ULONG                  Count;
-  IO_RESOURCE_DESCRIPTOR Descriptors[1];
-} IO_RESOURCE_LIST, *PIO_RESOURCE_LIST;
-
-typedef struct _IO_RESOURCE_REQUIREMENTS_LIST {
-  ULONG            ListSize;
-  INTERFACE_TYPE   InterfaceType;
-  ULONG            BusNumber;
-  ULONG            SlotNumber;
-  ULONG            Reserved[3];
-  ULONG            AlternativeLists;
-  IO_RESOURCE_LIST List[1];
-} IO_RESOURCE_REQUIREMENTS_LIST, *PIO_RESOURCE_REQUIREMENTS_LIST;
+typedef struct _IO_DISCONNECT_INTERRUPT_PARAMETERS {
+    ULONG Version;
+    union {
+        PVOID                      Generic;
+        PKINTERRUPT                InterruptObject;
+        PIO_INTERRUPT_MESSAGE_INFO InterruptMessageTable;
+    } ConnectionContext;
+} IO_DISCONNECT_INTERRUPT_PARAMETERS, * PIO_DISCONNECT_INTERRUPT_PARAMETERS;
 
 typedef struct _IO_SECURITY_CONTEXT {
   PSECURITY_QUALITY_OF_SERVICE SecurityQos;
@@ -2555,33 +3509,33 @@ typedef struct _IO_STACK_LOCATION {
     struct {
       PIO_SECURITY_CONTEXT     SecurityContext;
       ULONG                    Options;
-      USHORT POINTER_ALIGNMENT FileAttributes;
+      USHORT FileAttributes;
       USHORT                   ShareAccess;
-      ULONG POINTER_ALIGNMENT  EaLength;
+      ULONG EaLength;
     } Create;
     struct {
       PIO_SECURITY_CONTEXT          SecurityContext;
       ULONG                         Options;
-      USHORT POINTER_ALIGNMENT      Reserved;
+      USHORT Reserved;
       USHORT                        ShareAccess;
       PNAMED_PIPE_CREATE_PARAMETERS Parameters;
     } CreatePipe;
     struct {
       PIO_SECURITY_CONTEXT        SecurityContext;
       ULONG                       Options;
-      USHORT POINTER_ALIGNMENT    Reserved;
+      USHORT Reserved;
       USHORT                      ShareAccess;
       PMAILSLOT_CREATE_PARAMETERS Parameters;
     } CreateMailslot;
     struct {
       ULONG                   Length;
-      ULONG POINTER_ALIGNMENT Key;
+      ULONG  Key;
       ULONG                   Flags;
       LARGE_INTEGER           ByteOffset;
     } Read;
     struct {
       ULONG                   Length;
-      ULONG POINTER_ALIGNMENT Key;
+      ULONG  Key;
       ULONG                   Flags;
       LARGE_INTEGER           ByteOffset;
     } Write;
@@ -2589,24 +3543,24 @@ typedef struct _IO_STACK_LOCATION {
       ULONG                   Length;
       PUNICODE_STRING         FileName;
       FILE_INFORMATION_CLASS  FileInformationClass;
-      ULONG POINTER_ALIGNMENT FileIndex;
+      ULONG FileIndex;
     } QueryDirectory;
     struct {
       ULONG                   Length;
-      ULONG POINTER_ALIGNMENT CompletionFilter;
+      ULONG  CompletionFilter;
     } NotifyDirectory;
     struct {
       ULONG                                                Length;
-      ULONG POINTER_ALIGNMENT                              CompletionFilter;
-      DIRECTORY_NOTIFY_INFORMATION_CLASS POINTER_ALIGNMENT DirectoryNotifyInformationClass;
+      ULONG                               CompletionFilter;
+      DIRECTORY_NOTIFY_INFORMATION_CLASS  DirectoryNotifyInformationClass;
     } NotifyDirectoryEx;
     struct {
       ULONG                                    Length;
-      FILE_INFORMATION_CLASS POINTER_ALIGNMENT FileInformationClass;
+      FILE_INFORMATION_CLASS  FileInformationClass;
     } QueryFile;
     struct {
       ULONG                                    Length;
-      FILE_INFORMATION_CLASS POINTER_ALIGNMENT FileInformationClass;
+      FILE_INFORMATION_CLASS  FileInformationClass;
       PFILE_OBJECT                             FileObject;
       union {
         struct {
@@ -2621,39 +3575,39 @@ typedef struct _IO_STACK_LOCATION {
       ULONG                   Length;
       PVOID                   EaList;
       ULONG                   EaListLength;
-      ULONG POINTER_ALIGNMENT EaIndex;
+      ULONG  EaIndex;
     } QueryEa;
     struct {
       ULONG Length;
     } SetEa;
     struct {
       ULONG                                  Length;
-      FS_INFORMATION_CLASS POINTER_ALIGNMENT FsInformationClass;
+      FS_INFORMATION_CLASS  FsInformationClass;
     } QueryVolume;
     struct {
       ULONG                                  Length;
-      FS_INFORMATION_CLASS POINTER_ALIGNMENT FsInformationClass;
+      FS_INFORMATION_CLASS  FsInformationClass;
     } SetVolume;
     struct {
       ULONG                   OutputBufferLength;
-      ULONG POINTER_ALIGNMENT InputBufferLength;
-      ULONG POINTER_ALIGNMENT FsControlCode;
+      ULONG  InputBufferLength;
+      ULONG  FsControlCode;
       PVOID                   Type3InputBuffer;
     } FileSystemControl;
     struct {
       PLARGE_INTEGER          Length;
-      ULONG POINTER_ALIGNMENT Key;
+      ULONG  Key;
       LARGE_INTEGER           ByteOffset;
     } LockControl;
     struct {
       ULONG                   OutputBufferLength;
-      ULONG POINTER_ALIGNMENT InputBufferLength;
-      ULONG POINTER_ALIGNMENT IoControlCode;
+      ULONG  InputBufferLength;
+      ULONG  IoControlCode;
       PVOID                   Type3InputBuffer;
     } DeviceIoControl;
     struct {
       SECURITY_INFORMATION    SecurityInformation;
-      ULONG POINTER_ALIGNMENT Length;
+      ULONG  Length;
     } QuerySecurity;
     struct {
       SECURITY_INFORMATION SecurityInformation;
@@ -2700,7 +3654,7 @@ typedef struct _IO_STACK_LOCATION {
       ULONG                   WhichSpace;
       PVOID                   Buffer;
       ULONG                   Offset;
-      ULONG POINTER_ALIGNMENT Length;
+      ULONG  Length;
     } ReadWriteConfig;
     struct {
       BOOLEAN Lock;
@@ -2710,12 +3664,12 @@ typedef struct _IO_STACK_LOCATION {
     } QueryId;
     struct {
       DEVICE_TEXT_TYPE       DeviceTextType;
-      LCID POINTER_ALIGNMENT LocaleId;
+      LCID  LocaleId;
     } QueryDeviceText;
     struct {
       BOOLEAN                                          InPath;
       BOOLEAN                                          Reserved[3];
-      DEVICE_USAGE_NOTIFICATION_TYPE POINTER_ALIGNMENT Type;
+      DEVICE_USAGE_NOTIFICATION_TYPE  Type;
     } UsageNotification;
     struct {
       SYSTEM_POWER_STATE PowerState;
@@ -2723,24 +3677,24 @@ typedef struct _IO_STACK_LOCATION {
     struct {
       PPOWER_SEQUENCE PowerSequence;
     } PowerSequence;
-#if ...
+//#if ...
     struct {
       union {
         ULONG                      SystemContext;
         SYSTEM_POWER_STATE_CONTEXT SystemPowerStateContext;
       };
-      POWER_STATE_TYPE POINTER_ALIGNMENT Type;
-      POWER_STATE POINTER_ALIGNMENT      State;
-      POWER_ACTION POINTER_ALIGNMENT     ShutdownType;
+      POWER_STATE_TYPE  Type;
+      POWER_STATE       State;
+      POWER_ACTION      ShutdownType;
     } Power;
-#else
-    struct {
-      ULONG                              SystemContext;
-      POWER_STATE_TYPE POINTER_ALIGNMENT Type;
-      POWER_STATE POINTER_ALIGNMENT      State;
-      POWER_ACTION POINTER_ALIGNMENT     ShutdownType;
-    } Power;
-#endif
+//#else
+//    struct {
+//      ULONG                              SystemContext;
+//      POWER_STATE_TYPE  Type;
+//      POWER_STATE       State;
+//      POWER_ACTION      ShutdownType;
+//    } Power;
+//#endif
     struct {
       PCM_RESOURCE_LIST AllocatedResources;
       PCM_RESOURCE_LIST AllocatedResourcesTranslated;
@@ -2764,14 +3718,6 @@ typedef struct _IO_STACK_LOCATION {
   PVOID                  Context;
 } IO_STACK_LOCATION, *PIO_STACK_LOCATION;
 
-typedef struct _IO_STATUS_BLOCK {
-  union {
-    NTSTATUS Status;
-    PVOID    Pointer;
-  };
-  ULONG_PTR Information;
-} IO_STATUS_BLOCK, *PIO_STATUS_BLOCK;
-
 typedef struct _IO_STATUS_BLOCK64 {
   union {
     NTSTATUS Status;
@@ -2779,6 +3725,86 @@ typedef struct _IO_STATUS_BLOCK64 {
   } DUMMYUNIONNAME;
   ULONG64 Information;
 } IO_STATUS_BLOCK64;
+
+#ifndef _IRP_
+#define _IRP_
+typedef
+VOID
+(*PDRIVER_CANCEL) (
+    _In_ struct _DEVICE_OBJECT* DeviceObject,
+    _In_ struct _IRP* Irp
+    );
+
+
+typedef struct _IRP {
+    CSHORT                    Type;
+    USHORT                    Size;
+    PMDL                      MdlAddress;
+    ULONG                     Flags;
+    union {
+        struct _IRP* MasterIrp;
+        __volatile LONG IrpCount;
+        PVOID           SystemBuffer;
+    } AssociatedIrp;
+    LIST_ENTRY                ThreadListEntry;
+    IO_STATUS_BLOCK           IoStatus;
+    KPROCESSOR_MODE           RequestorMode;
+    BOOLEAN                   PendingReturned;
+    CHAR                      StackCount;
+    CHAR                      CurrentLocation;
+    BOOLEAN                   Cancel;
+    KIRQL                     CancelIrql;
+    CCHAR                     ApcEnvironment;
+    UCHAR                     AllocationFlags;
+    union {
+        PIO_STATUS_BLOCK UserIosb;
+        PVOID            IoRingContext;
+    };
+    PKEVENT                   UserEvent;
+    union {
+        struct {
+            union {
+                PIO_APC_ROUTINE UserApcRoutine;
+                PVOID           IssuingProcess;
+            };
+            union {
+                PVOID                 UserApcContext;
+                //#if ...
+                _IORING_OBJECT* IoRing;
+                //#else
+                //        struct _IORING_OBJECT *IoRing;
+                //#endif
+            };
+        } AsynchronousParameters;
+        LARGE_INTEGER AllocationSize;
+    } Overlay;
+    __volatile PDRIVER_CANCEL CancelRoutine;
+    PVOID                     UserBuffer;
+    union {
+        struct {
+            union {
+                KDEVICE_QUEUE_ENTRY DeviceQueueEntry;
+                struct {
+                    PVOID DriverContext[4];
+                };
+            };
+            PETHREAD     Thread;
+            PCHAR        AuxiliaryBuffer;
+            struct {
+                LIST_ENTRY ListEntry;
+                union {
+                    struct _IO_STACK_LOCATION* CurrentStackLocation;
+                    ULONG                     PacketType;
+                };
+            };
+            PFILE_OBJECT OriginalFileObject;
+        } Overlay;
+        KAPC  Apc;
+        PVOID CompletionKey;
+    } Tail;
+} IRP, * PIRP;
+#endif
+
 
 void IoAcquireCancelSpinLock(
   PKIRQL Irql
@@ -2801,16 +3827,18 @@ NTSTATUS IoAcquireKsrPersistentMemoryEx(
   PSIZE_T         Size
 );
 
+
+
 NTSTATUS
 IoAcquireRemoveLock (
     _Inout_ PIO_REMOVE_LOCK RemoveLock,
     _In_opt_ PVOID          Tag
     );
 
-void IoAdjustPagingPathCount(
-  _In_  _count_,
-  _In_  _paging_
-);
+//void IoAdjustPagingPathCount(
+//  _In_  _count_,
+//  _In_  _paging_
+//);
 
 NTSTATUS IoAllocateDriverObjectExtension(
   _In_  PDRIVER_OBJECT DriverObject,
@@ -2836,11 +3864,11 @@ PIRP IoAllocateIrpEx(
 );
 
 PMDL IoAllocateMdl(
-  _In_opt_      __drv_aliasesMem PVOID VirtualAddress,
+  _In_opt_            PVOID VirtualAddress,
   _In_                ULONG                  Length,
   _In_                BOOLEAN                SecondaryBuffer,
   _In_                BOOLEAN                ChargeQuota,
-  [in, out, optional] PIRP                   Irp
+  _In_ _Out_ PIRP                   Irp
 );
 
 PIO_WORKITEM IoAllocateWorkItem(
@@ -2859,7 +3887,7 @@ PDEVICE_OBJECT IoAttachDeviceToDeviceStack(
 );
 
 
-__drv_aliasesMem PIRP IoBuildAsynchronousFsdRequest(
+PIRP IoBuildAsynchronousFsdRequest(
   _In_           ULONG            MajorFunction,
   _In_           PDEVICE_OBJECT   DeviceObject,
         PVOID            Buffer,
@@ -2868,7 +3896,7 @@ __drv_aliasesMem PIRP IoBuildAsynchronousFsdRequest(
   _In_opt_ PIO_STATUS_BLOCK IoStatusBlock
 );
 
-__drv_aliasesMem PIRP IoBuildDeviceIoControlRequest(
+PIRP IoBuildDeviceIoControlRequest(
   _In_            ULONG            IoControlCode,
   _In_            PDEVICE_OBJECT   DeviceObject,
   _In_opt_  PVOID            InputBuffer,
@@ -2887,7 +3915,7 @@ void IoBuildPartialMdl(
   _In_      ULONG Length
 );
 
-__drv_aliasesMem PIRP IoBuildSynchronousFsdRequest(
+ PIRP IoBuildSynchronousFsdRequest(
   _In_           ULONG            MajorFunction,
   _In_           PDEVICE_OBJECT   DeviceObject,
         PVOID            Buffer,
@@ -2898,8 +3926,9 @@ __drv_aliasesMem PIRP IoBuildSynchronousFsdRequest(
 );
 
 #define IoCallDriver(a,b)   \
-        IofCallDriver(a,b)
-);
+        IofCallDriver(a,b)  \
+)
+
 
 BOOLEAN IoCancelIrp(
   _In_ PIRP Irp
@@ -2908,9 +3937,9 @@ BOOLEAN IoCancelIrp(
 NTSTATUS IoCheckLinkShareAccess(
   _In_                ACCESS_MASK        DesiredAccess,
   _In_                ULONG              DesiredShareAccess,
-  [in, out, optional] PFILE_OBJECT       FileObject,
-  [in, out, optional] PSHARE_ACCESS      ShareAccess,
-  [in, out, optional] PLINK_SHARE_ACCESS LinkShareAccess,
+  _In_ _Out_ PFILE_OBJECT       FileObject,
+  _In_ _Out_ PSHARE_ACCESS      ShareAccess,
+  _In_ _Out_ PLINK_SHARE_ACCESS LinkShareAccess,
   _In_                ULONG              IoShareAccessFlags
 );
 
@@ -3084,7 +4113,7 @@ NTSTATUS IoEnumerateKsrPersistentMemoryEx(
 
 NTSTATUS IofCallDriver(
   PDEVICE_OBJECT        DeviceObject,
-  __drv_aliasesMem PIRP Irp
+   PIRP Irp
 );
 
 void IofCompleteRequest(
@@ -3138,7 +4167,7 @@ NTSTATUS IoGetContainerInformation(
   _In_           ULONG                          BufferLength
 );
 
-__drv_aliasesMem PIO_STACK_LOCATION IoGetCurrentIrpStackLocation(
+ PIO_STACK_LOCATION IoGetCurrentIrpStackLocation(
   _In_ PIRP Irp
 );
 
@@ -3206,20 +4235,20 @@ _DMA_ADAPTER * IoGetDmaAdapter(
 );
 
 NTSTATUS IoGetDriverDirectory(
-  [_In_]  PDRIVER_OBJECT        DriverObject,
-  [_In_]  DRIVER_DIRECTORY_TYPE DirectoryType,
-  [_In_]  ULONG                 Flags,
-  [_Out_] PHANDLE               DriverDirectoryHandle
+  _In_  PDRIVER_OBJECT        DriverObject,
+  _In_  DRIVER_DIRECTORY_TYPE DirectoryType,
+  _In_  ULONG                 Flags,
+  _Out_ PHANDLE               DriverDirectoryHandle
 );
 
-__drv_aliasesMem PVOID IoGetDriverObjectExtension(
+ PVOID IoGetDriverObjectExtension(
   _In_ PDRIVER_OBJECT DriverObject,
   _In_ PVOID          ClientIdentificationAddress
 );
 
-void IoGetFunctionCodeFromCtlCode(
-  _In_  ControlCode
-);
+//void IoGetFunctionCodeFromCtlCode(
+//  _In_  ControlCode
+//);
 
 PVOID IoGetInitialStack();
 
@@ -3238,7 +4267,7 @@ IO_PRIORITY_HINT IoGetIoPriorityHint(
   _In_ PIRP Irp
 );
 
-__drv_aliasesMem PIO_STACK_LOCATION IoGetNextIrpStackLocation(
+ PIO_STACK_LOCATION IoGetNextIrpStackLocation(
   _In_ PIRP Irp
 );
 
@@ -3266,17 +4295,17 @@ void IoInitializeIrp(
   _In_      CCHAR  StackSize
 );
 
-void IoInitializeRemoveLock(
-  _In_  Lock,
-  _In_  Tag,
-  _In_  Maxmin,
-  _In_  HighWater
-);
+//void IoInitializeRemoveLock(
+//  _In_  Lock,
+//  _In_  Tag,
+//  _In_  Maxmin,
+//  _In_  HighWater
+//);
 
 NTSTATUS IoInitializeTimer(
   _In_           PDEVICE_OBJECT         DeviceObject,
   _In_           PIO_TIMER_ROUTINE      TimerRoutine,
-  _In_opt_ __drv_aliasesMem PVOID Context
+  _In_opt_  PVOID Context
 );
 
 void IoInitializeWorkItem(
@@ -3297,9 +4326,9 @@ BOOLEAN IoIs32bitProcess(
   _In_opt_ PIRP Irp
 );
 
-BOOLEAN IoIsErrorUserInduced(
-   Status
-);
+//BOOLEAN IoIsErrorUserInduced(
+//   Status
+//);
 
 BOOLEAN IoIsWdmVersionAvailable(
   _In_ UCHAR MajorVersion,
@@ -3309,6 +4338,86 @@ BOOLEAN IoIsWdmVersionAvailable(
 void IoMarkIrpPending(
    PIRP Irp
 );
+
+typedef struct _KBUGCHECK_ADD_PAGES {
+    PVOID     Context;
+    ULONG     Flags;
+    ULONG     BugCheckCode;
+    ULONG_PTR Address;
+    ULONG_PTR Count;
+} KBUGCHECK_ADD_PAGES, * PKBUGCHECK_ADD_PAGES;
+
+typedef enum _KBUGCHECK_CALLBACK_REASON {
+    KbCallbackInvalid,
+    KbCallbackReserved1,
+    KbCallbackSecondaryDumpData,
+    KbCallbackDumpIo,
+    KbCallbackAddPages,
+    KbCallbackSecondaryMultiPartDumpData,
+    KbCallbackRemovePages,
+    KbCallbackTriageDumpData,
+    KbCallbackReserved2
+} KBUGCHECK_CALLBACK_REASON;
+
+typedef enum _KBUGCHECK_DUMP_IO_TYPE {
+    KbDumpIoInvalid,
+    KbDumpIoHeader,
+    KbDumpIoBody,
+    KbDumpIoSecondaryData,
+    KbDumpIoComplete
+} KBUGCHECK_DUMP_IO_TYPE;
+
+typedef struct _KBUGCHECK_DUMP_IO {
+    _In_ ULONG64                Offset;
+    _In_ PVOID                  Buffer;
+    _In_ ULONG                  BufferLength;
+    _In_ KBUGCHECK_DUMP_IO_TYPE Type;
+} KBUGCHECK_DUMP_IO, * PKBUGCHECK_DUMP_IO;
+
+
+
+typedef struct _KBUGCHECK_SECONDARY_DUMP_DATA {
+    _In_ PVOID  InBuffer;
+    _In_ ULONG  InBufferLength;
+    _In_ ULONG  MaximumAllowed;
+    _Out_ GUID  Guid;
+    _Out_ PVOID OutBuffer;
+    _Out_ ULONG OutBufferLength;
+} KBUGCHECK_SECONDARY_DUMP_DATA, * PKBUGCHECK_SECONDARY_DUMP_DATA;
+
+typedef struct _KDPC_WATCHDOG_INFORMATION {
+    ULONG DpcTimeLimit;
+    ULONG DpcTimeCount;
+    ULONG DpcWatchdogLimit;
+    ULONG DpcWatchdogCount;
+    ULONG Reserved;
+} KDPC_WATCHDOG_INFORMATION, * PKDPC_WATCHDOG_INFORMATION;
+
+typedef enum {
+    KeProcessorAddStartNotify,
+    KeProcessorAddCompleteNotify,
+    KeProcessorAddFailureNotify
+} KE_PROCESSOR_CHANGE_NOTIFY_STATE;
+
+typedef struct _KE_PROCESSOR_CHANGE_NOTIFY_CONTEXT {
+    KE_PROCESSOR_CHANGE_NOTIFY_STATE State;
+    ULONG                            NtNumber;
+    NTSTATUS                         Status;
+    PROCESSOR_NUMBER                 ProcNumber;
+} KE_PROCESSOR_CHANGE_NOTIFY_CONTEXT, * PKE_PROCESSOR_CHANGE_NOTIFY_CONTEXT;
+
+typedef struct _IOMMU_DEVICE_CREATION_CONFIGURATION_ACPI {
+    UINT32 InputMappingBase;
+    UINT32 MappingsCount;
+} IOMMU_DEVICE_CREATION_CONFIGURATION_ACPI, * PIOMMU_DEVICE_CREATION_CONFIGURATION_ACPI;
+
+typedef enum _IOMMU_DEVICE_CREATION_CONFIGURATION_TYPE {
+    IommuDeviceCreationConfigTypeNone,
+    IommuDeviceCreationConfigTypeAcpi,
+    IommuDeviceCreationConfigTypeDeviceId,
+    IommuDeviceCreationConfigTypePasid,
+    IommuDeviceCreationConfigTypeMax
+} IOMMU_DEVICE_CREATION_CONFIGURATION_TYPE, * PIOMMU_DEVICE_CREATION_CONFIGURATION_TYPE;
 
 typedef struct _IOMMU_DEVICE_CREATION_CONFIGURATION {
   LIST_ENTRY                               NextConfiguration;
@@ -3320,18 +4429,7 @@ typedef struct _IOMMU_DEVICE_CREATION_CONFIGURATION {
   };
 } IOMMU_DEVICE_CREATION_CONFIGURATION, *PIOMMU_DEVICE_CREATION_CONFIGURATION;
 
-typedef struct _IOMMU_DEVICE_CREATION_CONFIGURATION_ACPI {
-  UINT32 InputMappingBase;
-  UINT32 MappingsCount;
-} IOMMU_DEVICE_CREATION_CONFIGURATION_ACPI, *PIOMMU_DEVICE_CREATION_CONFIGURATION_ACPI;
 
-typedef enum _IOMMU_DEVICE_CREATION_CONFIGURATION_TYPE {
-  IommuDeviceCreationConfigTypeNone,
-  IommuDeviceCreationConfigTypeAcpi,
-  IommuDeviceCreationConfigTypeDeviceId,
-  IommuDeviceCreationConfigTypePasid,
-  IommuDeviceCreationConfigTypeMax
-} IOMMU_DEVICE_CREATION_CONFIGURATION_TYPE, *PIOMMU_DEVICE_CREATION_CONFIGURATION_TYPE;
 
 typedef union _IOMMU_DMA_DOMAIN_CREATION_FLAGS {
   struct {
@@ -3348,11 +4446,6 @@ typedef enum _IOMMU_DMA_DOMAIN_TYPE {
   DomainTypeMax
 } IOMMU_DMA_DOMAIN_TYPE, *PIOMMU_DMA_DOMAIN_TYPE;
 
-typedef struct _IOMMU_DMA_LOGICAL_ADDRESS_TOKEN {
-  IOMMU_DMA_LOGICAL_ADDRESS LogicalAddressBase;
-  SIZE_T                    Size;
-} IOMMU_DMA_LOGICAL_ADDRESS_TOKEN, *PIOMMU_DMA_LOGICAL_ADDRESS_TOKEN;
-
 typedef struct _IOMMU_DMA_LOGICAL_ADDRESS_TOKEN_MAPPED_SEGMENT {
   PIOMMU_DMA_LOGICAL_ADDRESS_TOKEN OwningToken;
   SIZE_T                           Offset;
@@ -3368,11 +4461,13 @@ typedef struct _IOMMU_DMA_LOGICAL_ALLOCATOR_CONFIG {
   };
 } IOMMU_DMA_LOGICAL_ALLOCATOR_CONFIG, *PIOMMU_DMA_LOGICAL_ALLOCATOR_CONFIG;
 
-typedef enum _IOMMU_DMA_LOGICAL_ALLOCATOR_TYPE {
-  IommuDmaLogicalAllocatorNone,
-  IommuDmaLogicalAllocatorBuddy,
-  IommuDmaLogicalAllocatorMax
-} IOMMU_DMA_LOGICAL_ALLOCATOR_TYPE, *PIOMMU_DMA_LOGICAL_ALLOCATOR_TYPE;
+typedef union _IOMMU_INTERFACE_STATE_CHANGE_FIELDS {
+    struct {
+        ULONG AvailableDomainTypes : 1;
+        ULONG Reserved : 31;
+    } DUMMYSTRUCTNAME;
+    ULONG  AsULONG;
+} IOMMU_INTERFACE_STATE_CHANGE_FIELDS, * PIOMMU_INTERFACE_STATE_CHANGE_FIELDS;
 
 typedef struct _IOMMU_DMA_RESERVED_REGION {
   struct _IOMMU_DMA_RESERVED_REGION *RegionNext;
@@ -3386,13 +4481,7 @@ typedef struct _IOMMU_INTERFACE_STATE_CHANGE {
   ULONG                               AvailableDomainTypes;
 } IOMMU_INTERFACE_STATE_CHANGE, *PIOMMU_INTERFACE_STATE_CHANGE;
 
-typedef union _IOMMU_INTERFACE_STATE_CHANGE_FIELDS {
-  struct {
-    ULONG AvailableDomainTypes : 1;
-    ULONG Reserved : 31;
-  } DUMMYSTRUCTNAME;
-  ULONG  AsULONG;
-} IOMMU_INTERFACE_STATE_CHANGE_FIELDS, *PIOMMU_INTERFACE_STATE_CHANGE_FIELDS;
+
 
 typedef struct _IOMMU_MAP_PHYSICAL_ADDRESS {
   IOMMU_MAP_PHYSICAL_ADDRESS_TYPE MapType;
@@ -3410,13 +4499,6 @@ typedef struct _IOMMU_MAP_PHYSICAL_ADDRESS {
     } PfnArray;
   };
 } IOMMU_MAP_PHYSICAL_ADDRESS, *PIOMMU_MAP_PHYSICAL_ADDRESS;
-
-typedef enum _IOMMU_MAP_PHYSICAL_ADDRESS_TYPE {
-  MapPhysicalAddressTypeMdl,
-  MapPhysicalAddressTypeContiguousRange,
-  MapPhysicalAddressTypePfn,
-  MapPhysicalAddressTypeMax
-} IOMMU_MAP_PHYSICAL_ADDRESS_TYPE, *PIOMMU_MAP_PHYSICAL_ADDRESS_TYPE;
 
 NTSTATUS IoOpenDeviceInterfaceRegistryKey(
   _In_  PUNICODE_STRING SymbolicLinkName,
@@ -3455,17 +4537,17 @@ NTSTATUS IoQueryKsrPersistentMemorySizeEx(
 );
 
 void IoQueueWorkItem(
-  _In_           __drv_aliasesMem PIO_WORKITEM IoWorkItem,
+  _In_            PIO_WORKITEM IoWorkItem,
   _In_           PIO_WORKITEM_ROUTINE          WorkerRoutine,
   _In_           WORK_QUEUE_TYPE               QueueType,
-  _In_opt_ __drv_aliasesMem PVOID        Context
+  _In_opt_  PVOID        Context
 );
 
 void IoQueueWorkItemEx(
-  _In_           __drv_aliasesMem PIO_WORKITEM IoWorkItem,
+  _In_            PIO_WORKITEM IoWorkItem,
   _In_           PIO_WORKITEM_ROUTINE_EX       WorkerRoutine,
   _In_           WORK_QUEUE_TYPE               QueueType,
-  _In_opt_ __drv_aliasesMem PVOID        Context
+  _In_opt_  PVOID        Context
 );
 
 NTSTATUS
@@ -3494,7 +4576,7 @@ NTSTATUS IoRegisterPlugPlayNotification(
   _In_opt_ PVOID                                 EventCategoryData,
   _In_           PDRIVER_OBJECT                        DriverObject,
   _In_           PDRIVER_NOTIFICATION_CALLBACK_ROUTINE CallbackRoutine,
-  _In_opt_ __drv_aliasesMem PVOID                Context,
+  _In_opt_  PVOID                Context,
   _Out_          PVOID                                 *NotificationEntry
 );
 
@@ -3506,20 +4588,20 @@ void IoReleaseCancelSpinLock(
   KIRQL Irql
 );
 
-void IoReleaseRemoveLock(
-  _In_  RemoveLock,
-  _In_  Tag
-);
+//void IoReleaseRemoveLock(
+//  _In_  RemoveLock,
+//  _In_  Tag
+//);
 
-void IoReleaseRemoveLockAndWait(
-  _In_  RemoveLock,
-  _In_  Tag
-);
+//void IoReleaseRemoveLockAndWait(
+//  _In_  RemoveLock,
+//  _In_  Tag
+//);
 
 void IoRemoveLinkShareAccess(
   _In_                PFILE_OBJECT       FileObject,
              PSHARE_ACCESS      ShareAccess,
-  [in, out, optional] PLINK_SHARE_ACCESS LinkShareAccess
+  _In_ _Out_ PLINK_SHARE_ACCESS LinkShareAccess
 );
 
 void IoRemoveShareAccess(
@@ -3554,7 +4636,7 @@ void IoRequestDeviceEject(
 void IoRequestDpc(
   _In_ PDEVICE_OBJECT         DeviceObject,
   _In_ PIRP                   Irp,
-  _In_ __drv_aliasesMem PVOID Context
+  _In_  PVOID Context
 );
 
 NTSTATUS IoReserveKsrPersistentMemory(
@@ -3581,15 +4663,15 @@ void IoReuseIrp(
   _In_      NTSTATUS Iostatus
 );
 
-void Iosb64ToIosb(
-   _iosb,
-   _iosb64
-);
+//void Iosb64ToIosb(
+//   _iosb,
+//   _iosb64
+//);
 
-void IosbToIosb64(
-   _iosb64,
-   _iosb
-);
+//void IosbToIosb64(
+//   _iosb64,
+//   _iosb
+//);
 
 PDRIVER_CANCEL IoSetCancelRoutine(
   _In_ PIRP           Irp,
@@ -3599,7 +4681,7 @@ PDRIVER_CANCEL IoSetCancelRoutine(
 void IoSetCompletionRoutine(
   _In_           PIRP                   Irp,
   _In_opt_ PIO_COMPLETION_ROUTINE CompletionRoutine,
-  _In_opt_ __drv_aliasesMem PVOID Context,
+  _In_opt_  PVOID Context,
   _In_           BOOLEAN                InvokeOnSuccess,
   _In_           BOOLEAN                InvokeOnError,
   _In_           BOOLEAN                InvokeOnCancel
@@ -3650,7 +4732,7 @@ void IoSetLinkShareAccess(
   _In_                ULONG              DesiredShareAccess,
              PFILE_OBJECT       FileObject,
              PSHARE_ACCESS      ShareAccess,
-  [in, out, optional] PLINK_SHARE_ACCESS LinkShareAccess,
+  _In_ _Out_ PLINK_SHARE_ACCESS LinkShareAccess,
   _In_                ULONG              IoShareAccessFlags
 );
 
@@ -3680,9 +4762,9 @@ void IoSetStartIoAttributes(
   _In_ BOOLEAN        NonCancelable
 );
 
-void IoSizeOfIrp(
-  _In_  StackSize
-);
+//void IoSizeOfIrp(
+//  _In_  StackSize
+//);
 
 ULONG IoSizeofWorkItem();
 
@@ -3735,7 +4817,7 @@ void IoUnregisterShutdownNotification(
 void IoUpdateLinkShareAccess(
   _In_                PFILE_OBJECT       FileObject,
              PSHARE_ACCESS      ShareAccess,
-  [in, out, optional] PLINK_SHARE_ACCESS LinkShareAccess
+  _In_ _Out_ PLINK_SHARE_ACCESS LinkShareAccess
 );
 
 void IoUpdateLinkShareAccessEx(
@@ -3874,160 +4956,13 @@ NTSTATUS IoWriteKsrPersistentMemory(
   SIZE_T Size
 );
 
-typedef struct _IRP {
-  CSHORT                    Type;
-  USHORT                    Size;
-  PMDL                      MdlAddress;
-  ULONG                     Flags;
-  union {
-    struct _IRP     *MasterIrp;
-    __volatile LONG IrpCount;
-    PVOID           SystemBuffer;
-  } AssociatedIrp;
-  LIST_ENTRY                ThreadListEntry;
-  IO_STATUS_BLOCK           IoStatus;
-  KPROCESSOR_MODE           RequestorMode;
-  BOOLEAN                   PendingReturned;
-  CHAR                      StackCount;
-  CHAR                      CurrentLocation;
-  BOOLEAN                   Cancel;
-  KIRQL                     CancelIrql;
-  CCHAR                     ApcEnvironment;
-  UCHAR                     AllocationFlags;
-  union {
-    PIO_STATUS_BLOCK UserIosb;
-    PVOID            IoRingContext;
-  };
-  PKEVENT                   UserEvent;
-  union {
-    struct {
-      union {
-        PIO_APC_ROUTINE UserApcRoutine;
-        PVOID           IssuingProcess;
-      };
-      union {
-        PVOID                 UserApcContext;
-#if ...
-        _IORING_OBJECT        *IoRing;
-#else
-        struct _IORING_OBJECT *IoRing;
-#endif
-      };
-    } AsynchronousParameters;
-    LARGE_INTEGER AllocationSize;
-  } Overlay;
-  __volatile PDRIVER_CANCEL CancelRoutine;
-  PVOID                     UserBuffer;
-  union {
-    struct {
-      union {
-        KDEVICE_QUEUE_ENTRY DeviceQueueEntry;
-        struct {
-          PVOID DriverContext[4];
-        };
-      };
-      PETHREAD     Thread;
-      PCHAR        AuxiliaryBuffer;
-      struct {
-        LIST_ENTRY ListEntry;
-        union {
-          struct _IO_STACK_LOCATION *CurrentStackLocation;
-          ULONG                     PacketType;
-        };
-      };
-      PFILE_OBJECT OriginalFileObject;
-    } Overlay;
-    KAPC  Apc;
-    PVOID CompletionKey;
-  } Tail;
-} IRP;
 
-typedef enum _IRQ_DEVICE_POLICY {
-  IrqPolicyMachineDefault = 0,
-  IrqPolicyAllCloseProcessors = 1,
-  IrqPolicyOneCloseProcessor = 2,
-  IrqPolicyAllProcessorsInMachine = 3,
-  IrqPolicySpecifiedProcessors = 4,
-  IrqPolicySpreadMessagesAcrossAllProcessors = 5,
-  IrqPolicyAllProcessorsInMachineWhenSteered = 6
-} IRQ_DEVICE_POLICY, *PIRQ_DEVICE_POLICY;
-
-typedef enum _IRQ_PRIORITY {
-  IrqPriorityUndefined,
-  IrqPriorityLow,
-  IrqPriorityNormal,
-  IrqPriorityHigh
-} IRQ_PRIORITY, *PIRQ_PRIORITY;
 
 BOOLEAN IsListEmpty(
   _In_ const LIST_ENTRY *ListHead
 );
 
-typedef struct _KBUGCHECK_ADD_PAGES {
-  PVOID     Context;
-  ULONG     Flags;
-  ULONG     BugCheckCode;
-  ULONG_PTR Address;
-  ULONG_PTR Count;
-} KBUGCHECK_ADD_PAGES, *PKBUGCHECK_ADD_PAGES;
 
-typedef enum _KBUGCHECK_CALLBACK_REASON {
-  KbCallbackInvalid,
-  KbCallbackReserved1,
-  KbCallbackSecondaryDumpData,
-  KbCallbackDumpIo,
-  KbCallbackAddPages,
-  KbCallbackSecondaryMultiPartDumpData,
-  KbCallbackRemovePages,
-  KbCallbackTriageDumpData,
-  KbCallbackReserved2
-} KBUGCHECK_CALLBACK_REASON;
-
-
-typedef struct _KBUGCHECK_DUMP_IO {
-  IN ULONG64                Offset;
-  IN PVOID                  Buffer;
-  IN ULONG                  BufferLength;
-  IN KBUGCHECK_DUMP_IO_TYPE Type;
-} KBUGCHECK_DUMP_IO, *PKBUGCHECK_DUMP_IO;
-
-typedef enum _KBUGCHECK_DUMP_IO_TYPE {
-  KbDumpIoInvalid,
-  KbDumpIoHeader,
-  KbDumpIoBody,
-  KbDumpIoSecondaryData,
-  KbDumpIoComplete
-} KBUGCHECK_DUMP_IO_TYPE;
-
-typedef struct _KBUGCHECK_SECONDARY_DUMP_DATA {
-  IN PVOID  InBuffer;
-  IN ULONG  InBufferLength;
-  IN ULONG  MaximumAllowed;
-  OUT GUID  Guid;
-  OUT PVOID OutBuffer;
-  OUT ULONG OutBufferLength;
-} KBUGCHECK_SECONDARY_DUMP_DATA, *PKBUGCHECK_SECONDARY_DUMP_DATA;
-
-typedef struct _KDPC_WATCHDOG_INFORMATION {
-  ULONG DpcTimeLimit;
-  ULONG DpcTimeCount;
-  ULONG DpcWatchdogLimit;
-  ULONG DpcWatchdogCount;
-  ULONG Reserved;
-} KDPC_WATCHDOG_INFORMATION, *PKDPC_WATCHDOG_INFORMATION;
-
-typedef struct _KE_PROCESSOR_CHANGE_NOTIFY_CONTEXT {
-  KE_PROCESSOR_CHANGE_NOTIFY_STATE State;
-  ULONG                            NtNumber;
-  NTSTATUS                         Status;
-  PROCESSOR_NUMBER                 ProcNumber;
-} KE_PROCESSOR_CHANGE_NOTIFY_CONTEXT, *PKE_PROCESSOR_CHANGE_NOTIFY_CONTEXT;
-
-typedef enum {
-  KeProcessorAddStartNotify,
-  KeProcessorAddCompleteNotify,
-  KeProcessorAddFailureNotify
-} KE_PROCESSOR_CHANGE_NOTIFY_STATE;
 
 void KeAcquireGuardedMutex(
   PKGUARDED_MUTEX Mutex
@@ -4074,9 +5009,9 @@ KIRQL KeAcquireSpinLockRaiseToDpc(
 );
 
 NTSTATUS KeAddTriageDumpDataBlock(
-  [_Inout_] PKTRIAGE_DUMP_DATA_ARRAY KtriageDumpDataArray,
+  _Inout_ PKTRIAGE_DUMP_DATA_ARRAY KtriageDumpDataArray,
             PVOID                    Address,
-  [_In_]    SIZE_T                   Size
+  _In_    SIZE_T                   Size
 );
 
 BOOLEAN KeAreAllApcsDisabled();
@@ -4134,11 +5069,12 @@ NTSTATUS KeDeregisterNmiCallback(
 );
 
 void KeDeregisterProcessorChangeCallback(
-  _In_ PVOID CallbackHandle
+    _In_ PVOID CallbackHandle
+);
 
-  void KeEnterCriticalRegion();
 
-  void KeEnterGuardedRegion();
+void KeEnterCriticalRegion();
+void KeEnterGuardedRegion();
 
 void KeFlushIoBuffers(
   _In_ PMDL    Mdl,
@@ -4186,9 +5122,9 @@ void KeInitializeDeviceQueue(
 );
 
 void KeInitializeDpc(
-  _Out_          __drv_aliasesMem PRKDPC Dpc,
+  _Out_           PRKDPC Dpc,
   _In_           PKDEFERRED_ROUTINE      DeferredRoutine,
-  _In_opt_ __drv_aliasesMem PVOID  DeferredContext
+  _In_opt_  PVOID  DeferredContext
 );
 
 
@@ -4247,7 +5183,7 @@ BOOLEAN KeInsertDeviceQueue(
 BOOLEAN KeInsertQueueDpc(
         PRKDPC                 Dpc,
   _In_opt_ PVOID                  SystemArgument1,
-  _In_opt_ __drv_aliasesMem PVOID SystemArgument2
+  _In_opt_  PVOID SystemArgument2
 );
 
 ULONG_PTR KeIpiGenericCall(
@@ -4361,9 +5297,9 @@ void KeQuerySystemTimePrecise(
   _Out_ PLARGE_INTEGER CurrentTime
 );
 
-void KeQueryTickCount(
-  _Out_  CurrentCount
-);
+//void KeQueryTickCount(
+  //_Out_  CurrentCount
+//);
 
 ULONG KeQueryTimeIncrement();
 
@@ -4467,7 +5403,7 @@ LONG KeReleaseSemaphore(
 VOID
 KeReleaseSpinLock (
     _Inout_ PKSPIN_LOCK SpinLock,
-    _In_ _IRQL_restores_ KIRQL NewIrql
+    _In_ KIRQL NewIrql
 );
 
 void KeReleaseSpinLockForDpc(
@@ -4626,7 +5562,7 @@ NTHALAPI VOID KeStallExecutionProcessor(
 BOOLEAN KeSynchronizeExecution(
         PKINTERRUPT            Interrupt,
   _In_           PKSYNCHRONIZE_ROUTINE  SynchronizeRoutine,
-  _In_opt_ __drv_aliasesMem PVOID SynchronizeContext
+  _In_opt_  PVOID SynchronizeContext
 );
 
 BOOLEAN KeTestSpinLock(
@@ -4645,7 +5581,7 @@ NTSTATUS
 KeWaitForMultipleObjects (
     ULONG Count,
     PVOID Object[],
-    WaitType,
+    WAIT_TYPE WaitType,
     KWAIT_REASON WaitReason,
     KPROCESSOR_MODE WaitMode,
     BOOLEAN Alertable,
@@ -4662,149 +5598,6 @@ KeWaitForSingleObject (
     PLARGE_INTEGER Timeout
     );
 
-typedef struct _KEY_BASIC_INFORMATION {
-  LARGE_INTEGER LastWriteTime;
-  ULONG         TitleIndex;
-  ULONG         NameLength;
-  WCHAR         Name[1];
-} KEY_BASIC_INFORMATION, *PKEY_BASIC_INFORMATION;
-
-typedef struct _KEY_FULL_INFORMATION {
-  LARGE_INTEGER LastWriteTime;
-  ULONG         TitleIndex;
-  ULONG         ClassOffset;
-  ULONG         ClassLength;
-  ULONG         SubKeys;
-  ULONG         MaxNameLen;
-  ULONG         MaxClassLen;
-  ULONG         Values;
-  ULONG         MaxValueNameLen;
-  ULONG         MaxValueDataLen;
-  WCHAR         Class[1];
-} KEY_FULL_INFORMATION, *PKEY_FULL_INFORMATION;
-
-typedef enum _KEY_INFORMATION_CLASS {
-  KeyBasicInformation,
-  KeyNodeInformation,
-  KeyFullInformation,
-  KeyNameInformation,
-  KeyCachedInformation,
-  KeyFlagsInformation,
-  KeyVirtualizationInformation,
-  KeyHandleTagsInformation,
-  KeyTrustInformation,
-  KeyLayerInformation,
-  MaxKeyInfoClass
-} KEY_INFORMATION_CLASS;
-
-typedef struct _KEY_NODE_INFORMATION {
-  LARGE_INTEGER LastWriteTime;
-  ULONG         TitleIndex;
-  ULONG         ClassOffset;
-  ULONG         ClassLength;
-  ULONG         NameLength;
-  WCHAR         Name[1];
-} KEY_NODE_INFORMATION, *PKEY_NODE_INFORMATION;
-
-typedef enum _KEY_SET_INFORMATION_CLASS {
-  KeyWriteTimeInformation,
-  KeyWow64FlagsInformation,
-  KeyControlFlagsInformation,
-  KeySetVirtualizationInformation,
-  KeySetDebugInformation,
-  KeySetHandleTagsInformation,
-  KeySetLayerInformation,
-  MaxKeySetInfoClass
-} KEY_SET_INFORMATION_CLASS;
-
-typedef struct _KEY_VALUE_BASIC_INFORMATION {
-  ULONG TitleIndex;
-  ULONG Type;
-  ULONG NameLength;
-  WCHAR Name[1];
-} KEY_VALUE_BASIC_INFORMATION, *PKEY_VALUE_BASIC_INFORMATION;
-
-typedef struct _KEY_VALUE_ENTRY {
-  PUNICODE_STRING ValueName;
-  ULONG           DataLength;
-  ULONG           DataOffset;
-  ULONG           Type;
-} KEY_VALUE_ENTRY, *PKEY_VALUE_ENTRY;
-
-typedef struct _KEY_VALUE_FULL_INFORMATION {
-  ULONG TitleIndex;
-  ULONG Type;
-  ULONG DataOffset;
-  ULONG DataLength;
-  ULONG NameLength;
-  WCHAR Name[1];
-} KEY_VALUE_FULL_INFORMATION, *PKEY_VALUE_FULL_INFORMATION;
-
-typedef enum _KEY_VALUE_INFORMATION_CLASS {
-  KeyValueBasicInformation,
-  KeyValueFullInformation,
-  KeyValuePartialInformation,
-  KeyValueFullInformationAlign64,
-  KeyValuePartialInformationAlign64,
-  KeyValueLayerInformation,
-  MaxKeyValueInfoClass
-} KEY_VALUE_INFORMATION_CLASS;
-
-
-typedef struct _KEY_VALUE_PARTIAL_INFORMATION {
-  ULONG TitleIndex;
-  ULONG Type;
-  ULONG DataLength;
-  UCHAR Data[1];
-} KEY_VALUE_PARTIAL_INFORMATION, *PKEY_VALUE_PARTIAL_INFORMATION;
-
-typedef struct _KEY_WRITE_TIME_INFORMATION {
-  LARGE_INTEGER LastWriteTime;
-} KEY_WRITE_TIME_INFORMATION, *PKEY_WRITE_TIME_INFORMATION;
-
-typedef enum _KINTERRUPT_MODE {
-  LevelSensitive,
-  Latched
-} KINTERRUPT_MODE;
-
-typedef enum _KINTERRUPT_POLARITY {
-  InterruptPolarityUnknown,
-  InterruptActiveHigh,
-  InterruptRisingEdge,
-  InterruptActiveLow,
-  InterruptFallingEdge,
-  InterruptActiveBoth,
-  InterruptActiveBothTriggerLow,
-  InterruptActiveBothTriggerHigh
-} KINTERRUPT_POLARITY, *PKINTERRUPT_POLARITY;
-
-typedef struct _KMUTANT {
-  DISPATCHER_HEADER Header;
-  LIST_ENTRY        MutantListEntry;
-  struct _KTHREAD   *OwnerThread;
-  union {
-    UCHAR MutantFlags;
-    struct {
-      UCHAR Abandoned : 1;
-      UCHAR Spare1 : 7;
-    } DUMMYSTRUCTNAME;
-  } DUMMYUNIONNAME;
-  UCHAR             ApcDisable;
-} KMUTANT, *PKMUTANT, *PRKMUTANT, KMUTEX, *PKMUTEX, *PRKMUTEX;
-
-typedef struct _KTMOBJECT_CURSOR {
-  GUID  LastQuery;
-  ULONG ObjectIdCount;
-  GUID  ObjectIds[1];
-} KTMOBJECT_CURSOR, *PKTMOBJECT_CURSOR;
-
-typedef enum _KTMOBJECT_TYPE {
-  KTMOBJECT_TRANSACTION,
-  KTMOBJECT_TRANSACTION_MANAGER,
-  KTMOBJECT_RESOURCE_MANAGER,
-  KTMOBJECT_ENLISTMENT,
-  KTMOBJECT_INVALID
-} KTMOBJECT_TYPE, *PKTMOBJECT_TYPE;
 
 void KzLowerIrql(
   _In_ KIRQL NewIrql
@@ -4814,82 +5607,7 @@ KIRQL KzRaiseIrql(
   _In_ KIRQL NewIrql
 );
 
-typedef enum {
-  LT_DONT_CARE,
-  LT_LOWEST_LATENCY
-} LATENCY_TIME;
 
-typedef struct _LINK_SHARE_ACCESS {
-  ULONG OpenCount;
-  ULONG Deleters;
-  ULONG SharedDelete;
-} LINK_SHARE_ACCESS, *PLINK_SHARE_ACCESS;
-
-typedef struct _MAILSLOT_CREATE_PARAMETERS {
-  ULONG         MailslotQuota;
-  ULONG         MaximumMessageSize;
-  LARGE_INTEGER ReadTimeout;
-  BOOLEAN       TimeoutSpecified;
-} MAILSLOT_CREATE_PARAMETERS, *PMAILSLOT_CREATE_PARAMETERS;
-
-typedef struct _MDL {
-  struct _MDL      *Next;
-  CSHORT           Size;
-  CSHORT           MdlFlags;
-  struct _EPROCESS *Process;
-  PVOID            MappedSystemVa;
-  PVOID            StartVa;
-  ULONG            ByteCount;
-  ULONG            ByteOffset;
-} MDL, *PMDL;
-
-typedef struct MEM_EXTENDED_PARAMETER {
-  struct {
-    ULONG64 Type : MEM_EXTENDED_PARAMETER_TYPE_BITS;
-    ULONG64 Reserved : 64 - MEM_EXTENDED_PARAMETER_TYPE_BITS;
-  } DUMMYSTRUCTNAME;
-  union {
-    ULONG64 ULong64;
-    PVOID   Pointer;
-    SIZE_T  Size;
-    HANDLE  Handle;
-    ULONG   ULong;
-  } DUMMYUNIONNAME;
-} MEM_EXTENDED_PARAMETER, *PMEM_EXTENDED_PARAMETER;
-
-typedef enum MEM_EXTENDED_PARAMETER_TYPE {
-  MemExtendedParameterInvalidType = 0,
-  MemExtendedParameterAddressRequirements = 1,
-  MemExtendedParameterNumaNode = 2,
-  MemExtendedParameterPartitionHandle = 3,
-  MemExtendedParameterUserPhysicalHandle = 4,
-  MemExtendedParameterAttributeFlags = 5,
-  MemExtendedParameterImageMachine = 6,
-  MemExtendedParameterMax
-}  *PMEM_EXTENDED_PARAMETER_TYPE;
-
-typedef enum _MEMORY_CACHING_TYPE {
-  MmNonCached,
-  MmCached,
-  MmWriteCombined,
-  MmHardwareCoherentCached,
-  MmNonCachedUnordered,
-  MmUSWCCached,
-  MmMaximumCacheType,
-  MmNotMapped
-} MEMORY_CACHING_TYPE;
-
-typedef struct _MEMORY_PARTITION_DEDICATED_MEMORY_OPEN_INFORMATION {
-  ULONG64     DedicatedMemoryTypeId;
-  ULONG       HandleAttributes;
-  ACCESS_MASK DesiredAccess;
-  HANDLE      DedicatedMemoryPartitionHandle;
-} MEMORY_PARTITION_DEDICATED_MEMORY_OPEN_INFORMATION, *PMEMORY_PARTITION_DEDICATED_MEMORY_OPEN_INFORMATION;
-
-typedef struct _MM_PHYSICAL_ADDRESS_LIST {
-  PHYSICAL_ADDRESS PhysicalAddress;
-  SIZE_T           NumberOfBytes;
-} MM_PHYSICAL_ADDRESS_LIST, *PMM_PHYSICAL_ADDRESS_LIST;
 
 NTSTATUS MmAdvanceMdl(
    PMDL  Mdl,
@@ -5043,9 +5761,9 @@ LOGICAL MmIsDriverVerifyingByAddress(
   _In_ PVOID AddressWithinSection
 );
 
-void MmLockPagableCodeSection(
-  _In_  Address
-);
+//void MmLockPagableCodeSection(
+//  _In_  Address
+//);
 
 PVOID MmLockPagableDataSection(
   _In_ PVOID AddressWithinSection
@@ -5064,14 +5782,18 @@ PVOID MmMapIoSpaceEx(
 );
 
 PVOID MmMapLockedPages(
-  _In_ PMDL                                                                          MemoryDescriptorList,
-  _In_ __drv_strictType(KPROCESSOR_MODE / enum _MODE,__drv_typeConst)KPROCESSOR_MODE AccessMode
+  _In_ PMDL MemoryDescriptorList,
+  _In_ KPROCESSOR_MODE ,
+   uint64_t _MODE,
+    KPROCESSOR_MODE AccessMode
 );
 
 PVOID MmMapLockedPagesSpecifyCache(
   _In_           PMDL                                                                          MemoryDescriptorList,
-  _In_           __drv_strictType(KPROCESSOR_MODE / enum _MODE,__drv_typeConst)KPROCESSOR_MODE AccessMode,
-  _In_           __drv_strictTypeMatch(__drv_typeCond)MEMORY_CACHING_TYPE                      CacheType,
+  _In_           KPROCESSOR_MODE Mode,
+   uint64_t MODE,
+  KPROCESSOR_MODE AccessMode,
+  _In_           MEMORY_CACHING_TYPE                      CacheType,
   _In_opt_ PVOID                                                                         RequestedAddress,
   _In_           ULONG                                                                         BugCheckOnFailure,
   _In_           ULONG                                                                         Priority
@@ -5081,7 +5803,7 @@ PVOID MmMapLockedPagesWithReservedMapping(
   _In_ PVOID                                                    MappingAddress,
   _In_ ULONG                                                    PoolTag,
   _In_ PMDL                                                     MemoryDescriptorList,
-  _In_ __drv_strictTypeMatch(__drv_typeCond)MEMORY_CACHING_TYPE CacheType
+  _In_ MEMORY_CACHING_TYPE CacheType
 );
 
 NTSTATUS MmMapMdl(
@@ -5162,43 +5884,24 @@ void MmUnmapReservedMapping(
   _In_ PMDL  MemoryDescriptorList
 );
 
-typedef enum _MONITOR_DISPLAY_STATE {
-  PowerMonitorOff,
-  PowerMonitorOn,
-  PowerMonitorDim
-} MONITOR_DISPLAY_STATE, *PMONITOR_DISPLAY_STATE;
 
-typedef struct _NAMED_PIPE_CREATE_PARAMETERS {
-  ULONG         NamedPipeType;
-  ULONG         ReadMode;
-  ULONG         CompletionMode;
-  ULONG         MaximumInstances;
-  ULONG         InboundQuota;
-  ULONG         OutboundQuota;
-  LARGE_INTEGER DefaultTimeout;
-  BOOLEAN       TimeoutSpecified;
-} NAMED_PIPE_CREATE_PARAMETERS, *PNAMED_PIPE_CREATE_PARAMETERS;
 
-typedef struct {
-  GUID Guid;
-} NOTIFY_USER_POWER_SETTING, *PNOTIFY_USER_POWER_SETTING;
-
-__kernel_entry NTSYSCALLAPI NTSTATUS NtCommitComplete(
+NTSYSCALLAPI NTSTATUS NtCommitComplete(
   _In_           HANDLE         EnlistmentHandle,
   _In_opt_ PLARGE_INTEGER TmVirtualClock
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtCommitEnlistment(
+NTSYSCALLAPI NTSTATUS NtCommitEnlistment(
   _In_           HANDLE         EnlistmentHandle,
   _In_opt_ PLARGE_INTEGER TmVirtualClock
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtCommitTransaction(
+NTSYSCALLAPI NTSTATUS NtCommitTransaction(
   _In_ HANDLE  TransactionHandle,
   _In_ BOOLEAN Wait
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtCreateEnlistment(
+NTSYSCALLAPI NTSTATUS NtCreateEnlistment(
   _Out_          PHANDLE            EnlistmentHandle,
   _In_           ACCESS_MASK        DesiredAccess,
   _In_           HANDLE             ResourceManagerHandle,
@@ -5209,7 +5912,7 @@ __kernel_entry NTSYSCALLAPI NTSTATUS NtCreateEnlistment(
   _In_opt_ PVOID              EnlistmentKey
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtCreateResourceManager(
+NTSYSCALLAPI NTSTATUS NtCreateResourceManager(
   _Out_          PHANDLE            ResourceManagerHandle,
   _In_           ACCESS_MASK        DesiredAccess,
   _In_           HANDLE             TmHandle,
@@ -5219,7 +5922,7 @@ __kernel_entry NTSYSCALLAPI NTSTATUS NtCreateResourceManager(
   _In_opt_ PUNICODE_STRING    Description
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtCreateTransaction(
+NTSYSCALLAPI NTSTATUS NtCreateTransaction(
   _Out_          PHANDLE            TransactionHandle,
   _In_           ACCESS_MASK        DesiredAccess,
   _In_opt_ POBJECT_ATTRIBUTES ObjectAttributes,
@@ -5232,7 +5935,7 @@ __kernel_entry NTSYSCALLAPI NTSTATUS NtCreateTransaction(
   _In_opt_ PUNICODE_STRING    Description
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtCreateTransactionManager(
+NTSYSCALLAPI NTSTATUS NtCreateTransactionManager(
   _Out_          PHANDLE            TmHandle,
   _In_           ACCESS_MASK        DesiredAccess,
   _In_opt_ POBJECT_ATTRIBUTES ObjectAttributes,
@@ -5241,7 +5944,7 @@ __kernel_entry NTSYSCALLAPI NTSTATUS NtCreateTransactionManager(
   _In_opt_ ULONG              CommitStrength
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtEnumerateTransactionObject(
+NTSYSCALLAPI NTSTATUS NtEnumerateTransactionObject(
   _In_opt_ HANDLE            RootObjectHandle,
   _In_           KTMOBJECT_TYPE    QueryType,
         PKTMOBJECT_CURSOR ObjectCursor,
@@ -5249,7 +5952,7 @@ __kernel_entry NTSYSCALLAPI NTSTATUS NtEnumerateTransactionObject(
   _Out_          PULONG            ReturnLength
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtGetNotificationResourceManager(
+NTSYSCALLAPI NTSTATUS NtGetNotificationResourceManager(
   _In_            HANDLE                    ResourceManagerHandle,
   _Out_           PTRANSACTION_NOTIFICATION TransactionNotification,
   _In_            ULONG                     NotificationLength,
@@ -5259,7 +5962,7 @@ __kernel_entry NTSYSCALLAPI NTSTATUS NtGetNotificationResourceManager(
   _In_opt_  ULONG_PTR                 AsynchronousContext
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtManagePartition(
+NTSYSCALLAPI NTSTATUS NtManagePartition(
   _In_           HANDLE                      TargetHandle,
   _In_opt_ HANDLE                      SourceHandle,
   _In_           PARTITION_INFORMATION_CLASS PartitionInformationClass,
@@ -5267,7 +5970,7 @@ __kernel_entry NTSYSCALLAPI NTSTATUS NtManagePartition(
   _In_           ULONG                       PartitionInformationLength
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtOpenEnlistment(
+NTSYSCALLAPI NTSTATUS NtOpenEnlistment(
   _Out_          PHANDLE            EnlistmentHandle,
   _In_           ACCESS_MASK        DesiredAccess,
   _In_           HANDLE             ResourceManagerHandle,
@@ -5275,7 +5978,7 @@ __kernel_entry NTSYSCALLAPI NTSTATUS NtOpenEnlistment(
   _In_opt_ POBJECT_ATTRIBUTES ObjectAttributes
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtOpenResourceManager(
+NTSYSCALLAPI NTSTATUS NtOpenResourceManager(
   _Out_          PHANDLE            ResourceManagerHandle,
   _In_           ACCESS_MASK        DesiredAccess,
   _In_           HANDLE             TmHandle,
@@ -5283,7 +5986,7 @@ __kernel_entry NTSYSCALLAPI NTSTATUS NtOpenResourceManager(
   _In_opt_ POBJECT_ATTRIBUTES ObjectAttributes
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtOpenTransaction(
+NTSYSCALLAPI NTSTATUS NtOpenTransaction(
   _Out_          PHANDLE            TransactionHandle,
   _In_           ACCESS_MASK        DesiredAccess,
   _In_opt_ POBJECT_ATTRIBUTES ObjectAttributes,
@@ -5291,7 +5994,7 @@ __kernel_entry NTSYSCALLAPI NTSTATUS NtOpenTransaction(
   _In_opt_ HANDLE             TmHandle
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtOpenTransactionManager(
+NTSYSCALLAPI NTSTATUS NtOpenTransactionManager(
   _Out_          PHANDLE            TmHandle,
   _In_           ACCESS_MASK        DesiredAccess,
   _In_opt_ POBJECT_ATTRIBUTES ObjectAttributes,
@@ -5300,7 +6003,7 @@ __kernel_entry NTSYSCALLAPI NTSTATUS NtOpenTransactionManager(
   _In_opt_ ULONG              OpenOptions
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtPowerInformation(
+NTSYSCALLAPI NTSTATUS NtPowerInformation(
   _In_            POWER_INFORMATION_LEVEL InformationLevel,
   _In_opt_  PVOID                   InputBuffer,
   _In_            ULONG                   InputBufferLength,
@@ -5308,27 +6011,27 @@ __kernel_entry NTSYSCALLAPI NTSTATUS NtPowerInformation(
   _In_            ULONG                   OutputBufferLength
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtPrepareComplete(
+NTSYSCALLAPI NTSTATUS NtPrepareComplete(
   _In_           HANDLE         EnlistmentHandle,
   _In_opt_ PLARGE_INTEGER TmVirtualClock
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtPrepareEnlistment(
+NTSYSCALLAPI NTSTATUS NtPrepareEnlistment(
   _In_           HANDLE         EnlistmentHandle,
   _In_opt_ PLARGE_INTEGER TmVirtualClock
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtPrePrepareComplete(
+NTSYSCALLAPI NTSTATUS NtPrePrepareComplete(
   _In_           HANDLE         EnlistmentHandle,
   _In_opt_ PLARGE_INTEGER TmVirtualClock
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtPrePrepareEnlistment(
+NTSYSCALLAPI NTSTATUS NtPrePrepareEnlistment(
   _In_           HANDLE         EnlistmentHandle,
   _In_opt_ PLARGE_INTEGER TmVirtualClock
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtQueryInformationEnlistment(
+NTSYSCALLAPI NTSTATUS NtQueryInformationEnlistment(
   _In_            HANDLE                       EnlistmentHandle,
   _In_            ENLISTMENT_INFORMATION_CLASS EnlistmentInformationClass,
   _Out_           PVOID                        EnlistmentInformation,
@@ -5336,7 +6039,7 @@ __kernel_entry NTSYSCALLAPI NTSTATUS NtQueryInformationEnlistment(
    PULONG                       ReturnLength
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtQueryInformationResourceManager(
+NTSYSCALLAPI NTSTATUS NtQueryInformationResourceManager(
   _In_            HANDLE                            ResourceManagerHandle,
   _In_            RESOURCEMANAGER_INFORMATION_CLASS ResourceManagerInformationClass,
   _Out_           PVOID                             ResourceManagerInformation,
@@ -5344,7 +6047,7 @@ __kernel_entry NTSYSCALLAPI NTSTATUS NtQueryInformationResourceManager(
    PULONG                            ReturnLength
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtQueryInformationTransaction(
+NTSYSCALLAPI NTSTATUS NtQueryInformationTransaction(
   _In_            HANDLE                        TransactionHandle,
   _In_            TRANSACTION_INFORMATION_CLASS TransactionInformationClass,
   _Out_           PVOID                         TransactionInformation,
@@ -5352,7 +6055,7 @@ __kernel_entry NTSYSCALLAPI NTSTATUS NtQueryInformationTransaction(
    PULONG                        ReturnLength
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtQueryInformationTransactionManager(
+NTSYSCALLAPI NTSTATUS NtQueryInformationTransactionManager(
   _In_            HANDLE                               TransactionManagerHandle,
   _In_            TRANSACTIONMANAGER_INFORMATION_CLASS TransactionManagerInformationClass,
   _Out_           PVOID                                TransactionManagerInformation,
@@ -5360,167 +6063,92 @@ __kernel_entry NTSYSCALLAPI NTSTATUS NtQueryInformationTransactionManager(
    PULONG                               ReturnLength
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtReadOnlyEnlistment(
+NTSYSCALLAPI NTSTATUS NtReadOnlyEnlistment(
   _In_           HANDLE         EnlistmentHandle,
   _In_opt_ PLARGE_INTEGER TmVirtualClock
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtRecoverEnlistment(
+NTSYSCALLAPI NTSTATUS NtRecoverEnlistment(
   _In_           HANDLE EnlistmentHandle,
   _In_opt_ PVOID  EnlistmentKey
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtRecoverResourceManager(
+NTSYSCALLAPI NTSTATUS NtRecoverResourceManager(
   _In_ HANDLE ResourceManagerHandle
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtRecoverTransactionManager(
+NTSYSCALLAPI NTSTATUS NtRecoverTransactionManager(
   _In_ HANDLE TransactionManagerHandle
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtRenameTransactionManager(
+NTSYSCALLAPI NTSTATUS NtRenameTransactionManager(
   _In_ PUNICODE_STRING LogFileName,
   _In_ LPGUID          ExistingTransactionManagerGuid
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtRollbackComplete(
+NTSYSCALLAPI NTSTATUS NtRollbackComplete(
   _In_           HANDLE         EnlistmentHandle,
   _In_opt_ PLARGE_INTEGER TmVirtualClock
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtRollbackEnlistment(
+NTSYSCALLAPI NTSTATUS NtRollbackEnlistment(
   _In_           HANDLE         EnlistmentHandle,
   _In_opt_ PLARGE_INTEGER TmVirtualClock
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtRollbackTransaction(
+NTSYSCALLAPI NTSTATUS NtRollbackTransaction(
   _In_ HANDLE  TransactionHandle,
   _In_ BOOLEAN Wait
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtRollforwardTransactionManager(
+NTSYSCALLAPI NTSTATUS NtRollforwardTransactionManager(
   _In_           HANDLE         TransactionManagerHandle,
   _In_opt_ PLARGE_INTEGER TmVirtualClock
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtSetInformationEnlistment(
+NTSYSCALLAPI NTSTATUS NtSetInformationEnlistment(
   _In_ HANDLE                       EnlistmentHandle,
   _In_ ENLISTMENT_INFORMATION_CLASS EnlistmentInformationClass,
   _In_ PVOID                        EnlistmentInformation,
   _In_ ULONG                        EnlistmentInformationLength
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtSetInformationResourceManager(
+NTSYSCALLAPI NTSTATUS NtSetInformationResourceManager(
   HANDLE                            ResourceManagerHandle,
   RESOURCEMANAGER_INFORMATION_CLASS ResourceManagerInformationClass,
   PVOID                             ResourceManagerInformation,
   ULONG                             ResourceManagerInformationLength
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtSetInformationTransaction(
+NTSYSCALLAPI NTSTATUS NtSetInformationTransaction(
   _In_ HANDLE                        TransactionHandle,
   _In_ TRANSACTION_INFORMATION_CLASS TransactionInformationClass,
   _In_ PVOID                         TransactionInformation,
   _In_ ULONG                         TransactionInformationLength
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtSetInformationTransactionManager(
+NTSYSCALLAPI NTSTATUS NtSetInformationTransactionManager(
   _In_opt_ HANDLE                               TmHandle,
   _In_           TRANSACTIONMANAGER_INFORMATION_CLASS TransactionManagerInformationClass,
   _In_           PVOID                                TransactionManagerInformation,
   _In_           ULONG                                TransactionManagerInformationLength
 );
 
-__kernel_entry NTSYSCALLAPI NTSTATUS NtSinglePhaseReject(
+NTSYSCALLAPI NTSTATUS NtSinglePhaseReject(
   _In_           HANDLE         EnlistmentHandle,
   _In_opt_ PLARGE_INTEGER TmVirtualClock
 );
 
-typedef struct _OB_CALLBACK_REGISTRATION {
-  USHORT                    Version;
-  USHORT                    OperationRegistrationCount;
-  UNICODE_STRING            Altitude;
-  PVOID                     RegistrationContext;
-  OB_OPERATION_REGISTRATION *OperationRegistration;
-} OB_CALLBACK_REGISTRATION, *POB_CALLBACK_REGISTRATION;
 
-
-typedef struct _OB_OPERATION_REGISTRATION {
-  POBJECT_TYPE                *ObjectType;
-  OB_OPERATION                Operations;
-  POB_PRE_OPERATION_CALLBACK  PreOperation;
-  POB_POST_OPERATION_CALLBACK PostOperation;
-} OB_OPERATION_REGISTRATION, *POB_OPERATION_REGISTRATION;
-
-typedef struct _OB_POST_CREATE_HANDLE_INFORMATION {
-  ACCESS_MASK GrantedAccess;
-} OB_POST_CREATE_HANDLE_INFORMATION, *POB_POST_CREATE_HANDLE_INFORMATION;
-
-typedef struct _OB_POST_DUPLICATE_HANDLE_INFORMATION {
-  ACCESS_MASK GrantedAccess;
-} OB_POST_DUPLICATE_HANDLE_INFORMATION, *POB_POST_DUPLICATE_HANDLE_INFORMATION;
-
-typedef struct _OB_POST_OPERATION_INFORMATION {
-  OB_OPERATION                  Operation;
-  union {
-    ULONG Flags;
-    struct {
-      ULONG KernelHandle : 1;
-      ULONG Reserved : 31;
-    };
-  };
-  PVOID                         Object;
-  POBJECT_TYPE                  ObjectType;
-  PVOID                         CallContext;
-  NTSTATUS                      ReturnStatus;
-  POB_POST_OPERATION_PARAMETERS Parameters;
-} OB_POST_OPERATION_INFORMATION, *POB_POST_OPERATION_INFORMATION;
-
-typedef union _OB_POST_OPERATION_PARAMETERS {
-  OB_POST_CREATE_HANDLE_INFORMATION    CreateHandleInformation;
-  OB_POST_DUPLICATE_HANDLE_INFORMATION DuplicateHandleInformation;
-} OB_POST_OPERATION_PARAMETERS, *POB_POST_OPERATION_PARAMETERS;
-
-typedef struct _OB_PRE_CREATE_HANDLE_INFORMATION {
-  ACCESS_MASK DesiredAccess;
-  ACCESS_MASK OriginalDesiredAccess;
-} OB_PRE_CREATE_HANDLE_INFORMATION, *POB_PRE_CREATE_HANDLE_INFORMATION;
-
-typedef struct _OB_PRE_DUPLICATE_HANDLE_INFORMATION {
-  ACCESS_MASK DesiredAccess;
-  ACCESS_MASK OriginalDesiredAccess;
-  PVOID       SourceProcess;
-  PVOID       TargetProcess;
-} OB_PRE_DUPLICATE_HANDLE_INFORMATION, *POB_PRE_DUPLICATE_HANDLE_INFORMATION;
-
-typedef struct _OB_PRE_OPERATION_INFORMATION {
-  OB_OPERATION                 Operation;
-  union {
-    ULONG Flags;
-    struct {
-      ULONG KernelHandle : 1;
-      ULONG Reserved : 31;
-    };
-  };
-  PVOID                        Object;
-  POBJECT_TYPE                 ObjectType;
-  PVOID                        CallContext;
-  POB_PRE_OPERATION_PARAMETERS Parameters;
-} OB_PRE_OPERATION_INFORMATION, *POB_PRE_OPERATION_INFORMATION;
-
-typedef union _OB_PRE_OPERATION_PARAMETERS {
-  OB_PRE_CREATE_HANDLE_INFORMATION    CreateHandleInformation;
-  OB_PRE_DUPLICATE_HANDLE_INFORMATION DuplicateHandleInformation;
-} OB_PRE_OPERATION_PARAMETERS, *POB_PRE_OPERATION_PARAMETERS;
 
 NTSTATUS ObCloseHandle(
   _In_ HANDLE          Handle,
   _In_ KPROCESSOR_MODE PreviousMode
 );
 
-void ObDereferenceObject(
-  _In_  a
-);
+//void ObDereferenceObject(
+//  _In_  a
+//);
 
 void ObDereferenceObjectDeferDelete(
   _In_ PVOID Object
@@ -5531,10 +6159,10 @@ void ObDereferenceObjectDeferDeleteWithTag(
   _In_ ULONG Tag
 );
 
-void ObDereferenceObjectWithTag(
-  _In_  a,
-  _In_  t
-);
+//void ObDereferenceObjectWithTag(
+//  _In_  a,
+//  _In_  t
+//);
 
 LONG_PTR ObfReferenceObject(
   _In_ PVOID Object
@@ -5546,9 +6174,9 @@ NTSTATUS ObGetObjectSecurity(
   _Out_ PBOOLEAN             MemoryAllocated
 );
 
-void ObReferenceObject(
-  _In_  Object
-);
+//void ObReferenceObject(
+//  _In_  Object
+//);
 
 NTSTATUS ObReferenceObjectByHandle(
   _In_            HANDLE                     Handle,
@@ -5588,10 +6216,10 @@ BOOLEAN ObReferenceObjectSafe(
   PVOID Object
 );
 
-void ObReferenceObjectWithTag(
-  _In_  Object,
-  _In_  Tag
-);
+//void ObReferenceObjectWithTag(
+//  _In_  Object,
+//  _In_  Tag
+//);
 
 NTSTATUS ObRegisterCallbacks(
   _In_  POB_CALLBACK_REGISTRATION CallbackRegistration,
@@ -5608,221 +6236,10 @@ void ObUnRegisterCallbacks(
 );
 
 
-typedef struct _OSVERSIONINFOEXW {
-  ULONG  dwOSVersionInfoSize;
-  ULONG  dwMajorVersion;
-  ULONG  dwMinorVersion;
-  ULONG  dwBuildNumber;
-  ULONG  dwPlatformId;
-  WCHAR  szCSDVersion[128];
-  USHORT wServicePackMajor;
-  USHORT wServicePackMinor;
-  USHORT wSuiteMask;
-  UCHAR  wProductType;
-  UCHAR  wReserved;
-} OSVERSIONINFOEXW, *POSVERSIONINFOEXW, *LPOSVERSIONINFOEXW, RTL_OSVERSIONINFOEXW, *PRTL_OSVERSIONINFOEXW;
-
-
-
-typedef struct _OSVERSIONINFOW {
-  ULONG dwOSVersionInfoSize;
-  ULONG dwMajorVersion;
-  ULONG dwMinorVersion;
-  ULONG dwBuildNumber;
-  ULONG dwPlatformId;
-  WCHAR szCSDVersion[128];
-} OSVERSIONINFOW, *POSVERSIONINFOW, *LPOSVERSIONINFOW, RTL_OSVERSIONINFOW, *PRTL_OSVERSIONINFOW;
-
-typedef struct _PCI_ATS_INTERFACE {
-  USHORT                 Size;
-  USHORT                 Version;
-  PVOID                  Context;
-  PINTERFACE_REFERENCE   InterfaceReference;
-  PINTERFACE_DEREFERENCE InterfaceDereference;
-  PPCI_SET_ATS           SetAddressTranslationServices;
-  UCHAR                  InvalidateQueueDepth;
-} PCI_ATS_INTERFACE, *PPCI_ATS_INTERFACE;
-
-typedef struct _PCI_COMMON_CONFIG : PCI_COMMON_HEADER {
-  UCHAR DeviceSpecific[192];
-} PCI_COMMON_CONFIG, *PPCI_COMMON_CONFIG;
-
-typedef struct _PCI_MSIX_TABLE_CONFIG_INTERFACE {
-  USHORT                     Size;
-  USHORT                     Version;
-  PVOID                      Context;
-  PINTERFACE_REFERENCE       InterfaceReference;
-  PINTERFACE_DEREFERENCE     InterfaceDereference;
-  PPCI_MSIX_SET_ENTRY        SetTableEntry;
-  PPCI_MSIX_MASKUNMASK_ENTRY MaskTableEntry;
-  PPCI_MSIX_MASKUNMASK_ENTRY UnmaskTableEntry;
-  PPCI_MSIX_GET_ENTRY        GetTableEntry;
-  PPCI_MSIX_GET_TABLE_SIZE   GetTableSize;
-} PCI_MSIX_TABLE_CONFIG_INTERFACE, *PPCI_MSIX_TABLE_CONFIG_INTERFACE;
-
-typedef struct _PCI_SECURITY_INTERFACE2 {
-  USHORT                 Size;
-  USHORT                 Version;
-  PVOID                  Context;
-  PINTERFACE_REFERENCE   InterfaceReference;
-  PINTERFACE_DEREFERENCE InterfaceDereference;
-  ULONG                  Flags;
-  ULONG                  SupportedScenarios;
-  PPCI_SET_ACS2          SetAccessControlServices;
-} PCI_SECURITY_INTERFACE2, *PPCI_SECURITY_INTERFACE2;
-
-typedef struct _PCI_SEGMENT_BUS_NUMBER {
-  union {
-    struct {
-      ULONG BusNumber : 8;
-      ULONG SegmentNumber : 16;
-      ULONG Reserved : 8;
-    } bits;
-    ULONG AsULONG;
-  } u;
-} PCI_SEGMENT_BUS_NUMBER, *PPCI_SEGMENT_BUS_NUMBER;
-
-typedef struct _PCI_SLOT_NUMBER {
-  union {
-    struct {
-      ULONG DeviceNumber : 5;
-      ULONG FunctionNumber : 3;
-      ULONG Reserved : 24;
-    } bits;
-    ULONG AsULONG;
-  } u;
-} PCI_SLOT_NUMBER, *PPCI_SLOT_NUMBER;
-
-typedef struct _PLUGPLAY_NOTIFICATION_HEADER {
-  USHORT Version;
-  USHORT Size;
-  GUID   Event;
-} PLUGPLAY_NOTIFICATION_HEADER, *PPLUGPLAY_NOTIFICATION_HEADER;
-
-typedef struct _PNP_BUS_INFORMATION {
-  GUID           BusTypeGuid;
-  INTERFACE_TYPE LegacyBusType;
-  ULONG          BusNumber;
-} PNP_BUS_INFORMATION, *PPNP_BUS_INFORMATION;
-
-typedef struct _PO_FX_COMPONENT_IDLE_STATE {
-  ULONGLONG TransitionLatency;
-  ULONGLONG ResidencyRequirement;
-  ULONG     NominalPower;
-} PO_FX_COMPONENT_IDLE_STATE, *PPO_FX_COMPONENT_IDLE_STATE;
-
-typedef struct _PO_FX_COMPONENT_PERF_INFO {
-  ULONG                    PerfStateSetsCount;
-  PO_FX_COMPONENT_PERF_SET PerfStateSets[ANYSIZE_ARRAY];
-} PO_FX_COMPONENT_PERF_INFO, *PPO_FX_COMPONENT_PERF_INFO;
-
-typedef struct _PO_FX_COMPONENT_PERF_SET {
-  UNICODE_STRING        Name;
-  ULONGLONG             Flags;
-  PO_FX_PERF_STATE_UNIT Unit;
-  PO_FX_PERF_STATE_TYPE Type;
-  union {
-    struct {
-      ULONG             Count;
-      PPO_FX_PERF_STATE States;
-    } Discrete;
-    struct {
-      ULONGLONG Minimum;
-      ULONGLONG Maximum;
-    } Range;
-  };
-} PO_FX_COMPONENT_PERF_SET, *PPO_FX_COMPONENT_PERF_SET;
-
-typedef struct _PO_FX_COMPONENT_V1 {
-  GUID                        Id;
-  ULONG                       IdleStateCount;
-  ULONG                       DeepestWakeableIdleState;
-  PPO_FX_COMPONENT_IDLE_STATE IdleStates;
-} PO_FX_COMPONENT_V1, *PPO_FX_COMPONENT_V1;
-
-typedef struct _PO_FX_COMPONENT_V2 {
-  GUID                        Id;
-  ULONGLONG                   Flags;
-  ULONG                       DeepestWakeableIdleState;
-  ULONG                       IdleStateCount;
-  PPO_FX_COMPONENT_IDLE_STATE IdleStates;
-  ULONG                       ProviderCount;
-  PULONG                      Providers;
-} PO_FX_COMPONENT_V2, *PPO_FX_COMPONENT_V2;
-
-typedef struct _PO_FX_DEVICE_V1 {
-  ULONG                                      Version;
-  ULONG                                      ComponentCount;
-  PPO_FX_COMPONENT_ACTIVE_CONDITION_CALLBACK ComponentActiveConditionCallback;
-  PPO_FX_COMPONENT_IDLE_CONDITION_CALLBACK   ComponentIdleConditionCallback;
-  PPO_FX_COMPONENT_IDLE_STATE_CALLBACK       ComponentIdleStateCallback;
-  PPO_FX_DEVICE_POWER_REQUIRED_CALLBACK      DevicePowerRequiredCallback;
-  PPO_FX_DEVICE_POWER_NOT_REQUIRED_CALLBACK  DevicePowerNotRequiredCallback;
-  PPO_FX_POWER_CONTROL_CALLBACK              PowerControlCallback;
-  PVOID                                      DeviceContext;
-  PO_FX_COMPONENT_V1                         Components[ANYSIZE_ARRAY];
-} PO_FX_DEVICE_V1, *PPO_FX_DEVICE_V1;
-
-typedef struct _PO_FX_DEVICE_V2 {
-  ULONG                                      Version;
-  ULONGLONG                                  Flags;
-  PPO_FX_COMPONENT_ACTIVE_CONDITION_CALLBACK ComponentActiveConditionCallback;
-  PPO_FX_COMPONENT_IDLE_CONDITION_CALLBACK   ComponentIdleConditionCallback;
-  PPO_FX_COMPONENT_IDLE_STATE_CALLBACK       ComponentIdleStateCallback;
-  PPO_FX_DEVICE_POWER_REQUIRED_CALLBACK      DevicePowerRequiredCallback;
-  PPO_FX_DEVICE_POWER_NOT_REQUIRED_CALLBACK  DevicePowerNotRequiredCallback;
-  PPO_FX_POWER_CONTROL_CALLBACK              PowerControlCallback;
-  PVOID                                      DeviceContext;
-  ULONG                                      ComponentCount;
-  PO_FX_COMPONENT_V2                         Components[ANYSIZE_ARRAY];
-} PO_FX_DEVICE_V2, *PPO_FX_DEVICE_V2;
-
-typedef struct _PO_FX_DEVICE_V3 {
-  ULONG                                      Version;
-  ULONGLONG                                  Flags;
-  PPO_FX_COMPONENT_ACTIVE_CONDITION_CALLBACK ComponentActiveConditionCallback;
-  PPO_FX_COMPONENT_IDLE_CONDITION_CALLBACK   ComponentIdleConditionCallback;
-  PPO_FX_COMPONENT_IDLE_STATE_CALLBACK       ComponentIdleStateCallback;
-  PPO_FX_DEVICE_POWER_REQUIRED_CALLBACK      DevicePowerRequiredCallback;
-  PPO_FX_DEVICE_POWER_NOT_REQUIRED_CALLBACK  DevicePowerNotRequiredCallback;
-  PPO_FX_POWER_CONTROL_CALLBACK              PowerControlCallback;
-  PPO_FX_DIRECTED_POWER_UP_CALLBACK          DirectedPowerUpCallback;
-  PPO_FX_DIRECTED_POWER_DOWN_CALLBACK        DirectedPowerDownCallback;
-  ULONG                                      DirectedFxTimeoutInSeconds;
-  PVOID                                      DeviceContext;
-  ULONG                                      ComponentCount;
-  PO_FX_COMPONENT_V2                         Components[ANYSIZE_ARRAY];
-} PO_FX_DEVICE_V3, *PPO_FX_DEVICE_V3;
-
-typedef struct _PO_FX_PERF_STATE {
-  ULONGLONG Value;
-  PVOID     Context;
-} PO_FX_PERF_STATE, *PPO_FX_PERF_STATE;
-
-typedef struct _PO_FX_PERF_STATE_CHANGE {
-  ULONG Set;
-  union {
-    ULONG     StateIndex;
-    ULONGLONG StateValue;
-  };
-} PO_FX_PERF_STATE_CHANGE, *PPO_FX_PERF_STATE_CHANGE;
-
-typedef enum _PO_FX_PERF_STATE_TYPE {
-  PoFxPerfStateTypeDiscrete,
-  PoFxPerfStateTypeRange,
-  PoFxPerfStateTypeMaximum
-} PO_FX_PERF_STATE_TYPE, *PPO_FX_PERF_STATE_TYPE;
-
-typedef enum _PO_FX_PERF_STATE_UNIT {
-  PoFxPerfStateUnitOther,
-  PoFxPerfStateUnitFrequency,
-  PoFxPerfStateUnitBandwidth,
-  PoFxPerfStateUnitMaximum
-} PO_FX_PERF_STATE_UNIT, *PPO_FX_PERF_STATE_UNIT;
 
 NTSTATUS PoCallDriver(
   _In_      PDEVICE_OBJECT        DeviceObject,
-   __drv_aliasesMem PIRP Irp
+    PIRP Irp
 );
 
 NTSTATUS PoClearPowerRequest(
@@ -5887,7 +6304,7 @@ void PoFxIssueComponentPerfStateChangeMultiple(
   _In_ ULONG                      Flags,
   _In_ ULONG                      Component,
   _In_ ULONG                      PerfChangesCount,
-  _In_ PO_FX_PERF_STATE_CHANGE [] PerfChanges,
+  _In_ PO_FX_PERF_STATE_CHANGE*  PerfChanges,
   _In_ PVOID                      Context
 );
 
@@ -5981,66 +6398,7 @@ BOOLEAN PoGetSystemWake(
   _In_ PIRP Irp
 );
 
-typedef struct _POOL_CREATE_EXTENDED_PARAMS {
-  ULONG Version;
-} POOL_CREATE_EXTENDED_PARAMS, *PPOOL_CREATE_EXTENDED_PARAMS;
 
-typedef struct _POOL_EXTENDED_PARAMETER {
-  struct {
-    ULONG64 Type : POOL_EXTENDED_PARAMETER_TYPE_BITS;
-    ULONG64 Optional : POOL_EXTENDED_PARAMETER_REQUIRED_FIELD_BITS;
-    ULONG64 Reserved : POOL_EXTENDED_PARAMETER_RESERVED_BITS;
-  } DUMMYSTRUCTNAME;
-  union {
-    ULONG64                          Reserved2;
-    PVOID                            Reserved3;
-    EX_POOL_PRIORITY                 Priority;
-    POOL_EXTENDED_PARAMS_SECURE_POOL *SecurePoolParams;
-    POOL_NODE_REQUIREMENT            PreferredNode;
-  } DUMMYUNIONNAME;
-} POOL_EXTENDED_PARAMETER, *PPOOL_EXTENDED_PARAMETER;
-
-typedef enum POOL_EXTENDED_PARAMETER_TYPE {
-  PoolExtendedParameterInvalidType = 0,
-  PoolExtendedParameterPriority,
-  PoolExtendedParameterSecurePool,
-  PoolExtendedParameterNumaNode,
-  PoolExtendedParameterMax
-}  *PPOOL_EXTENDED_PARAMETER_TYPE;
-
-typedef struct _POOL_EXTENDED_PARAMS_SECURE_POOL {
-  HANDLE    SecurePoolHandle;
-  PVOID     Buffer;
-  ULONG_PTR Cookie;
-  ULONG     SecurePoolFlags;
-} POOL_EXTENDED_PARAMS_SECURE_POOL;
-
-typedef enum _POOL_TYPE {
-    NonPagedPool,
-    NonPagedPoolExecute = NonPagedPool,
-    PagedPool,
-    NonPagedPoolMustSucceed = NonPagedPool + 2,
-    DontUseThisType,
-    NonPagedPoolCacheAligned = NonPagedPool + 4,
-    PagedPoolCacheAligned,
-    NonPagedPoolCacheAlignedMustS = NonPagedPool + 6,
-    MaxPoolType,
-    NonPagedPoolBase = 0,
-    NonPagedPoolBaseMustSucceed = NonPagedPoolBase + 2,
-    NonPagedPoolBaseCacheAligned = NonPagedPoolBase + 4,
-    NonPagedPoolBaseCacheAlignedMustS = NonPagedPoolBase + 6,
-    NonPagedPoolSession = 32,
-    PagedPoolSession = NonPagedPoolSession + 1,
-    NonPagedPoolMustSucceedSession = PagedPoolSession + 1,
-    DontUseThisTypeSession = NonPagedPoolMustSucceedSession + 1,
-    NonPagedPoolCacheAlignedSession = DontUseThisTypeSession + 1,
-    PagedPoolCacheAlignedSession = NonPagedPoolCacheAlignedSession + 1,
-    NonPagedPoolCacheAlignedMustSSession = PagedPoolCacheAlignedSession + 1,
-    NonPagedPoolNx = 512,
-    NonPagedPoolNxCacheAligned = NonPagedPoolNx + 4,
-    NonPagedPoolSessionNx = NonPagedPoolNx + 32,
-
-} POOL_TYPE;
 
 PSINGLE_LIST_ENTRY PopEntryList(
    PSINGLE_LIST_ENTRY ListHead
@@ -6077,13 +6435,13 @@ NTSTATUS PoRequestPowerIrp(
   _In_           UCHAR                   MinorFunction,
   _In_           POWER_STATE             PowerState,
   _In_opt_ PREQUEST_POWER_COMPLETE CompletionFunction,
-  _In_opt_ __drv_aliasesMem PVOID  Context,
+  _In_opt_  PVOID  Context,
   _Out_          PIRP                    *Irp
 );
 
-void PoSetDeviceBusy(
-    IdlePointer
-);
+//void PoSetDeviceBusy(
+//    IdlePointer
+//);
 
 void PoSetDeviceBusyEx(
    PULONG IdlePointer
@@ -6128,221 +6486,20 @@ void PoUnregisterSystemState(
    PVOID StateHandle
 );
 
-typedef enum {
-  PowerActionNone,
-  PowerActionReserved,
-  PowerActionSleep,
-  PowerActionHibernate,
-  PowerActionShutdown,
-  PowerActionShutdownReset,
-  PowerActionShutdownOff,
-  PowerActionWarmEject,
-  PowerActionDisplayOff
-} POWER_ACTION, *PPOWER_ACTION;
-
-typedef enum {
-  SystemPowerPolicyAc,
-  SystemPowerPolicyDc,
-  VerifySystemPolicyAc,
-  VerifySystemPolicyDc,
-  SystemPowerCapabilities,
-  SystemBatteryState,
-  SystemPowerStateHandler,
-  ProcessorStateHandler,
-  SystemPowerPolicyCurrent,
-  AdministratorPowerPolicy,
-  SystemReserveHiberFile,
-  ProcessorInformation,
-  SystemPowerInformation,
-  ProcessorStateHandler2,
-  LastWakeTime,
-  LastSleepTime,
-  SystemExecutionState,
-  SystemPowerStateNotifyHandler,
-  ProcessorPowerPolicyAc,
-  ProcessorPowerPolicyDc,
-  VerifyProcessorPowerPolicyAc,
-  VerifyProcessorPowerPolicyDc,
-  ProcessorPowerPolicyCurrent,
-  SystemPowerStateLogging,
-  SystemPowerLoggingEntry,
-  SetPowerSettingValue,
-  NotifyUserPowerSetting,
-  PowerInformationLevelUnused0,
-  SystemMonitorHiberBootPowerOff,
-  SystemVideoState,
-  TraceApplicationPowerMessage,
-  TraceApplicationPowerMessageEnd,
-  ProcessorPerfStates,
-  ProcessorIdleStates,
-  ProcessorCap,
-  SystemWakeSource,
-  SystemHiberFileInformation,
-  TraceServicePowerMessage,
-  ProcessorLoad,
-  PowerShutdownNotification,
-  MonitorCapabilities,
-  SessionPowerInit,
-  SessionDisplayState,
-  PowerRequestCreate,
-  PowerRequestAction,
-  GetPowerRequestList,
-  ProcessorInformationEx,
-  NotifyUserModeLegacyPowerEvent,
-  GroupPark,
-  ProcessorIdleDomains,
-  WakeTimerList,
-  SystemHiberFileSize,
-  ProcessorIdleStatesHv,
-  ProcessorPerfStatesHv,
-  ProcessorPerfCapHv,
-  ProcessorSetIdle,
-  LogicalProcessorIdling,
-  UserPresence,
-  PowerSettingNotificationName,
-  GetPowerSettingValue,
-  IdleResiliency,
-  SessionRITState,
-  SessionConnectNotification,
-  SessionPowerCleanup,
-  SessionLockState,
-  SystemHiberbootState,
-  PlatformInformation,
-  PdcInvocation,
-  MonitorInvocation,
-  FirmwareTableInformationRegistered,
-  SetShutdownSelectedTime,
-  SuspendResumeInvocation,
-  PlmPowerRequestCreate,
-  ScreenOff,
-  CsDeviceNotification,
-  PlatformRole,
-  LastResumePerformance,
-  DisplayBurst,
-  ExitLatencySamplingPercentage,
-  RegisterSpmPowerSettings,
-  PlatformIdleStates,
-  ProcessorIdleVeto,
-  PlatformIdleVeto,
-  SystemBatteryStatePrecise,
-  ThermalEvent,
-  PowerRequestActionInternal,
-  BatteryDeviceState,
-  PowerInformationInternal,
-  ThermalStandby,
-  SystemHiberFileType,
-  PhysicalPowerButtonPress,
-  QueryPotentialDripsConstraint,
-  EnergyTrackerCreate,
-  EnergyTrackerQuery,
-  UpdateBlackBoxRecorder,
-  SessionAllowExternalDmaDevices,
-  SendSuspendResumeNotification,
-  BlackBoxRecorderDirectAccessBuffer,
-  PowerInformationLevelMaximum
-} POWER_INFORMATION_LEVEL;
-
-typedef enum {
-  MonitorRequestReasonUnknown,
-  MonitorRequestReasonPowerButton,
-  MonitorRequestReasonRemoteConnection,
-  MonitorRequestReasonScMonitorpower,
-  MonitorRequestReasonUserInput,
-  MonitorRequestReasonAcDcDisplayBurst,
-  MonitorRequestReasonUserDisplayBurst,
-  MonitorRequestReasonPoSetSystemState,
-  MonitorRequestReasonSetThreadExecutionState,
-  MonitorRequestReasonFullWake,
-  MonitorRequestReasonSessionUnlock,
-  MonitorRequestReasonScreenOffRequest,
-  MonitorRequestReasonIdleTimeout,
-  MonitorRequestReasonPolicyChange,
-  MonitorRequestReasonSleepButton,
-  MonitorRequestReasonLid,
-  MonitorRequestReasonBatteryCountChange,
-  MonitorRequestReasonGracePeriod,
-  MonitorRequestReasonPnP,
-  MonitorRequestReasonDP,
-  MonitorRequestReasonSxTransition,
-  MonitorRequestReasonSystemIdle,
-  MonitorRequestReasonNearProximity,
-  MonitorRequestReasonThermalStandby,
-  MonitorRequestReasonResumePdc,
-  MonitorRequestReasonResumeS4,
-  MonitorRequestReasonTerminal,
-  MonitorRequestReasonPdcSignal,
-  MonitorRequestReasonAcDcDisplayBurstSuppressed,
-  MonitorRequestReasonSystemStateEntered,
-  MonitorRequestReasonWinrt,
-  MonitorRequestReasonUserInputKeyboard,
-  MonitorRequestReasonUserInputMouse,
-  MonitorRequestReasonUserInputTouchpad,
-  MonitorRequestReasonUserInputPen,
-  MonitorRequestReasonUserInputAccelerometer,
-  MonitorRequestReasonUserInputHid,
-  MonitorRequestReasonUserInputPoUserPresent,
-  MonitorRequestReasonUserInputSessionSwitch,
-  MonitorRequestReasonUserInputInitialization,
-  MonitorRequestReasonPdcSignalWindowsMobilePwrNotif,
-  MonitorRequestReasonPdcSignalWindowsMobileShell,
-  MonitorRequestReasonPdcSignalHeyCortana,
-  MonitorRequestReasonPdcSignalHolographicShell,
-  MonitorRequestReasonPdcSignalFingerprint,
-  MonitorRequestReasonDirectedDrips,
-  MonitorRequestReasonDim,
-  MonitorRequestReasonBuiltinPanel,
-  MonitorRequestReasonDisplayRequiredUnDim,
-  MonitorRequestReasonBatteryCountChangeSuppressed,
-  MonitorRequestReasonResumeModernStandby,
-  MonitorRequestReasonTerminalInit,
-  MonitorRequestReasonPdcSignalSensorsHumanPresence,
-  MonitorRequestReasonBatteryPreCritical,
-  MonitorRequestReasonUserInputTouch,
-  MonitorRequestReasonMax
-} POWER_MONITOR_REQUEST_REASON;
-
 typedef enum _POWER_MONITOR_REQUEST_TYPE {
   MonitorRequestTypeOff,
   MonitorRequestTypeOnAndPresent,
   MonitorRequestTypeToggleOn
 } POWER_MONITOR_REQUEST_TYPE;
 
-typedef struct _POWER_PLATFORM_INFORMATION {
-  BOOLEAN AoAc;
-} POWER_PLATFORM_INFORMATION, *PPOWER_PLATFORM_INFORMATION;
 
-typedef enum _POWER_REQUEST_TYPE {
-  PowerRequestDisplayRequired,
-  PowerRequestSystemRequired,
-  PowerRequestAwayModeRequired,
-  PowerRequestExecutionRequired
-} POWER_REQUEST_TYPE, *PPOWER_REQUEST_TYPE;
 
-typedef struct _POWER_SESSION_ALLOW_EXTERNAL_DMA_DEVICES {
-  BOOLEAN IsAllowed;
-} POWER_SESSION_ALLOW_EXTERNAL_DMA_DEVICES, *PPOWER_SESSION_ALLOW_EXTERNAL_DMA_DEVICES;
-
-typedef union _POWER_STATE {
-  SYSTEM_POWER_STATE SystemState;
-  DEVICE_POWER_STATE DeviceState;
-} POWER_STATE, *PPOWER_STATE;
-
-typedef enum _POWER_STATE_TYPE {
-  SystemPowerState,
-  DevicePowerState
-} POWER_STATE_TYPE, *PPOWER_STATE_TYPE;
 
 typedef enum {
   UserNotPresent,
   UserPresent,
   UserUnknown
 } POWER_USER_PRESENCE_TYPE, *PPOWER_USER_PRESENCE_TYPE;
-
-typedef struct _PRIVILEGE_SET {
-  ULONG               PrivilegeCount;
-  ULONG               Control;
-  LUID_AND_ATTRIBUTES Privilege[ANYSIZE_ARRAY];
-} PRIVILEGE_SET, *PPRIVILEGE_SET;
 
 void ProbeForRead(
   _In_ const volatile VOID *Address,
@@ -6371,7 +6528,7 @@ NTSTATUS PsCreateSystemThread(
 );
 
 void PsFreeAffinityToken(
-  _Frees_ptr_ PAFFINITY_TOKEN AffinityToken
+  PAFFINITY_TOKEN AffinityToken
 );
 
 PETHREAD PsGetCurrentThread();
@@ -6416,78 +6573,9 @@ typedef struct _PTM_CONTROL_INTERFACE {
 
 void PushEntryList(
    PSINGLE_LIST_ENTRY                  ListHead,
-   __drv_aliasesMem PSINGLE_LIST_ENTRY Entry
+    PSINGLE_LIST_ENTRY Entry
 );
 
-NTHALAPI VOID READ_PORT_BUFFER_UCHAR(
-  _In_  PUCHAR Port,
-  _Out_ PUCHAR Buffer,
-  _In_  ULONG  Count
-);
-
-NTHALAPI VOID READ_PORT_BUFFER_ULONG(
-  _In_  PULONG Port,
-  _Out_ PULONG Buffer,
-  _In_  ULONG  Count
-);
-
-NTHALAPI VOID READ_PORT_BUFFER_USHORT(
-  _In_  PUSHORT Port,
-  _Out_ PUSHORT Buffer,
-  _In_  ULONG   Count
-);
-
-NTHALAPI UCHAR READ_PORT_UCHAR(
-  _In_ PUCHAR Port
-);
-
-NTHALAPI ULONG READ_PORT_ULONG(
-  _In_ PULONG Port
-);
-
-NTHALAPI USHORT READ_PORT_USHORT(
-  _In_ PUSHORT Port
-);
-
-void READ_REGISTER_BUFFER_UCHAR(
-  _In_  volatile UCHAR *Register,
-  _Out_ PUCHAR         Buffer,
-  _In_  ULONG          Count
-);
-
-void READ_REGISTER_BUFFER_ULONG(
-  _In_  volatile ULONG *Register,
-  _Out_ PULONG         Buffer,
-  _In_  ULONG          Count
-);
-
-void READ_REGISTER_BUFFER_ULONG64(
-  _In_  volatile ULONG64 *Register,
-  _Out_ PULONG64         Buffer,
-  _In_  ULONG            Count
-);
-
-void READ_REGISTER_BUFFER_USHORT(
-  _In_  volatile USHORT *Register,
-  _Out_ PUSHORT         Buffer,
-  _In_  ULONG           Count
-);
-
-UCHAR READ_REGISTER_UCHAR(
-  _In_ volatile UCHAR *Register
-);
-
-ULONG READ_REGISTER_ULONG(
-  _In_ volatile ULONG *Register
-);
-
-ULONG64 READ_REGISTER_ULONG64(
-  _In_ volatile ULONG64 *Register
-);
-
-USHORT READ_REGISTER_USHORT(
-  _In_ volatile USHORT *Register
-);
 
 UCHAR ReadBooleanRaw(
   BOOLEAN const volatile *Source
@@ -6517,370 +6605,6 @@ UINT32 ReadUInt32Raw(
   UINT32 const volatile *Source
 );
 
-typedef struct _REENUMERATE_SELF_INTERFACE_STANDARD {
-  USHORT                 Size;
-  USHORT                 Version;
-  PVOID                  Context;
-  PINTERFACE_REFERENCE   InterfaceReference;
-  PINTERFACE_DEREFERENCE InterfaceDereference;
-  PREENUMERATE_SELF      SurpriseRemoveAndReenumerateSelf;
-} REENUMERATE_SELF_INTERFACE_STANDARD, *PREENUMERATE_SELF_INTERFACE_STANDARD;
-
-typedef struct _REG_CALLBACK_CONTEXT_CLEANUP_INFORMATION {
-  PVOID Object;
-  PVOID ObjectContext;
-  PVOID Reserved;
-} REG_CALLBACK_CONTEXT_CLEANUP_INFORMATION, *PREG_CALLBACK_CONTEXT_CLEANUP_INFORMATION;
-
-typedef struct _REG_CREATE_KEY_INFORMATION {
-  PUNICODE_STRING CompleteName;
-  PVOID           RootObject;
-  PVOID           ObjectType;
-  ULONG           CreateOptions;
-  PUNICODE_STRING Class;
-  PVOID           SecurityDescriptor;
-  PVOID           SecurityQualityOfService;
-  ACCESS_MASK     DesiredAccess;
-  ACCESS_MASK     GrantedAccess;
-  PULONG          Disposition;
-  PVOID           *ResultObject;
-  PVOID           CallContext;
-  PVOID           RootObjectContext;
-  PVOID           Transaction;
-  PVOID           Reserved;
-} REG_CREATE_KEY_INFORMATION, REG_OPEN_KEY_INFORMATION, *PREG_CREATE_KEY_INFORMATION, *PREG_OPEN_KEY_INFORMATION;
-
-typedef struct _REG_CREATE_KEY_INFORMATION_V1 {
-  PUNICODE_STRING CompleteName;
-  PVOID           RootObject;
-  PVOID           ObjectType;
-  ULONG           Options;
-  PUNICODE_STRING Class;
-  PVOID           SecurityDescriptor;
-  PVOID           SecurityQualityOfService;
-  ACCESS_MASK     DesiredAccess;
-  ACCESS_MASK     GrantedAccess;
-  PULONG          Disposition;
-  PVOID           *ResultObject;
-  PVOID           CallContext;
-  PVOID           RootObjectContext;
-  PVOID           Transaction;
-  ULONG_PTR       Version;
-  PUNICODE_STRING RemainingName;
-  ULONG           Wow64Flags;
-  ULONG           Attributes;
-  KPROCESSOR_MODE CheckAccessMode;
-} REG_CREATE_KEY_INFORMATION_V1, REG_OPEN_KEY_INFORMATION_V1, *PREG_CREATE_KEY_INFORMATION_V1, *PREG_OPEN_KEY_INFORMATION_V1;
-
-typedef struct _REG_DELETE_KEY_INFORMATION {
-  PVOID Object;
-  PVOID CallContext;
-  PVOID ObjectContext;
-  PVOID Reserved;
-} REG_DELETE_KEY_INFORMATION, *PREG_DELETE_KEY_INFORMATION, REG_FLUSH_KEY_INFORMATION, *PREG_FLUSH_KEY_INFORMATION;
-
-typedef struct _REG_DELETE_VALUE_KEY_INFORMATION {
-  PVOID           Object;
-  PUNICODE_STRING ValueName;
-  PVOID           CallContext;
-  PVOID           ObjectContext;
-  PVOID           Reserved;
-} REG_DELETE_VALUE_KEY_INFORMATION, *PREG_DELETE_VALUE_KEY_INFORMATION;
-
-typedef struct _REG_ENUMERATE_KEY_INFORMATION {
-  PVOID                 Object;
-  ULONG                 Index;
-  KEY_INFORMATION_CLASS KeyInformationClass;
-  PVOID                 KeyInformation;
-  ULONG                 Length;
-  PULONG                ResultLength;
-  PVOID                 CallContext;
-  PVOID                 ObjectContext;
-  PVOID                 Reserved;
-} REG_ENUMERATE_KEY_INFORMATION, *PREG_ENUMERATE_KEY_INFORMATION;
-
-typedef struct _REG_ENUMERATE_VALUE_KEY_INFORMATION {
-  PVOID                       Object;
-  ULONG                       Index;
-  KEY_VALUE_INFORMATION_CLASS KeyValueInformationClass;
-  PVOID                       KeyValueInformation;
-  ULONG                       Length;
-  PULONG                      ResultLength;
-  PVOID                       CallContext;
-  PVOID                       ObjectContext;
-  PVOID                       Reserved;
-} REG_ENUMERATE_VALUE_KEY_INFORMATION, *PREG_ENUMERATE_VALUE_KEY_INFORMATION;
-
-typedef struct _REG_KEY_HANDLE_CLOSE_INFORMATION {
-  PVOID Object;
-  PVOID CallContext;
-  PVOID ObjectContext;
-  PVOID Reserved;
-} REG_KEY_HANDLE_CLOSE_INFORMATION, *PREG_KEY_HANDLE_CLOSE_INFORMATION;
-
-typedef struct _REG_LOAD_KEY_INFORMATION {
-  PVOID           Object;
-  PUNICODE_STRING KeyName;
-  PUNICODE_STRING SourceFile;
-  ULONG           Flags;
-  PVOID           TrustClassObject;
-  PVOID           UserEvent;
-  ACCESS_MASK     DesiredAccess;
-  PHANDLE         RootHandle;
-  PVOID           CallContext;
-  PVOID           ObjectContext;
-  PVOID           Reserved;
-} REG_LOAD_KEY_INFORMATION, *PREG_LOAD_KEY_INFORMATION;
-
-typedef struct _REG_LOAD_KEY_INFORMATION_V2 {
-  PVOID           Object;
-  PUNICODE_STRING KeyName;
-  PUNICODE_STRING SourceFile;
-  ULONG           Flags;
-  PVOID           TrustClassObject;
-  PVOID           UserEvent;
-  ACCESS_MASK     DesiredAccess;
-  PHANDLE         RootHandle;
-  PVOID           CallContext;
-  PVOID           ObjectContext;
-  ULONG_PTR       Version;
-  PVOID           FileAccessToken;
-} REG_LOAD_KEY_INFORMATION_V2, *PREG_LOAD_KEY_INFORMATION_V2;
-
-typedef enum _REG_NOTIFY_CLASS {
-  RegNtDeleteKey,
-  RegNtPreDeleteKey,
-  RegNtSetValueKey,
-  RegNtPreSetValueKey,
-  RegNtDeleteValueKey,
-  RegNtPreDeleteValueKey,
-  RegNtSetInformationKey,
-  RegNtPreSetInformationKey,
-  RegNtRenameKey,
-  RegNtPreRenameKey,
-  RegNtEnumerateKey,
-  RegNtPreEnumerateKey,
-  RegNtEnumerateValueKey,
-  RegNtPreEnumerateValueKey,
-  RegNtQueryKey,
-  RegNtPreQueryKey,
-  RegNtQueryValueKey,
-  RegNtPreQueryValueKey,
-  RegNtQueryMultipleValueKey,
-  RegNtPreQueryMultipleValueKey,
-  RegNtPreCreateKey,
-  RegNtPostCreateKey,
-  RegNtPreOpenKey,
-  RegNtPostOpenKey,
-  RegNtKeyHandleClose,
-  RegNtPreKeyHandleClose,
-  RegNtPostDeleteKey,
-  RegNtPostSetValueKey,
-  RegNtPostDeleteValueKey,
-  RegNtPostSetInformationKey,
-  RegNtPostRenameKey,
-  RegNtPostEnumerateKey,
-  RegNtPostEnumerateValueKey,
-  RegNtPostQueryKey,
-  RegNtPostQueryValueKey,
-  RegNtPostQueryMultipleValueKey,
-  RegNtPostKeyHandleClose,
-  RegNtPreCreateKeyEx,
-  RegNtPostCreateKeyEx,
-  RegNtPreOpenKeyEx,
-  RegNtPostOpenKeyEx,
-  RegNtPreFlushKey,
-  RegNtPostFlushKey,
-  RegNtPreLoadKey,
-  RegNtPostLoadKey,
-  RegNtPreUnLoadKey,
-  RegNtPostUnLoadKey,
-  RegNtPreQueryKeySecurity,
-  RegNtPostQueryKeySecurity,
-  RegNtPreSetKeySecurity,
-  RegNtPostSetKeySecurity,
-  RegNtCallbackObjectContextCleanup,
-  RegNtPreRestoreKey,
-  RegNtPostRestoreKey,
-  RegNtPreSaveKey,
-  RegNtPostSaveKey,
-  RegNtPreReplaceKey,
-  RegNtPostReplaceKey,
-  RegNtPreQueryKeyName,
-  RegNtPostQueryKeyName,
-  RegNtPreSaveMergedKey,
-  RegNtPostSaveMergedKey,
-  MaxRegNtNotifyClass
-} REG_NOTIFY_CLASS;
-
-typedef struct _REG_POST_CREATE_KEY_INFORMATION {
-  PUNICODE_STRING CompleteName;
-  PVOID           Object;
-  NTSTATUS        Status;
-} REG_POST_CREATE_KEY_INFORMATION, REG_POST_OPEN_KEY_INFORMATION, *PREG_POST_CREATE_KEY_INFORMATION, *PREG_POST_OPEN_KEY_INFORMATION;
-
-typedef struct _REG_POST_OPERATION_INFORMATION {
-  PVOID    Object;
-  NTSTATUS Status;
-  PVOID    PreInformation;
-  NTSTATUS ReturnStatus;
-  PVOID    CallContext;
-  PVOID    ObjectContext;
-  PVOID    Reserved;
-} REG_POST_OPERATION_INFORMATION, *PREG_POST_OPERATION_INFORMATION;
-
-typedef struct _REG_PRE_CREATE_KEY_INFORMATION {
-  PUNICODE_STRING CompleteName;
-} REG_PRE_CREATE_KEY_INFORMATION, REG_PRE_OPEN_KEY_INFORMATION, *PREG_PRE_CREATE_KEY_INFORMATION, *PREG_PRE_OPEN_KEY_INFORMATION;
-
-
-typedef struct _REG_PRE_CREATE_KEY_INFORMATION {
-  PUNICODE_STRING CompleteName;
-} REG_PRE_CREATE_KEY_INFORMATION, REG_PRE_OPEN_KEY_INFORMATION, *PREG_PRE_CREATE_KEY_INFORMATION, *PREG_PRE_OPEN_KEY_INFORMATION;
-
-
-typedef struct _REG_QUERY_KEY_INFORMATION {
-  PVOID                 Object;
-  KEY_INFORMATION_CLASS KeyInformationClass;
-  PVOID                 KeyInformation;
-  ULONG                 Length;
-  PULONG                ResultLength;
-  PVOID                 CallContext;
-  PVOID                 ObjectContext;
-  PVOID                 Reserved;
-} REG_QUERY_KEY_INFORMATION, *PREG_QUERY_KEY_INFORMATION;
-
-
-typedef struct _REG_QUERY_KEY_NAME {
-  PVOID                    Object;
-  POBJECT_NAME_INFORMATION ObjectNameInfo;
-  ULONG                    Length;
-  PULONG                   ReturnLength;
-  PVOID                    CallContext;
-  PVOID                    ObjectContext;
-  PVOID                    Reserved;
-} REG_QUERY_KEY_NAME, *PREG_QUERY_KEY_NAME;
-
-typedef struct _REG_QUERY_KEY_SECURITY_INFORMATION {
-  PVOID                 Object;
-  PSECURITY_INFORMATION SecurityInformation;
-  PSECURITY_DESCRIPTOR  SecurityDescriptor;
-  PULONG                Length;
-  PVOID                 CallContext;
-  PVOID                 ObjectContext;
-  PVOID                 Reserved;
-} REG_QUERY_KEY_SECURITY_INFORMATION, *PREG_QUERY_KEY_SECURITY_INFORMATION;
-
-typedef struct _REG_QUERY_MULTIPLE_VALUE_KEY_INFORMATION {
-  PVOID            Object;
-  PKEY_VALUE_ENTRY ValueEntries;
-  ULONG            EntryCount;
-  PVOID            ValueBuffer;
-  PULONG           BufferLength;
-  PULONG           RequiredBufferLength;
-  PVOID            CallContext;
-  PVOID            ObjectContext;
-  PVOID            Reserved;
-} REG_QUERY_MULTIPLE_VALUE_KEY_INFORMATION, *PREG_QUERY_MULTIPLE_VALUE_KEY_INFORMATION;
-
-typedef struct _REG_QUERY_VALUE_KEY_INFORMATION {
-  PVOID                       Object;
-  PUNICODE_STRING             ValueName;
-  KEY_VALUE_INFORMATION_CLASS KeyValueInformationClass;
-  PVOID                       KeyValueInformation;
-  ULONG                       Length;
-  PULONG                      ResultLength;
-  PVOID                       CallContext;
-  PVOID                       ObjectContext;
-  PVOID                       Reserved;
-} REG_QUERY_VALUE_KEY_INFORMATION, *PREG_QUERY_VALUE_KEY_INFORMATION;
-
-typedef struct _REG_RENAME_KEY_INFORMATION {
-  PVOID           Object;
-  PUNICODE_STRING NewName;
-  PVOID           CallContext;
-  PVOID           ObjectContext;
-  PVOID           Reserved;
-} REG_RENAME_KEY_INFORMATION, *PREG_RENAME_KEY_INFORMATION;
-
-typedef struct _REG_REPLACE_KEY_INFORMATION {
-  PVOID           Object;
-  PUNICODE_STRING OldFileName;
-  PUNICODE_STRING NewFileName;
-  PVOID           CallContext;
-  PVOID           ObjectContext;
-  PVOID           Reserved;
-} REG_REPLACE_KEY_INFORMATION, *PREG_REPLACE_KEY_INFORMATION;
-
-typedef struct _REG_RESTORE_KEY_INFORMATION {
-  PVOID  Object;
-  HANDLE FileHandle;
-  ULONG  Flags;
-  PVOID  CallContext;
-  PVOID  ObjectContext;
-  PVOID  Reserved;
-} REG_RESTORE_KEY_INFORMATION, *PREG_RESTORE_KEY_INFORMATION;
-
-typedef struct _REG_SAVE_KEY_INFORMATION {
-  PVOID  Object;
-  HANDLE FileHandle;
-  ULONG  Format;
-  PVOID  CallContext;
-  PVOID  ObjectContext;
-  PVOID  Reserved;
-} REG_SAVE_KEY_INFORMATION, *PREG_SAVE_KEY_INFORMATION;
-
-typedef struct _REG_SAVE_MERGED_KEY_INFORMATION {
-  PVOID  Object;
-  HANDLE FileHandle;
-  PVOID  HighKeyObject;
-  PVOID  LowKeyObject;
-  PVOID  CallContext;
-  PVOID  ObjectContext;
-  PVOID  Reserved;
-} REG_SAVE_MERGED_KEY_INFORMATION, *PREG_SAVE_MERGED_KEY_INFORMATION;
-
-
-typedef struct _REG_SET_INFORMATION_KEY_INFORMATION {
-  PVOID                     Object;
-  KEY_SET_INFORMATION_CLASS KeySetInformationClass;
-  PVOID                     KeySetInformation;
-  ULONG                     KeySetInformationLength;
-  PVOID                     CallContext;
-  PVOID                     ObjectContext;
-  PVOID                     Reserved;
-} REG_SET_INFORMATION_KEY_INFORMATION, *PREG_SET_INFORMATION_KEY_INFORMATION;
-
-typedef struct _REG_SET_KEY_SECURITY_INFORMATION {
-  PVOID                 Object;
-  PSECURITY_INFORMATION SecurityInformation;
-  PSECURITY_DESCRIPTOR  SecurityDescriptor;
-  PVOID                 CallContext;
-  PVOID                 ObjectContext;
-  PVOID                 Reserved;
-} REG_SET_KEY_SECURITY_INFORMATION, *PREG_SET_KEY_SECURITY_INFORMATION;
-
-typedef struct _REG_SET_VALUE_KEY_INFORMATION {
-  PVOID           Object;
-  PUNICODE_STRING ValueName;
-  ULONG           TitleIndex;
-  ULONG           Type;
-  PVOID           Data;
-  ULONG           DataSize;
-  PVOID           CallContext;
-  PVOID           ObjectContext;
-  PVOID           Reserved;
-} REG_SET_VALUE_KEY_INFORMATION, *PREG_SET_VALUE_KEY_INFORMATION;
-
-
-typedef struct _REG_UNLOAD_KEY_INFORMATION {
-  PVOID Object;
-  PVOID UserEvent;
-  PVOID CallContext;
-  PVOID ObjectContext;
-  PVOID Reserved;
-} REG_UNLOAD_KEY_INFORMATION, *PREG_UNLOAD_KEY_INFORMATION;
-
 BOOLEAN RemoveEntryList(
   _In_ PLIST_ENTRY Entry
 );
@@ -6894,26 +6618,9 @@ PLIST_ENTRY RemoveTailList(
 );
 
 
-typedef struct _RESOURCEMANAGER_BASIC_INFORMATION {
-  GUID  ResourceManagerId;
-  ULONG DescriptionLength;
-  WCHAR Description[1];
-} RESOURCEMANAGER_BASIC_INFORMATION, *PRESOURCEMANAGER_BASIC_INFORMATION;
 
-typedef struct _RESOURCEMANAGER_COMPLETION_INFORMATION {
-  HANDLE    IoCompletionPortHandle;
-  ULONG_PTR CompletionKey;
-} RESOURCEMANAGER_COMPLETION_INFORMATION, *PRESOURCEMANAGER_COMPLETION_INFORMATION;
-
-typedef enum _RESOURCEMANAGER_INFORMATION_CLASS {
-  ResourceManagerBasicInformation,
-  ResourceManagerCompletionInformation
-} RESOURCEMANAGER_INFORMATION_CLASS;
-
-
-  NTSYSAPI
+  
   ULONG
-  NTAPI
   RtlAnsiStringToUnicodeSize(
   PANSI_STRING AnsiString
   );
@@ -6925,31 +6632,31 @@ typedef enum _RESOURCEMANAGER_INFORMATION_CLASS {
 
 
 
-NTSYSAPI NTSTATUS RtlAnsiStringToUnicodeString(
+ NTSTATUS RtlAnsiStringToUnicodeString(
    PUNICODE_STRING DestinationString,
   _In_      PCANSI_STRING   SourceString,
   _In_      BOOLEAN         AllocateDestinationString
 );
 
 
-NTSYSAPI NTSTATUS RtlAppendUnicodeStringToString(
+ NTSTATUS RtlAppendUnicodeStringToString(
    PUNICODE_STRING  Destination,
   _In_      PCUNICODE_STRING Source
 );
 
-NTSYSAPI NTSTATUS RtlAppendUnicodeToString(
+ NTSTATUS RtlAppendUnicodeToString(
         PUNICODE_STRING Destination,
   _In_opt_ PCWSTR          Source
 );
 
 
-NTSYSAPI BOOLEAN RtlAreBitsClear(
+BOOLEAN RtlAreBitsClear(
   _In_ PRTL_BITMAP BitMapHeader,
   _In_ ULONG       StartingIndex,
   _In_ ULONG       Length
 );
 
-NTSYSAPI BOOLEAN RtlAreBitsSet(
+BOOLEAN RtlAreBitsSet(
   _In_ PRTL_BITMAP BitMapHeader,
   _In_ ULONG       StartingIndex,
   _In_ ULONG       Length
@@ -6961,45 +6668,45 @@ BOOLEAN RtlCheckBit(
   _In_ ULONG       BitPosition
 );
 
-NTSYSAPI NTSTATUS RtlCheckRegistryKey(
+ NTSTATUS RtlCheckRegistryKey(
   _In_ ULONG RelativeTo,
   _In_ PWSTR Path
 );
 
-NTSYSAPI VOID RtlClearAllBits(
+ VOID RtlClearAllBits(
   _In_ PRTL_BITMAP BitMapHeader
 );
 
-NTSYSAPI VOID RtlClearBit(
+ VOID RtlClearBit(
   _In_ PRTL_BITMAP BitMapHeader,
   _In_ ULONG       BitNumber
 );
 
-NTSYSAPI VOID RtlClearBits(
+ VOID RtlClearBits(
   _In_ PRTL_BITMAP BitMapHeader,
   _In_ ULONG       StartingIndex,
   _In_ ULONG       NumberToClear
 );
 
-NTSYSAPI ULONGLONG RtlCmDecodeMemIoResource(
+ ULONGLONG RtlCmDecodeMemIoResource(
   _In_            PCM_PARTIAL_RESOURCE_DESCRIPTOR Descriptor,
    PULONGLONG                      Start
 );
 
-NTSYSAPI NTSTATUS RtlCmEncodeMemIoResource(
+ NTSTATUS RtlCmEncodeMemIoResource(
   _In_ PCM_PARTIAL_RESOURCE_DESCRIPTOR Descriptor,
   _In_ UCHAR                           Type,
   _In_ ULONGLONG                       Length,
   _In_ ULONGLONG                       Start
 );
 
-NTSYSAPI SIZE_T RtlCompareMemory(
+ SIZE_T RtlCompareMemory(
   _In_ const VOID *Source1,
   _In_ const VOID *Source2,
   _In_ SIZE_T     Length
 );
 
-NTSYSAPI LONG RtlCompareUnicodeString(
+ LONG RtlCompareUnicodeString(
   _In_ PCUNICODE_STRING String1,
   _In_ PCUNICODE_STRING String2,
   _In_ BOOLEAN          CaseInSensitive
@@ -7011,11 +6718,11 @@ int RtlConstantTimeEqualMemory(
   unsigned long len
 );
 
-DECLSPEC_DEPRECATED_DDK_WINXP LARGE_INTEGER NTAPI_INLINE RtlConvertLongToLargeInteger(
+LARGE_INTEGER NTAPI_INLINE RtlConvertLongToLargeInteger(
   _In_ LONG SignedInteger
 );
 
-DECLSPEC_DEPRECATED_DDK_WINXP LARGE_INTEGER NTAPI_INLINE RtlConvertUlongToLargeInteger(
+LARGE_INTEGER NTAPI_INLINE RtlConvertUlongToLargeInteger(
   _In_ ULONG UnsignedInteger
 );
 
@@ -7025,45 +6732,45 @@ void RtlCopyMemory(
    size_t      Length
 );
 
-NTSYSAPI VOID RtlCopyMemoryNonTemporal(
+ VOID RtlCopyMemoryNonTemporal(
   VOID       *Destination,
   const VOID *Source,
   SIZE_T     Length
 );
 
-NTSYSAPI VOID RtlCopyUnicodeString(
+ VOID RtlCopyUnicodeString(
         PUNICODE_STRING  DestinationString,
   _In_opt_ PCUNICODE_STRING SourceString
 );
 
-NTSYSAPI NTSTATUS RtlCreateRegistryKey(
+ NTSTATUS RtlCreateRegistryKey(
   _In_ ULONG RelativeTo,
   _In_ PWSTR Path
 );
 
-NTSYSAPI NTSTATUS RtlCreateSecurityDescriptor(
+ NTSTATUS RtlCreateSecurityDescriptor(
   _Out_ PSECURITY_DESCRIPTOR SecurityDescriptor,
   _In_  ULONG                Revision
 );
 
-NTSYSAPI NTSTATUS RtlDeleteRegistryValue(
+ NTSTATUS RtlDeleteRegistryValue(
   _In_ ULONG  RelativeTo,
   _In_ PCWSTR Path,
   _In_ PCWSTR ValueName
 );
 
-NTSYSAPI WCHAR RtlDowncaseUnicodeChar(
+ WCHAR RtlDowncaseUnicodeChar(
   _In_ WCHAR SourceCharacter
 );
 
-BOOL WINAPI
+BOOLEAN
 RtlEqualMemory(
    _In_ void*  Destination,
    _In_ void*  Source,
    _In_ size_t Length
 );
 
-NTSYSAPI BOOLEAN RtlEqualUnicodeString(
+ BOOLEAN RtlEqualUnicodeString(
   _In_ PCUNICODE_STRING String1,
   _In_ PCUNICODE_STRING String2,
   _In_ BOOLEAN          CaseInSensitive
@@ -7071,67 +6778,67 @@ NTSYSAPI BOOLEAN RtlEqualUnicodeString(
 
 void RtlFillMemory(
    void*  Destination,
-   size_t Length
+   size_t Length,
    int    Fill
 );
 
 
-NTSYSAPI VOID RtlFillMemoryNonTemporal(
+ VOID RtlFillMemoryNonTemporal(
   VOID        *Destination,
   SIZE_T      Length,
   const UCHAR Value
 );
 
-NTSYSAPI ULONG RtlFindClearBits(
+ ULONG RtlFindClearBits(
   _In_ PRTL_BITMAP BitMapHeader,
   _In_ ULONG       NumberToFind,
   _In_ ULONG       HintIndex
 );
 
-NTSYSAPI ULONG RtlFindClearBitsAndSet(
+ ULONG RtlFindClearBitsAndSet(
   _In_ PRTL_BITMAP BitMapHeader,
   _In_ ULONG       NumberToFind,
   _In_ ULONG       HintIndex
 );
 
-NTSYSAPI ULONG RtlFindClearRuns(
+ ULONG RtlFindClearRuns(
   _In_  PRTL_BITMAP     BitMapHeader,
   _Out_ PRTL_BITMAP_RUN RunArray,
   _In_  ULONG           SizeOfRunArray,
   _In_  BOOLEAN         LocateLongestRuns
 );
 
-NTSYSAPI ULONG RtlFindFirstRunClear(
+ ULONG RtlFindFirstRunClear(
   _In_  PRTL_BITMAP BitMapHeader,
   _Out_ PULONG      StartingIndex
 );
 
-NTSYSAPI ULONG RtlFindLastBackwardRunClear(
+ ULONG RtlFindLastBackwardRunClear(
   _In_  PRTL_BITMAP BitMapHeader,
   _In_  ULONG       FromIndex,
   _Out_ PULONG      StartingRunIndex
 );
 
-NTSYSAPI CCHAR RtlFindLeastSignificantBit(
+ CCHAR RtlFindLeastSignificantBit(
   _In_ ULONGLONG Set
 );
 
-NTSYSAPI ULONG RtlFindLongestRunClear(
+ ULONG RtlFindLongestRunClear(
   _In_  PRTL_BITMAP BitMapHeader,
   _Out_ PULONG      StartingIndex
 );
 
-NTSYSAPI CCHAR RtlFindMostSignificantBit(
+ CCHAR RtlFindMostSignificantBit(
   _In_ ULONGLONG Set
 );
 
-NTSYSAPI ULONG RtlFindNextForwardRunClear(
+ ULONG RtlFindNextForwardRunClear(
   _In_  PRTL_BITMAP BitMapHeader,
   _In_  ULONG       FromIndex,
   _Out_ PULONG      StartingRunIndex
 );
 
-NTSYSAPI ULONG RtlFindSetBits(
+ ULONG RtlFindSetBits(
   _In_ PRTL_BITMAP BitMapHeader,
   _In_ ULONG       NumberToFind,
   _In_ ULONG       HintIndex
@@ -7140,106 +6847,102 @@ NTSYSAPI ULONG RtlFindSetBits(
 
 
 
-NTSYSAPI ULONG RtlFindSetBitsAndClear(
+ ULONG RtlFindSetBitsAndClear(
   _In_ PRTL_BITMAP BitMapHeader,
   _In_ ULONG       NumberToFind,
   _In_ ULONG       HintIndex
 );
 
 
-NTSYSAPI VOID RtlFreeAnsiString(
+ VOID RtlFreeAnsiString(
    PANSI_STRING AnsiString
 );
 
 
-NTSYSAPI VOID RtlFreeUnicodeString(
+ VOID RtlFreeUnicodeString(
    PUNICODE_STRING UnicodeString
 );
 
-NTSYSAPI VOID RtlFreeUTF8String(
+ VOID RtlFreeUTF8String(
   PUTF8_STRING utf8String
 );
 
-NTSYSAPI NTSTATUS RtlGetVersion(
+ NTSTATUS RtlGetVersion(
   _Out_ PRTL_OSVERSIONINFOW lpVersionInformation
 );
 
-NTSYSAPI NTSTATUS RtlGUIDFromString(
+ NTSTATUS RtlGUIDFromString(
   _In_  PCUNICODE_STRING GuidString,
   _Out_ GUID             *Guid
 );
 
-NTSYSAPI NTSTATUS RtlHashUnicodeString(
+ NTSTATUS RtlHashUnicodeString(
   _In_  PCUNICODE_STRING String,
   _In_  BOOLEAN          CaseInSensitive,
   _In_  ULONG            HashAlgorithm,
   _Out_ PULONG           HashValue
 );
 
-NTSYSAPI VOID RtlInitAnsiString(
+ VOID RtlInitAnsiString(
   _Out_          PANSI_STRING          DestinationString,
-  _In_opt_ __drv_aliasesMem PCSZ SourceString
+  _In_opt_  PCSZ SourceString
 );
 
-NTSYSAPI VOID RtlInitializeBitMap(
+ VOID RtlInitializeBitMap(
   _Out_ PRTL_BITMAP             BitMapHeader,
-  _In_  __drv_aliasesMem PULONG BitMapBuffer,
+  _In_   PULONG BitMapBuffer,
   _In_  ULONG                   SizeOfBitMap
 );
 
-NTSYSAPI VOID RtlInitString(
+ VOID RtlInitString(
   _Out_          PSTRING               DestinationString,
-  _In_opt_ __drv_aliasesMem PCSZ SourceString
+  _In_opt_  PCSZ SourceString
 );
 
 
-NTSYSAPI NTSTATUS RtlInitStringEx(
-  _Out_          PSTRING               DestinationString,
-  _In_opt_ __drv_aliasesMem PCSZ SourceString
-);
 
-NTSYSAPI VOID RtlInitUnicodeString(
+ VOID RtlInitUnicodeString(
   _Out_          PUNICODE_STRING         DestinationString,
-  _In_opt_ __drv_aliasesMem PCWSTR SourceString
+  _In_opt_  PCWSTR SourceString
 );
 
 
-NTSYSAPI VOID RtlInitUTF8String(
+ VOID RtlInitUTF8String(
   PUTF8_STRING          DestinationString,
-  __drv_aliasesMem PCSZ SourceString
+   PCSZ SourceString
 );
 
-NTSYSAPI NTSTATUS RtlInitUTF8StringEx(
+ NTSTATUS RtlInitUTF8StringEx(
   PUTF8_STRING          DestinationString,
-  __drv_aliasesMem PCSZ SourceString
+   PCSZ SourceString
 );
 
-NTSYSAPI NTSTATUS RtlInt64ToUnicodeString(
+ NTSTATUS RtlInt64ToUnicodeString(
   _In_           ULONGLONG       Value,
   _In_opt_ ULONG           Base,
         PUNICODE_STRING String
 );
 
-NTSYSAPI NTSTATUS RtlIntegerToUnicodeString(
+ NTSTATUS RtlIntegerToUnicodeString(
   _In_           ULONG           Value,
   _In_opt_ ULONG           Base,
         PUNICODE_STRING String
 );
 
-void RtlIntPtrToUnicodeString(
-  _In_            Value,
-  _In_opt_  Base,
-         String
-);
+//void RtlIntPtrToUnicodeString(
+//  _In_            Value,
+//  _In_opt_  Base,
+//         String
+//);
 
-NTSYSAPI ULONGLONG RtlIoDecodeMemIoResource(
+ ULONGLONG RtlIoDecodeMemIoResource(
   _In_            PIO_RESOURCE_DESCRIPTOR Descriptor,
    PULONGLONG              Alignment,
    PULONGLONG              MinimumAddress,
    PULONGLONG              MaximumAddress
 );
 
-NTSYSAPI NTSTATUS RtlIoEncodeMemIoResource(
+ NTSTATUS RtlIoEncodeMemIoResource(
   _In_ PIO_RESOURCE_DESCRIPTOR Descriptor,
   _In_ UCHAR                   Type,
   _In_ ULONGLONG               Length,
@@ -7256,7 +6959,7 @@ BOOLEAN RtlIsServicePackVersionInstalled(
   _In_ ULONG Version
 );
 
-NTSYSAPI ULONG RtlLengthSecurityDescriptor(
+ ULONG RtlLengthSecurityDescriptor(
   _In_ PSECURITY_DESCRIPTOR SecurityDescriptor
 );
 
@@ -7267,24 +6970,24 @@ void RtlMoveMemory(
 );
 
 
-NTSYSAPI ULONG RtlNumberOfClearBits(
+ ULONG RtlNumberOfClearBits(
   _In_ PRTL_BITMAP BitMapHeader
 );
 
-NTSYSAPI ULONG RtlNumberOfSetBits(
+ ULONG RtlNumberOfSetBits(
   _In_ PRTL_BITMAP BitMapHeader
 );
 
-NTSYSAPI ULONG RtlNumberOfSetBitsUlongPtr(
+ ULONG RtlNumberOfSetBitsUlongPtr(
   _In_ ULONG_PTR Target
 );
 
-NTSYSAPI VOID RtlPrefetchMemoryNonTemporal(
+ VOID RtlPrefetchMemoryNonTemporal(
   _In_ PVOID  Source,
   _In_ SIZE_T Length
 );
 
-NTSYSAPI NTSTATUS RtlQueryRegistryValues(
+ NTSTATUS RtlQueryRegistryValues(
   _In_           ULONG                     RelativeTo,
   _In_           PCWSTR                    Path,
         PRTL_QUERY_REGISTRY_TABLE QueryTable,
@@ -7301,54 +7004,54 @@ PVOID RtlSecureZeroMemory(
   _In_  SIZE_T cnt
 );
 
-NTSYSAPI VOID RtlSetAllBits(
+ VOID RtlSetAllBits(
   _In_ PRTL_BITMAP BitMapHeader
 );
 
-NTSYSAPI VOID RtlSetBit(
+ VOID RtlSetBit(
   _In_ PRTL_BITMAP BitMapHeader,
   _In_ ULONG       BitNumber
 );
 
-NTSYSAPI VOID RtlSetBits(
+ VOID RtlSetBits(
   _In_ PRTL_BITMAP BitMapHeader,
   _In_ ULONG       StartingIndex,
   _In_ ULONG       NumberToSet
 );
 
-NTSYSAPI NTSTATUS RtlSetDaclSecurityDescriptor(
+ NTSTATUS RtlSetDaclSecurityDescriptor(
         PSECURITY_DESCRIPTOR SecurityDescriptor,
   _In_           BOOLEAN              DaclPresent,
   _In_opt_ PACL                 Dacl,
   _In_opt_ BOOLEAN              DaclDefaulted
 );
 
-NTSYSAPI NTSTATUS RtlStringFromGUID(
+ NTSTATUS RtlStringFromGUID(
   _In_  REFGUID         Guid,
   _Out_ PUNICODE_STRING GuidString
 );
 
-NTSYSAPI BOOLEAN RtlTestBit(
+ BOOLEAN RtlTestBit(
   _In_ PRTL_BITMAP BitMapHeader,
   _In_ ULONG       BitNumber
 );
 
-NTSYSAPI BOOLEAN RtlTimeFieldsToTime(
+ BOOLEAN RtlTimeFieldsToTime(
   _In_  PTIME_FIELDS   TimeFields,
   _Out_ PLARGE_INTEGER Time
 );
 
 
-NTSYSAPI VOID RtlTimeToTimeFields(
+ VOID RtlTimeToTimeFields(
   _In_  PLARGE_INTEGER Time,
   _Out_ PTIME_FIELDS   TimeFields
 );
 
-NTSYSAPI ULONG RtlUlongByteSwap(
+ ULONG RtlUlongByteSwap(
   _In_ ULONG Source
 );
 
-NTSYSAPI ULONGLONG RtlUlonglongByteSwap(
+ ULONGLONG RtlUlonglongByteSwap(
   ULONGLONG Source
 );
 
@@ -7356,72 +7059,59 @@ void RtlUnicodeStringToAnsiSize(
   _In_  STRING
 );
 
-NTSYSAPI NTSTATUS RtlUnicodeStringToAnsiString(
+ NTSTATUS RtlUnicodeStringToAnsiString(
    PANSI_STRING     DestinationString,
   _In_      PCUNICODE_STRING SourceString,
   _In_      BOOLEAN          AllocateDestinationString
 );
 
-NTSYSAPI NTSTATUS RtlUnicodeStringToInteger(
+ NTSTATUS RtlUnicodeStringToInteger(
   _In_           PCUNICODE_STRING String,
   _In_opt_ ULONG            Base,
   _Out_          PULONG           Value
 );
 
-NTSYSAPI NTSTATUS RtlUnicodeStringToUTF8String(
+ NTSTATUS RtlUnicodeStringToUTF8String(
   PUTF8_STRING     DestinationString,
   PCUNICODE_STRING SourceString,
   BOOLEAN          AllocateDestinationString
 );
 
-NTSYSAPI NTSTATUS RtlUnicodeToUTF8N(
-  _Out_ PCHAR  UTF8StringDestination,
-  _In_  ULONG  UTF8StringMaxByteCount,
-  _Out_ PULONG UTF8StringActualByteCount,
-  _In_  PCWCH  UnicodeStringSource,
-  _In_  ULONG  UnicodeStringByteCount
-);
 
-NTSYSAPI WCHAR RtlUpcaseUnicodeChar(
+
+ WCHAR RtlUpcaseUnicodeChar(
   _In_ WCHAR SourceCharacter
 );
 
-NTSYSAPI USHORT RtlUshortByteSwap(
+ USHORT RtlUshortByteSwap(
   _In_ USHORT Source
 );
 
 
-NTSYSAPI NTSTATUS RtlUTF8StringToUnicodeString(
+ NTSTATUS RtlUTF8StringToUnicodeString(
   PUNICODE_STRING DestinationString,
   PUTF8_STRING    SourceString,
   BOOLEAN         AllocateDestinationString
 );
 
-NTSYSAPI NTSTATUS RtlUTF8ToUnicodeN(
-   PWSTR  UnicodeStringDestination,
-  _In_            ULONG  UnicodeStringMaxByteCount,
-  _Out_           PULONG UnicodeStringActualByteCount,
-  _In_            PCCH   UTF8StringSource,
-  _In_            ULONG  UTF8StringByteCount
-);
 
-NTSYSAPI BOOLEAN RtlValidRelativeSecurityDescriptor(
+ BOOLEAN RtlValidRelativeSecurityDescriptor(
   _In_ PSECURITY_DESCRIPTOR SecurityDescriptorInput,
   _In_ ULONG                SecurityDescriptorLength,
   _In_ SECURITY_INFORMATION RequiredInformation
 );
 
-NTSYSAPI BOOLEAN RtlValidSecurityDescriptor(
+ BOOLEAN RtlValidSecurityDescriptor(
   _In_ PSECURITY_DESCRIPTOR SecurityDescriptor
 );
 
-NTSYSAPI NTSTATUS RtlVerifyVersionInfo(
+ NTSTATUS RtlVerifyVersionInfo(
   _In_ PRTL_OSVERSIONINFOEXW VersionInfo,
   _In_ ULONG                 TypeMask,
   _In_ ULONGLONG             ConditionMask
 );
 
-NTSYSAPI NTSTATUS RtlWriteRegistryValue(
+ NTSTATUS RtlWriteRegistryValue(
   _In_           ULONG  RelativeTo,
   _In_           PCWSTR Path,
   _In_           PCWSTR ValueName,
@@ -7430,11 +7120,11 @@ NTSYSAPI NTSTATUS RtlWriteRegistryValue(
   _In_           ULONG  ValueLength
 );
 
-NTSYSAPI ULONG RtlxAnsiStringToUnicodeSize(
+ ULONG RtlxAnsiStringToUnicodeSize(
   _In_ PCANSI_STRING AnsiString
 );
 
-NTSYSAPI ULONG RtlxUnicodeStringToAnsiSize(
+ ULONG RtlxUnicodeStringToAnsiSize(
   _In_ PCUNICODE_STRING UnicodeString
 );
 
@@ -7443,24 +7133,6 @@ void RtlZeroMemory(
    size_t Length
 );
 
-typedef struct _SCATTER_GATHER_LIST {
-  ULONG                  NumberOfElements;
-  ULONG_PTR              Reserved;
-  SCATTER_GATHER_ELEMENT Elements[];
-} SCATTER_GATHER_LIST, *PSCATTER_GATHER_LIST;
-
-typedef struct _SDEV_IDENTIFIER_INTERFACE {
-  INTERFACE            InterfaceHeader;
-  PGET_SDEV_IDENTIFIER GetIdentifier;
-} SDEV_IDENTIFIER_INTERFACE, *PSDEV_IDENTIFIER_INTERFACE;
-
-typedef enum _SE_IMAGE_TYPE {
-  SeImageTypeElamDriver,
-  SeImageTypeDriver = ,
-  SeImageTypePlatformSecureFile = ,
-  SeImageTypeDynamicCodeFile = ,
-  SeImageTypeMax =
-} SE_IMAGE_TYPE, *PSE_IMAGE_TYPE;
 
 
 BOOLEAN SeAccessCheck(
@@ -7501,23 +7173,11 @@ NTSTATUS SeAssignSecurityEx(
   _In_           POOL_TYPE                 PoolType
 );
 
-typedef struct _SECTION_OBJECT_POINTERS {
-  PVOID DataSectionObject;
-  PVOID SharedCacheMap;
-  PVOID ImageSectionObject;
-} SECTION_OBJECT_POINTERS;
 
 NTSTATUS SeDeassignSecurity(
    PSECURITY_DESCRIPTOR *SecurityDescriptor
 );
 
-typedef struct {
-  ULONG                  Version;
-  GUID                   Guid;
-  SYSTEM_POWER_CONDITION PowerCondition;
-  ULONG                  DataLength;
-  UCHAR                  Data[ANYSIZE_ARRAY];
-} SET_POWER_SETTING_VALUE, *PSET_POWER_SETTING_VALUE;
 
 BOOLEAN SeValidSecurityDescriptor(
   _In_ ULONG                Length,
@@ -7525,78 +7185,6 @@ BOOLEAN SeValidSecurityDescriptor(
 );
 
 
-typedef struct _SLIST_ENTRY {
-  struct _SLIST_ENTRY *Next;
-} SLIST_ENTRY, *PSLIST_ENTRY;
-
-
-typedef struct _SYSTEM_POOL_ZEROING_INFORMATION {
-  BOOLEAN PoolZeroingSupportPresent;
-} SYSTEM_POOL_ZEROING_INFORMATION, *PSYSTEM_POOL_ZEROING_INFORMATION;
-
-
-typedef enum {
-  PoAc,
-  PoDc,
-  PoHot,
-  PoConditionMaximum
-} SYSTEM_POWER_CONDITION;
-
-typedef enum _SYSTEM_POWER_STATE {
-  PowerSystemUnspecified,
-  PowerSystemWorking,
-  PowerSystemSleeping1,
-  PowerSystemSleeping2,
-  PowerSystemSleeping3,
-  PowerSystemHibernate,
-  PowerSystemShutdown,
-  PowerSystemMaximum
-} SYSTEM_POWER_STATE, *PSYSTEM_POWER_STATE;
-
-typedef struct _SYSTEM_POWER_STATE_CONTEXT {
-  union {
-    struct {
-      ULONG Reserved1 : 8;
-      ULONG TargetSystemState : 4;
-      ULONG EffectiveSystemState : 4;
-      ULONG CurrentSystemState : 4;
-      ULONG IgnoreHibernationPath : 1;
-      ULONG PseudoTransition : 1;
-      ULONG KernelSoftReboot : 1;
-      ULONG DirectedDripsTransition : 1;
-      ULONG Reserved2 : 8;
-    } DUMMYSTRUCTNAME;
-    ULONG ContextAsUlong;
-  } DUMMYUNIONNAME;
-} SYSTEM_POWER_STATE_CONTEXT, *PSYSTEM_POWER_STATE_CONTEXT;
-
-typedef struct _TARGET_DEVICE_CUSTOM_NOTIFICATION {
-  USHORT       Version;
-  USHORT       Size;
-  GUID         Event;
-  PFILE_OBJECT FileObject;
-  LONG         NameBufferOffset;
-  UCHAR        CustomDataBuffer[1];
-} TARGET_DEVICE_CUSTOM_NOTIFICATION, *PTARGET_DEVICE_CUSTOM_NOTIFICATION;
-
-typedef struct _TARGET_DEVICE_REMOVAL_NOTIFICATION {
-  USHORT       Version;
-  USHORT       Size;
-  GUID         Event;
-  PFILE_OBJECT FileObject;
-} TARGET_DEVICE_REMOVAL_NOTIFICATION, *PTARGET_DEVICE_REMOVAL_NOTIFICATION;
-
-
-typedef struct _TIME_FIELDS {
-  CSHORT Year;
-  CSHORT Month;
-  CSHORT Day;
-  CSHORT Hour;
-  CSHORT Minute;
-  CSHORT Second;
-  CSHORT Milliseconds;
-  CSHORT Weekday;
-} TIME_FIELDS;
 
 NTSTATUS TmCommitComplete(
   _In_ PKENLISTMENT   Enlistment,
@@ -7728,88 +7316,6 @@ NTSTATUS TmSinglePhaseReject(
   _In_ PLARGE_INTEGER TmVirtualClock
 );
 
-typedef enum _TRACE_INFORMATION_CLASS {
-  TraceIdClass,
-  TraceHandleClass,
-  TraceEnableFlagsClass,
-  TraceEnableLevelClass,
-  GlobalLoggerHandleClass,
-  EventLoggerHandleClass,
-  AllLoggerHandlesClass,
-  TraceHandleByNameClass,
-  LoggerEventsLostClass,
-  TraceSessionSettingsClass,
-  LoggerEventsLoggedClass,
-  DiskIoNotifyRoutinesClass,
-  TraceInformationClassReserved1,
-  FltIoNotifyRoutinesClass,
-  TraceInformationClassReserved2,
-  WdfNotifyRoutinesClass,
-  MaxTraceInformationClass
-} TRACE_INFORMATION_CLASS;
-
-typedef struct _TRANSACTION_BASIC_INFORMATION {
-  GUID  TransactionId;
-  ULONG State;
-  ULONG Outcome;
-} TRANSACTION_BASIC_INFORMATION, *PTRANSACTION_BASIC_INFORMATION;
-
-typedef struct _TRANSACTION_ENLISTMENT_PAIR {
-  GUID EnlistmentId;
-  GUID ResourceManagerId;
-} TRANSACTION_ENLISTMENT_PAIR, *PTRANSACTION_ENLISTMENT_PAIR;
-
-typedef struct _TRANSACTION_ENLISTMENTS_INFORMATION {
-  ULONG                       NumberOfEnlistments;
-  TRANSACTION_ENLISTMENT_PAIR EnlistmentPair[1];
-} TRANSACTION_ENLISTMENTS_INFORMATION, *PTRANSACTION_ENLISTMENTS_INFORMATION;
-
-typedef enum _TRANSACTION_INFORMATION_CLASS {
-  TransactionBasicInformation,
-  TransactionPropertiesInformation,
-  TransactionEnlistmentInformation,
-  TransactionSuperiorEnlistmentInformation
-} TRANSACTION_INFORMATION_CLASS;
-
-typedef enum _TRANSACTION_OUTCOME {
-  TransactionOutcomeUndetermined,
-  TransactionOutcomeCommitted,
-  TransactionOutcomeAborted
-} TRANSACTION_OUTCOME;
-
-typedef struct _TRANSACTION_PROPERTIES_INFORMATION {
-  ULONG         IsolationLevel;
-  ULONG         IsolationFlags;
-  LARGE_INTEGER Timeout;
-  ULONG         Outcome;
-  ULONG         DescriptionLength;
-  WCHAR         Description[1];
-} TRANSACTION_PROPERTIES_INFORMATION, *PTRANSACTION_PROPERTIES_INFORMATION;
-
-
-typedef enum _TRANSACTION_STATE {
-  TransactionStateNormal,
-  TransactionStateIndoubt,
-  TransactionStateCommittedNotify
-} TRANSACTION_STATE;
-
-typedef struct _TRANSACTIONMANAGER_BASIC_INFORMATION {
-  GUID          TmIdentity;
-  LARGE_INTEGER VirtualClock;
-} TRANSACTIONMANAGER_BASIC_INFORMATION, *PTRANSACTIONMANAGER_BASIC_INFORMATION;
-
-typedef struct _TRANSACTIONMANAGER_LOG_INFORMATION {
-  GUID LogIdentity;
-} TRANSACTIONMANAGER_LOG_INFORMATION, *PTRANSACTIONMANAGER_LOG_INFORMATION;
-
-typedef struct _TRANSACTIONMANAGER_LOGPATH_INFORMATION {
-  ULONG LogPathLength;
-  WCHAR LogPath[1];
-} TRANSACTIONMANAGER_LOGPATH_INFORMATION, *PTRANSACTIONMANAGER_LOGPATH_INFORMATION;
-
-typedef struct _TRANSACTIONMANAGER_RECOVERY_INFORMATION {
-  ULONGLONG LastRecoveredLsn;
-} TRANSACTIONMANAGER_RECOVERY_INFORMATION, *PTRANSACTIONMANAGER_RECOVERY_INFORMATION;
 
 NTSTATUS VslCreateSecureSection(
   PHANDLE   Handle,
@@ -7823,26 +7329,6 @@ NTSTATUS VslDeleteSecureSection(
   HANDLE GlobalHandle
 );
 
-typedef struct _WAIT_CONTEXT_BLOCK {
-  union {
-    KDEVICE_QUEUE_ENTRY WaitQueueEntry;
-    struct {
-      LIST_ENTRY DmaWaitEntry;
-      ULONG      NumberOfChannels;
-      ULONG      SyncCallback : 1;
-      ULONG      DmaContext : 1;
-      ULONG      ZeroMapRegisters : 1;
-      ULONG      Reserved : 9;
-      ULONG      NumberOfRemapPages : 20;
-    };
-  };
-  PDRIVER_CONTROL DeviceRoutine;
-  PVOID           DeviceContext;
-  ULONG           NumberOfMapRegisters;
-  PVOID           DeviceObject;
-  PVOID           CurrentIrp;
-  PKDPC           BufferChainingDpc;
-} WAIT_CONTEXT_BLOCK, *PWAIT_CONTEXT_BLOCK;
 
 NTSTATUS WmiQueryTraceInformation(
   _In_            TRACE_INFORMATION_CLASS TraceInformationClass,
@@ -7868,94 +7354,9 @@ NTSTATUS WmiTraceMessageVa(
   _In_ va_list     MessageArgList
 );
 
-typedef enum _WORK_QUEUE_TYPE {
-  CriticalWorkQueue,
-  DelayedWorkQueue,
-  HyperCriticalWorkQueue,
-  NormalWorkQueue,
-  BackgroundWorkQueue,
-  RealTimeWorkQueue,
-  SuperCriticalWorkQueue,
-  MaximumWorkQueue,
-  CustomPriorityWorkQueue
-} WORK_QUEUE_TYPE;
+////
 
-NTHALAPI VOID WRITE_PORT_BUFFER_UCHAR(
-  _In_ PUCHAR Port,
-  _In_ PUCHAR Buffer,
-  _In_ ULONG  Count
-);
 
-NTHALAPI VOID WRITE_PORT_BUFFER_ULONG(
-  _In_ PULONG Port,
-  _In_ PULONG Buffer,
-  _In_ ULONG  Count
-);
-
-NTHALAPI VOID WRITE_PORT_BUFFER_USHORT(
-  _In_ PUSHORT Port,
-  _In_ PUSHORT Buffer,
-  _In_ ULONG   Count
-);
-
-NTHALAPI VOID WRITE_PORT_UCHAR(
-  _In_ PUCHAR Port,
-  _In_ UCHAR  Value
-);
-
-NTHALAPI VOID WRITE_PORT_ULONG(
-  _In_ PULONG Port,
-  _In_ ULONG  Value
-);
-
-NTHALAPI VOID WRITE_PORT_USHORT(
-  _In_ PUSHORT Port,
-  _In_ USHORT  Value
-);
-
-void WRITE_REGISTER_BUFFER_UCHAR(
-  _In_ volatile UCHAR *Register,
-  _In_ PUCHAR         Buffer,
-  _In_ ULONG          Count
-);
-
-void WRITE_REGISTER_BUFFER_ULONG(
-  _In_ volatile ULONG *Register,
-  _In_ PULONG         Buffer,
-  _In_ ULONG          Count
-);
-
-void WRITE_REGISTER_BUFFER_ULONG64(
-  _In_ volatile ULONG64 *Register,
-  _In_ PULONG64         Buffer,
-  _In_ ULONG            Count
-);
-
-void WRITE_REGISTER_BUFFER_USHORT(
-  _In_ volatile USHORT *Register,
-  _In_ PUSHORT         Buffer,
-  _In_ ULONG           Count
-);
-
-void WRITE_REGISTER_UCHAR(
-  _In_ volatile UCHAR *Register,
-  _In_ UCHAR          Value
-);
-
-void WRITE_REGISTER_ULONG(
-  _In_ volatile ULONG *Register,
-  _In_ ULONG          Value
-);
-
-void WRITE_REGISTER_ULONG64(
-  _In_ volatile ULONG64 *Register,
-  _In_ ULONG64          Value
-);
-
-void WRITE_REGISTER_USHORT(
-  _In_ volatile USHORT *Register,
-  _In_ USHORT          Value
-);
 
 void WriteInt32NoFence(
   INT32 volatile *Destination,
@@ -7988,12 +7389,9 @@ void WriteUInt32Release(
   UINT32          Value
 );
 
-typedef struct _XSAVE_CET_U_FORMAT {
-  ULONG64 Ia32CetUMsr;
-  ULONG64 Ia32Pl3SspMsr;
-} XSAVE_CET_U_FORMAT, *PXSAVE_CET_U_FORMAT;
 
-NTSYSAPI NTSTATUS ZwClose(
+
+ NTSTATUS ZwClose(
   _In_ HANDLE Handle
 );
 
@@ -8012,7 +7410,7 @@ NTSYSCALLAPI NTSTATUS ZwCommitTransaction(
   _In_ BOOLEAN Wait
 );
 
-NTSYSAPI NTSTATUS ZwCreateDirectoryObject(
+ NTSTATUS ZwCreateDirectoryObject(
   _Out_ PHANDLE            DirectoryHandle,
   _In_  ACCESS_MASK        DesiredAccess,
   _In_  POBJECT_ATTRIBUTES ObjectAttributes
@@ -8029,7 +7427,7 @@ NTSYSCALLAPI NTSTATUS ZwCreateEnlistment(
   _In_opt_ PVOID              EnlistmentKey
 );
 
-NTSYSAPI NTSTATUS ZwCreateFile(
+ NTSTATUS ZwCreateFile(
   _Out_          PHANDLE            FileHandle,
   _In_           ACCESS_MASK        DesiredAccess,
   _In_           POBJECT_ATTRIBUTES ObjectAttributes,
@@ -8043,7 +7441,7 @@ NTSYSAPI NTSTATUS ZwCreateFile(
   _In_           ULONG              EaLength
 );
 
-NTSYSAPI NTSTATUS ZwCreateKey(
+ NTSTATUS ZwCreateKey(
   _Out_           PHANDLE            KeyHandle,
   _In_            ACCESS_MASK        DesiredAccess,
   _In_            POBJECT_ATTRIBUTES ObjectAttributes,
@@ -8053,7 +7451,7 @@ NTSYSAPI NTSTATUS ZwCreateKey(
    PULONG             Disposition
 );
 
-NTSYSAPI NTSTATUS ZwCreateKeyTransacted(
+ NTSTATUS ZwCreateKeyTransacted(
   _Out_           PHANDLE            KeyHandle,
   _In_            ACCESS_MASK        DesiredAccess,
   _In_            POBJECT_ATTRIBUTES ObjectAttributes,
@@ -8074,7 +7472,7 @@ NTSYSCALLAPI NTSTATUS ZwCreateResourceManager(
   _In_opt_ PUNICODE_STRING    Description
 );
 
-NTSYSAPI NTSTATUS ZwCreateSection(
+ NTSTATUS ZwCreateSection(
   _Out_          PHANDLE            SectionHandle,
   _In_           ACCESS_MASK        DesiredAccess,
   _In_opt_ POBJECT_ATTRIBUTES ObjectAttributes,
@@ -8106,16 +7504,16 @@ NTSYSCALLAPI NTSTATUS ZwCreateTransactionManager(
   _In_opt_ ULONG              CommitStrength
 );
 
-NTSYSAPI NTSTATUS ZwDeleteKey(
+ NTSTATUS ZwDeleteKey(
   _In_ HANDLE KeyHandle
 );
 
-NTSYSAPI NTSTATUS ZwDeleteValueKey(
+ NTSTATUS ZwDeleteValueKey(
   _In_ HANDLE          KeyHandle,
   _In_ PUNICODE_STRING ValueName
 );
 
-NTSYSAPI NTSTATUS ZwEnumerateKey(
+ NTSTATUS ZwEnumerateKey(
   _In_            HANDLE                KeyHandle,
   _In_            ULONG                 Index,
   _In_            KEY_INFORMATION_CLASS KeyInformationClass,
@@ -8132,7 +7530,7 @@ NTSYSCALLAPI NTSTATUS ZwEnumerateTransactionObject(
   _Out_          PULONG            ReturnLength
 );
 
-NTSYSAPI NTSTATUS ZwEnumerateValueKey(
+ NTSTATUS ZwEnumerateValueKey(
   _In_            HANDLE                      KeyHandle,
   _In_            ULONG                       Index,
   _In_            KEY_VALUE_INFORMATION_CLASS KeyValueInformationClass,
@@ -8141,7 +7539,7 @@ NTSYSAPI NTSTATUS ZwEnumerateValueKey(
   _Out_           PULONG                      ResultLength
 );
 
-NTSYSAPI NTSTATUS ZwFlushKey(
+ NTSTATUS ZwFlushKey(
   _In_ HANDLE KeyHandle
 );
 
@@ -8156,21 +7554,21 @@ NTSYSCALLAPI NTSTATUS ZwGetNotificationResourceManager(
   _In_opt_  ULONG_PTR                 AsynchronousContext
 );
 
-NTSYSAPI NTSTATUS ZwLoadDriver(
+ NTSTATUS ZwLoadDriver(
   _In_ PUNICODE_STRING DriverServiceName
 );
 
-NTSYSAPI NTSTATUS ZwMakeTemporaryObject(
+ NTSTATUS ZwMakeTemporaryObject(
   _In_ HANDLE Handle
 );
 
-NTSYSAPI NTSTATUS ZwMapViewOfSection(
+ NTSTATUS ZwMapViewOfSection(
   _In_                HANDLE          SectionHandle,
   _In_                HANDLE          ProcessHandle,
              PVOID           *BaseAddress,
   _In_                ULONG_PTR       ZeroBits,
   _In_                SIZE_T          CommitSize,
-  [in, out, optional] PLARGE_INTEGER  SectionOffset,
+  _In_ _Out_ PLARGE_INTEGER  SectionOffset,
              PSIZE_T         ViewSize,
   _In_                SECTION_INHERIT InheritDisposition,
   _In_                ULONG           AllocationType,
@@ -8191,7 +7589,7 @@ NTSYSCALLAPI NTSTATUS ZwOpenEvent(
   _In_  POBJECT_ATTRIBUTES ObjectAttributes
 );
 
-NTSYSAPI NTSTATUS ZwOpenFile(
+ NTSTATUS ZwOpenFile(
   _Out_ PHANDLE            FileHandle,
   _In_  ACCESS_MASK        DesiredAccess,
   _In_  POBJECT_ATTRIBUTES ObjectAttributes,
@@ -8200,27 +7598,27 @@ NTSYSAPI NTSTATUS ZwOpenFile(
   _In_  ULONG              OpenOptions
 );
 
-NTSYSAPI NTSTATUS ZwOpenKey(
+ NTSTATUS ZwOpenKey(
   _Out_ PHANDLE            KeyHandle,
   _In_  ACCESS_MASK        DesiredAccess,
   _In_  POBJECT_ATTRIBUTES ObjectAttributes
 );
 
-NTSYSAPI NTSTATUS ZwOpenKeyEx(
+ NTSTATUS ZwOpenKeyEx(
   _Out_ PHANDLE            KeyHandle,
   _In_  ACCESS_MASK        DesiredAccess,
   _In_  POBJECT_ATTRIBUTES ObjectAttributes,
   _In_  ULONG              OpenOptions
 );
 
-NTSYSAPI NTSTATUS ZwOpenKeyTransacted(
+ NTSTATUS ZwOpenKeyTransacted(
   _Out_ PHANDLE            KeyHandle,
   _In_  ACCESS_MASK        DesiredAccess,
   _In_  POBJECT_ATTRIBUTES ObjectAttributes,
   _In_  HANDLE             TransactionHandle
 );
 
-NTSYSAPI NTSTATUS ZwOpenKeyTransactedEx(
+ NTSTATUS ZwOpenKeyTransactedEx(
   _Out_ PHANDLE            KeyHandle,
   _In_  ACCESS_MASK        DesiredAccess,
   _In_  POBJECT_ATTRIBUTES ObjectAttributes,
@@ -8236,13 +7634,13 @@ NTSYSCALLAPI NTSTATUS ZwOpenResourceManager(
   _In_opt_ POBJECT_ATTRIBUTES ObjectAttributes
 );
 
-NTSYSAPI NTSTATUS ZwOpenSection(
+ NTSTATUS ZwOpenSection(
   _Out_ PHANDLE            SectionHandle,
   _In_  ACCESS_MASK        DesiredAccess,
   _In_  POBJECT_ATTRIBUTES ObjectAttributes
 );
 
-NTSYSAPI NTSTATUS ZwOpenSymbolicLinkObject(
+ NTSTATUS ZwOpenSymbolicLinkObject(
   _Out_ PHANDLE            LinkHandle,
   _In_  ACCESS_MASK        DesiredAccess,
   _In_  POBJECT_ATTRIBUTES ObjectAttributes
@@ -8285,12 +7683,12 @@ NTSYSCALLAPI NTSTATUS ZwPrePrepareEnlistment(
   _In_opt_ PLARGE_INTEGER TmVirtualClock
 );
 
-NTSYSAPI NTSTATUS ZwQueryFullAttributesFile(
+ NTSTATUS ZwQueryFullAttributesFile(
   _In_  POBJECT_ATTRIBUTES             ObjectAttributes,
   _Out_ PFILE_NETWORK_OPEN_INFORMATION FileInformation
 );
 
-NTSYSAPI NTSTATUS ZwQueryInformationByName(
+ NTSTATUS ZwQueryInformationByName(
   _In_  POBJECT_ATTRIBUTES     ObjectAttributes,
   _Out_ PIO_STATUS_BLOCK       IoStatusBlock,
   _Out_ PVOID                  FileInformation,
@@ -8306,7 +7704,7 @@ NTSYSCALLAPI NTSTATUS ZwQueryInformationEnlistment(
    PULONG                       ReturnLength
 );
 
-NTSYSAPI NTSTATUS ZwQueryInformationFile(
+ NTSTATUS ZwQueryInformationFile(
   _In_  HANDLE                 FileHandle,
   _Out_ PIO_STATUS_BLOCK       IoStatusBlock,
   _Out_ PVOID                  FileInformation,
@@ -8338,7 +7736,7 @@ NTSYSCALLAPI NTSTATUS ZwQueryInformationTransactionManager(
    PULONG                               ReturnLength
 );
 
-NTSYSAPI NTSTATUS ZwQueryKey(
+ NTSTATUS ZwQueryKey(
   _In_            HANDLE                KeyHandle,
   _In_            KEY_INFORMATION_CLASS KeyInformationClass,
    PVOID                 KeyInformation,
@@ -8346,13 +7744,13 @@ NTSYSAPI NTSTATUS ZwQueryKey(
   _Out_           PULONG                ResultLength
 );
 
-NTSYSAPI NTSTATUS ZwQuerySymbolicLinkObject(
+ NTSTATUS ZwQuerySymbolicLinkObject(
   _In_            HANDLE          LinkHandle,
          PUNICODE_STRING LinkTarget,
    PULONG          ReturnedLength
 );
 
-NTSYSAPI NTSTATUS ZwQueryValueKey(
+ NTSTATUS ZwQueryValueKey(
   _In_            HANDLE                      KeyHandle,
   _In_            PUNICODE_STRING             ValueName,
   _In_            KEY_VALUE_INFORMATION_CLASS KeyValueInformationClass,
@@ -8361,7 +7759,7 @@ NTSYSAPI NTSTATUS ZwQueryValueKey(
   _Out_           PULONG                      ResultLength
 );
 
-NTSYSAPI NTSTATUS ZwReadFile(
+ NTSTATUS ZwReadFile(
   _In_           HANDLE           FileHandle,
   _In_opt_ HANDLE           Event,
   _In_opt_ PIO_APC_ROUTINE  ApcRoutine,
@@ -8419,7 +7817,7 @@ NTSYSCALLAPI NTSTATUS ZwSetInformationEnlistment(
   _In_ ULONG                        EnlistmentInformationLength
 );
 
-NTSYSAPI NTSTATUS ZwSetInformationFile(
+ NTSTATUS ZwSetInformationFile(
   _In_  HANDLE                 FileHandle,
   _Out_ PIO_STATUS_BLOCK       IoStatusBlock,
   _In_  PVOID                  FileInformation,
@@ -8441,7 +7839,7 @@ NTSYSCALLAPI NTSTATUS ZwSetInformationTransaction(
   _In_ ULONG                         TransactionInformationLength
 );
 
-NTSYSAPI NTSTATUS ZwSetValueKey(
+ NTSTATUS ZwSetValueKey(
   _In_           HANDLE          KeyHandle,
   _In_           PUNICODE_STRING ValueName,
   _In_opt_ ULONG           TitleIndex,
@@ -8455,16 +7853,16 @@ NTSYSCALLAPI NTSTATUS ZwSinglePhaseReject(
   _In_opt_ PLARGE_INTEGER TmVirtualClock
 );
 
-NTSYSAPI NTSTATUS ZwUnloadDriver(
+ NTSTATUS ZwUnloadDriver(
   _In_ PUNICODE_STRING DriverServiceName
 );
 
-NTSYSAPI NTSTATUS ZwUnmapViewOfSection(
+ NTSTATUS ZwUnmapViewOfSection(
   _In_           HANDLE ProcessHandle,
   _In_opt_ PVOID  BaseAddress
 );
 
-NTSYSAPI NTSTATUS ZwWriteFile(
+ NTSTATUS ZwWriteFile(
   _In_           HANDLE           FileHandle,
   _In_opt_ HANDLE           Event,
   _In_opt_ PIO_APC_ROUTINE  ApcRoutine,
@@ -8476,6 +7874,5 @@ NTSYSAPI NTSTATUS ZwWriteFile(
   _In_opt_ PULONG           Key
 );
 
-*/
 
 #endif

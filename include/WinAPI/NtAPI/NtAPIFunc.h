@@ -27,14 +27,6 @@ typedef struct _IMAGE_EXPORT_DIRECTORY {
 
 typedef void* PKINTERRUPT;
 
-typedef struct _IO_DISCONNECT_INTERRUPT_PARAMETERS {
-    ULONG Version;             // Indicates the version of the structure
-    union {
-        struct {
-            PVOID ConnectionContext; // Context information from IoConnectInterruptEx
-        } DisconnectParameters;
-    };
-} IO_DISCONNECT_DISCONNECT_PARAMETERS, * PIO_DISCONNECT_INTERRUPT_PARAMETERS;
 
 typedef enum {
     KernelMode,
@@ -48,12 +40,10 @@ typedef UCHAR KIRQL;
 
 //Filler Types Until Found
 typedef void* PETHREAD;
-typedef void* PFILE_OBJECT;
 typedef void* KAPC;
 typedef void* ACCESS_MASK;
 typedef void* FILE_INTERNAL_INFORMATION;
-typedef void* FILE_POSITION_INFORMATION;
-typedef void* PMEM_EXTENDED_PARAMETER;
+//typedef void* PMEM_EXTENDED_PARAMETER;
 typedef void* USN;
 typedef void* PREPARSE_DATA_BUFFER;
 typedef void* PFILE_TIMESTAMPS;
@@ -105,7 +95,7 @@ typedef void* STRSAFE_PCUNZWCH;
 typedef void* PEPHANDLE;
 typedef void* PACPI_METHOD_ARGUMENT;
 typedef void* POHANDLE;
-typedef void* PPO_FX_COMPONENT_IDLE_STATE;
+//typedef void* PPO_FX_COMPONENT_IDLE_STATE;
 typedef void* PPEPCALLBACKNOTIFYDPM;
 typedef void* PPEPCALLBACKNOTIFYPPM;
 typedef void* PPEPCALLBACKNOTIFYACPI;
@@ -123,7 +113,6 @@ typedef void* PPEPCALLBACKPOWERONCRASHDUMPDEVICE;
 typedef void* PEPCALLBACKNOTIFYACPI;
 typedef void* ACPI_METHOD_ARGUMENT;
 typedef void* PPEP_KERNEL_INFORMATION;
-typedef void* PIO_CONNECT_INTERRUPT_PARAMETERS;
 typedef void* PO_FX_COMPONENT;
 typedef void* PPO_FX_COMPONENT_IDLE_STATE_CALLBACK;
 typedef void* PPO_FX_COMPONENT_CRITICAL_TRANSITION_CALLBACK;
@@ -159,7 +148,6 @@ typedef void* PPHYSICAL_COUNTER_OVERFLOW_HANDLER;
 typedef void* UUID;
 typedef void* PHANDLE;
 typedef void* PGENERIC_MAPPING;
-typedef void* IO_PAGING_PRIORITY;
 typedef void* PKTHREAD;
 typedef void* PBOOT_DRIVER_CALLBACK_FUNCTION;
 typedef void* PDRIVER_REINITIALIZE;
@@ -175,7 +163,7 @@ typedef void* PZZWSTR;
 typedef void* PGET_LOCATION_STRING;
 typedef void* PESILO;
 typedef void* SILO_CONTEXT_CLEANUP_CALLBACK;
-typedef void* POOL_TYPE;
+//typedef void* POOL_TYPE;
 typedef void* PEJOB;
 typedef void* PSILO_MONITOR;
 typedef void* PCREATE_THREAD_NOTIFY_ROUTINE;
@@ -186,7 +174,6 @@ typedef void* PRTL_RUN_ONCE;
 typedef void* STRING;
 typedef void* PCORRELATION_VECTOR;
 typedef void* PACCESS_MASK;
-typedef void* GENERIC_MAPPING;
 typedef void* PRTL_RUN_ONCE_INIT_FN;
 typedef void* LUID;
 typedef void* SILO_MONITOR_CREATE_CALLBACK;
@@ -338,34 +325,192 @@ typedef void* PEX_TIMER;
 typedef void* PEXT_CALLBACK;
 typedef void* PEXT_CANCEL_PARAMETERS;
 typedef void* PCALLBACK_OBJECT;
-typedef void* POOL_CREATE_EXTENDED_PARAMS;
-//typedef void* PEXT_DELETE_PARAMETERS;
+//typedef void* POOL_CREATE_EXTENDED_PARAMS;
 typedef void* FIRMWARE_TYPE;
-//typedef void* PEXT_DELETE_PARAMETERS;
 typedef void* PALLOCATE_FUNCTION_EX;
 typedef void* PFREE_FUNCTION_EX;
 typedef void* PEX_PUSH_LOCK;
-//typedef void* PEXT_SET_PARAMETERS;
-typedef void* PSLIST_ENTRY;
+//typedef void* PSLIST_ENTRY;
 typedef void* PSLIST_HEADER;
 typedef void* PCALLBACK_FUNCTION;
 typedef void* ERESOURCE_THREAD;
 typedef void* PEXT_DELETE_CALLBACK;
+typedef void* PIO_COMPLETION_CONTEXT;
+typedef void* PSECTION_OBJECT_POINTERS;
+typedef void* PFPGA_BUS_SCAN;
+typedef void* PFPGA_CONTROL_LINK;
+typedef void* PFPGA_CONTROL_CONFIG_SPACE;
+typedef void* PFPGA_CONTROL_ERROR_REPORTING;
+typedef void* IO_CONNECT_INTERRUPT_FULLY_SPECIFIED_PARAMETERS;
+typedef void* IO_CONNECT_INTERRUPT_LINE_BASED_PARAMETERS;
+typedef void* IO_CONNECT_INTERRUPT_MESSAGE_BASED_PARAMETERS;
+typedef void* PSECURITY_QUALITY_OF_SERVICE;
+typedef void* PACCESS_STATE;
+typedef void* PNAMED_PIPE_CREATE_PARAMETERS;
+//typedef void* PMAILSLOT_CREATE_PARAMETERS;
+typedef void* DIRECTORY_NOTIFY_INFORMATION_CLASS;
+typedef void* PFILE_GET_QUOTA_INFORMATION;
+typedef void* DEVICE_RELATION_TYPE;
+typedef void* LCID;
+typedef void* PPOWER_SEQUENCE;
+typedef void* PIO_COMPLETION_ROUTINE;
+typedef void* PVOID64;
+typedef void* PKIRQL;
+typedef void* PIO_REMOVE_LOCK;
+typedef void* PIO_WORKITEM;
+typedef void* PSHARE_ACCESS;
+//typedef void* PLINK_SHARE_ACCESS;
+typedef void* PKSERVICE_ROUTINE;
+typedef void* CREATE_FILE_TYPE;
+typedef void* PKSTART_ROUTINE;
+typedef void* PIO_CSQ;
+typedef void* PIO_CSQ_INSERT_IRP;
+typedef void* PIO_CSQ_REMOVE_IRP;
+typedef void* PIO_CSQ_PEEK_NEXT_IRP;
+typedef void* PIO_CSQ_ACQUIRE_LOCK;
+typedef void* PIO_CSQ_RELEASE_LOCK;
+typedef void* PIO_CSQ_COMPLETE_CANCELED_IRP;
+typedef void* PIO_CSQ_INSERT_IRP_EX;
+typedef void* PIO_CSQ_IRP_CONTEXT;
+typedef void* PIO_PERSISTED_MEMORY_ENUMERATION_CALLBACK;
+typedef void* DEVPROPKEY;
+typedef void* PDEVPROPTYPE;
+typedef void* DEVICE_REGISTRY_PROPERTY;
+typedef void* DRIVER_DIRECTORY_TYPE;
+typedef void* PIO_DPC_ROUTINE;
+typedef void* PIO_TIMER_ROUTINE;
+typedef void* _IORING_OBJECT;
+typedef void* POOL_EXTENDED_PARAMS_SECURE_POOL;
+typedef void* POOL_NODE_REQUIREMENT;
+typedef void* SCATTER_GATHER_ELEMENT;
+typedef void* PGET_SDEV_IDENTIFIER;
+typedef void* PREENUMERATE_SELF;
+typedef void* POBJECT_NAME_INFORMATION;
+typedef void* PSECURITY_INFORMATION;
+typedef void* POBJECT_TYPE;
+typedef void* OB_OPERATION;
+typedef void* POB_PRE_OPERATION_CALLBACK;
+typedef void* POB_POST_OPERATION_CALLBACK;
+typedef void* PPCI_SET_ATS;
+typedef void* PPCI_MSIX_SET_ENTRY;
+typedef void* PPCI_MSIX_MASKUNMASK_ENTRY;
+typedef void* PPCI_MSIX_GET_ENTRY;
+typedef void* PPCI_MSIX_GET_TABLE_SIZE;
+typedef void* PPCI_SET_ACS2;
+typedef void* PPO_FX_DEVICE_POWER_REQUIRED_CALLBACK;
+typedef void* PPO_FX_DEVICE_POWER_NOT_REQUIRED_CALLBACK;
+typedef void* PPO_FX_POWER_CONTROL_CALLBACK;
+typedef void* PPO_FX_DIRECTED_POWER_UP_CALLBACK;
+typedef void* PPO_FX_DIRECTED_POWER_DOWN_CALLBACK;
+typedef void* IOMMU_DEVICE_CREATION_CONFIGURATION_PASID;
+typedef void* IOMMU_DMA_LOGICAL_ADDRESS;
+typedef void* PPFN_NUMBER;
+typedef void* PIO_WORKITEM_ROUTINE;
+typedef void* PIO_WORKITEM_ROUTINE_EX;
+typedef void* PIO_CONTAINER_NOTIFICATION_FUNCTION;
+typedef void* PDRIVER_NOTIFICATION_CALLBACK_ROUTINE;
+typedef void* PDEVICE_CHANGE_COMPLETE_CALLBACK;
+typedef void* DEVPROPTYPE;
+typedef void* WMI_NOTIFICATION_CALLBACK;
+typedef void* PKGUARDED_MUTEX;
+typedef void* PKLOCK_QUEUE_HANDLE;
+typedef void* SpinLock;
+typedef void* OldIrql;
+typedef void* PKTRIAGE_DUMP_DATA_ARRAY;
+typedef void* PKTIMER;
+typedef void* PKBUGCHECK_CALLBACK_RECORD;
+typedef void* PKBUGCHECK_REASON_CALLBACK_RECORD;
+typedef void* PRKSEMAPHORE;
+typedef void* TIMER_TYPE;
+typedef void* PKIPI_BROADCAST_WORKER;
+typedef void* LOGICAL_PROCESSOR_RELATIONSHIP;
+typedef void* PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX;
+typedef void* PBOUND_CALLBACK;
+typedef void* PKBUGCHECK_CALLBACK_ROUTINE;
+typedef void* PKBUGCHECK_REASON_CALLBACK_ROUTINE;
+typedef void* PNMI_CALLBACK;
+typedef void* PPROCESSOR_CALLBACK_FUNCTION;
+typedef void* PXSTATE_SAVE;
+typedef void* PKFLOATING_SAVE;
+typedef void* PKSYNCHRONIZE_ROUTINE;
+typedef void* KWAIT_REASON;
+typedef void* PKWAIT_BLOCK;
+typedef void* WAIT_TYPE;
+typedef void* PMM_MDL_ROUTINE;
+typedef void* LOCK_OPERATION;
+typedef void* PFILE_SEGMENT_ELEMENT;
+typedef void* MM_SYSTEMSIZE;
+typedef void* NOTIFICATION_MASK;
+typedef void* PTRANSACTION_NOTIFICATION;
+typedef void* PARTITION_INFORMATION_CLASS;
+typedef void* TRANSACTIONMANAGER_INFORMATION_CLASS;
+typedef void* POBJECT_HANDLE_INFORMATION;
+typedef void* PPO_FX_COMPONENT_PERF_STATE_CALLBACK;
+typedef void* PPO_FX_DEVICE;
+typedef void* PREQUEST_POWER_COMPLETE;
+typedef void* PAFFINITY_TOKEN;
+typedef void* PPTM_DEVICE_QUERY_GRANULARITY;
+typedef void* PPTM_DEVICE_QUERY_TIME_SOURCE;
+typedef void* PPTM_DEVICE_ENABLE;
+typedef void* PPTM_DEVICE_DISABLE;
+typedef void* PCANSI_STRING;
+typedef void* PANSI_STRING;
+typedef void* PRTL_BITMAP;
+typedef void* PRTL_BITMAP_RUN;
+typedef void* PUTF8_STRING;
+typedef void* PRTL_QUERY_REGISTRY_TABLE;
+typedef void* REFGUID;
+typedef void* PTIME_FIELDS;
+typedef void* PSECURITY_SUBJECT_CONTEXT;
+typedef void* PKENLISTMENT;
+typedef void* PKTRANSACTION;
+typedef void* PRKRESOURCEMANAGER;
+typedef void* PKRESOURCEMANAGER;
+typedef void* PTM_RM_NOTIFICATION;
+typedef void* PUOW;
+typedef void* PRKTM;
+typedef void* PGUID;
+typedef void* PKTM;
+typedef void* TRACEHANDLE;
+typedef void* SECTION_INHERIT;
 
-//typedef void* DEVICE_BUS_SPECIFIC_RESET_TYPE;
-//typedef void* CLS_IO_STATISTICS_HEADER;
 
 
+
+typedef CHAR** PSTR;
+typedef NTSTATUS* PNTSTATUS;
+
+#define POOL_EXTENDED_PARAMETER_TYPE_BITS 1
+#define POOL_EXTENDED_PARAMETER_REQUIRED_FIELD_BITS 1
+#define POOL_EXTENDED_PARAMETER_RESERVED_BITS 1
+#define MEM_EXTENDED_PARAMETER_TYPE_BITS 1
 //ENDOF: TODO LIST\n
 
 typedef char* ANSI_STRING;
 typedef uintptr_t PHYSICAL_ADDRESS;
+
+
+
+#ifdef __cplusplus
 #define NTHALAPI extern "C"
 #define NTSYSCALLAPI extern "C"
 #define NTSYSAPI extern "C"
 #define CLFSUSER_API extern "C"
 #define NTAPI_INLINE inline
 #define NTKERNELAPI extern "C"
+#define _DECL_HAL_KE_IMPORT extern "C"
+#else
+
+#define NTHALAPI extern
+#define NTSYSCALLAPI extern
+#define NTSYSAPI extern
+#define CLFSUSER_API extern
+#define NTAPI_INLINE inline
+#define NTKERNELAPI extern
+#define _DECL_HAL_KE_IMPORT extern
+#endif
+
+
 typedef size_t SIZE_T, * PSIZE_T;
 
 

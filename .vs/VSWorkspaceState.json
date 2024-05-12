@@ -2,12 +2,11 @@
   "ExpandedNodes": [
     "",
     "\\drivers",
-    "\\drivers\\WDKSubsystem",
-    "\\drivers\\WDKSubsystem\\Debuging",
     "\\include",
     "\\include\\WinAPI",
-    "\\include\\WinAPI\\NtAPI"
+    "\\include\\WinAPI\\NtAPI",
+    "\\include\\WinAPI\\WinAPITypes"
   ],
-  "SelectedNode": "\\API",
+  "SelectedNode": "\\Config",
   "PreviewInSolutionExplorer": false
 }
