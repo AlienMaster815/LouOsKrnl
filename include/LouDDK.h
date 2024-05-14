@@ -103,7 +103,7 @@ void RegisterInterruptHandler(void(*HANDLER)(), uint8_t InterruptNumber);
 
 KERNEL_IMPORT void sleep(uint64_t Time);
 
-
+#define ACPIBUFFER 256
 
 #else
 

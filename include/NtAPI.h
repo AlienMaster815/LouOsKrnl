@@ -13,4 +13,8 @@
 #include <KernelAPI/WDFLDR.h>
 #include <WinAPI/NtAPI/NtAPIFunc.h>
 
+#define ACPI 1094930505
+#define SMBIOS 837766737983
+#define APM 658077
+
 #endif

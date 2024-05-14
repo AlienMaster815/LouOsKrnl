@@ -42,6 +42,17 @@ char* KERNEL_ARCH = "64-BIT";
 char* KERNEL_ARCH = "32-BIT";
 #endif
 
+LOUSTATUS InitFADT();
+LOUSTATUS InitDSDT();
+LOUSTATUS InitSSDT();
+LOUSTATUS InitHPET();
+LOUSTATUS InitSBST();
+LOUSTATUS InitSRAT();
+LOUSTATUS InitBGRT();
+LOUSTATUS InitECDT();
+LOUSTATUS InitSLIT();
+LOUSTATUS InitMCFG();
+
 void PS2KeyboardHandler();
 void PageFault();
 void GPF();
@@ -51,7 +62,6 @@ void Clock();
 void INTERRUPT(uint8_t interrupt_number);
 
 void ParseMBootTags(struct multiboot_tag* MBOOT);
-
 
 
 LOUSTATUS Lou_kernel_early_initialization(){
@@ -64,6 +74,7 @@ LOUSTATUS Lou_kernel_early_initialization(){
     RegisterInterruptHandler(PageFault, INTERRUPT_SERVICE_ROUTINE_14);
     RegisterInterruptHandler(PS2KeyboardHandler, INTERRUPT_SERVICE_ROUTINE_33);
     RegisterInterruptHandler(Clock, INTERRUPT_SERVICE_ROUTINE_32);
+
 
     SetInterruptFlags();
  
@@ -86,9 +97,20 @@ LOUSTATUS Set_Up_Devices(){
 }
 
 LOUSTATUS Advanced_Kernel_Initialization(){
-    //if(InitializeMainInterruptHandleing() == LOUSTATUS_GOOD) LouPanic("Unable To Start Interrupts", BAD);
-
-    return LOUSTATUS_GOOD;
+    if (InitializeMainInterruptHandleing() != LOUSTATUS_GOOD) LouPrint("Unable To Start APIC System\n");
+    LOUSTATUS Status = LOUSTATUS_GOOD;
+    //if(LOUSTATUS_GOOD != InitFADT())LouPrint("Unable To Start FADT Handleing\n");
+    //if(LOUSTATUS_GOOD != InitDSDT())LouPrint("Unable To Start DSDT Handleing\n");
+    //if(LOUSTATUS_GOOD != InitSSDT())LouPrint("Unable To Start SSDT Handleing\n");
+    //if(LOUSTATUS_GOOD != InitHPET())LouPrint("Unable To Start HPET Handleing\n");
+    //if(LOUSTATUS_GOOD != InitSBST())LouPrint("Unable To Start SBST Handleing\n");
+    //if(LOUSTATUS_GOOD != InitSRAT())LouPrint("Unable To Start SRAT Handleing\n");
+    //if(LOUSTATUS_GOOD != InitBGRT())LouPrint("Unable To Start BGRT Handleing\n");
+    //if(LOUSTATUS_GOOD != InitECDT())LouPrint("Unable To Start ECDT Handleing\n");
+    //if(LOUSTATUS_GOOD != InitSLIT())LouPrint("Unable To Start SLIT Handleing\n");
+    //if(LOUSTATUS_GOOD != InitMCFG())LouPrint("Unable To Start MCFG Handleing\n");
+    
+    return Status;
 }
 
 LOUSTATUS User_Mode_Initialization(){
@@ -115,14 +137,18 @@ KERNEL_ENTRY Lou_kernel_start(uint32_t foo){
     //INITIALIZE IMPORTANT THINGS FOR US LATER
     if(Lou_kernel_early_initialization() != LOUSTATUS_GOOD)LouPanic("Early Initialization Failed",BAD);
 
+    if (Advanced_Kernel_Initialization() != LOUSTATUS_GOOD)LouPrint("WARNING: CertainFeatures Are Not Available\n");
+
+
     //SETUP DEVICES AND DRIVERS
-    if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);
+    //if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);
 
     //if(Advanced_Kernel_Initialization() != LOUSTATUS_GOOD)LouPanic("Final Kernel Initialization Failed",BAD);
 		
 
    // Initialize User Mode
    // if(User_Mode_Initialization() != LOUSTATUS_GOOD)LouPanic("User Mode Initialiation Failed",BAD);
+
 
     LouPrint("Hello World\n");
 

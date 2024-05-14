@@ -23,6 +23,8 @@ int64_t stringToInt64(const char* str);
 uint64_t stringToUnsignedInt64(const char* str);
 int8_t stringToInt8(const char* str);
 uint8_t stringToUnsignedInt8(const char* str);
+char* LouKeCharArrayToString(char* ConvertingString, uint16_t ArraySize);
+void UIntToString(unsigned int num, char* str);
 #else
 #include <LouDDK.h>
 
@@ -41,7 +43,8 @@ KERNEL_IMPORT int64_t stringToInt64(const char* str);
 KERNEL_IMPORT uint64_t stringToUnsignedInt64(const char* str);
 KERNEL_IMPORT int8_t stringToInt8(const char* str);
 KERNEL_IMPORT uint8_t stringToUnsignedInt8(const char* str);
-
+KERNEL_IMPORT char* LouKeCharArrayToString(char* ConvertingString, uint16_t ArraySize);
+KERNEL_IMPORT void UIntToString(unsigned int num, char* str);
 #endif
 
 

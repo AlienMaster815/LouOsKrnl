@@ -18,6 +18,6 @@
 #include <CPUInstructionSet/CPURegisters.h>
 
 
-
+#define ACPIBUFFER 256
 
 #endif

@@ -151,3 +151,15 @@ uint8_t stringToUnsignedInt8(const char* str) {
 
     return result;
 }
+
+
+void UIntToString(unsigned int num, char* str) {
+    uint8_t* NumberBuffer = (uint8_t*)&num;
+    int i;
+    for (i = 0; i < sizeof(int); i++) {
+        str[sizeof(int) - 1 - i] = NumberBuffer[i];
+    }
+    str[sizeof(int)] = '\0';
+}
+
+

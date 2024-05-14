@@ -4,13 +4,17 @@
 #include <kernel/errors.h>
 #include <kernel/pic.h>
 
+LOUSTATUS InitApicSystems();
+
 LOUSTATUS InitializeMainInterruptHandleing(){
     
-    if(InitializeAdvancedProgramableController() != LOUSTATUS_GOOD)LouPanic("Cunstruction Panic",BAD);
+    //if(InitializeAdvancedProgramableController() != LOUSTATUS_GOOD)LouPanic("Cunstruction Panic",BAD);
 
-    
+    LOUSTATUS Status = !LOUSTATUS_GOOD;
 
-    return 0;
+    Status = InitApicSystems();
+
+    return Status;
 }
 
 void InvalidOpcode();

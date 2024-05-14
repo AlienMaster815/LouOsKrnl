@@ -20,8 +20,8 @@ RAMADD Lou_Alloc_Mem(SIZE size) {
 }
 
 STATUS Lou_Free_Mem(RAMADD Addr, SIZE size) {
-    for (SIZE i = 0; i < size; i++) *(Addr + i) = 0;
-    return 0;
+    LouFree(Addr,size);
+    return GOOD;
 }
 
 void* Lou_Calloc_Mem(size_t numElements, size_t sizeOfElement) {
@@ -78,6 +78,7 @@ void SendMapToAllocation(struct master_multiboot_mmap_entry* mmap) {
 }
 
 #define LongLongBitDemention 64
+#define LongLongBitDimension 64
 #define BlockDemention 1024
 #define StartMap (10ULL * MEGABYTE)
 
@@ -86,10 +87,7 @@ void SendMapToAllocation(struct master_multiboot_mmap_entry* mmap) {
 
 static uint64_t* BitMap;
 
-
-
 void LouFree(RAMADD Addr, SIZE size) {
-    
     uint16_t Number_Of_Entries = (LousineMemoryMapTable->tag.size - sizeof(struct master_multiboot_mmap_entry)) / LousineMemoryMapTable->entry_size;
     if (LousineMemoryMapTable->entry_version == 0) {
         struct multiboot_mmap_entry* mmap_entry;
@@ -97,54 +95,58 @@ void LouFree(RAMADD Addr, SIZE size) {
             mmap_entry = (struct multiboot_mmap_entry*)(uintptr_t)((uint64_t)LousineMemoryMapTable + (uint64_t)sizeof(struct master_multiboot_mmap_entry) + (uint64_t)i * (uint64_t)LousineMemoryMapTable->entry_size);
             uint64_t limit = mmap_entry->len;
             uint64_t address = mmap_entry->addr;
-            if (mmap_entry->type == 0)continue;//dont touch shit
+            if (mmap_entry->type == 0) continue; // don't touch
             else if (mmap_entry->type == 1) {
-                //skip if system memory or not part of the address table
-
-                if ((mmap_entry->addr + mmap_entry->len) < (StartMap))continue;
-                else if (mmap_entry->addr < (StartMap)) {
-                    limit = (mmap_entry->addr + mmap_entry->len) - (StartMap);
-                    address = (StartMap);
+                // skip if system memory or not part of the address table
+                if ((mmap_entry->addr + mmap_entry->len) < StartMap) continue;
+                else if (mmap_entry->addr < StartMap) {
+                    limit = (mmap_entry->addr + mmap_entry->len) - StartMap;
+                    address = StartMap;
                 }
-                //LouPrint("Starting Address Is:%d\n", mmap_entry->addr);
-                //LouPrint("Address Buffer Is:%d\n", limit);
-                if ((Addr > (RAMADD)(address + limit)) ||
-                    Addr < (RAMADD)address)continue;
 
+                if ((Addr > (RAMADD)(address + limit)) || Addr < (RAMADD)address) continue;
 
                 for (uint64_t i = address; i < limit; i += PAGE_SIZE) {
                     LouMapAddress(i, i, KERNEL_PAGE_WRITE_PRESENT);
                 }
 
                 uint64_t Sector = limit - address;
-                uint64_t TotoalAllocation = (Sector / 72) / 8;
+                uint64_t TotalAllocation = (Sector / 72) / 8;
 
+                for (uint64_t TableSelect = 0; TableSelect < TotalAllocation; TableSelect++) {
+                    for (uint8_t TableEntry = 0; TableEntry < LongLongBitDimension; TableEntry++) {
+                        // Calculate the current address
+                        uint64_t currentAddress = (uintptr_t)(address + TableSelect * LongLongBitDimension * sizeof(uint64_t)) + TableEntry * sizeof(uint64_t);
 
-                for (uint64_t TableSelect = 0; TableSelect < TotoalAllocation; TableSelect++) {
-                    for (uint8_t TableEntry = 0; TableEntry < LongLongBitDemention; TableEntry++) {
-
-                        if ((uintptr_t)(address + (TableSelect * TableEntry) + TotoalAllocation) == (uintptr_t)(Addr)) {
-
-                            uint64_t* TableAddress = (uint64_t*)address;
-
+                        if ((RAMADD)currentAddress == Addr) {
                             size_t SizeDone = 0;
-                            for (; true; TableSelect++) {
-                                for (; TableEntry < LongLongBitDemention; TableEntry++) {
-                                    TableAddress[TableSelect] &= ~(1ULL << TableEntry);
+
+                            for (; TableSelect < TotalAllocation; TableSelect++) {
+                                // Read a 64-bit value into the stack buffer
+                                uint64_t stackBuffer = *((uint64_t*)(address + TableSelect * LongLongBitDimension * sizeof(uint64_t)));
+
+                                for (; TableEntry < LongLongBitDimension; TableEntry++) {
+                                    // Modify the stack buffer
+                                    stackBuffer &= ~(1ULL << TableEntry);
                                     SizeDone++;
-                                    if (SizeDone == size)return;
+
+                                    // Check if the modification size is met
+                                    if (SizeDone == size) {
+                                        // Write the modified value back to RAM
+                                        *((uint64_t*)(address + TableSelect * LongLongBitDimension * sizeof(uint64_t))) = stackBuffer;
+                                        return;
+                                    }
                                 }
+
+                                // Write the modified value back to RAM
+                                *((uint64_t*)(address + TableSelect * LongLongBitDimension * sizeof(uint64_t))) = stackBuffer;
+
+                                // Reset TableEntry for the next 64-bit value
                                 TableEntry = 0;
                             }
-
-                            return;
-
                         }
-
                     }
                 }
-
-                //Search For the Address i the table Then Flip The Bit
 
                 return;
             }
@@ -153,7 +155,6 @@ void LouFree(RAMADD Addr, SIZE size) {
             else continue;
         }
     }
-   
 }
 
 static inline void LouKeMapByteToTable(uint64_t* MapStart,uint64_t StartTableSelect, uint8_t StartTableEntry, size_t BytesToAllocate) {

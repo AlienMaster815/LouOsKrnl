@@ -541,6 +541,6 @@ ULONG DbgPrintEx ( _In_ ULONG ComponentId, _In_ ULONG Level, _In_z_ _Printf_form
 #include "pep_x.h"
 #include "pepfx.h"
 #include "wdm.h"
-
+#include "ntstatus.h"
 
 #endif

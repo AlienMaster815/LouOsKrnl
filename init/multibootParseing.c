@@ -3,21 +3,61 @@
 
 void ParseMemoryMap(struct multiboot_tag* MBOOT);
 
+LOUSTATUS LouKeSetEfiTable(uint64_t Address);
+LOUSTATUS LouKeSetSmbios(uintptr_t SMBIOS);
+LOUSTATUS LouKeSetRsdp(uintptr_t RSDP, uint8_t Type);
+LOUSTATUS LouKeSetApm(struct multiboot_tag_apm* APM);
+
 void ParseMBootTags(struct multiboot_tag* MBOOT) {
 
     // Iterate through tags until end tag is encountered
     while (MBOOT->type != 0) {
         // Check if tag is memory map tag
         switch (MBOOT->type) {
-        case (6): {
+        case (MULTIBOOT_TAG_TYPE_MMAP): {
             ParseMemoryMap(MBOOT);
+            break;
+        }
+        case (MULTIBOOT_TAG_TYPE_EFI64): {
+            uint64_t EFI_TABLE = *(uint64_t*)((uint8_t*)MBOOT + sizeof(struct multiboot_tag_efi64));
+            LouKeSetEfiTable(EFI_TABLE);
+            break;
+        }
+        case (MULTIBOOT_TAG_TYPE_SMBIOS): {
+            uintptr_t SMBIOS_POINTER = *(uintptr_t*)((uint8_t*)MBOOT + sizeof(struct multiboot_tag_smbios));
+            LouKeSetSmbios(SMBIOS_POINTER);
+            
+
+            break;
+        }
+        case (MULTIBOOT_TAG_TYPE_ACPI_OLD): {
+            LouKeSetRsdp((uint64_t)((uint8_t*)MBOOT + sizeof(struct multiboot_tag_old_acpi)), 1);
+
+            break;
+        }
+        case (MULTIBOOT_TAG_TYPE_ACPI_NEW): {
+            LouKeSetRsdp((uint64_t)((uint8_t*)MBOOT + sizeof(struct multiboot_tag_new_acpi)), 2);
+            break;
+        }
+        case (MULTIBOOT_TAG_TYPE_VBE): {
+            struct multiboot_tag_vbe* vbe_tag = (struct multiboot_tag_vbe*)MBOOT;
+            // Access VBE information from vbe_tag
+            // Example: uint16_t vbe_mode = vbe_tag->vbe_mode;
+            break;
+        }
+        case (MULTIBOOT_TAG_TYPE_APM): {
+            struct multiboot_tag_apm* apm_tag = (struct multiboot_tag_apm*)MBOOT;
+            LouKeSetApm(apm_tag);
             break;
         }
         default:
             break;
         }
         // Move to next tag
-        MBOOT = (struct multiboot_tag*)(uint8_t*)MBOOT + (MBOOT->size);
+        if (MBOOT->size % 8 == 0)
+            MBOOT = (struct multiboot_tag*)((uint8_t*)MBOOT + MBOOT->size);
+        else
+            MBOOT = (struct multiboot_tag*)((uint8_t*)MBOOT + MBOOT->size + (8 - MBOOT->size % 8));
     }
 
 }

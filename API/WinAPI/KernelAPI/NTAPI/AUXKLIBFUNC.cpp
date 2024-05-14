@@ -1,5 +1,20 @@
 #include <NtAPI.h>
 
+
+//Define Used Internal Kernel Functions
+
+NTSTATUS TRANSLATE_STATUS(LOUSTATUS Status);
+
+
+LOUSTATUS LouKeGetSystemFirmwareTable(
+	ULONG FirmwareTableProviderSignature,
+	ULONG FirmwareTabeId,
+	PVOID FirmwareTableBuffer,
+	ULONG BufferLength,
+	PULONG ReturnLength);
+
+
+
 NTSTATUS
 __stdcall
 AuxKlibEnumerateSystemFirmwareTables(
@@ -26,6 +41,7 @@ PIMAGE_EXPORT_DIRECTORY AuxKlibGetImageExportDirectory(
 	_In_ PVOID ImageBase
 ) {
 
+
 	return 0;
 }
 
@@ -37,8 +53,19 @@ NTSTATUS AuxKlibGetSystemFirmwareTable(
 	_In_      ULONG  BufferLength,
 	_Out_opt_ PULONG ReturnLength
 ) {
+	LOUSTATUS LouKStatus = LOUSTATUS_GOOD;
+	NTSTATUS DriverApiTranslatedStatus = STATUS_SUCCESS;
 
-	return STATUS_SUCCESS;
+	LouKStatus = LouKeGetSystemFirmwareTable(
+		FirmwareTableProviderSignature,
+		FirmwareTableID,
+		FirmwareTableBuffer,
+		BufferLength,
+		ReturnLength);
+
+	DriverApiTranslatedStatus = TRANSLATE_STATUS(LouKStatus);
+
+	return DriverApiTranslatedStatus;
 }
 
 
