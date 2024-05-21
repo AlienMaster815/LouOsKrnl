@@ -37,7 +37,6 @@ ULONG READ_REGISTER_ULONG(
 USHORT READ_REGISTER_USHORT(
 	_In_ PUSHORT Register
 ) {
-
 	return *Register;
 }
 

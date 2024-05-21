@@ -38,7 +38,7 @@ void ISO9660::ISOReadDirectoryStructure(uint8_t DrvNum,uint8_t DrvType){
 
             VolumeDescriptor VD = ReadVolumeDescriptor(DrvNum, DrvType);
 
-            if ((VD.Identifier == NULL) && (VD.Type == 0) && (VD.Version == 0)) {
+            if ((VD.Identifier == 0x0000) && (VD.Type == 0) && (VD.Version == 0)) {
                 LouPrint("No FileSystem On Device\n");
                 //At this point unmount/eject the drive
                 return;
@@ -152,7 +152,7 @@ VolumeDescriptor ISO9660::ReadVolumeDescriptor(uint8_t DrvNum,uint8_t DrvType,ui
             if ((VD.Type != 1) && (strcmp(VD.Identifier, "CD001") != 0) && (VD.Version != 1)) {
                 LouPrint("ISO FileSystem Has Not Been Found\n");
                 VD.Type = 0;
-                VD.Identifier = NULL;
+                VD.Identifier = 0x0000;
                 VD.Version = 0;
                 LouPrint("VD Parsed\n");
                 return VD;

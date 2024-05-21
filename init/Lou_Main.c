@@ -32,7 +32,7 @@ uintptr_t RBP_Current;
 //      the code to add a 0 place where the char is to make it
 //      the right 10 place value
 
-char* KERNEL_VERSION = "0.0.00036 RSC-1 Multiboot 2";
+char* KERNEL_VERSION = "0.0.00037 RSC-1 Multiboot 2";
 
 
 #ifdef __x86_64__
@@ -52,6 +52,7 @@ LOUSTATUS InitBGRT();
 LOUSTATUS InitECDT();
 LOUSTATUS InitSLIT();
 LOUSTATUS InitMCFG();
+LOUSTATUS InitThreadManager();
 
 void PS2KeyboardHandler();
 void PageFault();
@@ -66,6 +67,7 @@ void ParseMBootTags(struct multiboot_tag* MBOOT);
 
 LOUSTATUS Lou_kernel_early_initialization(){
 
+    
     InitializeStartupInterruptHandleing();
 
     RegisterInterruptHandler(DoubleFault, INTERRUPT_SERVICE_ROUTINE_8);
@@ -74,6 +76,7 @@ LOUSTATUS Lou_kernel_early_initialization(){
     RegisterInterruptHandler(PageFault, INTERRUPT_SERVICE_ROUTINE_14);
     RegisterInterruptHandler(PS2KeyboardHandler, INTERRUPT_SERVICE_ROUTINE_33);
     RegisterInterruptHandler(Clock, INTERRUPT_SERVICE_ROUTINE_32);
+
 
 
     SetInterruptFlags();
@@ -97,8 +100,8 @@ LOUSTATUS Set_Up_Devices(){
 }
 
 LOUSTATUS Advanced_Kernel_Initialization(){
-    if (InitializeMainInterruptHandleing() != LOUSTATUS_GOOD) LouPrint("Unable To Start APIC System\n");
     LOUSTATUS Status = LOUSTATUS_GOOD;
+    if (InitializeMainInterruptHandleing() != LOUSTATUS_GOOD)LouPrint("Unable To Start APIC System\n");
     //if(LOUSTATUS_GOOD != InitFADT())LouPrint("Unable To Start FADT Handleing\n");
     //if(LOUSTATUS_GOOD != InitDSDT())LouPrint("Unable To Start DSDT Handleing\n");
     //if(LOUSTATUS_GOOD != InitSSDT())LouPrint("Unable To Start SSDT Handleing\n");
@@ -110,6 +113,8 @@ LOUSTATUS Advanced_Kernel_Initialization(){
     //if(LOUSTATUS_GOOD != InitSLIT())LouPrint("Unable To Start SLIT Handleing\n");
     //if(LOUSTATUS_GOOD != InitMCFG())LouPrint("Unable To Start MCFG Handleing\n");
     
+    //if (LOUSTATUS_GOOD != InitThreadManager())LouPrint("SHIT!!!:I Hope You Hate Efficency: No Thread Management\n");
+
     return Status;
 }
 

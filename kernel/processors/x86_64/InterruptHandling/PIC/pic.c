@@ -18,7 +18,9 @@ void PIC_sendEOI(unsigned char irq){
     
     PIC_remap(0x20,0x28);
     Mask_All_Programable_Interrupts();
-    UnMaskKeyboard();
+    IRQ_Pic_clear_mask(0);
+    IRQ_Pic_clear_mask(1);
+
 }
 
 
@@ -92,4 +94,11 @@ uint16_t pic_get_isr(void){
 void Mask_All_Programable_Interrupts(){
     for(uint8_t i = 0;i < 16; i++)
         IRQ_Pic_set_mask(i);
+}
+
+
+// Function to disable the PIC
+void disable_pic() {
+    outb(PIC1_DATA, 0xff);
+    outb(PIC2_DATA, 0xff);
 }

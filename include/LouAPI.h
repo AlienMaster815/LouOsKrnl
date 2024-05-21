@@ -17,7 +17,9 @@
 #include <bootloader/grub/multiboot.h>
 #include <CPUInstructionSet/CPURegisters.h>
 
+#include "WinAPI/NtAPI/ntstatus.h"
 
 #define ACPIBUFFER 256
+#define ERRMAPPINGIO -1
 
 #endif

@@ -47,7 +47,9 @@ typedef struct _KBUGCHECK_DATA {
 	ULONG_PTR Parameter4;
 } KBUGCHECK_DATA, * PKBUGCHECK_DATA;
 
-
+// we will do this later
+//CONCEPT: Take All the firmware Data And copy
+// into the given buffer
 NTSTATUS
 __stdcall
 AuxKlibEnumerateSystemFirmwareTables(

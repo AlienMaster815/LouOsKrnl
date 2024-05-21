@@ -8,5 +8,6 @@
 #include <KernelAPI/Security.h>
 #include <KernelAPI/Video.h>
 #include <KernelAPI/WDFLDR.h>
+#include "BitCheck.h"
 
 #endif

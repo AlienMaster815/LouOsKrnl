@@ -75,7 +75,6 @@ extern PIC_sendEOI
 	mov rcx, [InterruptNum]
 	call InterruptRouter
 	mov rcx, [InterruptNum]
-	call PIC_sendEOI
 %endmacro
 
 

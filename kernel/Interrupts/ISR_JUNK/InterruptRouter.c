@@ -3,6 +3,9 @@
 
 void(*InterruptHandler[256])();
 
+void local_apic_send_eoi();
+bool GetAPICStatus();
+
 void InterruptWrapper(uint64_t Handler, uint8_t InterruptNumber) {
 	RegisterInterruptHandler((void(*)())Handler, InterruptNumber);
 }
@@ -23,6 +26,8 @@ void InterruptRouter(uint8_t Interrupt) {
 
 	if (NULL != InterruptHandler[Interrupt]) {
 		InterruptHandler[Interrupt]();
+		if (GetAPICStatus())local_apic_send_eoi(); \
+		else PIC_sendEOI(Interrupt);
 		return;
 	}
 

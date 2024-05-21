@@ -87,3 +87,17 @@ void DeterminCPU() {
 
 
 }
+
+uint16_t NPROC = 0;
+
+uint16_t GetNPROC() {
+    return NPROC;
+}
+
+void UpgradeNPROC(){
+    NPROC++;
+}
+
+void DowngradeNPROC(){
+    NPROC--;
+}

@@ -43,6 +43,15 @@ uint64_t read_msr(uint32_t msr_id) {
     return ((uint64_t)high << 32) | low;
 }
 
+
+// Inline assembly to write to an MSR (Model-Specific Register)
+void write_msr(uint32_t msr, uint64_t value) {
+    uint32_t low = (uint32_t)(value & 0xFFFFFFFF);
+    uint32_t high = (uint32_t)(value >> 32);
+    __asm__ __volatile__("wrmsr" : : "c"(msr), "a"(low), "d"(high));
+}
+
+
 void insw(uint64_t __port, void *__buf, unsigned long __n) {
 	__asm__ __volatile__("cld; rep; insw"
 			: "+D"(__buf), "+c"(__n)

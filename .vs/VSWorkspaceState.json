@@ -1,16 +1,19 @@
 {
   "ExpandedNodes": [
     "",
-    "\\drivers",
-    "\\drivers\\MotherBoards",
-    "\\drivers\\processors",
-    "\\drivers\\Video",
-    "\\drivers\\Video\\Firmware",
-    "\\drivers\\Video\\Intel",
+    "\\API",
+    "\\API\\LouAPI",
+    "\\API\\LouAPI\\KernelAPI",
+    "\\API\\LouAPI\\KernelAPI\\LouKernelAPI",
     "\\include",
+    "\\include\\kernel",
+    "\\include\\WinAPI",
+    "\\include\\WinAPI\\NtAPI",
+    "\\include\\WinAPI\\NtAPI\\Misc",
     "\\kernel",
+    "\\kernel\\BinaryHandleing",
     "\\kernel\\memory"
   ],
-  "SelectedNode": "\\drivers\\MotherBoards\\MFCG.cpp",
+  "SelectedNode": "\\Config",
   "PreviewInSolutionExplorer": false
 }

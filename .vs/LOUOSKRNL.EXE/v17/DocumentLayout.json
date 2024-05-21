@@ -3,52 +3,8 @@
   "WorkspaceRootPath": "E:\\LOUOSKRNL.EXE\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\init\\Lou_Main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:init\\Lou_Main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\MotherBoards\\MFCG.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\MotherBoards\\MFCG.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\MotherBoards\\SLIT.cpp||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\MotherBoards\\SLIT.cpp||{8B382828-6202-11D1-8870-0000F87579D2}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\MotherBoards\\ECDT.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\MotherBoards\\ECDT.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\Video\\Firmware\\BGRT.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\Video\\Firmware\\BGRT.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\MotherBoards\\SRAT.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\MotherBoards\\SRAT.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\MotherBoards\\HPET.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\MotherBoards\\HPET.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\MotherBoards\\SBST.cpp||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\MotherBoards\\SBST.cpp||{8B382828-6202-11D1-8870-0000F87579D2}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\kernel\\Firmware\\FirmwareParseing.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:kernel\\Firmware\\FirmwareParseing.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\MotherBoards\\DSDT.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\MotherBoards\\DSDT.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\MotherBoards\\SSDT.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\MotherBoards\\SSDT.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\processors\\apic.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\processors\\apic.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\ntstatus.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\WinAPI\\NtAPI\\ntstatus.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -58,7 +14,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 12,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
@@ -66,158 +22,15 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "MFCG.cpp",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\MotherBoards\\MFCG.cpp",
-              "RelativeDocumentMoniker": "drivers\\MotherBoards\\MFCG.cpp",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\MotherBoards\\MFCG.cpp",
-              "RelativeToolTip": "drivers\\MotherBoards\\MFCG.cpp",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAC0AAAARAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-05-14T02:42:15.178Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "SLIT.cpp",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\MotherBoards\\SLIT.cpp",
-              "RelativeDocumentMoniker": "drivers\\MotherBoards\\SLIT.cpp",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\MotherBoards\\SLIT.cpp",
-              "RelativeToolTip": "drivers\\MotherBoards\\SLIT.cpp",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAACIAAAARAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-05-14T02:36:54.425Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "ECDT.cpp",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\MotherBoards\\ECDT.cpp",
-              "RelativeDocumentMoniker": "drivers\\MotherBoards\\ECDT.cpp",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\MotherBoards\\ECDT.cpp",
-              "RelativeToolTip": "drivers\\MotherBoards\\ECDT.cpp",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAACgAAAARAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-05-14T02:36:14.128Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "BGRT.cpp",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\Video\\Firmware\\BGRT.cpp",
-              "RelativeDocumentMoniker": "drivers\\Video\\Firmware\\BGRT.cpp",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\Video\\Firmware\\BGRT.cpp",
-              "RelativeToolTip": "drivers\\Video\\Firmware\\BGRT.cpp",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-05-14T02:25:13.647Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "SRAT.cpp",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\MotherBoards\\SRAT.cpp",
-              "RelativeDocumentMoniker": "drivers\\MotherBoards\\SRAT.cpp",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\MotherBoards\\SRAT.cpp",
-              "RelativeToolTip": "drivers\\MotherBoards\\SRAT.cpp",
-              "ViewState": "AQIAAD8AAAAAAAAAAAAAAGMAAAARAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-05-14T02:00:44.862Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "SBST.cpp",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\MotherBoards\\SBST.cpp",
-              "RelativeDocumentMoniker": "drivers\\MotherBoards\\SBST.cpp",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\MotherBoards\\SBST.cpp",
-              "RelativeToolTip": "drivers\\MotherBoards\\SBST.cpp",
-              "ViewState": "AQIAAAEAAAAAAAAAAAAAAB0AAAAQAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-05-14T01:47:19.18Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "HPET.cpp",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\MotherBoards\\HPET.cpp",
-              "RelativeDocumentMoniker": "drivers\\MotherBoards\\HPET.cpp",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\MotherBoards\\HPET.cpp",
-              "RelativeToolTip": "drivers\\MotherBoards\\HPET.cpp",
-              "ViewState": "AQIAAAYAAAAAAAAAAAAAACsAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-05-14T01:27:35.06Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "DSDT.cpp",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\MotherBoards\\DSDT.cpp",
-              "RelativeDocumentMoniker": "drivers\\MotherBoards\\DSDT.cpp",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\MotherBoards\\DSDT.cpp",
-              "RelativeToolTip": "drivers\\MotherBoards\\DSDT.cpp",
-              "ViewState": "AQIAADAAAAAAAAAAAAAAADgAAAAXAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-05-14T00:52:28.252Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "FirmwareParseing.c",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\kernel\\Firmware\\FirmwareParseing.c",
-              "RelativeDocumentMoniker": "kernel\\Firmware\\FirmwareParseing.c",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\kernel\\Firmware\\FirmwareParseing.c",
-              "RelativeToolTip": "kernel\\Firmware\\FirmwareParseing.c",
-              "ViewState": "AQIAAIcAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
-              "WhenOpened": "2024-05-14T00:42:34.649Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "SSDT.cpp",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\MotherBoards\\SSDT.cpp",
-              "RelativeDocumentMoniker": "drivers\\MotherBoards\\SSDT.cpp",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\MotherBoards\\SSDT.cpp",
-              "RelativeToolTip": "drivers\\MotherBoards\\SSDT.cpp",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAACQAAAAeAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-05-14T00:09:02.858Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "apic.cpp",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\processors\\apic.cpp",
-              "RelativeDocumentMoniker": "drivers\\processors\\apic.cpp",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\processors\\apic.cpp",
-              "RelativeToolTip": "drivers\\processors\\apic.cpp",
-              "ViewState": "AQIAAAMAAAAAAAAAAAAAAAQAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-05-13T22:11:34.528Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "Lou_Main.c",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\init\\Lou_Main.c",
-              "RelativeDocumentMoniker": "init\\Lou_Main.c",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\init\\Lou_Main.c",
-              "RelativeToolTip": "init\\Lou_Main.c",
-              "ViewState": "AQIAAD8AAAAAAAAAAAAAAG4AAAAGAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
-              "WhenOpened": "2024-05-13T03:30:59.418Z",
+              "Title": "ntstatus.h",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\ntstatus.h",
+              "RelativeDocumentMoniker": "include\\WinAPI\\NtAPI\\ntstatus.h",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\ntstatus.h",
+              "RelativeToolTip": "include\\WinAPI\\NtAPI\\ntstatus.h",
+              "ViewState": "AQIAAJI6AAAAAAAAAAAAAJc6AABAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2024-05-18T13:56:02.392Z",
               "EditorCaption": ""
             }
           ]

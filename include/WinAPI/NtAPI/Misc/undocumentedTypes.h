@@ -1,0 +1,6 @@
+#ifndef _UNDOCUMENTED_TYPES
+#define _UNDOCUMENTED_TYPES
+
+
+
+#endif

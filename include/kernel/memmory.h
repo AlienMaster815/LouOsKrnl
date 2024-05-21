@@ -21,8 +21,9 @@
 #define BLOCK 4096
 #define SIZE unsigned long long
 
-#define GIGABYTE 0x40000000
-#define MEGABYTE 0x100000
+// Constants for gigabyte and megabyte sizes
+#define GIGABYTE (1ULL << 30)  // 1 GB in bytes
+#define MEGABYTE (1ULL << 20)  // 1 MB in bytes
 
 #define PAGE_TABLE_ALLIGNMENT 4096
 #define PAGE_SIZE 4096
@@ -71,6 +72,7 @@ void LouUnMapAddress(uint64_t VAddress);
 uint64_t GetPageOfFaultValue(uint64_t VAddress);
 extern uint64_t GetPageValue(uint64_t PAddress, uint64_t FLAGS);
 
+LOUSTATUS LouKeMapIO(uint64_t PADDRESS, uint64_t MemoryBuffer, uint64_t FLAGS);
 
 //Directory Entry FLAGS
 
@@ -103,7 +105,7 @@ KERNEL_IMPORT void LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t 
 KERNEL_IMPORT void LouUnMapAddress(uint64_t VAddress);
 KERNEL_IMPORT void LouFree(uint8_t* Addr, uint32_t size);
 KERNEL_IMPORT void* LouMalloc(size_t BytesToAllocate);
-
+KERNEL_IMPORT LOUSTATUS LouKeMapIO(uint64_t PADDRESS, uint64_t MemoryBuffer, uint64_t FLAGS);
 
 #endif
 #endif

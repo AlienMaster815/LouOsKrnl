@@ -17,6 +17,9 @@
 #include <kernel/memmory.h>
 #include <kernel/Binarys.h>
 
+#include <KernelAPI/BitCheck.h>
+
+
 #define RAMADD unsigned char*
 #define RAMADDDATA unsigned char *
 #define BLOCK 4096
@@ -76,13 +79,13 @@ KERNEL_IMPORT int LouPrint(char *format, ...);
 #include <drivers/Lou_drivers/Processor.h>
 #include <KernelAPI/Video.h>
 
-KERNEL_IMPORT uint8_t inb(uint16_t port);
-KERNEL_IMPORT void outb(uint16_t port, uint8_t data);
-KERNEL_IMPORT uint16_t inw(uint16_t port);
-KERNEL_IMPORT void outw(uint16_t port, uint16_t data);
-KERNEL_IMPORT uint32_t inl(uint16_t port);
-KERNEL_IMPORT void outl(uint16_t port, uint32_t data);
-KERNEL_IMPORT void outbSlow(uint16_t port,uint8_t data);
+KERNEL_IMPORT uint8_t inb(uint64_t port);
+KERNEL_IMPORT void outb(uint64_t port, uint8_t data);
+KERNEL_IMPORT uint16_t inw(uint64_t port);
+KERNEL_IMPORT void outw(uint64_t port, uint16_t data);
+KERNEL_IMPORT uint32_t inl(uint64_t port);
+KERNEL_IMPORT void outl(uint64_t port, uint32_t data);
+KERNEL_IMPORT void outbSlow(uint64_t port,uint8_t data);
 //MEMMORY ALLOCATION
 KERNEL_IMPORT RAMADD Lou_Alloc_Mem(SIZE size);
 KERNEL_IMPORT STATUS Lou_Free_Mem(RAMADD Addr, SIZE size);
@@ -104,6 +107,8 @@ void RegisterInterruptHandler(void(*HANDLER)(), uint8_t InterruptNumber);
 KERNEL_IMPORT void sleep(uint64_t Time);
 
 #define ACPIBUFFER 256
+
+#define ERRMAPPINGIO -1
 
 #else
 
