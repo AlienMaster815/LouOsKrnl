@@ -1,16 +1,15 @@
 {
   "ExpandedNodes": [
     "",
-    "\\API",
-    "\\API\\WinAPI",
-    "\\API\\WinAPI\\KernelAPI",
-    "\\include",
-    "\\include\\kernel",
-    "\\include\\WinAPI",
+    "\\drivers",
+    "\\drivers\\processors",
+    "\\drivers\\processors\\APIC",
+    "\\init",
     "\\kernel",
-    "\\kernel\\BinaryHandleing",
-    "\\kernel\\BinaryHandleing\\atomic"
+    "\\kernel\\Interrupts",
+    "\\kernel\\Interrupts\\ISR_JUNK",
+    "\\kernel\\Interrupts\\ISR_JUNK\\Routines"
   ],
-  "SelectedNode": "\\API\\WinAPI\\KernelAPI\\NTAPI\\miniport.cpp",
+  "SelectedNode": "\\drivers\\processors\\APIC\\apic.h",
   "PreviewInSolutionExplorer": false
 }
