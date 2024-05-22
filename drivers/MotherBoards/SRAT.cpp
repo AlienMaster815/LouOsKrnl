@@ -106,7 +106,7 @@ LOUDDK_API_ENTRY LOUSTATUS InitSRAT() {
 		'ACPI',
 		'SRAT',
 		Buffer,
-		0,
+		ACPIBUFFER,
 		&ReturnLength
 	);
 

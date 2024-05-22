@@ -3,8 +3,28 @@
   "WorkspaceRootPath": "E:\\LOUOSKRNL.EXE\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\ntstatus.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\WinAPI\\NtAPI\\ntstatus.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\API\\WinAPI\\KernelAPI\\NTAPI\\miniport.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:API\\WinAPI\\KernelAPI\\NTAPI\\miniport.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\kernel\\BinaryHandleing\\atomic\\AtomicOperations.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:kernel\\BinaryHandleing\\atomic\\AtomicOperations.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\kernel\\atomic.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\kernel\\atomic.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\miniport.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\WinAPI\\NtAPI\\miniport.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\API\\LouAPI\\KernelAPI\\LouKernelAPI\\KernelLib.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:API\\LouAPI\\KernelAPI\\LouKernelAPI\\KernelLib.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\ntddk.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\WinAPI\\NtAPI\\ntddk.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,7 +34,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Bookmark",
@@ -22,15 +42,80 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "ntstatus.h",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\ntstatus.h",
-              "RelativeDocumentMoniker": "include\\WinAPI\\NtAPI\\ntstatus.h",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\ntstatus.h",
-              "RelativeToolTip": "include\\WinAPI\\NtAPI\\ntstatus.h",
-              "ViewState": "AQIAAJI6AAAAAAAAAAAAAJc6AABAAAAA",
+              "DocumentIndex": 1,
+              "Title": "AtomicOperations.c",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\kernel\\BinaryHandleing\\atomic\\AtomicOperations.c",
+              "RelativeDocumentMoniker": "kernel\\BinaryHandleing\\atomic\\AtomicOperations.c",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\kernel\\BinaryHandleing\\atomic\\AtomicOperations.c",
+              "RelativeToolTip": "kernel\\BinaryHandleing\\atomic\\AtomicOperations.c",
+              "ViewState": "AQIAAIwBAAAAAAAAAAAiwKwBAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2024-05-21T23:05:39.435Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "atomic.h",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\kernel\\atomic.h",
+              "RelativeDocumentMoniker": "include\\kernel\\atomic.h",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\kernel\\atomic.h",
+              "RelativeToolTip": "include\\kernel\\atomic.h",
+              "ViewState": "AQIAAEcBAAAAAAAAAAAAAEkBAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-05-18T13:56:02.392Z",
+              "WhenOpened": "2024-05-21T23:02:59.895Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "miniport.h",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\miniport.h",
+              "RelativeDocumentMoniker": "include\\WinAPI\\NtAPI\\miniport.h",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\miniport.h",
+              "RelativeToolTip": "include\\WinAPI\\NtAPI\\miniport.h",
+              "ViewState": "AQIAAEMCAAAAAAAAAAAAAFcCAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2024-05-21T22:57:32.732Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "miniport.cpp",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\API\\WinAPI\\KernelAPI\\NTAPI\\miniport.cpp",
+              "RelativeDocumentMoniker": "API\\WinAPI\\KernelAPI\\NTAPI\\miniport.cpp",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\API\\WinAPI\\KernelAPI\\NTAPI\\miniport.cpp",
+              "RelativeToolTip": "API\\WinAPI\\KernelAPI\\NTAPI\\miniport.cpp",
+              "ViewState": "AQIAAB8AAAAAAAAAAAAAADYAAAAIAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-05-21T22:56:39.77Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ntddk.h",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\ntddk.h",
+              "RelativeDocumentMoniker": "include\\WinAPI\\NtAPI\\ntddk.h",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\WinAPI\\NtAPI\\ntddk.h",
+              "RelativeToolTip": "include\\WinAPI\\NtAPI\\ntddk.h",
+              "ViewState": "AQIAAP8AAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2024-05-21T20:19:09.685Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "KernelLib.cpp",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\API\\LouAPI\\KernelAPI\\LouKernelAPI\\KernelLib.cpp",
+              "RelativeDocumentMoniker": "API\\LouAPI\\KernelAPI\\LouKernelAPI\\KernelLib.cpp",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\API\\LouAPI\\KernelAPI\\LouKernelAPI\\KernelLib.cpp",
+              "RelativeToolTip": "API\\LouAPI\\KernelAPI\\LouKernelAPI\\KernelLib.cpp",
+              "ViewState": "AQIAAC0AAAAAAAAAAAAAAEIAAAAxAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-05-21T19:35:45.038Z",
               "EditorCaption": ""
             }
           ]

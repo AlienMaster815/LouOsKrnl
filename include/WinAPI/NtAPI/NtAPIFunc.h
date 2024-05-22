@@ -6,6 +6,9 @@
 typedef void* HANDLE;
 
 
+typedef CHAR** PSTR;
+typedef NTSTATUS* PNTSTATUS;
+
 typedef struct _OFFSETINSTANCEDATAANDLENGTH {
     ULONG OffsetInstanceData;
     ULONG LengthInstanceData;
@@ -39,36 +42,21 @@ typedef UCHAR KIRQL;
 //  and replace these with the actual definition
 
 //Filler Types Until Found
-typedef void* PETHREAD;
-typedef void* KAPC;
-typedef void* ACCESS_MASK;
 typedef void* FILE_INTERNAL_INFORMATION;
-//typedef void* PMEM_EXTENDED_PARAMETER;
-typedef void* USN;
 typedef void* PREPARSE_DATA_BUFFER;
 typedef void* PFILE_TIMESTAMPS;
-typedef void* POBJECT_ATTRIBUTES;
-typedef void* PHANDLE;
-typedef void* PIO_APC_ROUTINE;
 typedef void* TOKEN_TYPE;
-typedef void* PPRIVILEGE_SET;
-typedef void* PBOOLEAN;
-typedef void* FILE_INFORMATION_CLASS;
+typedef BOOLEAN* PBOOLEAN;
 typedef void* OBJECT_INFORMATION_CLASS;
-typedef void* SECURITY_INFORMATION;
+typedef ULONG SECURITY_INFORMATION;
 typedef void* MEMORY_INFORMATION_CLASS;
-typedef void* FS_INFORMATION_CLASS;
-typedef void* THREADINFOCLASS;
 typedef void* TOKEN_INFORMATION_CLASS;
-typedef void* PPOWER_SETTING_CALLBACK;
-typedef void* EXECUTION_STATE;
-typedef void* PSTRING;
-typedef void* PCWCH;
-typedef void* PCCH;
-typedef void* EVENT_TYPE;
+typedef ULONG EXECUTION_STATE;
+typedef const WCHAR* PCWCH;
+typedef const CHAR* PCCH;
 typedef void* VIRTUAL_MEMORY_INFORMATION_CLASS;
 typedef void* PMEMORY_RANGE_ENTRY;
-typedef void* PCSZ;
+typedef const char* PCSZ;
 typedef void* PSYSCTL_IRP_DISPOSITION;
 typedef void* PWMI_QUERY_REGINFO;
 typedef void* PWMI_QUERY_DATABLOCK;
@@ -76,26 +64,20 @@ typedef void* PWMI_SET_DATABLOCK;
 typedef void* PWMI_SET_DATAITEM;
 typedef void* PWMI_FUNCTION_CONTROL;
 typedef void* PWMI_EXECUTE_METHOD;
-typedef void* PCI_CAPABILITIES_HEADER;
-typedef void* PINTERFACE_REFERENCE;
 typedef void* EMULATOR_PORT_ACCESS_TYPE;
-typedef void* PINTERFACE_DEREFERENCE;
-typedef void* EISA_MEMORY_TYPE;
-typedef void* EISA_IRQ_DESCRIPTOR;
-typedef void* DMA_CONFIGURATION_BYTE0;
-typedef void* DMA_CONFIGURATION_BYTE1;
-typedef void* EISA_PORT_DESCRIPTOR;
-typedef void* NTSTRSAFE_PSTR;
-typedef void* NTSTRSAFE_PCSTR;
-typedef void* NTSTRSAFE_PWSTR;
-typedef void* NTSTRSAFE_PCWSTR;
-typedef void* STRSAFE_PCNZCH;
-typedef void* STRSAFE_PCNZWCH;
-typedef void* STRSAFE_PCUNZWCH;
+typedef PSTR NTSTRSAFE_PSTR;
+typedef PCSTR NTSTRSAFE_PCSTR;
+typedef PWSTR NTSTRSAFE_PWSTR;
+typedef PCWSTR NTSTRSAFE_PCWSTR;
+typedef const char* PCNZCH;
+typedef const wchar_t* PCNZWCH;
+typedef const unsigned short* PCUNZWCH;
+typedef PCNZCH STRSAFE_PCNZCH;
+typedef PCNZWCH STRSAFE_PCNZWCH;
+typedef PCUNZWCH STRSAFE_PCUNZWCH;
 typedef void* PEPHANDLE;
-typedef void* PACPI_METHOD_ARGUMENT;
+typedef void* PACPI_METHOD_ARGUMENT; //Start Here
 typedef void* POHANDLE;
-//typedef void* PPO_FX_COMPONENT_IDLE_STATE;
 typedef void* PPEPCALLBACKNOTIFYDPM;
 typedef void* PPEPCALLBACKNOTIFYPPM;
 typedef void* PPEPCALLBACKNOTIFYACPI;
@@ -146,7 +128,6 @@ typedef void* XSTATE_CONFIGURATION;
 typedef void* PPHYSICAL_COUNTER_EVENT_BUFFER_OVERFLOW_HANDLER;
 typedef void* PPHYSICAL_COUNTER_OVERFLOW_HANDLER;
 typedef void* UUID;
-typedef void* PHANDLE;
 typedef void* PGENERIC_MAPPING;
 typedef void* PKTHREAD;
 typedef void* PBOOT_DRIVER_CALLBACK_FUNCTION;
@@ -163,7 +144,6 @@ typedef void* PZZWSTR;
 typedef void* PGET_LOCATION_STRING;
 typedef void* PESILO;
 typedef void* SILO_CONTEXT_CLEANUP_CALLBACK;
-//typedef void* POOL_TYPE;
 typedef void* PEJOB;
 typedef void* PSILO_MONITOR;
 typedef void* PCREATE_THREAD_NOTIFY_ROUTINE;
@@ -171,7 +151,6 @@ typedef void* PLOAD_IMAGE_NOTIFY_ROUTINE;
 typedef void* PCREATE_PROCESS_NOTIFY_ROUTINE;
 typedef void* PCREATE_PROCESS_NOTIFY_ROUTINE_EX;
 typedef void* PRTL_RUN_ONCE;
-typedef void* STRING;
 typedef void* PCORRELATION_VECTOR;
 typedef void* PACCESS_MASK;
 typedef void* PRTL_RUN_ONCE_INIT_FN;
@@ -236,7 +215,6 @@ typedef void* PGPE_DISABLE_EVENT2;
 typedef void* PGPE_CLEAR_STATUS2;
 typedef void* PREGISTER_FOR_DEVICE_NOTIFICATIONS2;
 typedef void* PUNREGISTER_FOR_DEVICE_NOTIFICATIONS2;
-typedef void* PINTERFACE_REFERENCE;
 typedef void* PTRANSLATE_BUS_ADDRESS;
 typedef void* PGET_DMA_ADAPTER;
 typedef void* PGET_SET_DEVICE_DATA;
@@ -325,12 +303,10 @@ typedef void* PEX_TIMER;
 typedef void* PEXT_CALLBACK;
 typedef void* PEXT_CANCEL_PARAMETERS;
 typedef void* PCALLBACK_OBJECT;
-//typedef void* POOL_CREATE_EXTENDED_PARAMS;
 typedef void* FIRMWARE_TYPE;
 typedef void* PALLOCATE_FUNCTION_EX;
 typedef void* PFREE_FUNCTION_EX;
 typedef void* PEX_PUSH_LOCK;
-//typedef void* PSLIST_ENTRY;
 typedef void* PSLIST_HEADER;
 typedef void* PCALLBACK_FUNCTION;
 typedef void* ERESOURCE_THREAD;
@@ -347,7 +323,6 @@ typedef void* IO_CONNECT_INTERRUPT_MESSAGE_BASED_PARAMETERS;
 typedef void* PSECURITY_QUALITY_OF_SERVICE;
 typedef void* PACCESS_STATE;
 typedef void* PNAMED_PIPE_CREATE_PARAMETERS;
-//typedef void* PMAILSLOT_CREATE_PARAMETERS;
 typedef void* DIRECTORY_NOTIFY_INFORMATION_CLASS;
 typedef void* PFILE_GET_QUOTA_INFORMATION;
 typedef void* DEVICE_RELATION_TYPE;
@@ -359,7 +334,6 @@ typedef void* PKIRQL;
 typedef void* PIO_REMOVE_LOCK;
 typedef void* PIO_WORKITEM;
 typedef void* PSHARE_ACCESS;
-//typedef void* PLINK_SHARE_ACCESS;
 typedef void* PKSERVICE_ROUTINE;
 typedef void* CREATE_FILE_TYPE;
 typedef void* PKSTART_ROUTINE;
@@ -454,7 +428,6 @@ typedef void* PPTM_DEVICE_QUERY_TIME_SOURCE;
 typedef void* PPTM_DEVICE_ENABLE;
 typedef void* PPTM_DEVICE_DISABLE;
 typedef void* PCANSI_STRING;
-typedef void* PANSI_STRING;
 typedef void* PRTL_BITMAP;
 typedef void* PRTL_BITMAP_RUN;
 typedef void* PUTF8_STRING;
@@ -477,8 +450,6 @@ typedef void* SECTION_INHERIT;
 
 
 
-typedef CHAR** PSTR;
-typedef NTSTATUS* PNTSTATUS;
 
 #define POOL_EXTENDED_PARAMETER_TYPE_BITS 1
 #define POOL_EXTENDED_PARAMETER_REQUIRED_FIELD_BITS 1
@@ -486,7 +457,6 @@ typedef NTSTATUS* PNTSTATUS;
 #define MEM_EXTENDED_PARAMETER_TYPE_BITS 1
 //ENDOF: TODO LIST\n
 
-typedef char* ANSI_STRING;
 typedef uintptr_t PHYSICAL_ADDRESS;
 
 
@@ -518,7 +488,7 @@ VOID RtlCopyUnicodeString(_Inout_ PUNICODE_STRING DestinationString, _In_opt_ PU
 ULONG DbgPrint(_In_z_ _Printf_format_string_ PCSTR Format, ...);
 ULONG DbgPrintEx ( _In_ ULONG ComponentId, _In_ ULONG Level, _In_z_ _Printf_format_string_ PCSTR Format, ...);
 
-
+#include "Misc/undocumentedTypes.h"
 #include "aux_klib.h"
 #include "ioaccess.h"
 #include "miniport.h"

@@ -63,7 +63,7 @@ NTSTATUS AuxKlibGetSystemFirmwareTable(
 		BufferLength,
 		ReturnLength);
 
-	DriverApiTranslatedStatus = TRANSLATE_STATUS(LouKStatus);
+	DriverApiTranslatedStatus = (NTSTATUS)LouKStatus;
 
 	return DriverApiTranslatedStatus;
 }

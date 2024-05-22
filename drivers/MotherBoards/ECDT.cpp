@@ -46,7 +46,7 @@ LOUDDK_API_ENTRY LOUSTATUS InitECDT() {
         'ACPI',
         'ECDT',
         Buffer,
-        0,
+        ACPIBUFFER,
         &ReturnLength
     );
 

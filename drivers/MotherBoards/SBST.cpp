@@ -36,7 +36,7 @@ LOUDDK_API_ENTRY LOUSTATUS InitSBST() {
 	'ACPI',
 	'SBST',
 	Buffer,
-	0,
+	ACPIBUFFER,
 	&ReturnLength
 	);
 

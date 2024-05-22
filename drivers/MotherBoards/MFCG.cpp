@@ -51,7 +51,7 @@ LOUDDK_API_ENTRY LOUSTATUS InitMCFG() {
         'ACPI',
         'MCFG',
         Buffer,
-        0,
+        ACPIBUFFER,
         &ReturnLength
     );
 

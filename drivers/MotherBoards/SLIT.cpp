@@ -40,7 +40,7 @@ LOUDDK_API_ENTRY LOUSTATUS InitSLIT() {
         'ACPI',
         'SLIT',
         Buffer,
-        0,
+        ACPIBUFFER,
         &ReturnLength
     );
 

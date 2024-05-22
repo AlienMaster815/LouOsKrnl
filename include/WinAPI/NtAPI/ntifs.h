@@ -5,7 +5,7 @@
 #include <LouDDK.h>
 #include "ntoapi.h"
 #include "irp.h"
-
+#include "Misc/undocumentedTypes.h"
 typedef struct _ACE_HEADER {
 	UCHAR  AceType;
 	UCHAR  AceFlags;

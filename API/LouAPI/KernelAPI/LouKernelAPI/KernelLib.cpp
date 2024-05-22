@@ -64,7 +64,8 @@ LOUSTATUS LouKeGetSystemFirmwareTable(
 		&BufferLength
 	);
 	if (Status != LOUSTATUS_GOOD) {
-		LouPrint("Firmware Table Could Not Be Created\n");
+		LouPrint("Firmware Table Could Not Be Created\nREASON: ");
+		if(Status == (LOUSTATUS)STATUS_BUFFER_TOO_SMALL)LouPrint("Buffer Too Small\n");
 		return Status;
 	}
 
@@ -72,3 +73,4 @@ LOUSTATUS LouKeGetSystemFirmwareTable(
 
 	return Status;
 }
+ 

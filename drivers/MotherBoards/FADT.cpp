@@ -106,7 +106,7 @@ LOUDDK_API_ENTRY LOUSTATUS InitFADT(){
         'ACPI',
         'FADT',
         Buffer,
-        0,
+        ACPIBUFFER,
         &ReturnLength
     );
 

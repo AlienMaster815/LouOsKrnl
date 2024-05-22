@@ -2,18 +2,15 @@
   "ExpandedNodes": [
     "",
     "\\API",
-    "\\API\\LouAPI",
-    "\\API\\LouAPI\\KernelAPI",
-    "\\API\\LouAPI\\KernelAPI\\LouKernelAPI",
+    "\\API\\WinAPI",
+    "\\API\\WinAPI\\KernelAPI",
     "\\include",
     "\\include\\kernel",
     "\\include\\WinAPI",
-    "\\include\\WinAPI\\NtAPI",
-    "\\include\\WinAPI\\NtAPI\\Misc",
     "\\kernel",
     "\\kernel\\BinaryHandleing",
-    "\\kernel\\memory"
+    "\\kernel\\BinaryHandleing\\atomic"
   ],
-  "SelectedNode": "\\Config",
+  "SelectedNode": "\\API\\WinAPI\\KernelAPI\\NTAPI\\miniport.cpp",
   "PreviewInSolutionExplorer": false
 }

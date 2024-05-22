@@ -211,9 +211,9 @@ LOUDDK_API_ENTRY LOUSTATUS InitApicSystems() {
 
     UnSetInterruptFlags();
 
-    Status = AuxKlibGetSystemFirmwareTable('ACPI', 'APIC', Buffer, 0, &ReturnLength);
+    Status = AuxKlibGetSystemFirmwareTable('ACPI', 'APIC', Buffer, ACPIBUFFER, &ReturnLength);
     if (Status != LOUSTATUS_GOOD) {
-        Status = AuxKlibGetSystemFirmwareTable('ACPI', 'MADT', Buffer, 0, &ReturnLength);
+        Status = AuxKlibGetSystemFirmwareTable('ACPI', 'MADT', Buffer, ACPIBUFFER, &ReturnLength);
     }
     if (Status != LOUSTATUS_GOOD) return STATUS_UNSUCCESSFUL;
 
@@ -232,8 +232,10 @@ LOUDDK_API_ENTRY LOUSTATUS InitApicSystems() {
     if (EnableApic()) {
         LouPrint("Local APIC Enabled\n");
     }
-    else return STATUS_UNSUCCESSFUL;
-
+    else {
+        LouFree(Buffer, ACPIBUFFER);
+        return STATUS_UNSUCCESSFUL;
+    }
 
     SetInterruptFlags();
 

@@ -66,6 +66,7 @@ LOUSTATUS LouKeSetSmbios(uintptr_t SMBIOS) {
 	SMBIOS_MASTER = (SMBIOS_LOOKUP*)SMBIOS;
 	
 	LouPrint("SMBIOS Address Is:%d\n", SMBIOS_MASTER);
+	return LOUSTATUS_GOOD;
 }
 
 LOUSTATUS LouKeSetRsdp(uintptr_t RSDP,uint8_t Type) {
@@ -81,7 +82,7 @@ LOUSTATUS LouKeSetRsdp(uintptr_t RSDP,uint8_t Type) {
 LOUSTATUS LouKeSetApm(struct multiboot_tag_apm* APM) {
 
 	APM_MASTER = APM;
-
+	return LOUSTATUS_GOOD;
 }
 
 LOUSTATUS LouKeGetSystemFirmwareTableProviderSignature(
@@ -91,7 +92,7 @@ LOUSTATUS LouKeGetSystemFirmwareTableProviderSignature(
 	uint8_t* Type) {
 
 
-	LOUSTATUS Status = -LOUSTATUS_GOOD;
+	LOUSTATUS Status = (LOUSTATUS)STATUS_INVALID_PARAMETER;
 
 
 	if ('ACPI' == FirmwareTableProviderSignature) {
@@ -99,7 +100,7 @@ LOUSTATUS LouKeGetSystemFirmwareTableProviderSignature(
 		PRSDP_Descriptor Rsdp = (PRSDP_Descriptor)RSDP_MASTER;
 
 		if (strncmp("RSD PTR", (const char*)Rsdp->signature, 7) != 0) {
-			return -LOUSTATUS_GOOD;
+			return (LOUSTATUS)STATUS_FIRMWARE_IMAGE_INVALID;
 		}
 		if (TYPE_MASTER == 1) {
 			LouMapAddress((uint64_t)Rsdp, (uint64_t)Rsdp, KERNEL_PAGE_WRITE_PRESENT);
@@ -153,7 +154,7 @@ LOUSTATUS LouKeGetSystemFirmwareTableId(
 	uintptr_t* TableExtendedPointer,
 	uint8_t* Type
 ) {
-	LOUSTATUS Status = !LOUSTATUS_GOOD;
+	LOUSTATUS Status = (LOUSTATUS)STATUS_UNSUCCESSFUL;
 
 	char MasterString[sizeof(int)];
 
@@ -215,7 +216,7 @@ LOUSTATUS LouKeGetSystemFirmwareTableId(
 	}
 
 
-	return Status;
+	return STATUS_INVALID_PARAMETER;
 }
 
 
@@ -231,8 +232,12 @@ LOUSTATUS LouKeGetSystemFirmwareTableBuffer(
 
 	if (SystemType == 'ACPI') {
 		PACPI_STD_HEADER Fubar = (PACPI_STD_HEADER)FirmwareTableBufferSrc;
-		if (Fubar->Size < ResultBufferLength) ResultBufferLength = Fubar->Size;
-		else if (ResultBufferLength == 0)ResultBufferLength = Fubar->Size;
+		
+
+
+		if (Fubar->Size > ResultBufferLength) return (LOUSTATUS)STATUS_BUFFER_TOO_SMALL;
+		
+		else if ((ResultBufferLength >= Fubar->Size) || (ResultBufferLength == 0))ResultBufferLength = Fubar->Size;
 	}
 
 	memcpy(FirmwareTableBufferDest, FirmwareTableBufferSrc, ResultBufferLength);

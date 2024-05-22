@@ -103,7 +103,7 @@ LOUDDK_API_ENTRY LOUSTATUS InitDSDT() {
         'ACPI',
         'FADT',
         Buffer,
-        0,
+        ACPIBUFFER,
         &ReturnLength
     );
 

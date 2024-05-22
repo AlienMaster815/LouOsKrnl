@@ -50,7 +50,7 @@ LOUDDK_API_ENTRY LOUSTATUS InitHPET() {
         'ACPI',
         'HPET', 
         Buffer, 
-        0, 
+        ACPIBUFFER, 
         &ReturnLength
     );
 
