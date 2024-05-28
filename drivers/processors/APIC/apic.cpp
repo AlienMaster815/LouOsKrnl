@@ -477,6 +477,7 @@ void InitApic0() {
 
 
 
+
 LOUDDK_API_ENTRY LOUSTATUS InitApicSystems() {
     LOUSTATUS Status = LOUSTATUS_GOOD;
 

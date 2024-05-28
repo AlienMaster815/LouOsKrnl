@@ -64,7 +64,7 @@
               "RelativeDocumentMoniker": "drivers\\processors\\APIC\\apic.cpp",
               "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\processors\\APIC\\apic.cpp",
               "RelativeToolTip": "drivers\\processors\\APIC\\apic.cpp",
-              "ViewState": "AQIAALIBAAAAs////38ZwNsBAAABAAAA",
+              "ViewState": "AQIAALIBAAAAs////38ZwNwBAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-05-22T09:26:08.651Z",
               "IsPinned": true,
@@ -81,8 +81,7 @@
               "ViewState": "AQIAAFIAAACA+////78twHMAAAADAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2024-05-25T18:15:08.321Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Bookmark",
@@ -170,8 +169,7 @@
               "RelativeToolTip": "kernel\\processors\\x86_64\\InterruptHandling\\APIC\\apic.c",
               "ViewState": "AQIAAAwAAAAATGZmZmYBwCEAAAAFAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
-              "WhenOpened": "2024-05-25T20:13:33.212Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-05-25T20:13:33.212Z"
             },
             {
               "$type": "Document",
