@@ -111,14 +111,13 @@ int ioapic_count = 0;
 uint64_t localAPICOverrideAddress = 0xFEE00000; // Default APIC base address
 KERNEL_IMPORT uint64_t read_msr(uint32_t msr);
 KERNEL_IMPORT void write_msr(uint32_t msr, uint64_t Value);
-KERNEL_IMPORT void SetInterruptFlags();
-KERNEL_IMPORT void UnSetInterruptFlags();
+
 KERNEL_IMPORT void disable_pic();
 
 
 static uint64_t LocalApicBase = 0xFEE00000;
 
-void* CoProcessorsLapicAddresses[256] = { 0 };
+//void* CoProcessorsLapicAddresses[256] = { 0 };
 
 
 void ParseAPIC(uint8_t* entryAddress, uint8_t* endAddress) {
@@ -173,7 +172,7 @@ void ParseAPIC(uint8_t* entryAddress, uint8_t* endAddress) {
     }
 }
 
-bool ApicSet = false;
+static bool ApicSet = false;
 
 LOUDDK_API_ENTRY bool GetAPICStatus() {
     return ApicSet;
@@ -181,188 +180,311 @@ LOUDDK_API_ENTRY bool GetAPICStatus() {
 
 #define IA32_APIC_BASE_MSR 0x1B
 #define MSR_BASE_MASK 0xFFFFFFFFF000ULL
+#define IA32_X2APIC_BASE_MSR_ADDR 0x802
+#define MSR_BASE_MASKX2 0xFFFFFFFFFFFFF000
+
+int IsX2ApicSupported() {
+    uint32_t eax, ebx, ecx, edx;
+    __asm__ volatile (
+        "cpuid"
+        : "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
+        : "a"(1)
+        );
+    return ecx & (1 << 21);  // Check if the 21st bit of ecx is set
+}
 
 uint64_t GetLocalApicBase() {
-    uint64_t BASE = read_msr(IA32_APIC_BASE_MSR);
-    BASE &= MSR_BASE_MASK;
-    return BASE;
-}
-
-
-
-#define INTERRUPTENABLEBIT 8
-#define IA32_APIC_BASE_MSR_ENABLE 0x800
-
-KERNEL_IMPORT void SetPageingDebug();
-KERNEL_IMPORT void StartPagingDump();
-
-//NOTE: So According to the documentation all ports are 32 bit however they are
-// alligned by 16 bits wich defies all logic and reasonable sence but whatever
-// Registers are define below
-#define LAPICID_REGISTER                             (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x20)   //RW
-#define LAPICVER_REGISTER                            (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x30)   //RO
-#define TPR_REGISTER                                 (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x80)   //RW
-#define APR_REGISTER                                 (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x90)   //RO
-#define PPR_REGISTER                                 (ULONG*)(UCHAR*)(GetLocalApicBase() + 0xA0)   //RW
-#define EOI_REGISTER                                 (ULONG*)(UCHAR*)(GetLocalApicBase() + 0xB0)   //WO //Its Using the Chewbacka defence but whatever
-#define RRD_REGISTER                                 (ULONG*)(UCHAR*)(GetLocalApicBase() + 0xC0)   //RO
-#define LOGICAL_DESTINATION_REGISTER                 (ULONG*)(UCHAR*)(GetLocalApicBase() + 0xD0)   //RW
-#define DESTINATION_FORMAT_REGISTER                  (ULONG*)(UCHAR*)(GetLocalApicBase() + 0xE0)   //RW
-#define SPURRIOUS_INTERRUPT_REGISTER                 (ULONG*)(UCHAR*)(GetLocalApicBase() + 0xF0)   //RW
-#define IN_SERVICE_REGISTER                          (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x100)  //RO //70h / 16 bit wide buffer
-#define TMR_REGISTER                                 (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x180)  //RO Same As Above
-#define IRR_REGISTER                                 (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x200)  //RO Same As Above
-#define ERR_STATUS_REGISTER                          (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x280)  //RO
-#define CMCI_REGISTER                                (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x2F0)  //RW
-#define ICR_REGISTER                                 (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x300)  //RW //2 * 16 bit Wide buffer
-#define LVT_TIMER_REGISTER                           (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x320)  //RW
-#define LVT_THERMAL_SENSOR_REGISTER                  (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x330)  //RW
-#define LVT_PERFORMANCE_MONITORING_COUNTERS_REGISTER (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x340)  //RW
-#define LVT_INT0_REGISTER                            (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x350)  //RW
-#define LVT_INT1_REGISTER                            (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x360)  //RW
-#define LVT_ERROR_REGISTER                           (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x370)  //RW
-#define LVT_INITIAL_COUNT_REGISTER                   (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x380)  //RW
-#define LVT_CURRENT_COUNT_REGISTER                   (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x390)  //RO
-#define LVT_DIVIDE_CONFIGURATION_REGISTER            (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x3E0)  //RW
-
-#define CMCI_OFFSET                               0
-#define ICR_OFFSET                                1
-#define TIMER_OFFSET                              3
-#define THERMAL_SENSOR_OFFSET                     4
-#define PERFORMANCE_MONITORING_COUNTERS_OFFSET    5
-#define INT0_OFFSET                               6
-#define INT1_OFFSET                               7
-#define ERROR_OFFSET                              8
-#define INITIAL_OFFSET                            9
-#define CURRENT_OFFSET                            10
-#define DIVIDE_CFG_OFFSET                         11
-
-//Now Define Commands
-#define ENDOFINTERRUPT 0x00
-
-BOOLEAN EnableApic() {
-    
-    //if the lapi is not a valid lapic version > 0 then i think we all know what that means
-    if(!READ_REGISTER_ULONG(LAPICVER_REGISTER))return false;
-
-    ULONG SIR_VALUE = READ_REGISTER_ULONG(SPURRIOUS_INTERRUPT_REGISTER);
-
-    if (LouKeTestBitAndSetU32((uint32_t*)&SIR_VALUE, 8))LouPrint("LAPIC Already Enabled\n");
-
-    WRITE_REGISTER_ULONG(SPURRIOUS_INTERRUPT_REGISTER, SIR_VALUE);
-
-    return true;
-}
-
-#define CALCULATEVECTORTABLEOFFSET (ULONG*)(UCHAR*)((uintptr_t)CMCI_REGISTER + (uintptr_t)(Offset * 16))
-
-#define MASKINGBIT 16
-#define INTRPENDINGBIT 12
-
-#define HARDWARE_SPACE 32
-
-#define TIMER HARDWARE_SPACE
-#define KEYBOARD HARDWARE_SPACE + 1
-
-void AssignInterruptVector(uint8_t VectorNumber,uint8_t Offset) {
-    ULONG SIR_VALUE = READ_REGISTER_ULONG(CALCULATEVECTORTABLEOFFSET); //Gets the VectorTable Entry
-    SIR_VALUE |= VectorNumber;
-    WRITE_REGISTER_ULONG(CALCULATEVECTORTABLEOFFSET,SIR_VALUE); //Writes the updated value
-}
-
-BOOLEAN ApicCheckPendingInterrupt(uint8_t Offset) {
-    ULONG SIR_VALUE = READ_REGISTER_ULONG(CALCULATEVECTORTABLEOFFSET); //Gets the VectorTable Entry
-    return LouKeTestBitU32((uint32_t*)&SIR_VALUE, INTRPENDINGBIT);
-}
-
-void MaskLocalInterruptVector(uint8_t Offset) {
-    ULONG SIR_VALUE = READ_REGISTER_ULONG(CALCULATEVECTORTABLEOFFSET); //Gets the VectorTable Entry
-    LouKeSetBitU32((uint32_t*)&SIR_VALUE, MASKINGBIT);
-    WRITE_REGISTER_ULONG(CALCULATEVECTORTABLEOFFSET,SIR_VALUE); //Writes the updated value
-}
-
-
-void UnMaskLocalInterruptVector(uint8_t Offset) {
-    ULONG SIR_VALUE = READ_REGISTER_ULONG(CALCULATEVECTORTABLEOFFSET); //Gets the VectorTable Entry
-    LouKeUnSetBitU32((uint32_t*)&SIR_VALUE, MASKINGBIT);
-    WRITE_REGISTER_ULONG(CALCULATEVECTORTABLEOFFSET, SIR_VALUE); //Writes the updated value
-}
-
-//Delivery Modes
-#define NORMAL_DELIVERY_MODE 0
-#define LOW_PRIORITY_MODE    1
-#define SMI_MODE             2
-#define NMI_MODE             4
-#define INIT_MODE            5
-#define SIPI_MODE            6
-//Define Delivery Methods
-#define PHYSICAL_DESTINATION 0
-#define LOGICAL_DESTINATION  1
-//define Delivery Statuses
-#define INTERRUPT_CLEARED    0
-#define INTERRUPT_PENDING    1
-//Define DeAssert Tags
-#define IS_DE_ASSERTED       true
-#define IS_NOT_DE_ASSERTED   false
-//Define DT
-#define DEFATULT_DT                        0
-#define DT_TO_ITSELF                       1
-#define DT_SEND_ALL_PROCESSORS             2
-#define DT_SEND_ALL_PROCESSORS_BUT_ITSELF  3
-
-void SendLocalApicInterruptCommand(
-    uint8_t InterruptNumber,
-    uint8_t DeliveryMode, 
-    uint8_t DeliveryMethod,
-    //uint8_t DeliveryStatus,
-    BOOLEAN DeAssert,
-    uint8_t DT
-) {
-    
-    ULONG ICR_VALUE = READ_REGISTER_ULONG(ICR_REGISTER);
-    ICR_VALUE |= InterruptNumber;
-    ICR_VALUE |= (8 << DeliveryMode);
-    ICR_VALUE |= (11 << DeliveryMethod);
-    //ICR_VALUE |= (12 << DeliveryStatus);
-
-    if (!DeAssert) {
-        LouKeSetBitU32((uint32_t*)&ICR_VALUE, 15);
-        LouKeUnSetBitU32((uint32_t*)&ICR_VALUE, 14);
+    if (IsX2ApicSupported()) {
+        uint64_t base;
+        __asm__ volatile("rdmsr" : "=A"(base) : "c"(IA32_X2APIC_BASE_MSR_ADDR));
+        return base & MSR_BASE_MASKX2;
     }
     else {
-        LouKeSetBitU32((uint32_t*)&ICR_VALUE, 14);
-        LouKeUnSetBitU32((uint32_t*)&ICR_VALUE, 15);
+        uint64_t base = read_msr(IA32_APIC_BASE_MSR);
+        return base & MSR_BASE_MASK;
+    }
+}
+
+KERNEL_IMPORT void StartPagingDump();
+KERNEL_IMPORT void SetPageingDebug();
+
+#define IA32_APIC_BASE 0x1B
+#define GlobalEnableBit 0x800
+#define BspBit 0x80
+
+#define DISABLE false
+#define ENABLE true
+
+#define BspFlag 0
+#define GlobalEnableFlag 1
+
+void GetLapicStatus(PBOOLEAN Flags) {
+    uint64_t MSRApic = read_msr(IA32_APIC_BASE);
+    if(MSRApic & BspBit) Flags[BspFlag] = true;
+    else Flags[BspFlag] = false;
+    if (MSRApic & GlobalEnableBit) Flags[GlobalEnableFlag] = true;
+    else Flags[GlobalEnableFlag] = false;
+    
+}
+
+
+void ReMapApic(uintptr_t new_base_address) {
+    // Define the IA32_APIC_BASE MSR address
+    //#define IA32_APIC_BASE 0x1B
+
+// Read the current value of IA32_APIC_BASE MSR
+    uint64_t apic_base_msr_value = read_msr(IA32_APIC_BASE);
+
+    // Mask to clear the base address field
+    uint64_t base_address_mask = ~(0xFFFFFFFFFFFFF000ULL);
+
+    // Set the new base address in the IA32_APIC_BASE MSR value
+    apic_base_msr_value &= base_address_mask; // Clear the base address field
+    apic_base_msr_value |= (new_base_address & 0xFFFFFFFFFFFFF000ULL); // Set the new base address
+
+    // Write the modified value back to the IA32_APIC_BASE MSR
+    write_msr(IA32_APIC_BASE, apic_base_msr_value);
+}
+
+
+
+BOOLEAN EnableDisableGlobal(BOOLEAN IsEnableing){
+
+    UNUSED uint64_t APICMsr = read_msr(IA32_APIC_BASE);
+
+    if (IsEnableing) {
+        // we are enableing the chip
+        if (APICMsr & GlobalEnableBit) {
+            //chip is already enabled do nothing
+            LouPrint("Chip Is Already Enabled\n");
+            return true;
+        }
+        else{
+            //it is not awake wake it up
+            LouPrint("Wakeing APIC\n");
+        }
+    }
+    else {
+        // we are disableing the chip
+        if (APICMsr & GlobalEnableBit) {
+            //chip is enabled shut it down
+            LouPrint("Chip Is Enabled Shutting Down Per Request\n");
+            APICMsr &= ~GlobalEnableBit;
+            write_msr(IA32_APIC_BASE, APICMsr);
+            LouPrint("Chip Is Now Disabled\n");
+            return true;
+        }
+        else {
+            //it is not awake do nothing up
+            LouPrint("APIC Is Already Disabled\n");
+            return true;
+        }
     }
 
-    ICR_VALUE |= (DT << 18);
+    return false;
 
 }
 
-LOUSTATUS InitLocalVectorTable() {
-    LOUSTATUS Status = LOUSTATUS_GOOD;
+BOOLEAN EnableDisableSoftware(BOOLEAN IsEnableing) {
+    UNUSED ULONG Spurrious = READ_REGISTER_ULONG(SPURRIOUS_INTERRUPT_REGISTER);
 
-    AssignInterruptVector(TIMER, TIMER_OFFSET);
-    SendLocalApicInterruptCommand(
-        TIMER,
-        NORMAL_DELIVERY_MODE,
-        PHYSICAL_DESTINATION,
-        IS_NOT_DE_ASSERTED,
-        DEFATULT_DT
-    );
-    UnMaskLocalInterruptVector(TIMER_OFFSET);
+    if (IsEnableing){
+        // We Are enabling the chip
+        if ((Spurrious >> 8) & 1) {
+            //Apic already enabled do nothing
+            LouPrint("Apic Already Enabled\n");
+            return true;
+        }
+        else {
+            LouPrint("Enableing Apic\n");
+            Spurrious |= (1 << 8);
+            LouPrint("Apic Enabled\n");
+            WRITE_REGISTER_ULONG(SPURRIOUS_INTERRUPT_REGISTER, Spurrious);
+            return true;
+        }
+    }
+    else {
+        // We are disableing the chip
+        if ((Spurrious >> 8) & 1) {
+            //Apic Enabled Disable It
+            LouPrint("Apic Enabled Disableing Per Request\n");
+            Spurrious &= ~(1 << 8);
+            LouPrint("Apic Disabled\n");
+            WRITE_REGISTER_ULONG(SPURRIOUS_INTERRUPT_REGISTER, Spurrious);
+            return true;
+        }
+        else {
+            LouPrint("Apic Already Disabled\n");
+            return true;
+        }
+    }
 
-    return Status;
+    return false;
+
+}
+
+
+uint32_t GetApicID(BOOLEAN IsAPICx2) {
+
+    if (IsAPICx2) {
+        //the system is different in 2.0
+        uint32_t x2apic_id;
+
+        // Execute RDMSR instruction to read the x2APIC ID
+        asm volatile(
+            "movl $0x802, %%ecx\n\t"  // Set ECX to 0x802 for IA32_X2APIC_APICID MSR
+            "rdmsr\n\t"               // Read IA32_X2APIC_APICID MSR
+            "movl %%eax, %0\n\t"      // Move value in EAX register to x2apic_id variable
+            : "=r" (x2apic_id)        // Output operand (x2apic_id) in "=r" constraint
+            :                          // No input operands
+            : "%eax", "%ecx", "%edx"  // List of clobbered registers
+            );
+
+        // Extract the x2APIC ID
+        return x2apic_id;
+    }
+    else {
+        uint32_t apic_id;
+
+        // Execute CPUID instruction to get the xAPIC ID
+        asm volatile(
+            "movl $1, %%eax\n\t"   // Set EAX to 1 to indicate we want processor info
+            "cpuid\n\t"            // Execute CPUID instruction
+            "movl %%ebx, %0\n\t"   // Move value in EBX register to apic_id variable
+            : "=r" (apic_id)       // Output operand (apic_id) in "=r" constraint
+            :                      // No input operands
+            : "%eax", "%ebx", "%ecx", "%edx" // List of clobbered registers
+            );
+
+        // Extract the xAPIC ID from bits 31-24
+        return (apic_id >> 24) & 0xFF;
+    }
+}
+
+
+#define UNKNOWN 0
+#define PWR_RESET 1
+#define SOFTWARE_DISABLE 2
+uint8_t GetApicState() {
+
+    UNUSED ULONG IRR = 0, ISR = 0, \
+                 TMR = 0, ICR = 0, \
+                 LDR = 0, TPR = 0, \
+                 LIC = 0, DCR = 0, \
+                 DFR = 0, \
+                 VER = 0, ID = 0, \
+                 SPUR = 0;
+    IRR = READ_REGISTER_ULONG(IRR_REGISTER); ISR = READ_REGISTER_ULONG(IN_SERVICE_REGISTER);
+    TMR = READ_REGISTER_ULONG(LVT_TIMER_REGISTER); ICR = READ_REGISTER_ULONG(ICR_REGISTER);
+    LDR = READ_REGISTER_ULONG(LOGICAL_DESTINATION_REGISTER); TPR = READ_REGISTER_ULONG(TPR_REGISTER);
+    LIC = READ_REGISTER_ULONG(LVT_INITIAL_COUNT_REGISTER); DCR = READ_REGISTER_ULONG(LVT_DIVIDE_CONFIGURATION_REGISTER);
+    DFR = READ_REGISTER_ULONG(DESTINATION_FORMAT_REGISTER);
+    SPUR= READ_REGISTER_ULONG(SPURRIOUS_INTERRUPT_REGISTER);
+
+    if ((IRR == 0) && (ISR == 0) && (TMR == 0) && (ICR == 0) && (LDR == 0) && (TPR == 0) &&
+        (LIC == 0) && (DCR == 0) &&
+        (DFR == 0xFFFFFFFF) && (((SPUR >> 8) & 1) == 0)) {
+        return PWR_RESET;
+    }
+    else if(((SPUR >> 8) & 1) == 0){
+        return SOFTWARE_DISABLE;
+    }
+
+    return UNKNOWN;
+}
+
+uint32_t GetApicVersion() {
+    uint32_t VER = READ_REGISTER_ULONG(LAPICVER_REGISTER);
+    VER &= 0xFF;
+    return VER;
+}
+
+uint32_t GetApicMaxLvtEntries() {
+    uint32_t VER = READ_REGISTER_ULONG(LAPICVER_REGISTER);
+    VER = (VER >> 16) & 0xFF;
+    return VER;
+}
+
+uint32_t SuppressApicEOI() {
+    uint32_t VER = READ_REGISTER_ULONG(LAPICVER_REGISTER);
+    VER = (VER >> 24) & 1;
+    return VER;
+}
+
+// create a function that will initialize the system for
+// initial interrupt handleing for threads
+void InitApic0() {
+    bool Apic2x = IsX2ApicSupported();
+
+    PBOOLEAN StatusBits = (PBOOLEAN)LouMalloc(sizeof(BOOLEAN) * 2);
+
+
+    if (Apic2x) {
+        LouPrint("APIC 2X Features Supported\n");
+    }
+    else {
+        LouPrint("APIC 1X Features Only\n");
+
+        GetLapicStatus(StatusBits);
+
+        LouPrint("Bsp:%d\n",StatusBits[BspFlag]);
+        LouPrint("GE:%d\n", StatusBits[GlobalEnableFlag]);
+
+        RAMADD NewApicAddress = (RAMADD)LouMalloc(4 * KILOBYTE);
+        
+        LouPrint("Atempting To Remap APIC\n");
+        ReMapApic((uintptr_t)NewApicAddress);
+        
+        if ((uint64_t)NewApicAddress != GetLocalApicBase()) {
+            LouPrint("APIC Remap Failed Using Default Address\n");
+            LouFree(NewApicAddress, 4 * KILOBYTE);
+        }
+        else {
+            LouPrint("New Address Is:%h\n", GetLocalApicBase());
+        }
+
+    }
+
+    uint32_t ID = GetApicID(Apic2x);
+    uint8_t State = GetApicState();
+    uint32_t APICVersion = GetApicVersion();
+    uint32_t APICLvtEntries = 6 + (GetApicMaxLvtEntries() + 1);
+    uint32_t APICLvtEOI = SuppressApicEOI();
+    LouPrint("APIC ID Is:%h\n", ID);
+    LouPrint("APIC Version Is:%h\n", APICVersion);
+    LouPrint("APIC Max LVT Entries Is:%d\n", APICLvtEntries);
+    LouPrint("APIC Max SLE Entries Is:%d\n", APICLvtEOI);
+    LouPrint("APIC State Is:%d\n", State);
+
+    if (State == UNKNOWN) {
+        //see if the processor responds
+        //to command probes
+        EnableDisableSoftware(DISABLE);// disable and see if it disables
+        if (GetApicState() != SOFTWARE_DISABLE) {
+            LouPrint("Fuck We Need To Reset The APIC\n");
+        }
+        else {
+            LouPrint("System Is Responding To Commands Continue As Normal\n");
+        }
+
+    }
+
+
+
+    LouFree((RAMADD)StatusBits, sizeof(BOOLEAN) * 2);
+
 }
 
 
 
 LOUDDK_API_ENTRY LOUSTATUS InitApicSystems() {
-    LOUSTATUS Status = STATUS_UNSUCCESSFUL;
+    LOUSTATUS Status = LOUSTATUS_GOOD;
 
     uint8_t* Buffer = (uint8_t*)LouMalloc(ACPIBUFFER);
     ULONG ReturnLength = 0x0000;
 
     UnSetInterruptFlags();
+    
 
     Status = AuxKlibGetSystemFirmwareTable(
         'ACPI', 
@@ -384,8 +506,6 @@ LOUDDK_API_ENTRY LOUSTATUS InitApicSystems() {
 
     PACPI_MADT ApicTable = (PACPI_MADT)Buffer;
 
-    disable_pic();
-
     uint8_t* EntryHeaderAddress = ((uint8_t*)Buffer + sizeof(ACPI_MADT));
     uint8_t* HeaderEndAddress = ((uint8_t*)Buffer + ApicTable->Header.Length);
     
@@ -394,37 +514,15 @@ LOUDDK_API_ENTRY LOUSTATUS InitApicSystems() {
         HeaderEndAddress
     );
 
-    //we are going to leave tha apic bases where they is now 
-    //in case the Driver Module Developer wants to move it
+    InitApic0();
 
-    if (EnableApic()) {
-        LouPrint("Local APIC Enabled\n");
-    }
-    else {
-        LouFree(Buffer, ACPIBUFFER);
-        return STATUS_UNSUCCESSFUL;
-    }
+    //SetInterruptFlags();
 
-    Status = InitLocalVectorTable();
-
-    if (Status != LOUSTATUS_GOOD) {
-        LouPrint("Unable To Initialize Local APIC Vector Table\n");
-        LouFree(Buffer, ACPIBUFFER);
-        return STATUS_UNSUCCESSFUL;
-    }
-
-    //Initialize the Main  APIC Timer For Thread Management
-    SetTimerMode(
-        PeriodicMode,
-        1000
-    );
-
-    SetInterruptFlags();
-
-    return LOUSTATUS_GOOD;
+    return Status;
 }
 
 
 LOUDDK_API_ENTRY void local_apic_send_eoi() {
     WRITE_REGISTER_ULONG(EOI_REGISTER, ENDOFINTERRUPT);
+    LouPrint("EOI\n");
 }

@@ -24,6 +24,7 @@
 // Constants for gigabyte and megabyte sizes
 #define GIGABYTE (1ULL << 30)  // 1 GB in bytes
 #define MEGABYTE (1ULL << 20)  // 1 MB in bytes
+#define KILOBYTE 1 * 1024
 
 #define PAGE_TABLE_ALLIGNMENT 4096
 #define PAGE_SIZE 4096
@@ -78,6 +79,8 @@ LOUSTATUS LouKeMapIO(uint64_t PADDRESS, uint64_t MemoryBuffer, uint64_t FLAGS);
 
 //2mb Entry
 #define KERNEL_PAGE_WRITE_PRESENT 0b10000011
+#define KERNEL_PAGE_WRITE_UNCAHEABLE_PRESENT 0b10010011
+
 
 typedef uint64_t pde_t; // Page Directory Entry
 typedef uint64_t pte_t; // Page Table Entry
@@ -97,8 +100,10 @@ void* align_memory(void* ptr, size_t alignment);
 
 #define GIGABYTE 0x40000000
 #define MEGABYTE 0x100000
+#define KILOBYTE 1 * 1024
 
 #define KERNEL_PAGE_WRITE_PRESENT 0b10000011
+#define KERNEL_PAGE_WRITE_UNCAHEABLE_PRESENT 0b10010011
 
 KERNEL_IMPORT void remove_padding(const void* struct_ptr, size_t struct_size, uint8_t* buffer);
 KERNEL_IMPORT void LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS);

@@ -106,9 +106,9 @@ void LouFree(RAMADD Addr, SIZE size) {
 
                 if ((Addr > (RAMADD)(address + limit)) || Addr < (RAMADD)address) continue;
 
-                for (uint64_t i = address; i < limit; i += PAGE_SIZE) {
-                    LouMapAddress(i, i, KERNEL_PAGE_WRITE_PRESENT);
-                }
+                //for (uint64_t i = address; i < limit; i += PAGE_SIZE) {
+                    //LouMapAddress(i, i, KERNEL_PAGE_WRITE_PRESENT);
+                //}
 
                 uint64_t Sector = limit - address;
                 uint64_t TotalAllocation = (Sector / 72) / 8;
@@ -197,13 +197,13 @@ void* LouMallocEx(size_t BytesToAllocate, uint64_t Flags) {
                 //LouPrint("Address Buffer Is:%d\n", limit);
 
 
-                for (uint64_t i = address; i < limit; i += PAGE_SIZE) {
-                    LouMapAddress(i, i, Flags);
-                }
-
                 uint64_t Sector = limit - address;
                 uint64_t TotoalAllocation = (Sector / 72) / 8; //Calculate the bitmap ratio of the memory by 8 for 64 bits per 64 bytes
 
+
+                for (uint64_t i = address; i < TotoalAllocation; i += PAGE_SIZE) {
+                    LouMapAddress(i, i, Flags);
+                }
 
                 BitMap = (uint64_t*)(uintptr_t)address;
 

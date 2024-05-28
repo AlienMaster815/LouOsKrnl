@@ -53,6 +53,11 @@ KERNEL_IMPORT int32_t LouKeAndOperationLong(
 	int32_t Value
 );
 
+KERNEL_IMPORT uint32_t LouKeAndOperationULong(
+	uint32_t volatile* Destination,
+	uint32_t Value
+);
+
 KERNEL_IMPORT uint16_t LouKeAndOperationUShort(
 	uint16_t volatile* Destination,
 	uint16_t Value

@@ -1,15 +1,13 @@
 {
   "ExpandedNodes": [
     "",
+    "\\boot",
+    "\\boot\\x86_64",
     "\\drivers",
-    "\\drivers\\processors",
-    "\\drivers\\processors\\APIC",
-    "\\init",
+    "\\include",
+    "\\include\\kernel",
     "\\kernel",
-    "\\kernel\\Interrupts",
-    "\\kernel\\Interrupts\\ISR_JUNK",
-    "\\kernel\\Interrupts\\ISR_JUNK\\Routines"
+    "\\kernel\\memory"
   ],
-  "SelectedNode": "\\drivers\\processors\\APIC\\apic.h",
   "PreviewInSolutionExplorer": false
 }

@@ -26,8 +26,8 @@ void InterruptRouter(uint8_t Interrupt) {
 
 	if (NULL != InterruptHandler[Interrupt]) {
 		InterruptHandler[Interrupt]();
-		if (GetAPICStatus())local_apic_send_eoi(); \
-		else PIC_sendEOI(Interrupt);
+		if (!GetAPICStatus())PIC_sendEOI(Interrupt);
+		else local_apic_send_eoi();
 		return;
 	}
 

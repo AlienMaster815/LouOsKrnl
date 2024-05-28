@@ -55,7 +55,9 @@ void LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS) {
     if (VAddress >= GIGABYTE && VAddress < (GIGABYTE * 512ULL)) {
         // Within the range of a single gigabyte
         L3Entry = count_gigabytes(VAddress);
-        L2Entry = (VAddress - (VAddress & ~(0x3FFFFFFF))) / (2ULL * MEGABYTE);
+        if ((VAddress - (count_gigabytes(VAddress) * GIGABYTE)) != 0) {
+            L2Entry = (VAddress - (count_gigabytes(VAddress) * GIGABYTE)) / (2ULL * MEGABYTE);
+        }
     }
     else {
         // Beyond the range of a single gigabyte
@@ -107,12 +109,17 @@ void LouUnMapAddress(uint64_t VAddress) {
 
     // Calculate L3 and L2 entries based on the virtual address
     if (VAddress >= GIGABYTE && VAddress < (GIGABYTE * 512ULL)) {
-        L3Entry = (VAddress / GIGABYTE);
-        L2Entry = ((VAddress % GIGABYTE) / (2ULL * MEGABYTE));
+        // Within the range of a single gigabyte
+        L3Entry = count_gigabytes(VAddress);
+        if ((VAddress - (count_gigabytes(VAddress) * GIGABYTE)) != 0) {
+            L2Entry = (VAddress - (count_gigabytes(VAddress) * GIGABYTE)) / (2ULL * MEGABYTE);
+        }
     }
     else {
-        L2Entry = (VAddress / (2ULL * MEGABYTE));
+        // Beyond the range of a single gigabyte
+        L2Entry = VAddress / (2ULL * MEGABYTE);
     }
+
 
     // Obtain the PML4 table
     PML* PML4 = GetPageBase();
@@ -143,12 +150,17 @@ uint64_t GetPageOfFaultValue(uint64_t VAddress) {
 
     // Calculate L3 and L2 entries based on the virtual address
     if (VAddress >= GIGABYTE && VAddress < (GIGABYTE * 512ULL)) {
-        L3Entry = (VAddress / GIGABYTE);
-        L2Entry = ((VAddress % GIGABYTE) / (2ULL * MEGABYTE));
+        // Within the range of a single gigabyte
+        L3Entry = count_gigabytes(VAddress);
+        if ((VAddress - (count_gigabytes(VAddress) * GIGABYTE)) != 0) {
+            L2Entry = (VAddress - (count_gigabytes(VAddress) * GIGABYTE)) / (2ULL * MEGABYTE);
+        }
     }
     else {
-        L2Entry = (VAddress / (2ULL * MEGABYTE));
+        // Beyond the range of a single gigabyte
+        L2Entry = VAddress / (2ULL * MEGABYTE);
     }
+
 
     UNUSED PML* PML4 = GetPageBase();
 
@@ -158,4 +170,7 @@ uint64_t GetPageOfFaultValue(uint64_t VAddress) {
 }
 
 
+//void LouMapAddressEx(uint64_t PAddress, uint64_t VAddress, uint64_t PageSize, uint64_t FLAGS) {
 
+
+//}
