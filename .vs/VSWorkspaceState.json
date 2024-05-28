@@ -1,13 +1,17 @@
 {
   "ExpandedNodes": [
     "",
-    "\\boot",
-    "\\boot\\x86_64",
     "\\drivers",
-    "\\include",
-    "\\include\\kernel",
+    "\\drivers\\MotherBoards",
+    "\\init",
     "\\kernel",
-    "\\kernel\\memory"
+    "\\kernel\\cstdlib",
+    "\\kernel\\cstdlib\\Time",
+    "\\kernel\\processors",
+    "\\kernel\\processors\\x86_64",
+    "\\kernel\\Timers",
+    "\\kernel\\Timers\\TimerDrivers"
   ],
+  "SelectedNode": "\\kernel\\Timers\\TimerDrivers\\TSC.c",
   "PreviewInSolutionExplorer": false
 }

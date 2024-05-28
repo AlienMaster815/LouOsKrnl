@@ -45,7 +45,6 @@ char* KERNEL_ARCH = "32-BIT";
 LOUSTATUS InitFADT();
 LOUSTATUS InitDSDT();
 LOUSTATUS InitSSDT();
-LOUSTATUS InitHPET();
 LOUSTATUS InitSBST();
 LOUSTATUS InitSRAT();
 LOUSTATUS InitBGRT();
@@ -53,6 +52,8 @@ LOUSTATUS InitECDT();
 LOUSTATUS InitSLIT();
 LOUSTATUS InitMCFG();
 LOUSTATUS InitThreadManager();
+LOUSTATUS SetUpTimers();
+
 
 void PS2KeyboardHandler();
 void PageFault();
@@ -116,9 +117,11 @@ LOUSTATUS Lou_kernel_early_initialization(){
 
 
     SetInterruptFlags();
- 
+
+
     uint8_t* FO = LouMalloc(sizeof(uint8_t));
 
+    SetUpTimers();
 
     DeterminCPU();
     return LOUSTATUS_GOOD;
@@ -137,11 +140,10 @@ LOUSTATUS Set_Up_Devices(){
 
 LOUSTATUS Advanced_Kernel_Initialization(){
     LOUSTATUS Status = LOUSTATUS_GOOD;
-    if (InitializeMainInterruptHandleing() != LOUSTATUS_GOOD)LouPrint("Unable To Start APIC System\n");
+    //if (InitializeMainInterruptHandleing() != LOUSTATUS_GOOD)LouPrint("Unable To Start APIC System\n");
     //if(LOUSTATUS_GOOD != InitFADT())LouPrint("Unable To Start FADT Handleing\n");
     //if(LOUSTATUS_GOOD != InitDSDT())LouPrint("Unable To Start DSDT Handleing\n");
     //if(LOUSTATUS_GOOD != InitSSDT())LouPrint("Unable To Start SSDT Handleing\n");
-    //if(LOUSTATUS_GOOD != InitHPET())LouPrint("Unable To Start HPET Handleing\n");
     //if(LOUSTATUS_GOOD != InitSBST())LouPrint("Unable To Start SBST Handleing\n");
     //if(LOUSTATUS_GOOD != InitSRAT())LouPrint("Unable To Start SRAT Handleing\n");
     //if(LOUSTATUS_GOOD != InitBGRT())LouPrint("Unable To Start BGRT Handleing\n");

@@ -1,7 +1,8 @@
 #ifndef _APIC_LOCAL_HEADER
 #define _APIC_LOCAL_HEADER
 
-
+//I appologise if this is messy but at this point i just need this to work
+// I WILL FIX IT LATER BEFORE 1.0
 
 //Delivery Modes
 #define NORMAL_DELIVERY_MODE 0
@@ -79,13 +80,49 @@
 //Now Define Commands
 #define ENDOFINTERRUPT 0x00
 #define APIC_DISABLE 0x10000
+#define FIXED (0 << 8)
+#define SMI (2 << 8)
 #define NMI (4 << 8)
+#define INIT (5 << 8)
+#define ExtINIT (7 << 8)
+
+#define IDLE (0 << 12)
+#define SEND_PENDING (1 << 12)
+
+// PIN bit 13
+
+// IRR bit 14
+
+// TRIGGER MODE bit 15
+
+#define EDGE (0 << 15)
+#define LEVEL (1 << 15)
+
+//MASK
+#define MASKED (1 << 16)
+#define UnMASKED (0 << 16)
+
+//TIMER MODE Bit 17
+#define ONESHOT (0 << 17)
+#define PERIODIC (1 << 17)
+#define TSCDeadline (2 << 17)
+
 #define REGISTER_RESET 0
 #define SPURIOUS 0x0F0
 
 #define APIC_ENABLE 0x100
 #define SPURRIOUS_VECTOR 39
 #define APIC_SW_ENABLE 0x100
+
+#define IlegalRegisterAddress (1 << 7)
+#define RecievedIlegalVector  (1 << 6)
+#define SendIlegalVector  (1 << 5)
+#define RedirectableIPI  (1 << 4)
+#define RecieveAccept  (1 << 3)
+#define SendAccept  (1 << 2)
+#define RecieveChecksum  (1 << 1)
+#define SendChecksum  (1)
+
 
 typedef enum {
 	PeriodicMode,
@@ -118,6 +155,32 @@ int IsX2ApicSupported();
 void AssignInterruptVector(uint8_t VectorNumber, uint8_t Offset);
 
 uint64_t GetLocalApicBase();
+
+
+namespace APIC {
+
+	class APIC_TIMER{
+	public:
+		APIC_TIMER();
+		~APIC_TIMER();
+
+		void ApicEnableTimer();
+		
+	private:
+		BOOLEAN IsX6CpuIdSupported();
+		long double GetApicTimerFrequency();
+		
+		void ApicSetTimer();
+
+		BOOLEAN IsX6Supported;
+	};
+
+
+}
+
+
+
+
 
 #elif
 //C World

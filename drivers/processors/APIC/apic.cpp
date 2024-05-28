@@ -3,6 +3,9 @@
 #include "../Processors.h"
 #include "apic.h"
 
+//I appologise if this is messy but at this point i just need this to work
+// I WILL FIX IT LATER BEFORE 1.0
+
 // Structure representing the lower 32 bits of an IOAPIC redirection table entry
 typedef struct {
     uint32_t vector : 8;          // Bits 0-7
@@ -464,12 +467,20 @@ void InitApic0() {
             LouPrint("Fuck We Need To Reset The APIC\n");
         }
         else {
-            LouPrint("System Is Responding To Commands Continue As Normal\n");
+            EnableDisableSoftware(ENABLE);
+            if (GetApicState() == SOFTWARE_DISABLE) {
+                LouPrint("Fuck We Need To Reset The APIC\n");
+            }
+            else {
+                LouPrint("System Working Normally Continue\n");
+            }
         }
 
     }
 
+    APIC::APIC_TIMER Timer;
 
+    Timer.ApicEnableTimer();
 
     LouFree((RAMADD)StatusBits, sizeof(BOOLEAN) * 2);
 
