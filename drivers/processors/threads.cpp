@@ -143,6 +143,11 @@ uint64_t GetThreadStackSize(uint16_t ThreadNumber) {
 	return 0;
 }
 
+void SaveThreadInstance(uint16_t JumpingThread) {
+	TStack[JumpingThread]->ThreadPresent = THREADNOTPRESENT;
+	TStack[JumpingThread]->StackSize = GetThreadStackSize(JumpingThread);
+}
+
 void StartNextThread(uint16_t JumpingThread) {
 	for (uint16_t Priority = 0; Priority <= PRILO; Priority++) {
 		for (uint16_t i = 0; i < TSTACKLENGTH; i++) {
@@ -150,9 +155,8 @@ void StartNextThread(uint16_t JumpingThread) {
 			else if ((TStack[i]->ThreadPresent == THREADNOTPRESENT) 
 				&& (TStack[i]->Priority == Priority)
 				){
-				TStack[JumpingThread]->ThreadPresent = THREADNOTPRESENT;
-				TStack[JumpingThread]->StackSize = GetThreadStackSize(JumpingThread);
-				//Save Registers
+				//Save Registers and shit
+				SaveThreadInstance(JumpingThread);
 			}
 		}
 	}

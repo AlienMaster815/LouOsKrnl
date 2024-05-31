@@ -16,8 +16,11 @@ LOUSTATUS SetUpTimers() {
 	//if (LOUSTATUS_GOOD != InitHPET()) {
 		//if no hpet use tsc
 		LouPrint("HPET Not Found Using TSC\n");
-		uint64_t TSC_Ticks = calibrate_tsc();
-
+		
+		uint64_t TSC_Ticks = 0;
+		while(TSC_Ticks == 0){
+		TSC_Ticks = calibrate_tsc();
+		}
 		LouPrint("TSC Ticks Are:%d\n",TSC_Ticks);
 
 		SetTSCFrequency(TSC_Ticks);

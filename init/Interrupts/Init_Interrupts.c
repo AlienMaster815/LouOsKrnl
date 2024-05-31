@@ -4,7 +4,7 @@
 #include <kernel/errors.h>
 #include <kernel/pic.h>
 
-LOUSTATUS InitApicSystems();
+LOUSTATUS InitApicSystems(bool LateStage);
 
 LOUSTATUS InitializeMainInterruptHandleing(){
     
@@ -12,7 +12,7 @@ LOUSTATUS InitializeMainInterruptHandleing(){
 
     LOUSTATUS Status = LOUSTATUS_GOOD;
 
-    Status = InitApicSystems();
+    Status = InitApicSystems(true);
     if (Status == LOUSTATUS_GOOD) {
         LouPrint("Advance Interrupts Setup\n");
     }

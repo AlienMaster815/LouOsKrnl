@@ -142,8 +142,21 @@ LOUDDK_API_ENTRY bool IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func) {
 	return false;
 }
 
+LOUSTATUS InitAHCIController(P_PCI_DEVICE_OBJECT PDEV);
 
 LOUDDK_API_ENTRY void Sata_init(uint8_t bus, uint8_t slot, uint8_t func) {
+
+	LouPrint("Initializing Sata Controller\n");
+
+	P_PCI_DEVICE_OBJECT SataDev = (P_PCI_DEVICE_OBJECT)LouMalloc(sizeof(P_PCI_DEVICE_OBJECT));
+
+	SataDev->bus = bus;
+	SataDev->slot = slot;
+	SataDev->func = func;
+	SataDev->DeviceID = PciGetDeviceID(bus, slot, func);
+	SataDev->VendorID = PciGetVendorID(bus, slot);
+
+	InitAHCIController(SataDev);
 
 }
 

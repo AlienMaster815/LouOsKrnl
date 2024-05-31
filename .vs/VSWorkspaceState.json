@@ -2,16 +2,13 @@
   "ExpandedNodes": [
     "",
     "\\drivers",
-    "\\drivers\\MotherBoards",
+    "\\include",
+    "\\include\\drivers",
+    "\\include\\drivers\\Lou_drivers",
     "\\init",
     "\\kernel",
-    "\\kernel\\cstdlib",
-    "\\kernel\\cstdlib\\Time",
-    "\\kernel\\processors",
-    "\\kernel\\processors\\x86_64",
-    "\\kernel\\Timers",
-    "\\kernel\\Timers\\TimerDrivers"
+    "\\kernel\\memory"
   ],
-  "SelectedNode": "\\kernel\\Timers\\TimerDrivers\\TSC.c",
+  "SelectedNode": "\\init\\Lou_Main.c",
   "PreviewInSolutionExplorer": false
 }

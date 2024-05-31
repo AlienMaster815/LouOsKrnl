@@ -3,44 +3,32 @@
   "WorkspaceRootPath": "E:\\LOUOSKRNL.EXE\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\storage\\ahci\\ahci.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\storage\\ahci\\ahci.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\init\\Lou_Main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:init\\Lou_Main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\kernel\\cstdlib\\Time\\sleep.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:kernel\\cstdlib\\Time\\sleep.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\pci_systems\\pci\\pci_busses.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\pci_systems\\pci\\pci_busses.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\processors\\APIC\\apic.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\processors\\APIC\\apic.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\pci_systems\\pci\\pci.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\pci_systems\\pci\\pci.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\processors\\APIC\\apic.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\processors\\APIC\\apic.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\storage\\SATA\\SATA.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\storage\\SATA\\SATA.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\kernel\\Timers\\TimerDrivers\\TSC.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:kernel\\Timers\\TimerDrivers\\TSC.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\include\\drivers\\Lou_drivers\\pci.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\drivers\\Lou_drivers\\pci.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\kernel\\Timers\\Timers.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:kernel\\Timers\\Timers.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\MotherBoards\\HPET.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\MotherBoards\\HPET.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\kernel\\Timers\\ClockMinipulation.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:kernel\\Timers\\ClockMinipulation.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\processors\\APIC\\apicTimers.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\processors\\APIC\\apicTimers.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\kernel\\Timers\\TimerClock.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:kernel\\Timers\\TimerClock.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\storage\\ahci\\ahci.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\storage\\ahci\\ahci.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -50,143 +38,99 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 7,
+          "SelectedChildIndex": 6,
           "Children": [
             {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "apic.cpp",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\processors\\APIC\\apic.cpp",
-              "RelativeDocumentMoniker": "drivers\\processors\\APIC\\apic.cpp",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\processors\\APIC\\apic.cpp",
-              "RelativeToolTip": "drivers\\processors\\APIC\\apic.cpp",
-              "ViewState": "AQIAAJ4BAAAAAAAAAAAYwMcBAAAkAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-05-22T09:26:08.651Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{6324226f-61b6-4f28-92ee-18d4b5fe1e48}"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "apic.h",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\processors\\APIC\\apic.h",
-              "RelativeDocumentMoniker": "drivers\\processors\\APIC\\apic.h",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\processors\\APIC\\apic.h",
-              "RelativeToolTip": "drivers\\processors\\APIC\\apic.h",
-              "ViewState": "AQIAAGgAAABAZ2ZmZiYwwLQAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-05-25T18:15:08.321Z",
-              "IsPinned": true,
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "TSC.c",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\kernel\\Timers\\TimerDrivers\\TSC.c",
-              "RelativeDocumentMoniker": "kernel\\Timers\\TimerDrivers\\TSC.c",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\kernel\\Timers\\TimerDrivers\\TSC.c",
-              "RelativeToolTip": "kernel\\Timers\\TimerDrivers\\TSC.c",
-              "ViewState": "AQIAACkAAAAA/P///38ZwEsAAAAFAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
-              "WhenOpened": "2024-05-28T23:06:12.883Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "HPET.cpp",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\MotherBoards\\HPET.cpp",
-              "RelativeDocumentMoniker": "drivers\\MotherBoards\\HPET.cpp",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\MotherBoards\\HPET.cpp",
-              "RelativeToolTip": "drivers\\MotherBoards\\HPET.cpp",
-              "ViewState": "AQIAABUAAACglZmZmRkmwAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-05-28T22:36:22.002Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "ClockMinipulation.c",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\kernel\\Timers\\ClockMinipulation.c",
-              "RelativeDocumentMoniker": "kernel\\Timers\\ClockMinipulation.c",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\kernel\\Timers\\ClockMinipulation.c",
-              "RelativeToolTip": "kernel\\Timers\\ClockMinipulation.c",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
-              "WhenOpened": "2024-05-28T21:59:51.727Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "TimerClock.c",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\kernel\\Timers\\TimerClock.c",
-              "RelativeDocumentMoniker": "kernel\\Timers\\TimerClock.c",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\kernel\\Timers\\TimerClock.c",
-              "RelativeToolTip": "kernel\\Timers\\TimerClock.c",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
-              "WhenOpened": "2024-05-28T21:59:50.918Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "Timers.c",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\kernel\\Timers\\Timers.c",
-              "RelativeDocumentMoniker": "kernel\\Timers\\Timers.c",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\kernel\\Timers\\Timers.c",
-              "RelativeToolTip": "kernel\\Timers\\Timers.c",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAABgAAAAEAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
-              "WhenOpened": "2024-05-28T21:59:48.072Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "Lou_Main.c",
               "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\init\\Lou_Main.c",
               "RelativeDocumentMoniker": "init\\Lou_Main.c",
               "ToolTip": "E:\\LOUOSKRNL.EXE\\init\\Lou_Main.c",
               "RelativeToolTip": "init\\Lou_Main.c",
-              "ViewState": "AQIAALAAAAAAyMzMzEwrwLMAAAAuAAAA",
+              "ViewState": "AQIAAGMAAAAAAAAAAAAAAJEAAABTAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
-              "WhenOpened": "2024-05-28T21:23:38.821Z",
+              "WhenOpened": "2024-05-30T09:10:15.907Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "sleep.c",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\kernel\\cstdlib\\Time\\sleep.c",
-              "RelativeDocumentMoniker": "kernel\\cstdlib\\Time\\sleep.c",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\kernel\\cstdlib\\Time\\sleep.c",
-              "RelativeToolTip": "kernel\\cstdlib\\Time\\sleep.c",
-              "ViewState": "AQIAAAkAAAAAsDIzMzPbvx8AAAAQAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
-              "WhenOpened": "2024-05-28T20:12:58.67Z",
-              "EditorCaption": ""
+              "DocumentIndex": 5,
+              "Title": "pci.h",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Lou_drivers\\pci.h",
+              "RelativeDocumentMoniker": "include\\drivers\\Lou_drivers\\pci.h",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\include\\drivers\\Lou_drivers\\pci.h",
+              "RelativeToolTip": "include\\drivers\\Lou_drivers\\pci.h",
+              "ViewState": "AQIAAFAAAAAALTMzMzMbwF8AAAA9AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2024-05-30T04:09:42.539Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "apicTimers.cpp",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\processors\\APIC\\apicTimers.cpp",
-              "RelativeDocumentMoniker": "drivers\\processors\\APIC\\apicTimers.cpp",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\processors\\APIC\\apicTimers.cpp",
-              "RelativeToolTip": "drivers\\processors\\APIC\\apicTimers.cpp",
-              "ViewState": "AQIAAAEAAAAAAAAAAAAiwBkAAAAGAAAA",
+              "DocumentIndex": 2,
+              "Title": "pci_busses.cpp",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\pci_systems\\pci\\pci_busses.cpp",
+              "RelativeDocumentMoniker": "drivers\\pci_systems\\pci\\pci_busses.cpp",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\pci_systems\\pci\\pci_busses.cpp",
+              "RelativeToolTip": "drivers\\pci_systems\\pci\\pci_busses.cpp",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAAABAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-05-22T22:22:40.89Z",
+              "WhenOpened": "2024-05-30T04:05:20.476Z",
               "EditorCaption": ""
             },
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{6324226f-61b6-4f28-92ee-18d4b5fe1e48}"
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "pci.cpp",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\pci_systems\\pci\\pci.cpp",
+              "RelativeDocumentMoniker": "drivers\\pci_systems\\pci\\pci.cpp",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\pci_systems\\pci\\pci.cpp",
+              "RelativeToolTip": "drivers\\pci_systems\\pci\\pci.cpp",
+              "ViewState": "AQIAAGAAAADA9v////8QwJEAAAAkAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-05-30T03:59:52.926Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ahci.h",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\storage\\ahci\\ahci.h",
+              "RelativeDocumentMoniker": "drivers\\storage\\ahci\\ahci.h",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\storage\\ahci\\ahci.h",
+              "RelativeToolTip": "drivers\\storage\\ahci\\ahci.h",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAQAAAASAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2024-05-30T03:52:22.412Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ahci.cpp",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\storage\\ahci\\ahci.cpp",
+              "RelativeDocumentMoniker": "drivers\\storage\\ahci\\ahci.cpp",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\storage\\ahci\\ahci.cpp",
+              "RelativeToolTip": "drivers\\storage\\ahci\\ahci.cpp",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAcAAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-05-30T03:52:08.276Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "SATA.cpp",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\storage\\SATA\\SATA.cpp",
+              "RelativeDocumentMoniker": "drivers\\storage\\SATA\\SATA.cpp",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\storage\\SATA\\SATA.cpp",
+              "RelativeToolTip": "drivers\\storage\\SATA\\SATA.cpp",
+              "ViewState": "AQIAAHYAAACAZ2ZmZuYnwKIAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-05-30T03:46:19.624Z"
             }
           ]
         }

@@ -116,9 +116,6 @@ LOUSTATUS Lou_kernel_early_initialization(){
 
 
 
-    SetInterruptFlags();
-
-
     uint8_t* FO = LouMalloc(sizeof(uint8_t));
 
     SetUpTimers();
@@ -140,7 +137,7 @@ LOUSTATUS Set_Up_Devices(){
 
 LOUSTATUS Advanced_Kernel_Initialization(){
     LOUSTATUS Status = LOUSTATUS_GOOD;
-    //if (InitializeMainInterruptHandleing() != LOUSTATUS_GOOD)LouPrint("Unable To Start APIC System\n");
+    if (InitializeMainInterruptHandleing() != LOUSTATUS_GOOD)LouPrint("Unable To Start APIC System\n");
     //if(LOUSTATUS_GOOD != InitFADT())LouPrint("Unable To Start FADT Handleing\n");
     //if(LOUSTATUS_GOOD != InitDSDT())LouPrint("Unable To Start DSDT Handleing\n");
     //if(LOUSTATUS_GOOD != InitSSDT())LouPrint("Unable To Start SSDT Handleing\n");
@@ -151,7 +148,9 @@ LOUSTATUS Advanced_Kernel_Initialization(){
     //if(LOUSTATUS_GOOD != InitSLIT())LouPrint("Unable To Start SLIT Handleing\n");
     //if(LOUSTATUS_GOOD != InitMCFG())LouPrint("Unable To Start MCFG Handleing\n");
     
-    //if (LOUSTATUS_GOOD != InitThreadManager())LouPrint("SHIT!!!:I Hope You Hate Efficency: No Thread Management\n");
+    if (LOUSTATUS_GOOD != InitThreadManager())LouPrint("SHIT!!!:I Hope You Hate Efficency: No Thread Management\n");
+
+    SetInterruptFlags();
 
     return Status;
 }

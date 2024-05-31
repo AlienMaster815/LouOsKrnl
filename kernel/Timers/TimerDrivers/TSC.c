@@ -62,6 +62,7 @@ uint64_t calibrate_tsc() {
     }
 
     // Calculate the TSC frequency (PIT_FREQUENCY is in Hz)
+    if(((end_tsc - start_tsc) * PIT_FREQUENCY == 0) || (pit_ticks == 0))return 0;
     tsc_frequency = (end_tsc - start_tsc) * PIT_FREQUENCY / pit_ticks;
 
     return tsc_frequency;

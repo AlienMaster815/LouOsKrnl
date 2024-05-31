@@ -25,6 +25,10 @@ int8_t stringToInt8(const char* str);
 uint8_t stringToUnsignedInt8(const char* str);
 char* LouKeCharArrayToString(char* ConvertingString, uint16_t ArraySize);
 void UIntToString(unsigned int num, char* str);
+void reverse_string(string str, int length);
+void double_to_string(string Buffer, long double value);
+void float_to_string(string Buffer, float value);
+void long_double_to_string(string Buffer, long double value);
 #else
 #include <LouDDK.h>
 
@@ -45,6 +49,10 @@ KERNEL_IMPORT int8_t stringToInt8(const char* str);
 KERNEL_IMPORT uint8_t stringToUnsignedInt8(const char* str);
 KERNEL_IMPORT char* LouKeCharArrayToString(char* ConvertingString, uint16_t ArraySize);
 KERNEL_IMPORT void UIntToString(unsigned int num, char* str);
+KERNEL_IMPORT void reverse_string(string str, int length);
+KERNEL_IMPORT void double_to_string(string Buffer, long double value);
+KERNEL_IMPORT void float_to_string(string Buffer, float value);
+KERNEL_IMPORT void long_double_to_string(string Buffer, long double value);
 #endif
 
 

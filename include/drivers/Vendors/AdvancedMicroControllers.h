@@ -4,7 +4,7 @@
 #define AdvancedMicroDevices_1 0x1002
 #define AdvancedMicroDevices_2 0x1022
 
-
+#define AMD_ID 1
 
 #define	RadeonR7465X 0x0128079c
 #define	ProliantRageXL 0x0e11001e

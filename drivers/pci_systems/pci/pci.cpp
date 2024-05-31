@@ -14,6 +14,8 @@ bool isVirtualizationDevice(uint8_t bus, uint8_t slot, uint8_t function);
 
 void RegisterUnkownDevice(uint8_t bus,uint8_t device,uint8_t function);
 
+LOUDDK_API_ENTRY void scan_pci_bridges();
+
 //CPP Land
 DRIVER_IO_FUNCTION P_PCIBuffer PCI::PCI_Read(P_PCIDEV Device) {
     P_PCIBuffer PCIBuff = (P_PCIBuffer)Lou_Alloc_Mem(sizeof(PCIBuffer));
@@ -26,6 +28,7 @@ DRIVER_IO_FUNCTION void PCI::PCI_Write(P_PCIDEV Device, P_PCIBuffer buffer) {
 
 }
 
+bool IsPciBus(uint8_t bus, uint8_t slot, uint8_t func);
 
 LOUDDK_API_ENTRY void checkBus(uint8_t bus) {
     uint8_t device;
@@ -43,7 +46,8 @@ LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device) {
     uint16_t vendorID = PciGetVendorID(bus, device);
     if (vendorID == NOT_A_PCI_DEVICE) return; // Device doesn't exist
     checkFunction(bus, device, function);
-    LouPrint("PCI Device Found Vedor Is: %h and Device Is: %h\n", vendorID, PciGetDeviceID( bus , device, function));
+
+    //LouPrint("PCI Device Found Vedor Is: %h and Device Is: %h\n", vendorID, PciGetDeviceID( bus , device, function));
     uint8_t headerType = getHeaderType(bus, device, function);
     if ((headerType & 0x80) != 0) {
         LouPrint("Device Is MultiFunction\n");
@@ -53,36 +57,40 @@ LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device) {
                 checkFunction(bus, device, function);
                 if (PciGetDeviceID(bus,device,function) == NOT_A_PCI_DEVICE) continue;
                 else {
-                    LouPrint("PCI Device Found Vedor Is: %h and Device Is: %h\n", vendorID, PciGetDeviceID(bus, device, function));
-                    //Parse Funxtios and have fun
-                    if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
-                    if (!DeviceIdentified)DeviceIdentified = isUsb( bus,  device,  function);
-                    if (!DeviceIdentified)DeviceIdentified = IsVGA( bus,  device,  function);
-                    if (!DeviceIdentified)DeviceIdentified = IsSerial( bus,  device,  function);
-                    if (!DeviceIdentified)DeviceIdentified = IsEithernet( bus,  device,  function);
-                    if (!DeviceIdentified)DeviceIdentified = IsChipset( bus,  device,  function);
-                    if (!DeviceIdentified)DeviceIdentified = IsAudioDevice( bus,  device, function);
-                    if (!DeviceIdentified)DeviceIdentified = IsAGPDevice(bus,device, function);
-                    if (!DeviceIdentified)DeviceIdentified = isVirtualizationDevice( bus, device, function);
-                    //IsSataCheck(bus, device, function);
-                    if (!DeviceIdentified)RegisterUnkownDevice(bus, device, function);
+                    LouPrint("Multi Function PCI Device Found Vedor Is: %h and Device Is: %h\n", vendorID, PciGetDeviceID(bus, device, function));
+                        //Parse Funxtios and have fun
+                        //if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
+                        //if (!DeviceIdentified)DeviceIdentified = isUsb( bus,  device,  function);
+                        //if (!DeviceIdentified)DeviceIdentified = IsVGA( bus,  device,  function);
+                        //if (!DeviceIdentified)DeviceIdentified = IsSerial( bus,  device,  function);
+                        //if (!DeviceIdentified)DeviceIdentified = IsEithernet( bus,  device,  function);
+                        //if (!DeviceIdentified)DeviceIdentified = IsChipset( bus,  device,  function);
+                        //if (!DeviceIdentified)DeviceIdentified = IsAudioDevice( bus,  device, function);
+                        //if (!DeviceIdentified)DeviceIdentified = IsAGPDevice(bus,device, function);
+                        //if (!DeviceIdentified)DeviceIdentified = isVirtualizationDevice( bus, device, function);
+                        //IsSataCheck(bus, device, function);
+                        //if (!DeviceIdentified)RegisterUnkownDevice(bus, device, function);
+                        if (!DeviceIdentified)IsPciBus(bus, device, function);
                 }
             }
         }
+        return;
     }
     else{
-        //device is single function have fun
-        if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
-        if (!DeviceIdentified)DeviceIdentified = isUsb(bus, device, function);
-        if (!DeviceIdentified)DeviceIdentified = IsVGA(bus, device, function);
-        if (!DeviceIdentified)DeviceIdentified = IsSerial(bus, device, function);
-        if (!DeviceIdentified)DeviceIdentified = IsEithernet(bus, device, function);
-        if (!DeviceIdentified)DeviceIdentified = IsChipset(bus, device, function);
-        if (!DeviceIdentified)DeviceIdentified = IsAudioDevice(bus, device, function);
-        if (!DeviceIdentified)DeviceIdentified = IsAGPDevice(bus, device, function);
-        if (!DeviceIdentified)DeviceIdentified = isVirtualizationDevice(bus, device, function);
-
-        if (!DeviceIdentified)RegisterUnkownDevice(bus, device, function);
+         LouPrint("Single Function PCI Device Found Vedor Is: %h and Device Is: %h\n", vendorID, PciGetDeviceID(bus, device, function));
+            //Parse Funxtios and have fun
+            //if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
+            //if (!DeviceIdentified)DeviceIdentified = isUsb( bus,  device,  function);
+            //if (!DeviceIdentified)DeviceIdentified = IsVGA( bus,  device,  function);
+            //if (!DeviceIdentified)DeviceIdentified = IsSerial( bus,  device,  function);
+            //if (!DeviceIdentified)DeviceIdentified = IsEithernet( bus,  device,  function);
+            //if (!DeviceIdentified)DeviceIdentified = IsChipset( bus,  device,  function);
+            //if (!DeviceIdentified)DeviceIdentified = IsAudioDevice( bus,  device, function);
+            //if (!DeviceIdentified)DeviceIdentified = IsAGPDevice(bus,device, function);
+            //if (!DeviceIdentified)DeviceIdentified = isVirtualizationDevice( bus, device, function);
+            //IsSataCheck(bus, device, function);
+            //if (!DeviceIdentified)RegisterUnkownDevice(bus, device, function);
+            if (!DeviceIdentified)IsPciBus(bus, device, function);
     }
 }
 
@@ -108,6 +116,7 @@ LOUDDK_API_ENTRY void PCI_Scan_Bus(){
     
     LouPrint("Scanning PCI Bus\n");
     
+
     uint8_t function;
     uint8_t bus;
 
