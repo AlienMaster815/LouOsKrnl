@@ -49,4 +49,3 @@ LOUSTATUS EnableAdvancedBspFeatures(){
 
     return Status;
 }
-
