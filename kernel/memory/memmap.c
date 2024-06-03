@@ -71,7 +71,7 @@ void LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS) {
     // Map the physical address to the L2 entry
     PML4->PML2[L3Entry].entries[L2Entry] = GetPageValue(PAddress, FLAGS);
 
-    // If virtual address falls within 1GB to 512GB range, also map to L3 entry
+    // If virtual address falls within 1GB to 512GB range, also map to L3 & L4 entry
     if (VAddress >= GIGABYTE && VAddress < (GIGABYTE * 512ULL)) {
         PML4->PML3[L4Entry].entries[L3Entry] = (uint64_t)GetPageValue((uint64_t)&PML4->PML2[L3Entry].entries[L2Entry], 0b11);
     }
@@ -79,10 +79,9 @@ void LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS) {
     // Flush the modified page table entries
     PageFlush(PML4->PML2[L3Entry].entries[L2Entry]);
     if (VAddress >= GIGABYTE && VAddress < (GIGABYTE * 512ULL)) {
-        PageFlush(PML4->PML3[L4Entry].entries[L2Entry]);
+        PageFlush(PML4->PML3[L4Entry].entries[L3Entry]);
     }
 
-    if (Pagingdebug == true) {
         // Print debug information
         LouPrint("L3 Entry: %d\n", L3Entry);
         LouPrint("L2 Entry: %d\n", L2Entry);
@@ -92,10 +91,6 @@ void LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS) {
         //uint8_t* test = (uint8_t*)VAddress;
 
         //uint8_t foo = *test;
-        if (PagingDump == true) {
-            while (1);
-        }
-    }
 }
 
 

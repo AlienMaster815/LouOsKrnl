@@ -35,35 +35,36 @@
 #define TIMER HARDWARE_SPACE
 #define KEYBOARD HARDWARE_SPACE + 1
 
-#define CALCULATEVECTORTABLEOFFSET (ULONG*)(UCHAR*)((uintptr_t)CMCI_REGISTER + (uintptr_t)(Offset * 16))
+#define CALCULATEVECTORTABLEOFFSET (ULONG*)((uintptr_t)CMCI_REGISTER + (uintptr_t)(Offset * 16))
 //NOTE: So According to the documentation all ports are 32 bit however they are
 // alligned by 16 bits wich defies all logic and reasonable sence but whatever
 // Registers are define below
-#define LAPICID_REGISTER                             (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x20)   //RW
-#define LAPICVER_REGISTER                            (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x30)   //RO
-#define TPR_REGISTER                                 (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x80)   //RW
-#define APR_REGISTER                                 (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x90)   //RO
-#define PPR_REGISTER                                 (ULONG*)(UCHAR*)(GetLocalApicBase() + 0xA0)   //RW
-#define EOI_REGISTER                                 (ULONG*)(UCHAR*)(GetLocalApicBase() + 0xB0)   //WO //Its Using the Chewbacka defence but whatever
-#define RRD_REGISTER                                 (ULONG*)(UCHAR*)(GetLocalApicBase() + 0xC0)   //RO
-#define LOGICAL_DESTINATION_REGISTER                 (ULONG*)(UCHAR*)(GetLocalApicBase() + 0xD0)   //RW
-#define DESTINATION_FORMAT_REGISTER                  (ULONG*)(UCHAR*)(GetLocalApicBase() + 0xE0)   //RW
-#define SPURRIOUS_INTERRUPT_REGISTER                 (ULONG*)(UCHAR*)(GetLocalApicBase() + 0xF0)   //RW
-#define IN_SERVICE_REGISTER                          (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x100)  //RO //70h / 16 bit wide buffer
-#define TMR_REGISTER                                 (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x180)  //RO Same As Above
-#define IRR_REGISTER                                 (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x200)  //RO Same As Above
-#define ERR_STATUS_REGISTER                          (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x280)  //RO
-#define CMCI_REGISTER                                (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x2F0)  //RW
-#define ICR_REGISTER                                 (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x300)  //RW //2 * 16 bit Wide buffer
-#define LVT_TIMER_REGISTER                           (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x320)  //RW
-#define LVT_THERMAL_SENSOR_REGISTER                  (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x330)  //RW
-#define LVT_PERFORMANCE_MONITORING_COUNTERS_REGISTER (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x340)  //RW
-#define LVT_INT0_REGISTER                            (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x350)  //RW
-#define LVT_INT1_REGISTER                            (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x360)  //RW
-#define LVT_ERROR_REGISTER                           (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x370)  //RW
-#define LVT_INITIAL_COUNT_REGISTER                   (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x380)  //RW
-#define LVT_CURRENT_COUNT_REGISTER                   (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x390)  //RO
-#define LVT_DIVIDE_CONFIGURATION_REGISTER            (ULONG*)(UCHAR*)(GetLocalApicBase() + 0x3E0)  //RW
+#define LAPICID_REGISTER                             (ULONG*)(GetLocalApicBase() + 0x20)   //RW
+#define LAPICVER_REGISTER                            (ULONG*)(GetLocalApicBase() + 0x30)   //RO
+#define TPR_REGISTER                                 (ULONG*)(GetLocalApicBase() + 0x80)   //RW
+#define APR_REGISTER                                 (ULONG*)(GetLocalApicBase() + 0x90)   //RO
+#define PPR_REGISTER                                 (ULONG*)(GetLocalApicBase() + 0xA0)   //RW
+#define EOI_REGISTER                                 (ULONG*)(GetLocalApicBase() + 0xB0)   //WO //Its Using the Chewbacka defence but whatever
+#define RRD_REGISTER                                 (ULONG*)(GetLocalApicBase() + 0xC0)   //RO
+#define LOGICAL_DESTINATION_REGISTER                 (ULONG*)(GetLocalApicBase() + 0xD0)   //RW
+#define DESTINATION_FORMAT_REGISTER                  (ULONG*)(GetLocalApicBase() + 0xE0)   //RW
+#define SPURRIOUS_INTERRUPT_REGISTER                 (ULONG*)(GetLocalApicBase() + 0xF0)   //RW
+#define IN_SERVICE_REGISTER                          (ULONG*)(GetLocalApicBase() + 0x100)  //RO //70h / 16 bit wide buffer
+#define TMR_REGISTER                                 (ULONG*)(GetLocalApicBase() + 0x180)  //RO Same As Above
+#define IRR_REGISTER                                 (ULONG*)(GetLocalApicBase() + 0x200)  //RO Same As Above
+#define ERR_STATUS_REGISTER                          (ULONG*)(GetLocalApicBase() + 0x280)  //RO
+#define CMCI_REGISTER                                (ULONG*)(GetLocalApicBase() + 0x2F0)  //RW
+#define ICR_REGISTER_LOW                             (ULONG*)(GetLocalApicBase() + 0x300)  //RW //2 * 16 bit Wide buffer
+#define ICR_REGISTER_HI                              (ULONG*)(GetLocalApicBase() + 0x310)  //RW //2 * 16 bit Wide buffer
+#define LVT_TIMER_REGISTER                           (ULONG*)(GetLocalApicBase() + 0x320)  //RW
+#define LVT_THERMAL_SENSOR_REGISTER                  (ULONG*)(GetLocalApicBase() + 0x330)  //RW
+#define LVT_PERFORMANCE_MONITORING_COUNTERS_REGISTER (ULONG*)(GetLocalApicBase() + 0x340)  //RW
+#define LVT_INT0_REGISTER                            (ULONG*)(GetLocalApicBase() + 0x350)  //RW
+#define LVT_INT1_REGISTER                            (ULONG*)(GetLocalApicBase() + 0x360)  //RW
+#define LVT_ERROR_REGISTER                           (ULONG*)(GetLocalApicBase() + 0x370)  //RW
+#define LVT_INITIAL_COUNT_REGISTER                   (ULONG*)(GetLocalApicBase() + 0x380)  //RW
+#define LVT_CURRENT_COUNT_REGISTER                   (ULONG*)(GetLocalApicBase() + 0x390)  //RO
+#define LVT_DIVIDE_CONFIGURATION_REGISTER            (ULONG*)(GetLocalApicBase() + 0x3E0)  //RW
 
 #define CMCI_OFFSET                               0
 #define ICR_OFFSET                                1
@@ -123,6 +124,9 @@
 #define RecieveChecksum  (1 << 1)
 #define SendChecksum  (1)
 
+#define IA32_APIC_BASE_MSR_ENABLE 0x800
+#define LVTdisabled 0xFFFFFFFF
+
 
 typedef enum {
 	PeriodicMode,
@@ -169,13 +173,25 @@ namespace APIC {
 	private:
 		BOOLEAN IsX6CpuIdSupported();
 		long double GetApicTimerFrequency();
-		
+
 		void ApicSetTimer();
 
 		BOOLEAN IsX6Supported;
 	};
 
+	class LAPIC{
 
+		public:
+			LAPIC();
+			~LAPIC();
+			CPU::FEATURE APIC_VERSION;
+			bool InitializeApic();
+			uint8_t MaxLVTEntries;
+			bool EOI_Suppressable;
+			uint16_t APIC_ID;
+		private:
+			bool InitializeBspLapic();
+	};
 }
 
 

@@ -32,16 +32,13 @@ void clear_row(size_t row) {
         }
     }
 }
-void init_terminal() {
-    vga_new = Lou_Alloc_Mem(sizeof(uint8_t));    
+void init_terminal() {  
     STATUS Continue_vga = register_new_mode(vga_new, VGA_MODE_80x25);    
     if((Continue_vga) == (GOOD)){
-        *vga_current = *vga_new;        
-        Lou_Free_Mem(vga_new, sizeof(uint8_t));
+        vga_current = vga_new;        
     }
     else if((Continue_vga) == (BAD)){
         //later we will error this        
-        Lou_Free_Mem(vga_new, sizeof(uint8_t));
         return;    
     }
     col = 0;
@@ -111,14 +108,14 @@ void print_set_color(uint8_t foreground, uint8_t background) {
     if(vga_current == VGA_MODE_80x25)color = foreground + (background << 4);
 }
 
-STATUS register_new_mode(RAMADD new_vga,uint8_t mode){  
+STATUS register_new_mode(uint8_t new_vga,uint8_t mode){  
 
     //later we will talk to user mode to see 
     //if this video mode is shown on the screen
     
-    *new_vga = mode;
+    new_vga = mode;
     
-    if((*new_vga) != (mode)) LouPanic("unable to locate memory for VMODE", BAD);
+    if((new_vga) != (mode)) LouPanic("unable to locate memory for VMODE", BAD);
     
     return GOOD;
 }

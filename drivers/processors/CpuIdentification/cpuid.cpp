@@ -168,6 +168,18 @@ bool CPU::CPUID::IsFeatureSupported(FEATURE Feature){
         // Check if Hyper-Threading (bit 28 of EDX) is supported
         return edx & (1 << 28);
     }
+    else if(Feature == X2APIC){
+        if(edx & (1 << 21))return true;
+        else return false;
+    }
+    else if(Feature == XAPIC){
+        if(edx & (1 << 9))return true;
+        else return false;
+    }
+    else if(Feature == APIC){
+        if((edx & (1 << 9)) || (edx & (1 << 21)))return false;
+        else return true;
+    } 
 
     return false;
 

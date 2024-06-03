@@ -61,7 +61,7 @@ LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device) {
                         //Parse Funxtios and have fun
                         //if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
                         //if (!DeviceIdentified)DeviceIdentified = isUsb( bus,  device,  function);
-                        //if (!DeviceIdentified)DeviceIdentified = IsVGA( bus,  device,  function);
+                        if (!DeviceIdentified)DeviceIdentified = IsVGA( bus,  device,  function);
                         //if (!DeviceIdentified)DeviceIdentified = IsSerial( bus,  device,  function);
                         //if (!DeviceIdentified)DeviceIdentified = IsEithernet( bus,  device,  function);
                         //if (!DeviceIdentified)DeviceIdentified = IsChipset( bus,  device,  function);
@@ -70,7 +70,7 @@ LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device) {
                         //if (!DeviceIdentified)DeviceIdentified = isVirtualizationDevice( bus, device, function);
                         //IsSataCheck(bus, device, function);
                         //if (!DeviceIdentified)RegisterUnkownDevice(bus, device, function);
-                        if (!DeviceIdentified)IsPciBus(bus, device, function);
+                        //if (!DeviceIdentified)IsPciBus(bus, device, function);
                 }
             }
         }
@@ -81,7 +81,7 @@ LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device) {
             //Parse Funxtios and have fun
             //if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
             //if (!DeviceIdentified)DeviceIdentified = isUsb( bus,  device,  function);
-            //if (!DeviceIdentified)DeviceIdentified = IsVGA( bus,  device,  function);
+            if (!DeviceIdentified)DeviceIdentified = IsVGA( bus,  device,  function);
             //if (!DeviceIdentified)DeviceIdentified = IsSerial( bus,  device,  function);
             //if (!DeviceIdentified)DeviceIdentified = IsEithernet( bus,  device,  function);
             //if (!DeviceIdentified)DeviceIdentified = IsChipset( bus,  device,  function);
@@ -90,7 +90,7 @@ LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device) {
             //if (!DeviceIdentified)DeviceIdentified = isVirtualizationDevice( bus, device, function);
             //IsSataCheck(bus, device, function);
             //if (!DeviceIdentified)RegisterUnkownDevice(bus, device, function);
-            if (!DeviceIdentified)IsPciBus(bus, device, function);
+            //if (!DeviceIdentified)IsPciBus(bus, device, function);
     }
 }
 

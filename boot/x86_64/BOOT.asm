@@ -31,6 +31,8 @@ global start
 
 MBoot dd 0
 
+FOO dd 0
+
 extern SetUpPages
 extern Lou_kernel_start
 extern enable_paging
@@ -45,8 +47,11 @@ start:
     ;mov [multiboot_info_ptr], ebx
     mov esp, stack_top
 
-    ;mov eax, 5
-    ;mov [3221225490], eax
+    ;mov eax, 0xFFFFFFFF
+    ;mov [0xFEE000F0], eax
+
+    mov eax, [0xFEE000F0]
+    mov [FOO], eax
 
     call check_cpuid
     call check_long_mode
@@ -152,6 +157,7 @@ long_mode_start:
     mov ss, ax 
 
     mov rcx, [multiboot_info_ptr]
+    mov rdx, [FOO]
     call Lou_kernel_start
     jmp $ 
 

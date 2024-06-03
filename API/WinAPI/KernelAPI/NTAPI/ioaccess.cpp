@@ -31,6 +31,7 @@ UCHAR READ_REGISTER_UCHAR(
 ULONG READ_REGISTER_ULONG(
 	_In_ PULONG Register
 ) {
+	LouPrint("Address IS:%h\n",Register);
 	return *Register;
 }
 
@@ -75,6 +76,7 @@ VOID WRITE_REGISTER_ULONG(
 	_In_ PULONG Register,
 	_In_ ULONG Value
 ) {
+	LouPrint("Address IS:%h\n",Register);
 	*Register = Value;
 }
 

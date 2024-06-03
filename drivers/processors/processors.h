@@ -43,6 +43,9 @@ namespace CPU{
         SSE4A,
         SSE42,
         HYPERTHREAD,
+        APIC,
+        XAPIC,
+        X2APIC,
     }FEATURE;
 
     typedef enum{

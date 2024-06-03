@@ -1,11 +1,6 @@
 
 // allocation.c
 // Tyler Grenier
-// this will not compile for a while so
-// if your looking for this to compile 
-// go Fuck Yourself
-
-
 
 //include headers from freestanding
 
@@ -113,42 +108,33 @@ void LouFree(RAMADD Addr, SIZE size) {
                 uint64_t Sector = limit - address;
                 uint64_t TotalAllocation = (Sector / 72) / 8;
 
-                for (uint64_t TableSelect = 0; TableSelect < TotalAllocation; TableSelect++) {
-                    for (uint8_t TableEntry = 0; TableEntry < LongLongBitDimension; TableEntry++) {
-                        // Calculate the current address
-                        uint64_t currentAddress = (uintptr_t)(address + TableSelect * LongLongBitDimension * sizeof(uint64_t)) + TableEntry * sizeof(uint64_t);
+                uint64_t* Mapping = (uint64_t*)(uintptr_t)address;
 
-                        if ((RAMADD)currentAddress == Addr) {
-                            size_t SizeDone = 0;
+                uint64_t TableSelect = 0, TableEntry = 0;
 
-                            for (; TableSelect < TotalAllocation; TableSelect++) {
-                                // Read a 64-bit value into the stack buffer
-                                uint64_t stackBuffer = *((uint64_t*)(address + TableSelect * LongLongBitDimension * sizeof(uint64_t)));
-
-                                for (; TableEntry < LongLongBitDimension; TableEntry++) {
-                                    // Modify the stack buffer
-                                    stackBuffer &= ~(1ULL << TableEntry);
-                                    SizeDone++;
-
-                                    // Check if the modification size is met
-                                    if (SizeDone == size) {
-                                        // Write the modified value back to RAM
-                                        *((uint64_t*)(address + TableSelect * LongLongBitDimension * sizeof(uint64_t))) = stackBuffer;
-                                        return;
-                                    }
-                                }
-
-                                // Write the modified value back to RAM
-                                *((uint64_t*)(address + TableSelect * LongLongBitDimension * sizeof(uint64_t))) = stackBuffer;
-
-                                // Reset TableEntry for the next 64-bit value
-                                TableEntry = 0;
-                            }
-                        }
+                while(1){
+                    if((uint64_t)((uint64_t)&Mapping[TableSelect] + (uint64_t)TableEntry + (uint64_t)TotalAllocation) == (uint64_t)Addr)break;
+                    if(TableEntry > (LongLongBitDimension - 1)){
+                        TableEntry = 0;
+                        TableSelect++;
                     }
+                    else TableEntry++;
                 }
 
-                return;
+                while(size > 0){
+                    uint64_t Foowy = Mapping[TableSelect];
+                    while(TableEntry < (LongLongBitDimension - 1)){
+                        Foowy &= ~(1 << TableEntry);
+                        TableEntry++;
+                        Mapping[TableSelect] = Foowy;
+                        if(TableEntry < (LongLongBitDimension - 1))break;
+                     }
+                    TableEntry = 0;
+                    TableSelect++;
+                    size--;
+                } 
+
+
             }
             else if (mmap_entry->type == 2) continue;
             else if (mmap_entry->type == 3) continue;
@@ -157,24 +143,26 @@ void LouFree(RAMADD Addr, SIZE size) {
     }
 }
 
-static inline void LouKeMapByteToTable(uint64_t* MapStart,uint64_t StartTableSelect, uint8_t StartTableEntry, size_t BytesToAllocate) {
 
-    size_t BytesAllocated = 0;
-
-    for (uint64_t TS = StartTableSelect; BytesAllocated < BytesToAllocate; TS++) {
-        for (uint8_t TE = StartTableEntry; TE < LongLongBitDemention; TE++){
-            MapStart[TS] |= (1ULL << TE);
-            BytesAllocated++;
-            if (BytesAllocated >= BytesToAllocate)return;
-        }
-        StartTableEntry = 0;
-    }
+bool is_aligned(void *address, size_t alignment) {
+    // Cast the address to uintptr_t to perform arithmetic on it
+    uintptr_t addr = (uintptr_t)address;
+    // Check if the address is aligned by checking if it is divisible by the alignment
+    return addr % alignment == 0;
 }
 
 
-void* LouMallocEx(size_t BytesToAllocate, uint64_t Flags) {
+bool GetNextAllignedBitmap(){
 
-    if (BytesToAllocate >= (LongLongBitDemention * BlockDemention)) return NULL;
+
+
+    return true;
+}
+
+void* LouMallocEx(size_t BytesToAllocate, uint64_t Flags, uint64_t Alignment){
+
+
+    //if (BytesToAllocate >= (LongLongBitDemention * BlockDemention)) return NULL;
 
     uint16_t Number_Of_Entries = (LousineMemoryMapTable->tag.size - sizeof(struct master_multiboot_mmap_entry)) / LousineMemoryMapTable->entry_size;
     if (LousineMemoryMapTable->entry_version == 0) {
@@ -205,54 +193,99 @@ void* LouMallocEx(size_t BytesToAllocate, uint64_t Flags) {
                     LouMapAddress(i, i, Flags);
                 }
 
+                uint64_t TEMPBTA = BytesToAllocate;
                 BitMap = (uint64_t*)(uintptr_t)address;
-
-                size_t BitsChecked = 0;
-
+                uint64_t TableSelect = 0;
                 uint64_t StartTableSelect = 0;
-                uint8_t StartTableEntry = 0;
+                uint8_t TableEntry = 0;
+                uint64_t StartTableEntry = 0;
 
-                for (uint64_t TableSelect = 0; TableSelect < TotoalAllocation; TableSelect++) {
-                    uint64_t TableEntry = *(BitMap + TableSelect);// store a temp variable so we dont hog system memory
-                    for (uint8_t BitCheck = 0; BitCheck < LongLongBitDemention; BitCheck++) {
-                        //Check If the Bit Is FLipped
-                        if ((TableEntry >> BitCheck) & 0x01){
-                            BitsChecked = 0;
-                            if (BitCheck < (LongLongBitDemention - 1)) {
-                                StartTableSelect = TableSelect;
-                                StartTableEntry =  BitCheck++;
-                            }
-                            else {
-                                StartTableSelect = TableSelect++;
-                                StartTableEntry  = 0;
-                            }
-                        }
-                        else {
-                            BitsChecked++;
-                        }
-                        if (BitsChecked >= BytesToAllocate) {
-                            //Found An address
+                _FUCK_ME_DO_IT_AGAIN:
 
-                            LouKeMapByteToTable(BitMap, StartTableSelect, StartTableEntry, BytesToAllocate);
-                            return (void*)(uintptr_t)((&BitMap[StartTableSelect] + StartTableEntry) + TotoalAllocation);
+                while(BytesToAllocate > 0){
+                    if((BitMap[TableSelect] >> TableEntry) & 0x01){
+                        BytesToAllocate++;
+                        if(TableEntry > (LongLongBitDimension - 1)){
+                            TableEntry = 0;
+                            TableSelect++;
+                            StartTableEntry = TableEntry;
+                            StartTableSelect = TableSelect;
+                        }
+                        else{
+                            TableEntry++;
+                            //LouPrint("FOO:%d\n",TableEntry);
+                            StartTableEntry = TableEntry;
+                        } 
+                    }
+                    else TableEntry++;
+                    BytesToAllocate--;
+                }
+                if(Alignment > 1){
+                // Calculate the aligned address
+                uint64_t AlignedAddress = ((uint64_t)&BitMap[StartTableSelect] + (uint64_t)StartTableEntry + (uint64_t)TotoalAllocation); // Start with the current address
+                AlignedAddress = (AlignedAddress + Alignment - 1) & ~(Alignment - 1); // Align the address
+
+                // Calculate the New Variables
+                    while(AlignedAddress == (uint64_t)(&BitMap[StartTableSelect] + (uint64_t)StartTableEntry + (uint64_t)TotoalAllocation)){
+                        StartTableEntry++;
+                        if(StartTableEntry > (LongLongBitDimension - 1)){
+                            StartTableEntry = 0;
+                            StartTableSelect++;
                         }
                     }
+                    while(BytesToAllocate > 0){
+                        if((BitMap[TableSelect] >> TableEntry) & 0x01){
+                            BytesToAllocate++;
+                            if(TableEntry > (LongLongBitDimension - 1)){
+                                TableEntry = 0;
+                                TableSelect++;
+                                StartTableEntry = TableEntry;
+                                StartTableSelect = TableSelect;
+                                goto _FUCK_ME_DO_IT_AGAIN;
+                            }
+                            else{
+                                TableEntry++;
+                                //LouPrint("FOO:%d\n",TableEntry);
+                                StartTableEntry = TableEntry;
+                                goto _FUCK_ME_DO_IT_AGAIN;
+                            } 
+                        }
+                        else TableEntry++;
+                        BytesToAllocate--;
+                    }
+
                 }
+                BytesToAllocate = TEMPBTA;
+                TableEntry = StartTableEntry;
+                TableSelect = StartTableSelect;
+                while(BytesToAllocate > 0){
+                    uint64_t TEMPBitMap = BitMap[TableSelect];
+                    TEMPBitMap |= (1 << TableEntry);
+                    BitMap[TableSelect] = TEMPBitMap;
+                    TableEntry++;    
+                    if(TableEntry > (LongLongBitDimension - 1)){
+                        TableEntry = 0;
+                        TableSelect++;
+                    }
+                    BytesToAllocate--;
+
+                }
+
+                //LouPrint("TableSelect:%d\nTableEntry:%d\n",TableSelect,TableEntry);
+
+                return (void*)(uintptr_t)((uint64_t)&BitMap[StartTableSelect] + (uint64_t)StartTableEntry + (uint64_t)TotoalAllocation);
             }
             else if (mmap_entry->type == 2) continue;
             else if (mmap_entry->type == 3) continue;
             else continue;
         }
     }
-    return (void*)0x00000000;
+    return (void*)0x00000000;    
 
 }
-
 
 void* LouMalloc(size_t BytesToAllocate) {
 
-    return LouMallocEx(BytesToAllocate, KERNEL_PAGE_WRITE_PRESENT);
+    return LouMallocEx(BytesToAllocate, KERNEL_PAGE_WRITE_PRESENT,1);
 
 }
-
-

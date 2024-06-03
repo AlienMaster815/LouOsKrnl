@@ -163,7 +163,9 @@ LOUSTATUS User_Mode_Initialization(){
 
 void* LouMalloc(size_t BytesToAllocate);
 
-KERNEL_ENTRY Lou_kernel_start(uint32_t foo){
+void* LouMallocEx(size_t BytesToAllocate, uint64_t Flags, size_t Aligned);
+
+KERNEL_ENTRY Lou_kernel_start(uint32_t foo, uint32_t Apic){
     
     struct multiboot_tag* mboot = (struct multiboot_tag*)(uintptr_t)(foo + 8);
     ParseMBootTags(mboot);
@@ -183,16 +185,16 @@ KERNEL_ENTRY Lou_kernel_start(uint32_t foo){
 
 
     //SETUP DEVICES AND DRIVERS
-    //if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);
-
-    //if(Advanced_Kernel_Initialization() != LOUSTATUS_GOOD)LouPanic("Final Kernel Initialization Failed",BAD);
-		
+    //if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);		
 
    // Initialize User Mode
    // if(User_Mode_Initialization() != LOUSTATUS_GOOD)LouPanic("User Mode Initialiation Failed",BAD);
 
-
     LouPrint("Hello World\n");
+
+    //asm volatile("INT $0x20");
+
+    //LouPrint("Actual SPURRIOUS Register:%h\n",Apic);
 
     while (1) {
         asm("hlt");

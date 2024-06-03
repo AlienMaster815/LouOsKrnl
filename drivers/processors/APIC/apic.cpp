@@ -117,10 +117,13 @@ KERNEL_IMPORT void write_msr(uint32_t msr, uint64_t Value);
 
 KERNEL_IMPORT void disable_pic();
 
+CPU::CPUID* Cpu;
+APIC::LAPIC* Lapic;
+
 
 static uint64_t LocalApicBase = 0xFEE00000;
 
-LOUSTATUS EnableAdvancedBspFeatures();
+LOUSTATUS EnableAdvancedBspFeatures(CPU::FEATURE Feature);
 
 void ParseAPIC(uint8_t* entryAddress, uint8_t* endAddress) {
     while (entryAddress < endAddress) {
@@ -185,27 +188,18 @@ LOUDDK_API_ENTRY bool GetAPICStatus() {
 #define IA32_X2APIC_BASE_MSR_ADDR 0x802
 #define MSR_BASE_MASKX2 0xFFFFFFFFFFFFF000
 
-int IsX2ApicSupported() {
-    uint32_t eax, ebx, ecx, edx;
-    __asm__ volatile (
-        "cpuid"
-        : "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
-        : "a"(1)
-        );
-    return ecx & (1 << 21);  // Check if the 21st bit of ecx is set
-}
 
 uint64_t GetLocalApicBase() {
-    if (IsX2ApicSupported()) {
-        uint64_t base;
-        __asm__ volatile("rdmsr" : "=A"(base) : "c"(IA32_X2APIC_BASE_MSR_ADDR));
-        return base & MSR_BASE_MASKX2;
-    }
-    else {
-        uint64_t base = read_msr(IA32_APIC_BASE_MSR);
-        return base & MSR_BASE_MASK;
-    }
+   uint64_t msr_value = read_msr(IA32_APIC_BASE_MSR);
+   return msr_value & 0xFFFFFFFFFFFFF000;
 }
+
+// Function to set the APIC base address
+void cpu_set_apic_base(uintptr_t apic) {
+   uint64_t msr_value = (apic & 0xFFFFFFFFFFFFF000) | IA32_APIC_BASE_MSR_ENABLE;
+   write_msr(IA32_APIC_BASE_MSR, msr_value);
+}
+
 
 LOUDDK_API_ENTRY LOUSTATUS InitApicSystems(bool LateStage) {
     LOUSTATUS Status = LOUSTATUS_GOOD;
@@ -213,9 +207,8 @@ LOUDDK_API_ENTRY LOUSTATUS InitApicSystems(bool LateStage) {
     uint8_t* Buffer = (uint8_t*)LouMalloc(ACPIBUFFER);
     ULONG ReturnLength = 0x0000;
 
-    UnSetInterruptFlags();
+    //UnSetInterruptFlags();
     
-
     Status = AuxKlibGetSystemFirmwareTable(
         'ACPI', 
         'APIC', 
@@ -245,15 +238,15 @@ LOUDDK_API_ENTRY LOUSTATUS InitApicSystems(bool LateStage) {
         HeaderEndAddress
     );
     
-
-    //configure BSP for all systems
-
-    EnableAdvancedBspFeatures();
-
-    // identify all processors and set them up
-
+    Cpu = (CPU::CPUID*)LouMalloc(sizeof(CPU::CPUID));
+    Lapic = (APIC::LAPIC*)LouMalloc(sizeof(APIC::LAPIC));
+    //configure FPU for BSP
+    EnableAdvancedBspFeatures(CPU::FPU);
     //enable apic mode 
-    
+
+    if(Lapic->InitializeApic())LouPrint("APIC ENABLED SUCCESSFULLY\n");
+
+
     //remap pic to 32 base
 
     //wake up aspplication processors
@@ -266,10 +259,127 @@ LOUDDK_API_ENTRY LOUSTATUS InitApicSystems(bool LateStage) {
 
     //configure io apic
 
+    Cpu->~CPUID();
+
+    ApicSet = true;
+
+    LouFree((RAMADD)Cpu, sizeof(CPU::CPUID));
+    LouFree((RAMADD)Cpu, sizeof(APIC::LAPIC));
+
     return Status;
 
 }
 
+
+APIC::LAPIC::LAPIC(){
+
+}
+APIC::LAPIC::~LAPIC(){
+
+}
+bool APIC::LAPIC::InitializeApic(){
+
+    LouPrint("Setting Up APIC\n");
+    uint64_t MSR = read_msr(IA32_APIC_BASE_MSR);
+
+    if(!(MSR >> 11) & 0x01) return false;
+    if((MSR >> 8) & 0x01)   InitializeBspLapic();
+    //else if (!(MSR >> 8) & 0x01) InitializeApApic();
+    else return false;
+
+    return true;
+}
+
+bool APIC::LAPIC::InitializeBspLapic(){
+
+    LouPrint("Initializing BootStrap Processor\n");
+ 
+    LouPrint("Disableing Pic\n");
+    disable_pic();
+    LouPrint("Pic Has Been Disabled\n");
+
+    volatile uint32_t* apic_base = (volatile uint32_t*)GetLocalApicBase();
+
+
+    if(Cpu->IsFeatureSupported(CPU::X2APIC)){
+        //initiailize x2 standard
+        LouPrint("Using X2 Standard\n");
+
+        //Set the Spurious Interrupt Vector Register bit 8 to start receiving interrupts
+        apic_base[0xF0 / 4] |= 0x100; // Assuming memory-mapped I/O
+
+    }
+    else if (Cpu->IsFeatureSupported(CPU::XAPIC)){
+        //initialize x1 standard
+        LouPrint("Using X1 Standard\n");
+
+        //LouMapAddress(0xFEE00000,0xFEE00000,KERNEL_PAGE_WRITE_PRESENT);
+        //LouMapAddress(0xFEF00000,0xFEF00000,KERNEL_PAGE_WRITE_PRESENT);
+
+
+        //uint32_t FOOBAR = READ_REGISTER_ULONG((ULONG*)0xFEE000F0);
+
+        //LouPrint("FOOBAR IS:%h\n",FOOBAR);
+
+/*
+        //LouMapAddress(GetLocalApicBase(),GetLocalApicBase(),KERNEL_PAGE_WRITE_PRESENT);
+
+        LouPrint("Got Apic Base\n");
+
+        WRITE_REGISTER_ULONG(SPURRIOUS_INTERRUPT_REGISTER, READ_REGISTER_ULONG(SPURRIOUS_INTERRUPT_REGISTER) | 0x100 );
+
+        LouPrint("Enabled APIC\n");
+
+        WRITE_REGISTER_ULONG(LVT_TIMER_REGISTER, 0x20); //IRQ 0
+
+        LouPrint("Set Timer Vector\n");
+
+        WRITE_REGISTER_ULONG(LVT_DIVIDE_CONFIGURATION_REGISTER, 0x0A); //divide by 128
+        LouPrint("Set Divison\n");
+        sleep(256);
+        WRITE_REGISTER_ULONG(LVT_INITIAL_COUNT_REGISTER,0xFFFFFFFF);
+        LouPrint("Set Counter\n");
+        sleep(256);
+        WRITE_REGISTER_ULONG(LVT_TIMER_REGISTER, LVTdisabled);        
+        LouPrint("Disabled Timer\n");
+        uint32_t CRC = READ_REGISTER_ULONG(LVT_CURRENT_COUNT_REGISTER);
+
+        LouPrint("CRC Is:%h\n",CRC);
+*/
+
+    }
+    else{
+        //determine Discreet or integrated chip
+        LouPrint("APIC Version Is:%h\n", READ_REGISTER_ULONG(LAPICID_REGISTER) & 0xFF);
+
+        switch(READ_REGISTER_ULONG(LAPICID_REGISTER) & 0xFF){
+            
+            case 0:
+                //initialize descreet apic
+                LouPrint("Descrete Apic Found\n");
+                // Set the Spurious Interrupt Vector Register bit 8 to start receiving interrupts
+                apic_base[0xF0 / 4] |= 0x100; // Assuming memory-mapped I/O
+                break;
+
+            case 0x10:
+            case 0x11:
+            case 0x12:
+            case 0x13:
+            case 0x14:
+            case 0x15:
+                LouPrint("Integrated Apic Found\n");
+                // Set the Spurious Interrupt Vector Register bit 8 to start receiving interrupts
+                apic_base[0xF0 / 4] |= 0x100; // Assuming memory-mapped I/O                
+                break;
+
+            default:{
+                LouPrint("Unkown APIC CHIP\n");
+                return false;
+            }
+        }
+    }
+    return true;
+}
 
 LOUDDK_API_ENTRY void local_apic_send_eoi() {
     WRITE_REGISTER_ULONG(EOI_REGISTER, ENDOFINTERRUPT);

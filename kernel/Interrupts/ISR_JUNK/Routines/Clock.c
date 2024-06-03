@@ -13,7 +13,7 @@ void Clock() {
 
 	//Later We Will Find The Clock Caller
 	UpdateThreadManager();
-	//LouPrint("Clock Was Used\n");
+	LouPrint("Clock Was Used\n");
 	if (GetAPICStatus()) {
 		//Status = HandleApicTimer();
 	}

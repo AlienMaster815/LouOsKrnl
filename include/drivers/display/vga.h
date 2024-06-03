@@ -85,12 +85,12 @@ typedef struct{
 	uint8_t color;
 }Char;
 
-static RAMADD vga_current;
-static RAMADD vga_new;
+static uint8_t vga_current;
+static uint8_t vga_new;
 
 
 void setup_vga_systems();
-STATUS register_new_mode(RAMADD new_vga,uint8_t mode);
+STATUS register_new_mode(uint8_t new_vga,uint8_t mode);
 void print_clear();
 void print_char(char character);
 void print_str(char* str);

@@ -40,5 +40,7 @@ LOUSTATUS InitializeStartupInterruptHandleing(){
     IRQ_Pic_clear_mask(0);
     IRQ_Pic_clear_mask(1);
 
+    //SetInterruptFlags();
+
     return 0;
 }

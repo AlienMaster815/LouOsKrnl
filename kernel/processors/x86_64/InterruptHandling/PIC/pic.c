@@ -111,7 +111,7 @@ void Mask_All_Programable_Interrupts(){
 // Function to disable the PIC
 void disable_pic() {
 
-    PIC_remap(255 - 32, 255 - 16);
+    PIC_remap(0x40, 0x40 + 0x08);
 
     // Mask all interrupts on both PICs
     outb(PIC1_DATA, 0xFF);

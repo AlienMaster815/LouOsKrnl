@@ -1,14 +1,16 @@
 {
   "ExpandedNodes": [
     "",
-    "\\drivers",
     "\\include",
     "\\include\\drivers",
     "\\include\\drivers\\Lou_drivers",
     "\\init",
+    "\\init\\GDS",
     "\\kernel",
+    "\\kernel\\Drivers",
+    "\\kernel\\Drivers\\Display",
     "\\kernel\\memory"
   ],
-  "SelectedNode": "\\init\\Lou_Main.c",
+  "SelectedNode": "\\init\\GDS\\init_vga_sys.c",
   "PreviewInSolutionExplorer": false
 }
