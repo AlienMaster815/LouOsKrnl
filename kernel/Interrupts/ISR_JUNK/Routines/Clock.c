@@ -5,7 +5,7 @@ void UpdateThreadManager();
 
 bool GetAPICStatus();
 
-LOUSTATUS HandleApicTimer();
+
 
 void Clock() {
 
@@ -13,9 +13,6 @@ void Clock() {
 
 	//Later We Will Find The Clock Caller
 	UpdateThreadManager();
-	LouPrint("Clock Was Used\n");
-	if (GetAPICStatus()) {
-		//Status = HandleApicTimer();
-	}
+	//LouPrint("Clock Was Used\n");
 	return;
 }

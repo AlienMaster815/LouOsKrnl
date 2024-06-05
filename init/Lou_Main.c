@@ -32,7 +32,7 @@ uintptr_t RBP_Current;
 //      the code to add a 0 place where the char is to make it
 //      the right 10 place value
 
-char* KERNEL_VERSION = "0.0.00037 RSC-1 Multiboot 2";
+char* KERNEL_VERSION = "0.0.00038 RSC-1 Multiboot 2";
 
 
 #ifdef __x86_64__
@@ -82,6 +82,7 @@ void ControlProtectionException();
 
 void ParseMBootTags(struct multiboot_tag* MBOOT);
 
+void CreateNewPageSystem();
 
 LOUSTATUS Lou_kernel_early_initialization(){
 
@@ -161,9 +162,7 @@ LOUSTATUS User_Mode_Initialization(){
 }
 
 
-void* LouMalloc(size_t BytesToAllocate);
-
-void* LouMallocEx(size_t BytesToAllocate, uint64_t Flags, size_t Aligned);
+bool LouMapAddressEx(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize);
 
 KERNEL_ENTRY Lou_kernel_start(uint32_t foo, uint32_t Apic){
     
@@ -185,16 +184,15 @@ KERNEL_ENTRY Lou_kernel_start(uint32_t foo, uint32_t Apic){
 
 
     //SETUP DEVICES AND DRIVERS
-    //if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);		
+    if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);		
 
    // Initialize User Mode
    // if(User_Mode_Initialization() != LOUSTATUS_GOOD)LouPanic("User Mode Initialiation Failed",BAD);
 
+
     LouPrint("Hello World\n");
 
     //asm volatile("INT $0x20");
-
-    //LouPrint("Actual SPURRIOUS Register:%h\n",Apic);
 
     while (1) {
         asm("hlt");

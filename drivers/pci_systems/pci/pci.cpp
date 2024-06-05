@@ -59,9 +59,9 @@ LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device) {
                 else {
                     LouPrint("Multi Function PCI Device Found Vedor Is: %h and Device Is: %h\n", vendorID, PciGetDeviceID(bus, device, function));
                         //Parse Funxtios and have fun
-                        //if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
+                        if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
                         //if (!DeviceIdentified)DeviceIdentified = isUsb( bus,  device,  function);
-                        if (!DeviceIdentified)DeviceIdentified = IsVGA( bus,  device,  function);
+                        //if (!DeviceIdentified)DeviceIdentified = IsVGA( bus,  device,  function);
                         //if (!DeviceIdentified)DeviceIdentified = IsSerial( bus,  device,  function);
                         //if (!DeviceIdentified)DeviceIdentified = IsEithernet( bus,  device,  function);
                         //if (!DeviceIdentified)DeviceIdentified = IsChipset( bus,  device,  function);
@@ -79,9 +79,9 @@ LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device) {
     else{
          LouPrint("Single Function PCI Device Found Vedor Is: %h and Device Is: %h\n", vendorID, PciGetDeviceID(bus, device, function));
             //Parse Funxtios and have fun
-            //if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
+            if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
             //if (!DeviceIdentified)DeviceIdentified = isUsb( bus,  device,  function);
-            if (!DeviceIdentified)DeviceIdentified = IsVGA( bus,  device,  function);
+            //if (!DeviceIdentified)DeviceIdentified = IsVGA( bus,  device,  function);
             //if (!DeviceIdentified)DeviceIdentified = IsSerial( bus,  device,  function);
             //if (!DeviceIdentified)DeviceIdentified = IsEithernet( bus,  device,  function);
             //if (!DeviceIdentified)DeviceIdentified = IsChipset( bus,  device,  function);

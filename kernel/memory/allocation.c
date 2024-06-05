@@ -10,6 +10,9 @@
 
 void* LouMalloc(size_t BytesToAllocate);
 
+#define BITMAP_TABLE_BASE 0
+#define TABLE_SIZE  8
+
 RAMADD Lou_Alloc_Mem(SIZE size) {
     return (RAMADD)LouMalloc(size);
 }
@@ -181,16 +184,13 @@ void* LouMallocEx(size_t BytesToAllocate, uint64_t Flags, uint64_t Alignment){
                     limit = (mmap_entry->addr + mmap_entry->len) - (StartMap);
                     address = (StartMap);
                 }
-                //LouPrint("Starting Address Is:%d\n", mmap_entry->addr);
-                //LouPrint("Address Buffer Is:%d\n", limit);
-
-
                 uint64_t Sector = limit - address;
                 uint64_t TotoalAllocation = (Sector / 72) / 8; //Calculate the bitmap ratio of the memory by 8 for 64 bits per 64 bytes
 
-
-                for (uint64_t i = address; i < TotoalAllocation; i += PAGE_SIZE) {
-                    LouMapAddress(i, i, Flags);
+                if(address > GIGABYTE){
+                    for (uint64_t i = address; i < TotoalAllocation; i += PAGE_SIZE) {
+                        LouMapAddress(i, i, Flags);
+                    }
                 }
 
                 uint64_t TEMPBTA = BytesToAllocate;
@@ -200,80 +200,55 @@ void* LouMallocEx(size_t BytesToAllocate, uint64_t Flags, uint64_t Alignment){
                 uint8_t TableEntry = 0;
                 uint64_t StartTableEntry = 0;
 
-                _FUCK_ME_DO_IT_AGAIN:
-
-                while(BytesToAllocate > 0){
-                    if((BitMap[TableSelect] >> TableEntry) & 0x01){
-                        BytesToAllocate++;
-                        if(TableEntry > (LongLongBitDimension - 1)){
+                uint64_t AddressCheck = (uint64_t)&BitMap[BITMAP_TABLE_BASE] + (uint64_t)TotoalAllocation;  //create an address to check address alignment
+                AddressCheck &= ~(Alignment - 1);                                                           //align address by setting the bits that arent aligned to 0
+                AddressCheck += Alignment;                                                                  //add an alignment to get back to the bitmap space
+                                                                                                            //calculate the new table select and TableEntry
+                uint64_t CheckMap = AddressCheck;                                                           //create a temp value so we dont overwrite data
+                CheckMap -= ((uint64_t)&BitMap[BITMAP_TABLE_BASE] + (uint64_t)TotoalAllocation);            //Subtract the offset of the table and the bitmaps base
+                TableSelect = CheckMap / TABLE_SIZE;                                                        //divide the check for the Table Select
+                TableEntry = CheckMap - (TableSelect * TABLE_SIZE);                                         //subtract the diference due to the fload affect
+                                                                                                            //Start To Find An Open Address
+                for(size_t BytesAllocated = 0; BytesAllocated < BytesToAllocate; BytesAllocated++){         //iterate until number of free bytes found
+                    if((BitMap[TableSelect] >> TableEntry) & 0x01){                                         //check if the byte entry in the table is already being used
+                        AddressCheck += Alignment;                                                          //if it is get the next alligned address
+                        CheckMap = AddressCheck;                                                            //do what we did before to get the map entry
+                        CheckMap -= ((uint64_t)&BitMap[BITMAP_TABLE_BASE] + (uint64_t)TotoalAllocation);            
+                        TableSelect = CheckMap / TABLE_SIZE;                                                        
+                        TableEntry = CheckMap - (TableSelect * TABLE_SIZE);
+                        BytesAllocated = 0;
+                    }
+                    else{                                                                                   //otherwise continue with the checks
+                        if(TableEntry > (LongLongBitDemention - 1)){
                             TableEntry = 0;
                             TableSelect++;
-                            StartTableEntry = TableEntry;
-                            StartTableSelect = TableSelect;
                         }
                         else{
                             TableEntry++;
-                            //LouPrint("FOO:%d\n",TableEntry);
-                            StartTableEntry = TableEntry;
-                        } 
+                        }   
                     }
-                    else TableEntry++;
-                    BytesToAllocate--;
                 }
-                if(Alignment > 1){
-                // Calculate the aligned address
-                uint64_t AlignedAddress = ((uint64_t)&BitMap[StartTableSelect] + (uint64_t)StartTableEntry + (uint64_t)TotoalAllocation); // Start with the current address
-                AlignedAddress = (AlignedAddress + Alignment - 1) & ~(Alignment - 1); // Align the address
-
-                // Calculate the New Variables
-                    while(AlignedAddress == (uint64_t)(&BitMap[StartTableSelect] + (uint64_t)StartTableEntry + (uint64_t)TotoalAllocation)){
-                        StartTableEntry++;
-                        if(StartTableEntry > (LongLongBitDimension - 1)){
-                            StartTableEntry = 0;
-                            StartTableSelect++;
-                        }
-                    }
-                    while(BytesToAllocate > 0){
-                        if((BitMap[TableSelect] >> TableEntry) & 0x01){
-                            BytesToAllocate++;
-                            if(TableEntry > (LongLongBitDimension - 1)){
-                                TableEntry = 0;
-                                TableSelect++;
-                                StartTableEntry = TableEntry;
-                                StartTableSelect = TableSelect;
-                                goto _FUCK_ME_DO_IT_AGAIN;
-                            }
-                            else{
-                                TableEntry++;
-                                //LouPrint("FOO:%d\n",TableEntry);
-                                StartTableEntry = TableEntry;
-                                goto _FUCK_ME_DO_IT_AGAIN;
-                            } 
-                        }
-                        else TableEntry++;
-                        BytesToAllocate--;
-                    }
-
-                }
-                BytesToAllocate = TEMPBTA;
-                TableEntry = StartTableEntry;
-                TableSelect = StartTableSelect;
-                while(BytesToAllocate > 0){
-                    uint64_t TEMPBitMap = BitMap[TableSelect];
-                    TEMPBitMap |= (1 << TableEntry);
-                    BitMap[TableSelect] = TEMPBitMap;
-                    TableEntry++;    
-                    if(TableEntry > (LongLongBitDimension - 1)){
+                CheckMap = AddressCheck;                                                                    //create a temp value so we dont overwrite data
+                CheckMap -= ((uint64_t)&BitMap[BITMAP_TABLE_BASE] + (uint64_t)TotoalAllocation);            //Subtract the offset of the table and the bitmaps base
+                TableSelect = CheckMap / TABLE_SIZE;                                                        //divide the check for the Table Select
+                TableEntry = CheckMap - (TableSelect * TABLE_SIZE);                                         //subtract the diference due to the fload affect
+                //define the result as taken
+                
+                for(size_t BytesAllocated = 0; BytesAllocated < BytesToAllocate; BytesAllocated++){
+                    if(TableEntry > (LongLongBitDemention - 1)){
+                        BytesAllocated--;
                         TableEntry = 0;
                         TableSelect++;
                     }
-                    BytesToAllocate--;
-
+                    else{
+                        uint64_t TEMP = BitMap[TableSelect];
+                        TEMP |= (1 << TableEntry);
+                        BitMap[TableSelect] = TEMP;
+                        TableEntry++;
+                    }
                 }
 
-                //LouPrint("TableSelect:%d\nTableEntry:%d\n",TableSelect,TableEntry);
-
-                return (void*)(uintptr_t)((uint64_t)&BitMap[StartTableSelect] + (uint64_t)StartTableEntry + (uint64_t)TotoalAllocation);
+                return (void*)AddressCheck;
             }
             else if (mmap_entry->type == 2) continue;
             else if (mmap_entry->type == 3) continue;
@@ -286,6 +261,6 @@ void* LouMallocEx(size_t BytesToAllocate, uint64_t Flags, uint64_t Alignment){
 
 void* LouMalloc(size_t BytesToAllocate) {
 
-    return LouMallocEx(BytesToAllocate, KERNEL_PAGE_WRITE_PRESENT,1);
+    return LouMallocEx(BytesToAllocate, KERNEL_PAGE_WRITE_PRESENT,BytesToAllocate);
 
 }

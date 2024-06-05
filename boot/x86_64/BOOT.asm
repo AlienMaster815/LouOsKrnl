@@ -47,10 +47,13 @@ start:
     ;mov [multiboot_info_ptr], ebx
     mov esp, stack_top
 
-    ;mov eax, 0xFFFFFFFF
-    ;mov [0xFEE000F0], eax
+    mov eax, 5
+    mov [1073741824], eax
 
-    mov eax, [0xFEE000F0]
+    ;mov eax, 0xFFFFFFFF
+    ;mov [0xFEE000E0], eax
+
+    mov eax, [0xFEE000E0]
     mov [FOO], eax
 
     call check_cpuid
@@ -155,7 +158,7 @@ long_mode_start:
     mov es, ax 
     mov gs, ax 
     mov ss, ax 
-
+    
     mov rcx, [multiboot_info_ptr]
     mov rdx, [FOO]
     call Lou_kernel_start

@@ -1,4 +1,4 @@
-#include <kernel/ports.h>
+#include <LouAPI.h>
 
 uint8_t inb(uint64_t port) {
     unsigned char data;
@@ -62,4 +62,19 @@ void outsw(uint64_t __port, const void *__buf, unsigned long __n) {
 	__asm__ __volatile__("cld; rep; outsw"
 			: "+S"(__buf), "+c"(__n)
 			: "d"(__port));
+}
+
+
+extern uint64_t LouKeMachineLevelReadRegisterUlong(uint64_t AddressOfRegister);
+extern uint64_t LouKeMachineLevelWriteRegisterUlong(uint64_t AddressOfRegister,uint64_t Data);
+
+
+unsigned long LouKeReadRegisterUlong(void* Register){
+    unsigned long RESULT = 0;
+    RESULT = (unsigned long)LouKeMachineLevelReadRegisterUlong((uint64_t)(uint8_t*)Register);
+    return RESULT;
+}
+
+void LouKeWriteRegisterUlong(void* Register, unsigned long Data){
+    LouKeMachineLevelWriteRegisterUlong((uint64_t)(uint8_t*)Register,(uint64_t)Data);
 }

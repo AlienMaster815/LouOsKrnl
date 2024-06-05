@@ -344,12 +344,15 @@ ISR31:
 
 
 ISR32:
+	cli
 	pusha
 	mov ah, 32
 	mov [InterruptNum], ah
 	Handle
 	popa
+	sti
 	iretq
+
 
 ISR33:
 	pusha

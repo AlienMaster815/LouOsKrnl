@@ -11,7 +11,22 @@
 #include <bootloader/grub/multiboot.h>
 
 
+#define KILOBYTE_PAGE 4 * 1024
+#define MEGABYTE_PAGE 2 * 1024 * 1024
 
+
+#define PRESENT_PAGE           0b1
+#define WRITEABLE_PAGE        0b10
+#define KERNEL_PAGE          0b100
+#define WRITE_THROUGH_PAGE  0b1000
+#define CACHE_DISABLED_PAGE 0b10000
+
+#define PAGE_PRESENT        (1 << 0)
+#define PAGE_WRITE          (1 << 1)
+#define PAGE_USER           (1 << 2)
+#define PAGE_PWT            (1 << 3)
+#define PAGE_PCD            (1 << 4)
+#define END_PAGE            (1 << 4)
 
 #ifndef __cplusplus
 // Section 1:1 RAM ADDRESS
@@ -28,6 +43,7 @@
 
 #define PAGE_TABLE_ALLIGNMENT 4096
 #define PAGE_SIZE 4096
+
 
 #include <LouAPI.h>
 
@@ -47,6 +63,8 @@ RAMADD Lou_Alloc_Mem_Alligned(SIZE size,uint64_t allignment);
 void* LouMalloc(size_t BytesToAllocate);
 void LouFree(RAMADD Addr, SIZE size);
 void* LouMalloc(size_t BytesToAllocate);
+void* LouMallocEx(size_t BytesToAllocate, uint64_t Flags, size_t Aligned);
+bool LouMapAddressEx(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize);
 
 #include <stdint.h>
 
@@ -111,6 +129,7 @@ KERNEL_IMPORT void LouUnMapAddress(uint64_t VAddress);
 KERNEL_IMPORT void LouFree(uint8_t* Addr, uint32_t size);
 KERNEL_IMPORT void* LouMalloc(size_t BytesToAllocate);
 KERNEL_IMPORT LOUSTATUS LouKeMapIO(uint64_t PADDRESS, uint64_t MemoryBuffer, uint64_t FLAGS);
+KERNEL_IMPORT bool LouMapAddressEx(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize);
 
 #endif
 #endif

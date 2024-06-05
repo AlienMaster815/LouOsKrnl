@@ -43,12 +43,20 @@ int count_gigabytes(uint64_t number) {
 
 
 
+bool LouMapAddressEx(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize);
 
 void LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS) {
+    LouMapAddressEx(PAddress, VAddress,FLAGS,MEGABYTE_PAGE);
+}
+
+
+bool LouMapAddressEx(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize){
+        
+    if(PageSize == MEGABYTE_PAGE){
+
     // Align addresses to 2MB boundary
     PAddress &= 0xFFFFFFFFFFE00000;
     VAddress &= 0xFFFFFFFFFFE00000;
-
     uint64_t L4Entry = 0,L3Entry = 0, L2Entry = 0;
 
 // Calculate L3 and L2 entries based on the virtual address
@@ -83,16 +91,72 @@ void LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS) {
     }
 
         // Print debug information
-        LouPrint("L3 Entry: %d\n", L3Entry);
-        LouPrint("L2 Entry: %d\n", L2Entry);
-        LouPrint("PML2 Entry: %h\n", PML4->PML2[L3Entry].entries[L2Entry]);
-        LouPrint("PML3 Entry: %h\n", PML4->PML3[L4Entry].entries[L3Entry]);
+        //LouPrint("L3 Entry: %d\n", L3Entry);
+        //LouPrint("L2 Entry: %d\n", L2Entry);
+        //LouPrint("PML2 Entry: %h\n", PML4->PML2[L3Entry].entries[L2Entry]);
+        //LouPrint("PML3 Entry: %h\n", PML4->PML3[L4Entry].entries[L3Entry]);    
+        
+        
+        return true;
+    }
+    else if(PageSize == KILOBYTE_PAGE){
+        // PARAMETERs FOR REFERENCE uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize
+        VAddress &= 0xFFFFFFFFFFFFF800;
+        PAddress &= 0xFFFFFFFFFFFFF800;
+        uint64_t L4Entry = 0,L3Entry = 0, L2Entry = 0, L1Entry = 0;
 
-        //uint8_t* test = (uint8_t*)VAddress;
+        if (VAddress >= GIGABYTE && VAddress < (GIGABYTE * 512ULL)) {
+        // Within the range of a single gigabyte
+            L3Entry = VAddress / GIGABYTE;
+            L2Entry = (VAddress - (L3Entry * GIGABYTE)) / (2ULL * MEGABYTE);
+            L1Entry = (VAddress - ((L3Entry * GIGABYTE) + (L2Entry * (2ULL * MEGABYTE)))) / KILOBYTE_PAGE;
+        }
+        else {
+            LouPrint("Could Not Create Page");
+            return false;
+        }
+        //create an l1 entry that is alingged by the table
+        uint64_t* L1Table = (uint64_t*)LouMallocEx(sizeof(uint64_t) * 512, KERNEL_PAGE_WRITE_PRESENT, PAGE_TABLE_ALLIGNMENT);
 
-        //uint8_t foo = *test;
+        //LouPrint("L1 Is:%d\n", L1Entry);
+
+        //obtain the PML 4 Table
+        PML* PML4 = GetPageBase();
+
+        //Map the Kilobyte page to the L1 Entry
+        L1Table[L1Entry] = GetPageValue(PAddress,FLAGS);
+
+        //Map L1 To the L2 Entry
+        PML4->PML2[L3Entry].entries[L2Entry] = (uint64_t)GetPageValue((uint64_t)&L1Table[L1Entry], FLAGS);
+
+        if (VAddress >= GIGABYTE && VAddress < (GIGABYTE * 512ULL)) {
+            PML4->PML3[L4Entry].entries[L3Entry] = (uint64_t)GetPageValue((uint64_t)&PML4->PML2[L3Entry].entries[L2Entry], FLAGS);
+        }
+
+        // Flush the modified page table entries
+        PageFlush((uint64_t)L1Table[L1Entry]);
+        PageFlush(PML4->PML2[L3Entry].entries[L2Entry]);
+        if (VAddress >= GIGABYTE && VAddress < (GIGABYTE * 512ULL)) {
+            PageFlush(PML4->PML3[L4Entry].entries[L3Entry]);
+        }
+
+        // Print debug information
+        //LouPrint("L3 Entry: %d\n", L3Entry);
+        //LouPrint("L2 Entry: %d\n", L2Entry);
+        //LouPrint("L1 Entry: %d\n", L1Entry);
+
+        //LouPrint("PML2 Entry: %h\n", PML4->PML2[L3Entry].entries[L2Entry]);
+        //LouPrint("PML3 Entry: %h\n", PML4->PML3[L4Entry].entries[L3Entry]); 
+
+        LouFree((RAMADD)L1Table,sizeof(uint64_t) * 512);
+
+        return true;
+    }
+    else{
+        LouPrint("Could Not Create Page");
+    }
+    return false;
 }
-
 
 void LouUnMapAddress(uint64_t VAddress) {
 

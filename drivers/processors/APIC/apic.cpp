@@ -246,19 +246,6 @@ LOUDDK_API_ENTRY LOUSTATUS InitApicSystems(bool LateStage) {
 
     if(Lapic->InitializeApic())LouPrint("APIC ENABLED SUCCESSFULLY\n");
 
-
-    //remap pic to 32 base
-
-    //wake up aspplication processors
-
-    //initialize ap
-
-    //sync ap
-
-    //configure apic
-
-    //configure io apic
-
     Cpu->~CPUID();
 
     ApicSet = true;
@@ -290,6 +277,8 @@ bool APIC::LAPIC::InitializeApic(){
     return true;
 }
 
+uint64_t ApicBase;
+
 bool APIC::LAPIC::InitializeBspLapic(){
 
     LouPrint("Initializing BootStrap Processor\n");
@@ -298,55 +287,35 @@ bool APIC::LAPIC::InitializeBspLapic(){
     disable_pic();
     LouPrint("Pic Has Been Disabled\n");
 
-    volatile uint32_t* apic_base = (volatile uint32_t*)GetLocalApicBase();
+    ApicBase = (uint64_t)LouMalloc(MEGABYTE_PAGE);
 
+    //volatile uint32_t* apic_base = (volatile uint32_t*)GetLocalApicBase();
+    LouMapAddress(GetLocalApicBase(), ApicBase, KERNEL_PAGE_WRITE_UNCAHEABLE_PRESENT);
 
     if(Cpu->IsFeatureSupported(CPU::X2APIC)){
         //initiailize x2 standard
         LouPrint("Using X2 Standard\n");
-
         //Set the Spurious Interrupt Vector Register bit 8 to start receiving interrupts
-        apic_base[0xF0 / 4] |= 0x100; // Assuming memory-mapped I/O
 
     }
     else if (Cpu->IsFeatureSupported(CPU::XAPIC)){
         //initialize x1 standard
         LouPrint("Using X1 Standard\n");
 
-        //LouMapAddress(0xFEE00000,0xFEE00000,KERNEL_PAGE_WRITE_PRESENT);
-        //LouMapAddress(0xFEF00000,0xFEF00000,KERNEL_PAGE_WRITE_PRESENT);
+        //Set the Spurious Register
+        WRITE_REGISTER_ULONG(SPURRIOUS_INTERRUPT_REGISTER, READ_REGISTER_ULONG(SPURRIOUS_INTERRUPT_REGISTER) | APIC_ENABLE);
+        
+        WRITE_REGISTER_ULONG(LVT_DIVIDE_CONFIGURATION_REGISTER, 0b1010); //divide by 128
+        WRITE_REGISTER_ULONG(LVT_INITIAL_COUNT_REGISTER, 0xFFFFFFFF);
+        sleep(250);
 
+        uint32_t CRC = 0xFFFFFFFF - READ_REGISTER_ULONG(LVT_CURRENT_COUNT_REGISTER);
 
-        //uint32_t FOOBAR = READ_REGISTER_ULONG((ULONG*)0xFEE000F0);
-
-        //LouPrint("FOOBAR IS:%h\n",FOOBAR);
-
-/*
-        //LouMapAddress(GetLocalApicBase(),GetLocalApicBase(),KERNEL_PAGE_WRITE_PRESENT);
-
-        LouPrint("Got Apic Base\n");
-
-        WRITE_REGISTER_ULONG(SPURRIOUS_INTERRUPT_REGISTER, READ_REGISTER_ULONG(SPURRIOUS_INTERRUPT_REGISTER) | 0x100 );
-
-        LouPrint("Enabled APIC\n");
-
-        WRITE_REGISTER_ULONG(LVT_TIMER_REGISTER, 0x20); //IRQ 0
-
-        LouPrint("Set Timer Vector\n");
-
-        WRITE_REGISTER_ULONG(LVT_DIVIDE_CONFIGURATION_REGISTER, 0x0A); //divide by 128
-        LouPrint("Set Divison\n");
-        sleep(256);
-        WRITE_REGISTER_ULONG(LVT_INITIAL_COUNT_REGISTER,0xFFFFFFFF);
-        LouPrint("Set Counter\n");
-        sleep(256);
-        WRITE_REGISTER_ULONG(LVT_TIMER_REGISTER, LVTdisabled);        
-        LouPrint("Disabled Timer\n");
-        uint32_t CRC = READ_REGISTER_ULONG(LVT_CURRENT_COUNT_REGISTER);
-
-        LouPrint("CRC Is:%h\n",CRC);
-*/
-
+        LouPrint("CRC IS:%h\n",CRC);
+        // Start timer as periodic on IRQ 0, divider 128, with the number of ticks we counted
+        WRITE_REGISTER_ULONG(LVT_TIMER_REGISTER, 32 | 0x20000);
+        WRITE_REGISTER_ULONG(LVT_DIVIDE_CONFIGURATION_REGISTER, 0b1010);
+        WRITE_REGISTER_ULONG(LVT_INITIAL_COUNT_REGISTER, CRC);
     }
     else{
         //determine Discreet or integrated chip
@@ -358,7 +327,6 @@ bool APIC::LAPIC::InitializeBspLapic(){
                 //initialize descreet apic
                 LouPrint("Descrete Apic Found\n");
                 // Set the Spurious Interrupt Vector Register bit 8 to start receiving interrupts
-                apic_base[0xF0 / 4] |= 0x100; // Assuming memory-mapped I/O
                 break;
 
             case 0x10:
@@ -369,7 +337,6 @@ bool APIC::LAPIC::InitializeBspLapic(){
             case 0x15:
                 LouPrint("Integrated Apic Found\n");
                 // Set the Spurious Interrupt Vector Register bit 8 to start receiving interrupts
-                apic_base[0xF0 / 4] |= 0x100; // Assuming memory-mapped I/O                
                 break;
 
             default:{
@@ -381,7 +348,8 @@ bool APIC::LAPIC::InitializeBspLapic(){
     return true;
 }
 
+
+
 LOUDDK_API_ENTRY void local_apic_send_eoi() {
-    WRITE_REGISTER_ULONG(EOI_REGISTER, ENDOFINTERRUPT);
-    LouPrint("EOI\n");
+    WRITE_REGISTER_ULONG(EOI_REGISTER, 0);
 }
