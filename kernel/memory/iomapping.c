@@ -19,26 +19,3 @@ uint64_t CalculateIterations(uint64_t startAddress, uint64_t bufferSize) {
 }
 
 
-LOUSTATUS LouKeMapIO(uint64_t PADDRESS,uint64_t MemoryBuffer,uint64_t FLAGS) {
-
-	for (uint64_t i = 0; i < CalculateIterations(PADDRESS, MemoryBuffer); i++) {
-			//well get to error handleing later when we get to modules for now were just creating a function for internal drivers
-			if( (GetPageOfFaultValue(PADDRESS) == GetPageValue(PADDRESS,KERNEL_PAGE_WRITE_PRESENT)) &&
-				(GetPageOfFaultValue(PADDRESS) == GetPageValue(PADDRESS, KERNEL_PAGE_WRITE_UNCAHEABLE_PRESENT))) { //Checks If Virtual Address Is Not Free 
-				if ((GetPageOfFaultValue(PADDRESS) == KERNEL_PAGE_WRITE_PRESENT) &&
-					(GetPageOfFaultValue(PADDRESS) == KERNEL_PAGE_WRITE_UNCAHEABLE_PRESENT)) {
-				//reset the mappings for no leaks
-					LouPrint("Virtual Address Table Value Is:%h\n", GetPageOfFaultValue(PADDRESS));
-
-					for (uint64_t j = 0; j < MemoryBuffer; j ++) {
-						LouMapAddress(0, PADDRESS + (i * (2 * MEGABYTE)), 0); //set the address to 0 and map no flags
-					}
-					return ERRMAPPINGIO;
-				}
-			}
-			//LouPrint("Mapping Address:%h\n",PADDRESS + (i * (2*MEGABYTE)));
-			LouMapAddress(PADDRESS + (i * (2 * MEGABYTE)), PADDRESS + (i * (2 * MEGABYTE)), FLAGS);
-	}
-	LouPrint("System Mapped\n");
-	return LOUSTATUS_GOOD;
-}

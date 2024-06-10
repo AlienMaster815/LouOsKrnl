@@ -120,9 +120,15 @@ KERNEL_IMPORT void disable_pic();
 CPU::CPUID* Cpu;
 APIC::LAPIC* Lapic;
 
+string DRV_VERSION_APIC = "\nLousine Internal Kernel APIC.SYS Module Version 1.01\n";
+string DRV_UNLOAD_STRING_SUCCESS_APIC = "Driver Execution Completed Successfully Exiting Proccess\n\n"; 
+string DRV_UNLOAD_STRING_FAILURE_APIC = "Driver Execution Failed To Execute Properly Exiting Proccess\n\n"; 
+
+uint64_t ApicBase;
 
 static uint64_t LocalApicBase = 0xFEE00000;
 
+bool InitializeIoApic(uint64_t IoApicNumber, uint64_t MappedArea);
 LOUSTATUS EnableAdvancedBspFeatures(CPU::FEATURE Feature);
 
 void ParseAPIC(uint8_t* entryAddress, uint8_t* endAddress) {
@@ -208,7 +214,9 @@ LOUDDK_API_ENTRY LOUSTATUS InitApicSystems(bool LateStage) {
     ULONG ReturnLength = 0x0000;
 
     //UnSetInterruptFlags();
+    LouPrint(DRV_VERSION_APIC);
     
+
     Status = AuxKlibGetSystemFirmwareTable(
         'ACPI', 
         'APIC', 
@@ -237,7 +245,6 @@ LOUDDK_API_ENTRY LOUSTATUS InitApicSystems(bool LateStage) {
         EntryHeaderAddress,
         HeaderEndAddress
     );
-    
     Cpu = (CPU::CPUID*)LouMalloc(sizeof(CPU::CPUID));
     Lapic = (APIC::LAPIC*)LouMalloc(sizeof(APIC::LAPIC));
     //configure FPU for BSP
@@ -245,13 +252,21 @@ LOUDDK_API_ENTRY LOUSTATUS InitApicSystems(bool LateStage) {
     //enable apic mode 
 
     if(Lapic->InitializeApic())LouPrint("APIC ENABLED SUCCESSFULLY\n");
-
     Cpu->~CPUID();
-
+    
     ApicSet = true;
 
     LouFree((RAMADD)Cpu, sizeof(CPU::CPUID));
     LouFree((RAMADD)Cpu, sizeof(APIC::LAPIC));
+
+    for(uint8_t i = 0 ; i < ioapic_count; i++){
+        if(!InitializeIoApic(i,ApicBase)){
+            LouPrint(DRV_UNLOAD_STRING_FAILURE_APIC);
+            return false;
+        }
+    }
+
+    LouPrint(DRV_UNLOAD_STRING_SUCCESS_APIC);
 
     return Status;
 
@@ -272,12 +287,14 @@ bool APIC::LAPIC::InitializeApic(){
     if(!(MSR >> 11) & 0x01) return false;
     if((MSR >> 8) & 0x01)   InitializeBspLapic();
     //else if (!(MSR >> 8) & 0x01) InitializeApApic();
-    else return false;
+    else{
+        LouPrint(DRV_UNLOAD_STRING_FAILURE_APIC);
+        return false;
+    } 
 
     return true;
 }
 
-uint64_t ApicBase;
 
 bool APIC::LAPIC::InitializeBspLapic(){
 
@@ -287,10 +304,10 @@ bool APIC::LAPIC::InitializeBspLapic(){
     disable_pic();
     LouPrint("Pic Has Been Disabled\n");
 
-    ApicBase = (uint64_t)LouMalloc(MEGABYTE_PAGE);
+    ApicBase = (uint64_t)LouMalloc(KILOBYTE_PAGE);
 
     //volatile uint32_t* apic_base = (volatile uint32_t*)GetLocalApicBase();
-    LouMapAddress(GetLocalApicBase(), ApicBase, KERNEL_PAGE_WRITE_UNCAHEABLE_PRESENT);
+    LouMapAddress(GetLocalApicBase(), ApicBase, KERNEL_PAGE_WRITE_UNCAHEABLE_PRESENT, KILOBYTE_PAGE);
 
     if(Cpu->IsFeatureSupported(CPU::X2APIC)){
         //initiailize x2 standard
@@ -307,7 +324,7 @@ bool APIC::LAPIC::InitializeBspLapic(){
         
         WRITE_REGISTER_ULONG(LVT_DIVIDE_CONFIGURATION_REGISTER, 0b1010); //divide by 128
         WRITE_REGISTER_ULONG(LVT_INITIAL_COUNT_REGISTER, 0xFFFFFFFF);
-        sleep(250);
+        sleep(1); //sleep 1 ms for 1 ms acuracy
 
         uint32_t CRC = 0xFFFFFFFF - READ_REGISTER_ULONG(LVT_CURRENT_COUNT_REGISTER);
 

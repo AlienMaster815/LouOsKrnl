@@ -27,10 +27,7 @@ uintptr_t RBP_Current;
 -- with allocation functions
 */
 
-//NOTE: There is a bug int the code for getting the gen type
-//      integer for processors with string literals later change
-//      the code to add a 0 place where the char is to make it
-//      the right 10 place value
+
 
 char* KERNEL_VERSION = "0.0.00038 RSC-1 Multiboot 2";
 
@@ -84,6 +81,10 @@ void ParseMBootTags(struct multiboot_tag* MBOOT);
 
 void CreateNewPageSystem();
 
+uint64_t GetRamSize();
+
+
+
 LOUSTATUS Lou_kernel_early_initialization(){
 
     
@@ -115,13 +116,10 @@ LOUSTATUS Lou_kernel_early_initialization(){
     RegisterInterruptHandler(PS2KeyboardHandler, INTERRUPT_SERVICE_ROUTINE_33);
     RegisterInterruptHandler(Clock, INTERRUPT_SERVICE_ROUTINE_32);
 
-
-
-    uint8_t* FO = LouMalloc(sizeof(uint8_t));
-
     SetUpTimers();
 
     DeterminCPU();
+
     return LOUSTATUS_GOOD;
 }
 
@@ -149,7 +147,7 @@ LOUSTATUS Advanced_Kernel_Initialization(){
     //if(LOUSTATUS_GOOD != InitSLIT())LouPrint("Unable To Start SLIT Handleing\n");
     //if(LOUSTATUS_GOOD != InitMCFG())LouPrint("Unable To Start MCFG Handleing\n");
     
-    if (LOUSTATUS_GOOD != InitThreadManager())LouPrint("SHIT!!!:I Hope You Hate Efficency: No Thread Management\n");
+    //if (LOUSTATUS_GOOD != InitThreadManager())LouPrint("SHIT!!!:I Hope You Hate Efficency: No Thread Management\n");
 
     SetInterruptFlags();
 
@@ -161,30 +159,30 @@ LOUSTATUS User_Mode_Initialization(){
     return LOUSTATUS_GOOD;
 }
 
-
-bool LouMapAddressEx(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize);
+ bool LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize);
 
 KERNEL_ENTRY Lou_kernel_start(uint32_t foo, uint32_t Apic){
     
-    struct multiboot_tag* mboot = (struct multiboot_tag*)(uintptr_t)(foo + 8);
-    ParseMBootTags(mboot);
     setup_vga_systems();
 
 	//vga set for debug
-	
+	struct multiboot_tag* mboot = (struct multiboot_tag*)(uintptr_t)(foo + 8);
+    ParseMBootTags(mboot);
+
 
 	LouPrint("Lou Version %s %s\n", KERNEL_VERSION ,KERNEL_ARCH);
     LouPrint("Hello Im Lousine Getting Things Ready\n");
     
+
+
 
     //INITIALIZE IMPORTANT THINGS FOR US LATER
     if(Lou_kernel_early_initialization() != LOUSTATUS_GOOD)LouPanic("Early Initialization Failed",BAD);
 
     if (Advanced_Kernel_Initialization() != LOUSTATUS_GOOD)LouPrint("WARNING: CertainFeatures Are Not Available\n");
 
-
     //SETUP DEVICES AND DRIVERS
-    if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);		
+    //if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);		
 
    // Initialize User Mode
    // if(User_Mode_Initialization() != LOUSTATUS_GOOD)LouPanic("User Mode Initialiation Failed",BAD);

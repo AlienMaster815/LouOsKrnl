@@ -1,16 +1,17 @@
 {
   "ExpandedNodes": [
     "",
-    "\\include",
-    "\\include\\drivers",
-    "\\include\\drivers\\Lou_drivers",
+    "\\API",
+    "\\API\\LouAPI",
+    "\\API\\LouAPI\\KernelAPI",
+    "\\API\\LouAPI\\KernelAPI\\LouKernelAPI",
+    "\\API\\WinAPI\\KernelAPI\\NTAPI",
+    "\\drivers",
+    "\\drivers\\processors",
+    "\\drivers\\processors\\APIC",
     "\\init",
-    "\\init\\GDS",
-    "\\kernel",
-    "\\kernel\\Drivers",
-    "\\kernel\\Drivers\\Display",
-    "\\kernel\\memory"
+    "\\init\\memoryProbing"
   ],
-  "SelectedNode": "\\init\\GDS\\init_vga_sys.c",
+  "SelectedNode": "\\kernel\\memory\\allocation.c",
   "PreviewInSolutionExplorer": false
 }

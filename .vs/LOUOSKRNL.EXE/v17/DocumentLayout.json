@@ -1,7 +1,32 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "E:\\LOUOSKRNL.EXE\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\kernel\\memory\\allocation.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:kernel\\memory\\allocation.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\kernel\\memory\\memmap.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:kernel\\memory\\memmap.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\init\\memoryProbing\\mmap_parseing.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:init\\memoryProbing\\mmap_parseing.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\init\\memoryProbing\\acpiprobing.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:init\\memoryProbing\\acpiprobing.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\init\\Lou_Main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:init\\Lou_Main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\drivers\\processors\\APIC\\apic.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:drivers\\processors\\APIC\\apic.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -9,11 +34,89 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{6324226f-61b6-4f28-92ee-18d4b5fe1e48}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "allocation.c",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\kernel\\memory\\allocation.c",
+              "RelativeDocumentMoniker": "kernel\\memory\\allocation.c",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\kernel\\memory\\allocation.c",
+              "RelativeToolTip": "kernel\\memory\\allocation.c",
+              "ViewState": "AQIAAMAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2024-06-09T00:04:39.832Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "memmap.c",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\kernel\\memory\\memmap.c",
+              "RelativeDocumentMoniker": "kernel\\memory\\memmap.c",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\kernel\\memory\\memmap.c",
+              "RelativeToolTip": "kernel\\memory\\memmap.c",
+              "ViewState": "AQIAAB4AAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2024-06-09T00:04:17.256Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "acpiprobing.c",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\init\\memoryProbing\\acpiprobing.c",
+              "RelativeDocumentMoniker": "init\\memoryProbing\\acpiprobing.c",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\init\\memoryProbing\\acpiprobing.c",
+              "RelativeToolTip": "init\\memoryProbing\\acpiprobing.c",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2024-06-08T23:47:36.039Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "mmap_parseing.c",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\init\\memoryProbing\\mmap_parseing.c",
+              "RelativeDocumentMoniker": "init\\memoryProbing\\mmap_parseing.c",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\init\\memoryProbing\\mmap_parseing.c",
+              "RelativeToolTip": "init\\memoryProbing\\mmap_parseing.c",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2024-06-08T23:47:34.819Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "apic.cpp",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\processors\\APIC\\apic.cpp",
+              "RelativeDocumentMoniker": "drivers\\processors\\APIC\\apic.cpp",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\processors\\APIC\\apic.cpp",
+              "RelativeToolTip": "drivers\\processors\\APIC\\apic.cpp",
+              "ViewState": "AQIAAAIBAAAAAAAAAADwvzQBAABLAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-06-08T23:44:35.872Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Lou_Main.c",
+              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\init\\Lou_Main.c",
+              "RelativeDocumentMoniker": "init\\Lou_Main.c",
+              "ToolTip": "E:\\LOUOSKRNL.EXE\\init\\Lou_Main.c",
+              "RelativeToolTip": "init\\Lou_Main.c",
+              "ViewState": "AQIAAF0AAAAAAAAAAAAAAKEAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2024-06-08T13:43:56.467Z",
+              "EditorCaption": ""
             }
           ]
         }

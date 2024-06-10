@@ -19,7 +19,7 @@
 
 #include "WinAPI/NtAPI/ntstatus.h"
 
-#define ACPIBUFFER 256
+#define ACPIBUFFER 512
 #define ERRMAPPINGIO -1
 
 #endif

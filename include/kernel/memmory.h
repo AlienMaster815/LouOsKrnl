@@ -11,9 +11,9 @@
 #include <bootloader/grub/multiboot.h>
 
 
-#define KILOBYTE_PAGE 4 * 1024
+#define KILOBYTE_PAGE 4096
 #define MEGABYTE_PAGE 2 * 1024 * 1024
-
+#define KILOBYTE 1 * 1024
 
 #define PRESENT_PAGE           0b1
 #define WRITEABLE_PAGE        0b10
@@ -44,6 +44,7 @@
 #define PAGE_TABLE_ALLIGNMENT 4096
 #define PAGE_SIZE 4096
 
+#define FLAGSSPACE 0x1FF
 
 #include <LouAPI.h>
 
@@ -63,8 +64,7 @@ RAMADD Lou_Alloc_Mem_Alligned(SIZE size,uint64_t allignment);
 void* LouMalloc(size_t BytesToAllocate);
 void LouFree(RAMADD Addr, SIZE size);
 void* LouMalloc(size_t BytesToAllocate);
-void* LouMallocEx(size_t BytesToAllocate, uint64_t Flags, size_t Aligned);
-bool LouMapAddressEx(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize);
+void* LouMallocEx(size_t BytesToAllocate, size_t Aligned);
 
 #include <stdint.h>
 
@@ -79,19 +79,18 @@ typedef struct  __attribute__((packed, aligned(4096))) _PageTable {
 
 typedef struct __attribute__((packed, aligned(4096))) _PML {
     PageTable PML4;
-    PageTable PML3[2];
-    PageTable PML2[512];
+    PageTable PML3;
+    PageTable PML2;
     PageTable PML1;
 }PML;
 
 PML* page_table_l4;
 
-void LouMapAddress(uint64_t PAddress,uint64_t VAddress, uint64_t FLAGS);
-void LouUnMapAddress(uint64_t VAddress);
+bool LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize);
+bool LouUnMapAddress(uint64_t VAddress);
 uint64_t GetPageOfFaultValue(uint64_t VAddress);
 extern uint64_t GetPageValue(uint64_t PAddress, uint64_t FLAGS);
-
-LOUSTATUS LouKeMapIO(uint64_t PADDRESS, uint64_t MemoryBuffer, uint64_t FLAGS);
+uint64_t GetRamSize();
 
 //Directory Entry FLAGS
 
@@ -123,13 +122,15 @@ void* align_memory(void* ptr, size_t alignment);
 #define KERNEL_PAGE_WRITE_PRESENT 0b10000011
 #define KERNEL_PAGE_WRITE_UNCAHEABLE_PRESENT 0b10010011
 
+
+KERNEL_IMPORT bool LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize);
 KERNEL_IMPORT void remove_padding(const void* struct_ptr, size_t struct_size, uint8_t* buffer);
-KERNEL_IMPORT void LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS);
-KERNEL_IMPORT void LouUnMapAddress(uint64_t VAddress);
 KERNEL_IMPORT void LouFree(uint8_t* Addr, uint32_t size);
 KERNEL_IMPORT void* LouMalloc(size_t BytesToAllocate);
 KERNEL_IMPORT LOUSTATUS LouKeMapIO(uint64_t PADDRESS, uint64_t MemoryBuffer, uint64_t FLAGS);
 KERNEL_IMPORT bool LouMapAddressEx(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize);
+KERNEL_IMPORT void* LouMallocEx(size_t BytesToAllocate, size_t Aligned);
+KERNEL_IMPORT void* memset(void* dest, int value, size_t count);
 
 #endif
 #endif

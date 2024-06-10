@@ -103,9 +103,7 @@ LOUSTATUS LouKeGetSystemFirmwareTableProviderSignature(
 			return (LOUSTATUS)STATUS_FIRMWARE_IMAGE_INVALID;
 		}
 		if (TYPE_MASTER == 1) {
-			LouMapAddress((uint64_t)Rsdp, (uint64_t)Rsdp, KERNEL_PAGE_WRITE_PRESENT);
-			LouMapAddress(Rsdp->rsdt_address, Rsdp->rsdt_address, KERNEL_PAGE_WRITE_PRESENT);
-			LouMapAddress(Rsdp->rsdt_address + (2 * MEGABYTE), Rsdp->rsdt_address + (2 * MEGABYTE), KERNEL_PAGE_WRITE_PRESENT);
+
 
 			*TablePointer = (uintptr_t)Rsdp->rsdt_address;
 			*Type = TYPE_MASTER;
@@ -114,9 +112,7 @@ LOUSTATUS LouKeGetSystemFirmwareTableProviderSignature(
 			}
 		}
 		else {
-			LouMapAddress((uint64_t)Rsdp, (uint64_t)Rsdp, KERNEL_PAGE_WRITE_PRESENT);
-			LouMapAddress(Rsdp->rsdt_address, Rsdp->rsdt_address, KERNEL_PAGE_WRITE_PRESENT);
-			LouMapAddress(Rsdp->rsdt_address + (2 * MEGABYTE), Rsdp->rsdt_address + (2 * MEGABYTE), KERNEL_PAGE_WRITE_PRESENT);
+
 
 			PRSDP_Descriptor2 Rsdp2 = (PRSDP_Descriptor2)Rsdp;
 
@@ -179,6 +175,20 @@ LOUSTATUS LouKeGetSystemFirmwareTableId(
 			return Status;
 		}
 		
+
+
+		for (uint16_t i = sizeof(ACPI_STD_HEADER); i < GenericTable->Size; i += sizeof(uint32_t)) {
+			uint32_t foo = *(uint32_t*)((uintptr_t)GenericTable + (uintptr_t)i);
+			PACPI_STD_HEADER Fubar = (PACPI_STD_HEADER)(uintptr_t)foo;
+
+			if (strncmp((const string)Fubar->Signature, (const string)MasterString, 4) == 0) {
+				*TablePointer = (uintptr_t)Fubar;
+				Status = LOUSTATUS_GOOD;
+				return Status;
+			}
+
+		}
+
 		PACPI_STD_HEADER GenericTable2 = (PACPI_STD_HEADER)(*TableExtendedPointer);
 
 		for (uint16_t i = sizeof(ACPI_STD_HEADER); i < GenericTable2->Size; i += sizeof(uint32_t)) {
@@ -194,17 +204,6 @@ LOUSTATUS LouKeGetSystemFirmwareTableId(
 		}
 
 
-		for (uint16_t i = sizeof(ACPI_STD_HEADER); i < GenericTable->Size; i+= sizeof(uint32_t)) {
-			uint32_t foo = *(uint32_t*)((uintptr_t)GenericTable + (uintptr_t)i);
-			PACPI_STD_HEADER Fubar = (PACPI_STD_HEADER)(uintptr_t)foo;
-
-			if (strncmp((const string)Fubar->Signature, (const string)MasterString, 4) == 0) {
-				*TablePointer = (uintptr_t)Fubar;
-				Status = LOUSTATUS_GOOD;
-				return Status;
-			}
-
-		}
 
 
 	}

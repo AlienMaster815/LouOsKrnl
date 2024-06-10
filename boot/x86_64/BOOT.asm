@@ -23,7 +23,7 @@ MBOOTEND:
 section .data
 multiboot_info_ptr dd 0
 
-%define STACK_SIZE 8 * 1024 * 1024
+%define STACK_SIZE 2 * 1024 * 1024
 
 section .text
 

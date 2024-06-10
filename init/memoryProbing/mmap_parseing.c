@@ -3,19 +3,27 @@
 
 void SendMapToAllocation(struct master_multiboot_mmap_entry* mmap);
 
-uint64_t mlimit = 0;
-uint64_t nulimit = 0;
+uint64_t mlimit;
+
+uint64_t GetRamSize() {
+    return mlimit;
+}
+
 
 void RegisterRamMap(struct multiboot_mmap_entry* mmap_entry) {
+
     if((mmap_entry->addr + mmap_entry->len) > mlimit)mlimit = mmap_entry->addr + mmap_entry->len;
 }
 
 void RegisterACPIMap(struct multiboot_mmap_entry* mmap_entry) {
-    if((mmap_entry->addr + mmap_entry->len) > nulimit)nulimit = mmap_entry->addr + mmap_entry->len;
+    for(uint64_t i = mmap_entry->addr; i < (mmap_entry->addr + mmap_entry->len);i += KILOBYTE_PAGE){
+        LouMapAddress(i,i, KERNEL_PAGE_WRITE_PRESENT, KILOBYTE_PAGE);
+    }
+    if((mmap_entry->addr + mmap_entry->len) > mlimit)mlimit = mmap_entry->addr + mmap_entry->len;
 }
 
 void RegisterNotUsable(struct multiboot_mmap_entry* mmap_entry) {
-    if ((mmap_entry->addr + mmap_entry->len) > nulimit)nulimit = mmap_entry->addr + mmap_entry->len;
+
 }
 
 void ParseMemoryMap(struct multiboot_tag* MBOOT) {
@@ -33,6 +41,7 @@ void ParseMemoryMap(struct multiboot_tag* MBOOT) {
 
     //parse version 0
     if (mmap->entry_version == 0) {
+        SendMapToAllocation(mmap);
         struct multiboot_mmap_entry* mmap_entry;
         for (uint16_t i = 0; i < Number_Of_Entries; i++) {
             mmap_entry = (struct multiboot_mmap_entry*)(uintptr_t)((uint64_t)mmap + (uint64_t)sizeof(struct master_multiboot_mmap_entry) + (uint64_t)i * (uint64_t)mmap->entry_size);
@@ -42,13 +51,13 @@ void ParseMemoryMap(struct multiboot_tag* MBOOT) {
             else if (mmap_entry->type == 2)RegisterNotUsable(mmap_entry);
             else if (mmap_entry->type == 3)RegisterACPIMap(mmap_entry);
             else {
-                LouPrint("address is:%d\n", mmap_entry->addr);
-                LouPrint("length is:%d\n", mmap_entry->len);
-                LouPrint("type is:%d\n", mmap_entry->type);
+                if ((mmap_entry->addr + mmap_entry->len) > mlimit)mlimit = mmap_entry->addr + mmap_entry->len;
+                //LouPrint("address is:%d\n", mmap_entry->addr);
+                //LouPrint("length is:%d\n", mmap_entry->len);
+                //LouPrint("type is:%d\n", mmap_entry->type);
             }
         }
-        SendMapToAllocation(mmap);
     }
-    
-    LouPrint("Ram Installed is:%d BYTES\n", mlimit);
+    LouPrint("Ram Installed is:%h BYTES\n", mlimit);
+
 }

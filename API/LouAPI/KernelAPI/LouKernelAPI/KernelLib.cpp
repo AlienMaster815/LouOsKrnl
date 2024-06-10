@@ -34,12 +34,14 @@ LOUSTATUS LouKeGetSystemFirmwareTable(
 	uintptr_t TablePointer = 0x0000, TableExtendedPointer = 0x0000;
 	uint8_t Type;
 
+
 	Status = LouKeGetSystemFirmwareTableProviderSignature(
 		FirmwareTableProviderSignature, 
 		&TablePointer, 
 		&TableExtendedPointer,
 		&Type
 	);
+
 	if (Status != LOUSTATUS_GOOD) {
 		LouPrint("Firmware Table Provider Signature Could Not BeFound:ID NUMBER:%d\n",FirmwareTableProviderSignature);
 		return Status;

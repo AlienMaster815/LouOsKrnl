@@ -21,6 +21,8 @@ LOUDDK_API_ENTRY bool IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func) {
 
 	uint16_t vendorID = PciGetVendorID(bus, slot);
 	uint16_t deviceID = PciGetDeviceID(bus, slot, func);
+	uint8_t ClassCode = pciConfigReadByte(bus,slot,func, 0x0B);
+	uint8_t SubClass = pciConfigReadByte(bus,slot,func, 0x0A);
 
 	switch (vendorID) {
 	case 0x8086:
@@ -136,9 +138,17 @@ LOUDDK_API_ENTRY bool IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func) {
 			break;
 		}
 	default:
-		//not a supported company
+
 		break;
 	}
+	if(ClassCode == 0x01){
+		if(SubClass == 0x05){
+			LouPrint("Found Generic Sata Controller\n");
+			Sata_init(bus, slot, func);
+			return true;
+		}
+	}
+
 	return false;
 }
 
@@ -155,6 +165,17 @@ LOUDDK_API_ENTRY void Sata_init(uint8_t bus, uint8_t slot, uint8_t func) {
 	SataDev->func = func;
 	SataDev->DeviceID = PciGetDeviceID(bus, slot, func);
 	SataDev->VendorID = PciGetVendorID(bus, slot);
+
+	//uint8_t ILine = LouKeGetPciInterruptLine(SataDev);
+	//uint8_t IPin = LouKeGetPciInterruptPin(SataDev);
+
+	//LouPrint("Interrupt Line:%d:PIN:%d\n",ILine,IPin);
+
+	//uint16_t CMD = LouKeReadPciCommandRegister(SataDev);
+	//CMD |= (PCI_INTERRUPT_ENABLE | MEMORY_SPACE_ENABLE | IO_SPACE_ENABLE);
+	//LouKeWritePciCommandRegister(SataDev, CMD);
+
+	//LouKeConfigureInterrupt(ILine, false, IPin, 0);
 
 	InitAHCIController(SataDev);
 

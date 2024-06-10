@@ -151,3 +151,29 @@ void PCI_Write(P_PCIDEV Device, P_PCIBuffer buffer) {
     PCI Write;
     Write.PCI_Write(Device, buffer);
 }
+
+uint8_t LouKeReadPciUint8(P_PCI_DEVICE_OBJECT PDEV, uint8_t Offset){
+    return pciConfigReadByte(PDEV->bus,PDEV->slot,PDEV->func, Offset);
+}
+
+uint16_t LouKeReadPciUint16(P_PCI_DEVICE_OBJECT PDEV, uint8_t Offset){
+    return pciConfigReadWord(PDEV->bus,PDEV->slot,PDEV->func, Offset);
+
+}
+
+uint32_t LouKeReadPciUint32(P_PCI_DEVICE_OBJECT PDEV, uint8_t Offset){
+    return pci_read(PDEV->bus,PDEV->slot,PDEV->func, Offset);
+}
+
+
+void LouKeWritePciUint8(P_PCI_DEVICE_OBJECT PDEV, uint8_t Offset, uint8_t Value){
+    pciConfigWriteByte(PDEV->bus,PDEV->slot,PDEV->func,Offset,Value);
+}
+
+void LouKeWritePciUint16(P_PCI_DEVICE_OBJECT PDEV, uint8_t Offset, uint16_t Value){
+    pciConfigWriteWord(PDEV->bus, PDEV->slot,PDEV->func,Offset,Value);
+}
+
+void LouKeWritePciUint32(P_PCI_DEVICE_OBJECT PDEV, uint8_t Offset, uint32_t Value){
+    write_pci(PDEV->bus,PDEV->slot,PDEV->func, Offset, Value);
+}

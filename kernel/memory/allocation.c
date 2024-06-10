@@ -13,6 +13,8 @@ void* LouMalloc(size_t BytesToAllocate);
 #define BITMAP_TABLE_BASE 0
 #define TABLE_SIZE  8
 
+uint64_t GetRamSize();
+
 RAMADD Lou_Alloc_Mem(SIZE size) {
     return (RAMADD)LouMalloc(size);
 }
@@ -82,7 +84,6 @@ void SendMapToAllocation(struct master_multiboot_mmap_entry* mmap) {
 
 
 
-
 static uint64_t* BitMap;
 
 void LouFree(RAMADD Addr, SIZE size) {
@@ -104,6 +105,7 @@ void LouFree(RAMADD Addr, SIZE size) {
 
                 if ((Addr > (RAMADD)(address + limit)) || Addr < (RAMADD)address) continue;
 
+                
                 //for (uint64_t i = address; i < limit; i += PAGE_SIZE) {
                     //LouMapAddress(i, i, KERNEL_PAGE_WRITE_PRESENT);
                 //}
@@ -162,8 +164,8 @@ bool GetNextAllignedBitmap(){
     return true;
 }
 
-void* LouMallocEx(size_t BytesToAllocate, uint64_t Flags, uint64_t Alignment){
-
+void* LouMallocEx(size_t BytesToAllocate, uint64_t Alignment){
+    uint64_t Flags = KERNEL_PAGE_WRITE_PRESENT;
 
     //if (BytesToAllocate >= (LongLongBitDemention * BlockDemention)) return NULL;
 
@@ -187,11 +189,6 @@ void* LouMallocEx(size_t BytesToAllocate, uint64_t Flags, uint64_t Alignment){
                 uint64_t Sector = limit - address;
                 uint64_t TotoalAllocation = (Sector / 72) / 8; //Calculate the bitmap ratio of the memory by 8 for 64 bits per 64 bytes
 
-                if(address > GIGABYTE){
-                    for (uint64_t i = address; i < TotoalAllocation; i += PAGE_SIZE) {
-                        LouMapAddress(i, i, Flags);
-                    }
-                }
 
                 uint64_t TEMPBTA = BytesToAllocate;
                 BitMap = (uint64_t*)(uintptr_t)address;
@@ -247,8 +244,8 @@ void* LouMallocEx(size_t BytesToAllocate, uint64_t Flags, uint64_t Alignment){
                         TableEntry++;
                     }
                 }
-
-                return (void*)AddressCheck;
+                if (AddressCheck < GetRamSize()) return (void*)AddressCheck;
+                else return 0;//null
             }
             else if (mmap_entry->type == 2) continue;
             else if (mmap_entry->type == 3) continue;
@@ -261,6 +258,6 @@ void* LouMallocEx(size_t BytesToAllocate, uint64_t Flags, uint64_t Alignment){
 
 void* LouMalloc(size_t BytesToAllocate) {
 
-    return LouMallocEx(BytesToAllocate, KERNEL_PAGE_WRITE_PRESENT,BytesToAllocate);
+    return LouMallocEx(BytesToAllocate,BytesToAllocate);
 
 }

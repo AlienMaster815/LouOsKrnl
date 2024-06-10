@@ -158,7 +158,7 @@ int IsX2ApicSupported();
 
 void AssignInterruptVector(uint8_t VectorNumber, uint8_t Offset);
 
-uint64_t GetLocalApicBase();
+uint64_t GetLocaApicBase();
 
 
 namespace APIC {

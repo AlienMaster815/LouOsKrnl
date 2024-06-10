@@ -15,6 +15,22 @@
 #ifndef _PCI_H
 #define _PCI_H
 
+
+
+#define PCI_INTERRUPT_DISABLE (1 << 10)
+#define PCI_INTERRUPT_ENABLE ~(1 << 10)
+#define SERR_ENABLE (1 << 8)
+#define SERR_DISABLE ~(1 << 8)
+#define PARITY_NORMAL (1 << 6)
+#define PARITY_SPECIAL ~(1 << 6)
+#define BUS_MASTER_ENABLE (1 << 2)
+#define BUS_MASTER_DISABLE ~(1 << 2)
+#define MEMORY_SPACE_ENABLE (1 << 1)
+#define MEMORY_SPACE_DISABLE ~(1 << 1)
+#define IO_SPACE_ENABLE (1)
+#define IO_SPACE_DISABLE ~(1)
+
+
 #include "pcireg.h"
 #include <kernel/atomic.h>
 
@@ -73,6 +89,22 @@ enum BaseAddressRegisterType {
 #ifdef __cplusplus
 #include <LouDDK.h>
 
+uint32_t LouKeReadPciVendorId(P_PCI_DEVICE_OBJECT PDEV);
+uint32_t LouKeReadPciDeviceId(P_PCI_DEVICE_OBJECT PDEV);
+uint8_t LouKePciReadSubClass(P_PCI_DEVICE_OBJECT PDEV);
+uint8_t LouKePciReadClass(P_PCI_DEVICE_OBJECT PDEV);
+uint8_t LouKeGetPciInterruptPin(P_PCI_DEVICE_OBJECT PDEV);
+uint8_t LouKeGetPciInterruptLine(P_PCI_DEVICE_OBJECT PDEV);
+void LouKeConfigureInterrupt(uint8_t IRQ,  bool Mask, uint8_t Pin, uint8_t Destination);
+void LouKeWritePciCommandRegister(P_PCI_DEVICE_OBJECT PDEV,uint16_t Value);
+uint16_t LouKeReadPciCommandRegister(P_PCI_DEVICE_OBJECT PDEV);
+
+uint8_t LouKeReadPciUint8(P_PCI_DEVICE_OBJECT PDEV, uint8_t Offset);
+uint16_t LouKeReadPciUint16(P_PCI_DEVICE_OBJECT PDEV, uint8_t Offset);
+uint32_t LouKeReadPciUint32(P_PCI_DEVICE_OBJECT PDEV, uint8_t Offset);
+void LouKeWritePciUint8(P_PCI_DEVICE_OBJECT PDEV, uint8_t Offset, uint8_t Value);
+void LouKeWritePciUint16(P_PCI_DEVICE_OBJECT PDEV, uint8_t Offset, uint16_t Value);
+void LouKeWritePciUint32(P_PCI_DEVICE_OBJECT PDEV, uint8_t Offset, uint32_t Value);
 
 KERNEL_IMPORT uint32_t pci_read(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset);
 KERNEL_IMPORT uint32_t write_pci(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset,uint32_t Value);
