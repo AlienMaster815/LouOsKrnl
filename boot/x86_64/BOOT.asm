@@ -123,27 +123,28 @@ stack_bottom:
 stack_top:
 
 section .rodata
-
 gdt64:
     dq 0 ; Null segment
-.code_segment: equ $ - gdt64
+.code_segment: equ $ - gdt64 ;8
     dq 0x00AF9A000000FFFF ; 64-bit Code segment (CS)
-.data_segment: equ $ - gdt64
+.data_segment: equ $ - gdt64 ; 10
     dq 0x00AF92000000FFFF ; 64-bit Data segment (DS)
-.user_code_segment: equ $ - gdt64
+.user_code_segment: equ $ - gdt64 ; 18
     dq 0x00AFFA000000FFFF ; 64-bit User mode Code segment (CS)
-.user_data_segment: equ $ - gdt64
+.user_data_segment: equ $ - gdt64 ; 20
     dq 0x00AFF20000000FFFF ; 64-bit User mode Data segment (DS)
-.system_code_segment: equ $ - gdt64
+.system_code_segment: equ $ - gdt64 ; 28
     dq 0x00AF92000000FFFF ; 64-bit System mode Code segment (CS)
-.system_data_segment: equ $ - gdt64
+.system_data_segment: equ $ - gdt64 ; 30
     dq 0x00AF92000000FFFF ; 64-bit System mode Data segment (DS)
-; Define an interrupt code segment
-.interrupt_code_segment: equ $ - gdt64
-    dq 0x00AF9A000000FFFF ; 64-bit Code segment (CS)
-; Define an interrupt data segment
-.interrupt_data_segment: equ $ - gdt64
-    dq 0x00AF92000000FFFF ; 64-bit Data segment (DS)
+.interrupt_code_segment: equ $ - gdt64 ; 38
+    dq 0x00AF9A000000FFFF ; 64-bit Interrupt Code segment (CS)
+.interrupt_data_segment: equ $ - gdt64 ; 40
+    dq 0x00AF92000000FFFF ; 64-bit Interrupt Data segment (DS)
+.syscall_code_segment: equ $ - gdt64 ; 48
+    dq 0x00AF9A000000FFFF ; 64-bit Syscall Code segment (CS)
+.syscall_data_segment: equ $ - gdt64 ; 50
+    dq 0x00AF92000000FFFF ; 64-bit Syscall Data segment (DS)
 
 
 .pointer:

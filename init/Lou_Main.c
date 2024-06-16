@@ -83,11 +83,13 @@ void CreateNewPageSystem();
 
 uint64_t GetRamSize();
 
+void InitializeSystemCalls();
 
+void SYSCALLS();
 
 LOUSTATUS Lou_kernel_early_initialization(){
 
-    
+    //basic kernel initialization for IR Exseptions
     InitializeStartupInterruptHandleing();
 
     RegisterInterruptHandler(DivideByZero, INTERRUPT_SERVICE_ROUTINE_0);
@@ -112,7 +114,7 @@ LOUSTATUS Lou_kernel_early_initialization(){
     RegisterInterruptHandler(VirtualizationException, INTERRUPT_SERVICE_ROUTINE_20);
     RegisterInterruptHandler(ControlProtectionException, INTERRUPT_SERVICE_ROUTINE_21);
 
-
+    RegisterInterruptHandler(SYSCALLS, 0x80);
     RegisterInterruptHandler(PS2KeyboardHandler, INTERRUPT_SERVICE_ROUTINE_33);
     RegisterInterruptHandler(Clock, INTERRUPT_SERVICE_ROUTINE_32);
 
@@ -125,12 +127,11 @@ LOUSTATUS Lou_kernel_early_initialization(){
 
 LOUSTATUS Set_Up_Devices(){
 
-    //pata_device_scanc();
+    pata_device_scanc();    
 
-    //FileSystemSetup();
-    
-    PCI_Setup();
+   //PCI_Setup();
 
+    FileSystemSetup();
     return LOUSTATUS_GOOD;
 }
 
@@ -182,15 +183,17 @@ KERNEL_ENTRY Lou_kernel_start(uint32_t foo, uint32_t Apic){
     if (Advanced_Kernel_Initialization() != LOUSTATUS_GOOD)LouPrint("WARNING: CertainFeatures Are Not Available\n");
 
     //SETUP DEVICES AND DRIVERS
-    //if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);		
+    if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);		
+
 
    // Initialize User Mode
    // if(User_Mode_Initialization() != LOUSTATUS_GOOD)LouPanic("User Mode Initialiation Failed",BAD);
 
 
+
     LouPrint("Hello World\n");
 
-    //asm volatile("INT $0x20");
+    
 
     while (1) {
         asm("hlt");

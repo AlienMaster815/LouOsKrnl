@@ -5,7 +5,7 @@
 // Define Data Types For ISO Filesystems
 
 #include <LouDDK.h>
-
+#include <NtAPI.h>
 
 
 //8BitTypes
@@ -83,7 +83,8 @@ class ISO9660{
         FSStruct ISOFileSystemScan(uint8_t DrvNum,uint8_t DrvType);
         void ISOReadDirectoryStructure(uint8_t DrvNum,uint8_t DrvType);
         void ISOFormatDevice(uint8_t DrvNum,uint8_t DrvType,uintptr_t Base, uintptr_t height);
-    
+        FILE* ISOLouKefopen(uint8_t DrvNum, uint8_t DrvType,string Path);
+        FILE* ISOLouKefclose(FILE* File);
         void MinipulateDirectoryTable(strA Directory);
 
         ISO9660();
@@ -93,7 +94,9 @@ class ISO9660{
         FSStruct FSS;
         FSStruct DetectFileSystems(uint8_t DrvNum,uint8_t DrvType);
         VolumeDescriptor ReadVolumeDescriptor(uint8_t DrvNum, uint8_t DrvType, uint32_t sector = 0x10, uint32_t buffer = 2048);
-
+        uint32_t ISOGetLBA(uint8_t* DirectoryEntry);
+        uint32_t ISOGetDirecotrySize(uint8_t* DirectoryEntry);
+        FILE* ISOLouKeFindDirectory(uint32_t RootLBA, uint32_t RootSize, uint8_t DrvNum, uint8_t DrvType, string Dir);
 
 };
 

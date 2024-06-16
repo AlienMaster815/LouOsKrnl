@@ -19,6 +19,7 @@
 
 #include <KernelAPI/BitCheck.h>
 
+typedef void* FILE;
 
 #define RAMADD unsigned char*
 #define RAMADDDATA unsigned char *
@@ -78,6 +79,7 @@ KERNEL_IMPORT int LouPrint(char *format, ...);
 #include <stdlib.h>
 #include <drivers/Lou_drivers/Processor.h>
 #include <KernelAPI/Video.h>
+#include <fstream.h>
 
 KERNEL_IMPORT uint8_t inb(uint64_t port);
 KERNEL_IMPORT void outb(uint64_t port, uint8_t data);

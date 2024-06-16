@@ -39,7 +39,7 @@ void ISO9660::ISOReadDirectoryStructure(uint8_t DrvNum,uint8_t DrvType){
             VolumeDescriptor VD = ReadVolumeDescriptor(DrvNum, DrvType);
 
             if ((VD.Identifier == 0x0000) && (VD.Type == 0) && (VD.Version == 0)) {
-                LouPrint("No FileSystem On Device\n");
+                //LouPrint("No FileSystem On Device\n");
                 //At this point unmount/eject the drive
                 return;
             }
@@ -161,7 +161,7 @@ VolumeDescriptor ISO9660::ReadVolumeDescriptor(uint8_t DrvNum,uint8_t DrvType,ui
             //If We are here we have successfully found an ISO Filesystem
 
             LouPrint("ISO FileSystem Has Been Found Parseing ISO System Information\n");
-            
+
             uint16_t i = 0, BufferSelector = 0;
             bool condition = false;
 
@@ -217,6 +217,16 @@ FSStruct ISO9660::DetectFileSystems(uint8_t DrvNum,uint8_t DrvType){
               
         FSS.FSNum = VolumeSize;
         FSS.FSType = ISO;
+        FILE* Kernel = ISOLouKefopen(DrvNum, DrvType, "/ANNYA/SYSTEM64/LOUOSKRNL.EXE");
+
+        if(Kernel != 0x00){
+            LouPrint("Kernel Found This Is A System Disk\n");
+            LouPrint("LOUOSKRNL.EXE Has Been Loaded Off Of Disk At Address:%h\n", Kernel);
+            LouPrint("Closing The Kernel File\n");
+            ISOLouKefclose(Kernel);
+            LouPrint("Kernel File Successfully Closed\n");
+            FSS.SystemDisk = true;
+        }
     }
     return FSS;
 }
@@ -232,3 +242,157 @@ ISO9660::~ISO9660(){
 
 }
 
+
+FILE* ISO9660::ISOLouKeFindDirectory(
+    uint32_t RootLBA,
+    uint32_t RootSize, 
+    uint8_t DrvNum, 
+    uint8_t DrvType, 
+    string Dir
+    ){
+
+    PATA* Pata = RetrievePATAP();
+    Pata->pata_Read(DrvNum,RootLBA,RootSize);
+    if(!Pata->AtaReadSuccess()) return 0x00; //return null
+    uint16_t *Test = GetAtaBufferAddr();
+    UNUSED uint8_t* FOO = (uint8_t*)(uint64_t)Test;
+    
+    string NewDir = GetNextDirectoryName(Dir);
+
+    string SearchDirectory = NewDir;
+
+    while(1){
+        if (FOO[32] == CurrenDirectoryStringLength(SearchDirectory)){
+            if(strncmp((const char*)SearchDirectory, (const char*)&FOO[33], CurrenDirectoryStringLength(SearchDirectory)) == 0){
+
+                SearchDirectory = GetNextDirectoryName(SearchDirectory);
+
+                LouPrint("%s\n", SearchDirectory);
+
+                RootLBA = ISOGetLBA(FOO);
+                RootSize = ISOGetDirecotrySize(FOO);
+
+                Pata->pata_Read(DrvNum,RootLBA,RootSize);
+                if(!Pata->AtaReadSuccess())return 0x00; //return null
+                Test = GetAtaBufferAddr();
+
+                FOO = (uint8_t*)(uint64_t)Test;
+                
+                if(*(char*)(SearchDirectory + CurrenDirectoryStringLength(SearchDirectory)) == '\0'){
+                    FILE* Handle = (FILE*)LouMalloc(RootSize + sizeof(uint64_t));
+                    memcpy(Handle + sizeof(uint64_t), FOO,RootSize);
+                    memcpy(Handle, &RootSize,sizeof(uint64_t));
+                    LouPrint("Done With Recursion: Found File\n");
+                    return Handle;
+                }
+
+            }
+        }
+        if(FOO[0] == 0){
+            break;
+        }
+        else{
+            FOO += FOO[0];   
+        }
+    }
+
+    LouPrint("Done With Recursion: Could Not Find File\n");
+
+    return 0;
+}
+
+#define ROOT_DIRECTORY_START 156 - 7
+#define ROOT_DIRECTORY_END 190 - 7
+#define SIZE_OF_ROOT_DIRECTORY_ENTRY 34
+
+#define LBA_LSB32 ROOT_DIRECTORY_START + 2
+#define LBA_LSB_HI32 LBA_LSB32 + 1
+#define LBA_MSB_LO32 LBA_LSB_HI32 + 1
+#define LBA_MSB32 LBA_MSB_LO32 + 1
+
+#define DL_LSB32 ROOT_DIRECTORY_START + 10
+#define DL_LSB_HI32 DL_LSB32 + 1
+#define DL_MSB_LO32 DL_LSB_HI32 + 1
+#define DL_MSB DL_MSB_LO32 + 1
+
+FILE* ISO9660::ISOLouKefopen(uint8_t DrvNum, uint8_t DrvType,string Path){
+
+    UNUSED VolumeDescriptor VD = ReadVolumeDescriptor(DrvNum,DrvType);
+
+    //:/Dir/dir/.../file
+    LouPrint("Opening File:%s\n", Path);
+
+    //for(uint32_t i = (ROOT_DIRECTORY_START); i < (ROOT_DIRECTORY_END); i++){
+    //    LouPrint("DATA:%d ",VD.Data[i]);
+    //}
+
+    uint64_t LBA = 0;
+    uint64_t DATA_LEN = 0;
+
+    switch(DrvType){
+
+        case PATADEV:{
+            LBA |= VD.Data[LBA_LSB32];    
+            LBA |= (VD.Data[LBA_LSB_HI32] << 8);
+            LBA |= (VD.Data[LBA_MSB_LO32] << 16);
+            LBA |= (VD.Data[LBA_MSB32] << 24);
+
+            DATA_LEN |= VD.Data[DL_LSB32];
+            DATA_LEN |= (VD.Data[DL_LSB_HI32] << 8);
+            DATA_LEN |= (VD.Data[DL_MSB_LO32] << 16);
+            DATA_LEN |= (VD.Data[DL_MSB] << 24);
+
+            LouPrint("LBA:%h\n", LBA);            
+            LouPrint("Data Length:%h\n", DATA_LEN);            
+            
+            return ISOLouKeFindDirectory(
+                LBA, 
+                DATA_LEN, 
+                DrvNum, 
+                DrvType, 
+                Path
+                );
+            break;
+        } 
+
+        default:
+            break;
+    }
+
+
+    return 0;
+}
+
+FILE* ISO9660::ISOLouKefclose(FILE* File){
+
+    uint64_t FOO = *(uint64_t*)File;
+
+    LouFree((RAMADD)File,FOO);
+
+    return 0;
+}
+
+
+uint32_t ISO9660::ISOGetLBA(uint8_t* DirectoryEntry){
+
+    uint32_t LBA = 0;
+
+    LBA |= DirectoryEntry[2];    
+    LBA |= (DirectoryEntry[3] << 8);
+    LBA |= (DirectoryEntry[4] << 16);
+    LBA |= (DirectoryEntry[5] << 24);
+
+    return LBA;
+}
+        
+uint32_t ISO9660::ISOGetDirecotrySize(uint8_t* DirectoryEntry){
+
+    uint32_t DATA_LEN = 0;
+
+    DATA_LEN |= DirectoryEntry[10];
+    DATA_LEN |= (DirectoryEntry[11] << 8);
+    DATA_LEN |= (DirectoryEntry[12] << 16);
+    DATA_LEN |= (DirectoryEntry[13] << 24);
+
+    return DATA_LEN;
+}

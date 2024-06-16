@@ -365,6 +365,6 @@ bool isUsb(uint8_t bus, uint8_t slot, uint8_t function) {
 
 void USB_INIT(uint8_t bus,uint8_t slot, uint8_t function) {
 
-
+	LouPrint("Initializing USB Controller\n");
 
 }

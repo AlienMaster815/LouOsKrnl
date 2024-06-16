@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <Time.h>
+#include <fstream.h>
 #include <KernelAPI/KernelAPI.h>
 #include <Kernel/kernel.h>
 #include <drivers/drivers.h>
@@ -21,5 +22,7 @@
 
 #define ACPIBUFFER 512
 #define ERRMAPPINGIO -1
+
+typedef void* FILE;
 
 #endif

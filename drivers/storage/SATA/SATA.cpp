@@ -166,16 +166,16 @@ LOUDDK_API_ENTRY void Sata_init(uint8_t bus, uint8_t slot, uint8_t func) {
 	SataDev->DeviceID = PciGetDeviceID(bus, slot, func);
 	SataDev->VendorID = PciGetVendorID(bus, slot);
 
-	//uint8_t ILine = LouKeGetPciInterruptLine(SataDev);
-	//uint8_t IPin = LouKeGetPciInterruptPin(SataDev);
+	uint8_t ILine = LouKeGetPciInterruptLine(SataDev);
+	uint8_t IPin = LouKeGetPciInterruptPin(SataDev);
 
 	//LouPrint("Interrupt Line:%d:PIN:%d\n",ILine,IPin);
 
-	//uint16_t CMD = LouKeReadPciCommandRegister(SataDev);
-	//CMD |= (PCI_INTERRUPT_ENABLE | MEMORY_SPACE_ENABLE | IO_SPACE_ENABLE);
-	//LouKeWritePciCommandRegister(SataDev, CMD);
+	uint16_t CMD = LouKeReadPciCommandRegister(SataDev);
+	CMD |= (PCI_INTERRUPT_ENABLE | MEMORY_SPACE_ENABLE | IO_SPACE_ENABLE);
+	LouKeWritePciCommandRegister(SataDev, CMD);
 
-	//LouKeConfigureInterrupt(ILine, false, IPin, 0);
+	LouKeConfigureInterrupt(ILine, false, IPin, 0);
 
 	InitAHCIController(SataDev);
 
