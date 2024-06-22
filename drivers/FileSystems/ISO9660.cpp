@@ -33,7 +33,7 @@ void ISO9660::MinipulateDirectoryTable(strA Directory) {
 void ISO9660::ISOReadDirectoryStructure(uint8_t DrvNum,uint8_t DrvType){
     
     switch (DrvType) {
-
+        /*
         case(PATADEV): {
 
             VolumeDescriptor VD = ReadVolumeDescriptor(DrvNum, DrvType);
@@ -100,7 +100,7 @@ void ISO9660::ISOReadDirectoryStructure(uint8_t DrvNum,uint8_t DrvType){
 
             return;
         }
-
+        */
         default: {
             LouPrint("Unkown Device Type\n");
             return;;

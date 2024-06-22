@@ -23,7 +23,7 @@ MBOOTEND:
 section .data
 multiboot_info_ptr dd 0
 
-%define STACK_SIZE 2 * 1024 * 1024
+%define STACK_SIZE 16 * 1024
 
 section .text
 
@@ -31,7 +31,7 @@ global start
 
 MBoot dd 0
 
-FOO dd 0
+;FOO dd 0
 
 extern SetUpPages
 extern Lou_kernel_start

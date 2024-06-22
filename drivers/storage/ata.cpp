@@ -8,6 +8,7 @@
 -- Bug Fixes And code Optimization
 */
 
+//NOTICE: This will soon be depriciated for DMA systems
 
 /*
 -- Tyler Grenier 10-9-23 7:05
@@ -149,8 +150,7 @@ void PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int Buffe
                 pata[3] = 2;
             }
 
-            Read28PATAPI(drive,Master,0, 0x1FF);
-            
+            Read28PATAPI(drive,Master,0, 0x1FF);            
 
             return;
         }
@@ -173,14 +173,12 @@ void PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int Buffe
     
     int j = 0;
     //char *text = "  \0";
-
-    for(int i = 0; i < BufferSize; i += 2)
-    {
+    for(int i = 0; i < BufferSize; i += 2){
         uint16_t wdata = DataPort.Read();
         
         atabuffer[j] = wdata;
-
-        /*text[0] = wdata & 0xFF;
+        /*
+        text[0] = wdata & 0xFF;
         
         if(i+1 < BufferSize){
             text[1] = (wdata >> 8) & 0xFF;
@@ -191,11 +189,17 @@ void PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int Buffe
         //LouPrint(text);
         j++;
     }
+    
+    uint32_t Index = 0, length = (54 + 8);
 
-    //LouPrint("\n");    
+    LouKePrintLittleEndianBufferHex(
+        (uintptr_t)atabuffer,
+        Index, 
+        length
+        );
 
-    for(int i = BufferSize + (BufferSize%2); i < (512 * sectorCount); i += 2)
-        DataPort.Read();
+    LouPrint("Done Reading\n");
+
 }
 
 void PATA::Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, int BufferSize){
@@ -401,10 +405,10 @@ void PATA::Write28PATA(uint16_t device,bool Master, uint32_t Sector_Num ,uint8_t
             wdata |= ((uint16_t)Data[i+1]) << 8;
         DataPort.Write(wdata);
         
-        char *text = "  \0";
-        text[1] = (wdata >> 8) & 0xFF;
-        text[0] = wdata & 0xFF;
-        LouPrint(text);
+        //char *text = "  \0";
+        //text[1] = (wdata >> 8) & 0xFF;
+        //text[0] = wdata & 0xFF;
+        //LouPrint(text);
     }
     
     //LouPrint("\n");    
@@ -492,28 +496,28 @@ void PATA::pata_Write(uint8_t device, uint32_t Sector_Num ,uint8_t* Data, uint32
 
     
     if(device == 1){
-        if     (pata[0] == 1) Write28PATA(0x1F0,true,Sector_Num,Data ,BufferSize);
+        if     (pata[0] == 1) {Write28PATA(0x1F0,true,Sector_Num,Data ,BufferSize);Flush(1);}
         else if(pata[0] == 2) Write28PATAPI(0x1F0,true, Sector_Num,Data,BufferSize);
         else{
             //LouPrint("No Drive Present\n");
         }
     }
     else if(device == 2){
-        if     (pata[1] == 1) Write28PATA(0x1F0,false, Sector_Num, Data, BufferSize);
+        if     (pata[1] == 1) {Write28PATA(0x1F0,false, Sector_Num, Data, BufferSize); Flush(3);}
         else if(pata[1] == 2) Write28PATAPI(0x1F0,false,Sector_Num, Data, BufferSize);
         else {
             //LouPrint("No Drive Present\n");
         }
     }
     else if(device == 3){
-        if     (pata[2] == 1) Write28PATA(0x170,true, Sector_Num, Data, BufferSize);
+        if     (pata[2] == 1) {Write28PATA(0x170,true, Sector_Num, Data, BufferSize); Flush(3);}
         else if(pata[2] == 2) Write28PATAPI(0x170,true,Sector_Num, Data, BufferSize);
         else{
             //LouPrint("No Drive Present\n");
         }
     }
     else if(device == 4){
-        if     (pata[3] == 1) Write28PATA(0x170,false, Sector_Num, Data, BufferSize);
+        if     (pata[3] == 1) {Write28PATA(0x170,false, Sector_Num, Data, BufferSize); Flush(4);}
         else if(pata[3] == 2) Write28PATAPI(0x170,false, Sector_Num, Data, BufferSize);
         else{
             //LouPrint("No Drive Present\n");
@@ -564,11 +568,9 @@ void PATA::initialize_pata(uint16_t drive,bool Master){
     if((drive == 0x1F0) && (Master)){
         pata[0] = 1;
         //char* atabuff = "Hello World!!!";
-        //pata_Write28(1, 0, (uint8_t*)atabuff, 14);
+        //pata_Write(1, 0, (uint8_t*)atabuff, 14);
         //Flush(1);
         pata_Read(1, 0, 512);
-        
-        
         return;
     }
     else if((drive == 0x1F0) && (!Master)){
@@ -782,6 +784,11 @@ bool PATA::AtaReadSuccess(){
     }
     LouPrint("ata Read Success\n");
     return true;
+}
+
+LOUDDK_API_ENTRY bool IsIdeDriveAvailable(uint8_t Drive){
+    if(pata[Drive] != 0)return true;
+    else return false;
 }
 
 uint16_t *GetAtaBufferAddr() {

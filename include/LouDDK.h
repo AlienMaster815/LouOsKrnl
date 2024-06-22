@@ -16,7 +16,7 @@
 #include <drivers/Vendors/VendorsDictionary.h>
 #include <kernel/memmory.h>
 #include <kernel/Binarys.h>
-
+#include <stdio.h>
 #include <KernelAPI/BitCheck.h>
 
 typedef void* FILE;

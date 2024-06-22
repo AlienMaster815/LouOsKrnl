@@ -82,13 +82,13 @@ extern "C" void ReadStorageDrive(char Drive, uint32_t Location , uint32_t Buffer
 
 PATA* pataobj = (PATA*)Lou_Alloc_Mem(sizeof(PATA));
 
-extern "C" void pata_device_scanc(){
+LOUDDK_API_ENTRY void pata_device_scanc(){
 
     pataobj->pata_device_scan();
 
 }
 
-extern "C" void PCI_Setup() {
+LOUDDK_API_ENTRY void PCI_Setup() {
     PCI_Scan_Bus();
 }
 
@@ -97,20 +97,56 @@ PATA* RetrievePATAP(){
 }
 
 
-extern "C" void SetVideoMode(uint64_t Height,uint64_t Widthe, uint8_t  ColorDepth){
+LOUDDK_API_ENTRY void SetVideoMode(uint64_t Height,uint64_t Widthe, uint8_t  ColorDepth){
     
 }
 
 
-extern "C" void FileSystemSetup(){
+typedef struct{
+    FSStruct Fss;
+}StandardPataDeviceObject;
 
-    ISO9660 iso;
-    
+KERNEL_IMPORT bool 
+IsIdeDriveAvailable(
+uint8_t Drive
+);
+
+static StandardPataDeviceObject pata[4];
+
+static ISO9660 iso;
+static FAT Fat;
+
+LOUDDK_API_ENTRY void FileSystemSetup(){
+
+    // take note the way this function looks may be silly and redundant
+    // but its because the stack is wonky right now if you change this 
+    // your also expected to find the bug before you exspect me to 
+    // release Your Update - Fuck You : Tyler Grenier
+
+    // Oh and if you think just think that raising my stack budget is
+    // the fix go fuck yourself all that does is wate unesscisary
+    // resources, FUCK OFF THIS IS NOT WINDOWS GO SUCK MICROSOFTS DICK
+    // WE DONT WANT YOU
+
+
     //iso.ISOFileSystemScan(3, PATADEV);
     
     for(uint8_t i = 1; i < 5; i++){ 
-        iso.ISOFileSystemScan(i,PATADEV);
+        /*if(IsIdeDriveAvailable(i - 1)){
+            pata[i - 1].Fss = iso.ISOFileSystemScan(i,PATADEV);
+            if(pata[i - 1].Fss.FSType == ISO)continue; 
+            pata[i - 1].Fss = Fat.InitializeFatSystem(i, PATADEV);
+            LouPrint("Drive:%d: Has No Filesystem\n",i);
+
+        } */
     }
+
+
 }
+
+
+LOUDDK_API_ENTRY uintptr_t GetPataDeviceObjectPointer(uint8_t Drive){
+    return (uintptr_t)(&pata[Drive]);
+} 
 
 // End Of Redundant File

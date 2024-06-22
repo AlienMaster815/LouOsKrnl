@@ -84,8 +84,6 @@ typedef struct __attribute__((packed, aligned(4096))) _PML {
     PageTable PML1;
 }PML;
 
-PML* page_table_l4;
-
 bool LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize);
 bool LouUnMapAddress(uint64_t VAddress);
 uint64_t GetPageOfFaultValue(uint64_t VAddress);

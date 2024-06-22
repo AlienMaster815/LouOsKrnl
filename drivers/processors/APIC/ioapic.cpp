@@ -82,7 +82,7 @@ bool InitializeIoApic(uint64_t IoApicNumber, uint64_t MappedArea){
 
     NumberOfInterrupts = (VersionRegister >> 16);
 
-    LouPrint("Number Of Interrupts:%d\n",NumberOfInterrupts);
+    LouPrint("Number Of Interrupts That Can Be Handled At Once:%d\n",NumberOfInterrupts);
 
     LouPrint("Initializing IO/APIC To A Operating State\n");
     for (uint8_t irq = 0; irq < NumberOfInterrupts; irq++) {

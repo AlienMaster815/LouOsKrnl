@@ -29,7 +29,7 @@ uintptr_t RBP_Current;
 
 
 
-char* KERNEL_VERSION = "0.0.00038 RSC-1 Multiboot 2";
+char* KERNEL_VERSION = "0.0.438 RSC-1 Multiboot 2";
 
 
 #ifdef __x86_64__
@@ -51,6 +51,7 @@ LOUSTATUS InitMCFG();
 LOUSTATUS InitThreadManager();
 LOUSTATUS SetUpTimers();
 
+void LastSataRun();
 
 void PS2KeyboardHandler();
 void PageFault();
@@ -125,13 +126,18 @@ LOUSTATUS Lou_kernel_early_initialization(){
     return LOUSTATUS_GOOD;
 }
 
+void UpdateDeviceInformationTable();
+
 LOUSTATUS Set_Up_Devices(){
 
-    pata_device_scanc();    
+    PCI_Setup();
+   
+    LastSataRun();
 
-   //PCI_Setup();
+    UpdateDeviceInformationTable();
 
-    FileSystemSetup();
+    //FileSystemSetup();
+
     return LOUSTATUS_GOOD;
 }
 
@@ -184,10 +190,9 @@ KERNEL_ENTRY Lou_kernel_start(uint32_t foo, uint32_t Apic){
 
     //SETUP DEVICES AND DRIVERS
     if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);		
-
-
-   // Initialize User Mode
-   // if(User_Mode_Initialization() != LOUSTATUS_GOOD)LouPanic("User Mode Initialiation Failed",BAD);
+    
+    // Initialize User Mode
+    // if(User_Mode_Initialization() != LOUSTATUS_GOOD)LouPanic("User Mode Initialiation Failed",BAD);
 
 
 

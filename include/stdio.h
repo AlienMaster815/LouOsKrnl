@@ -4,15 +4,77 @@
 
 #ifdef __x86_64__
 #ifdef __cplusplus
-
+#include <LouDDK.h>
 extern "C" void uintToHexString(uint64_t number, char* hexString);
+KERNEL_IMPORT void LouKePrintLittleEndianBufferDecimal(
+    uintptr_t DataPointer,
+    uint64_t Offset,
+    uint64_t Length
+    );
+
+KERNEL_IMPORT void LouKePrintLittleEndianBufferHex(
+    uintptr_t DataPointer,
+    uint64_t Offset,
+    uint64_t Length
+    );
+
+KERNEL_IMPORT void LouKePrintLittleEndianBufferBinary(
+    uintptr_t DataPointer,
+    uint64_t Offset,
+    uint64_t Length
+    );
+
+KERNEL_IMPORT void LouKePrintBigEndianBufferString(
+    uintptr_t DataPointer,
+    uint64_t Offset,
+    uint64_t Length
+    );
+
+KERNEL_IMPORT bool LouKeIsLittleEndianBufferEqualTo(
+    uintptr_t DataPointer,
+    uintptr_t CheckBuffer,
+    uint64_t Offset,
+    uint64_t Length
+    );
+
 
 #else
+#include <LouAPI.h>
 
 int LouPrint(char *format, ...);
 int putchar(int ic);
 void uintToHexString(uint64_t number, char* hexString);
 
+void LouKePrintLittleEndianBufferDecimal(
+    uintptr_t DataPointer,
+    uint64_t Offset,
+    uint64_t Length
+    );
+
+void LouKePrintLittleEndianBufferHex(
+    uintptr_t DataPointer,
+    uint64_t Offset,
+    uint64_t Length
+    );
+
+void LouKePrintLittleEndianBufferBinary(
+    uintptr_t DataPointer,
+    uint64_t Offset,
+    uint64_t Length
+    );
+
+void LouKePrintBigEndianBufferString(
+    uintptr_t DataPointer,
+    uint64_t Offset,
+    uint64_t Length
+    );
+
+bool LouKeIsLittleEndianBufferEqualTo(
+    uintptr_t DataPointer,
+    uintptr_t CheckBuffer,
+    uint64_t Offset,
+    uint64_t Length
+    );
 #endif
 #endif
 
@@ -21,11 +83,14 @@ void uintToHexString(uint64_t number, char* hexString);
 
 extern "C" void uintToHexString(uint32_t number, char* hexString);
 
+
 #else
 
 int LouPrint(char *format, ...);
 int putchar(int ic);
 void uintToHexString(uint32_t number, char* hexString);
+
+
 
 #endif
 #endif
