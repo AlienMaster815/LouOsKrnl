@@ -47,7 +47,7 @@ void LouKePrintLittleEndianBufferBinary(
     LouPrint("\n");
 }
 
-void LouKePrintBigEndianBufferString(
+void LouKePrintLittleEndianBufferString(
     uintptr_t DataPointer,
     uint64_t Offset,
     uint64_t Length

@@ -9,5 +9,6 @@
 #include <KernelAPI/Video.h>
 #include <KernelAPI/WDFLDR.h>
 #include "BitCheck.h"
+#include "Devices.h"
 
 #endif

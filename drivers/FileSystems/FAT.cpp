@@ -61,7 +61,6 @@ typedef struct __attribute__((packed)) _FSInfo{
 }FSInfo, * PFSInfo;
 
 typedef struct __attribute__((packed)) _EBR_X{
-    uint8_t JumpShort3CNop[3];
     char OEMID[8]; // "EXFAT   "
     uint8_t NullBytes[53];
     uint64_t PartitionOffset;
@@ -118,15 +117,15 @@ void ReadFat12(uintptr_t PointerToEBP12, uint32_t ActiveCluster){
 void ReadFat32(uintptr_t PointerToEBP32, uint32_t ActiveCluster){
     UNUSED PEBR_32 EBR = (PEBR_32)PointerToEBP32;
 
-    //uint32_t FAT_Offset = ActiveCluster * 4;
-    //uint32_t FAT_Sector = (EBR->BiosParameterBlock.NumberOfReservedSectors) + (FAT_Offset / EBR->BiosParameterBlock.BytesPerSector);
-    //uint32_t Ent_Offset = FAT_Offset % EBR->BiosParameterBlock.BytesPerSector;
+    uint32_t FAT_Offset = ActiveCluster * 4;
+    uint32_t FAT_Sector = (EBR->BiosParameterBlock.NumberOfReservedSectors) + (FAT_Offset / EBR->BiosParameterBlock.BytesPerSector);
+    uint32_t Ent_Offset = FAT_Offset % EBR->BiosParameterBlock.BytesPerSector;
 
-    //LouPrint("FAT Table :%d\n", FAT_Table);
-    LouPrint("FAT Offset:%d\n", PointerToEBP32);
-    LouPrint("Bytes Per Sector:%d\n", (uint16_t*)(uint8_t*)(PointerToEBP32 + 11));
-    //LouPrint("FAT Sector:%d\n", FAT_Sector);
-    //LouPrint("Ent Offset:%d\n", Ent_Offset);    
+    LouPrint("FAT Offset :%d\n",FAT_Offset);
+    LouPrint("FAT Sector:%d\n", FAT_Sector);
+    LouPrint("Ent Offset:%d\n", Ent_Offset);    
+
+    
 
 }
 
@@ -137,7 +136,7 @@ FAT::~FAT(){
 
 }
 
-FSStruct FAT::InitializeFatSystem(uint8_t DriveNumber, uint8_t DriveType){
+FSStruct FAT::InitializeFatSystem(uint8_t DriveNumber){
     FSStruct FSS;
     FSS.SystemDisk = false;
     FSS.FSType = 0;
@@ -149,21 +148,21 @@ FSStruct FAT::InitializeFatSystem(uint8_t DriveNumber, uint8_t DriveType){
 
     //LouPrint("Drive Number Is:%d\n", DriveNumber);
 
-    UNUSED FAT::FatFileSystemType FTT = DetermineFileSystemType(DriveNumber, DriveType, &FSS);
+    UNUSED FAT::FatFileSystemType FTT = DetermineFileSystemType(DriveNumber, &FSS);
 
     while(1);
     return FSS;
 }
-uint16_t* FAT::ReadFatSystem(uint8_t DriveNumber, uint8_t DriveType, FSStruct* FSP){
+uint16_t* FAT::ReadFatSystem(uint8_t DriveNumber, FSStruct* FSP){
     
     return 0;
 }
-void FAT::WriteFatSystem(uint8_t DriveNumber,uint8_t DriveType, FSStruct* FSP, uint16_t* Data){
+void FAT::WriteFatSystem(uint8_t DriveNumber, FSStruct* FSP, uint16_t* Data){
 
 }
  
  //PrivateFunctions
- FAT::FatFileSystemType FAT::DetermineFileSystemType(uint8_t DriveNumber, uint8_t DriveType, FSStruct* FSS){
+ FAT::FatFileSystemType FAT::DetermineFileSystemType(uint8_t DriveNumber, FSStruct* FSS){
     FatFileSystemType FTT;
 
     FTT = NONE;
@@ -172,10 +171,26 @@ void FAT::WriteFatSystem(uint8_t DriveNumber,uint8_t DriveType, FSStruct* FSP, u
 
     LouPrint("Drive Number:%d\n",DriveNumber);
 
+    char* FatBuffer = (char*)LouMalloc(512);
+
+    LouPrint("Fat Buffer Is:%h\n", FatBuffer);
+
+    ReadDrive(
+        DriveNumber,
+        0,
+        0,
+        1,
+        FatBuffer
+    );
 
 
-    //char* FOO = "Hello World";
+    ReadFat32((uintptr_t)FatBuffer,0);
 
 
+    LouFree((RAMADD)FatBuffer, 512);
+
+    LouPrint("Done Reading\n");
+
+    while(1);
     return FTT;    
  }

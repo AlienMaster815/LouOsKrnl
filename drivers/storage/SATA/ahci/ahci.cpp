@@ -6,38 +6,6 @@ string DRV_UNLOAD_STRING_FAILURE = "Driver Execution Failed To Execute Properly 
 
 
 
-#define	SATA_SIG_ATA	0x00000101	// SATA drive
-#define	SATA_SIG_ATAPI	0xEB140101	// SATAPI drive
-#define	SATA_SIG_SEMB	0xC33C0101	// Enclosure management bridge
-#define	SATA_SIG_PM	0x96690101	// Port multiplier
- 
-#define AHCI_DEV_NULL 0
-#define AHCI_DEV_SATA 1
-#define AHCI_DEV_SEMB 2
-#define AHCI_DEV_PM 3
-#define AHCI_DEV_SATAPI 4
- 
-#define HBA_PORT_IPM_ACTIVE 1
-#define HBA_PORT_DET_PRESENT 3
-
-#define	AHCI_BASE	0x400000	// 4M
- 
-#define HBA_PxCMD_ST    0x0001
-#define HBA_PxCMD_FRE   0x0010
-#define HBA_PxCMD_FR    0x4000
-#define HBA_PxCMD_CR    0x8000
-
-#define ATA_CMD_PACKET 0xA0
-#define ATA_CMD_READ_DMA_EX 0x25 // This is a typical value; check your specification
-#define HBA_PxIS_TFES (1 << 30) 
- 
-#define ATA_DEV_BUSY 0x80
-#define ATA_DEV_DRQ 0x08
-#define HBA_PxIS_TFES (1 << 30)
-#define FIS_TYPE_REG_H2D 0x27
-#define ATA_CMD_WRITE_DMA_EX 0x35
-#define ATAPI_CMD_READ 0xA8
-
 
 // Start command engine
 void start_cmd(HBA_PORT *port){
@@ -133,8 +101,7 @@ int CheckSataType(HBA_PORT *port)
  
 
  // Find a free command list slot
-int find_cmdslot(HBA_PORT *port)
-{
+int find_cmdslot(HBA_PORT *port){
     // If not set in SACT and CI, the slot is free
     uint32_t slots = (port->sact | port->ci);
     for (uint32_t i = 0; i < 32; i++) { // Iterate over 32 possible slots
@@ -397,8 +364,7 @@ bool WriteSATA(HBA_PORT *port, uint32_t startl, uint32_t starth, uint32_t count,
     return true;
 }
 
-uint16_t Buff[512];
-
+/*
 typedef enum{
 	SATA,
 	SATAPI,
@@ -411,8 +377,12 @@ typedef struct _AHCI_DEVICE{
 	uintptr_t PortAddress;
 	uint8_t PortNumber;
 }AHCI_DEVICE, * PAHCI_DEVICE;
-
+*/
 static uint16_t AhciDevice = 0;
+
+LOUDDK_API_ENTRY uint16_t GetNumberOfAhciDevices(){
+	return AhciDevice; 
+}
 
 static PAHCI_DEVICE AhciBase;
 

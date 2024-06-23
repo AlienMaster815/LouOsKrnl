@@ -111,42 +111,25 @@ IsIdeDriveAvailable(
 uint8_t Drive
 );
 
-static StandardPataDeviceObject pata[4];
 
 static ISO9660 iso;
 static FAT Fat;
+static FSStruct Fss;
 
 LOUDDK_API_ENTRY void FileSystemSetup(){
 
-    // take note the way this function looks may be silly and redundant
-    // but its because the stack is wonky right now if you change this 
-    // your also expected to find the bug before you exspect me to 
-    // release Your Update - Fuck You : Tyler Grenier
-
-    // Oh and if you think just think that raising my stack budget is
-    // the fix go fuck yourself all that does is wate unesscisary
-    // resources, FUCK OFF THIS IS NOT WINDOWS GO SUCK MICROSOFTS DICK
-    // WE DONT WANT YOU
-
-
     //iso.ISOFileSystemScan(3, PATADEV);
-    
-    for(uint8_t i = 1; i < 5; i++){ 
-        /*if(IsIdeDriveAvailable(i - 1)){
-            pata[i - 1].Fss = iso.ISOFileSystemScan(i,PATADEV);
-            if(pata[i - 1].Fss.FSType == ISO)continue; 
-            pata[i - 1].Fss = Fat.InitializeFatSystem(i, PATADEV);
-            LouPrint("Drive:%d: Has No Filesystem\n",i);
+        
 
-        } */
-    }
-
-
+    //for(uint8_t i = 0; i < GetNumberOfStorageDevices(); i++){ 
+        //Fss = iso.ISOFileSystemScan(i);
+        //if(Fss.FSType == ISO)continue; 
+        Fss = Fat.InitializeFatSystem(0);
+            
+        //LouPrint("Drive:%d: Has No Filesystem\n",i);
+    //}
 }
 
 
-LOUDDK_API_ENTRY uintptr_t GetPataDeviceObjectPointer(uint8_t Drive){
-    return (uintptr_t)(&pata[Drive]);
-} 
 
 // End Of Redundant File

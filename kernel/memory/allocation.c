@@ -258,6 +258,6 @@ void* LouMallocEx(size_t BytesToAllocate, uint64_t Alignment){
 
 void* LouMalloc(size_t BytesToAllocate) {
 
-    return LouMallocEx(BytesToAllocate,BytesToAllocate);
+    return LouMallocEx(BytesToAllocate, BytesToAllocate);
 
 }

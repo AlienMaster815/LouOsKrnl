@@ -2,6 +2,8 @@
 #define _STDIO_H
 #include <stdint.h>
 
+#define PRINT_NEW_LINE "\n"
+
 #ifdef __x86_64__
 #ifdef __cplusplus
 #include <LouDDK.h>
@@ -24,7 +26,7 @@ KERNEL_IMPORT void LouKePrintLittleEndianBufferBinary(
     uint64_t Length
     );
 
-KERNEL_IMPORT void LouKePrintBigEndianBufferString(
+KERNEL_IMPORT void LouKePrintLittleEndianBufferString(
     uintptr_t DataPointer,
     uint64_t Offset,
     uint64_t Length
@@ -63,7 +65,7 @@ void LouKePrintLittleEndianBufferBinary(
     uint64_t Length
     );
 
-void LouKePrintBigEndianBufferString(
+void LouKePrintLittleEndianBufferString(
     uintptr_t DataPointer,
     uint64_t Offset,
     uint64_t Length

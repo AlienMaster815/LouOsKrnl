@@ -7,9 +7,9 @@ class FAT{
     public:
         FAT();
         ~FAT();
-        FSStruct InitializeFatSystem(uint8_t DriveNumber, uint8_t DriveType);
-        uint16_t* ReadFatSystem(uint8_t DriveNumber, uint8_t DriveType, FSStruct* FSP);
-        void WriteFatSystem(uint8_t DriveNumber,uint8_t DriveType, FSStruct* FSP, uint16_t* Data);
+        FSStruct InitializeFatSystem(uint8_t DriveNumber);
+        uint16_t* ReadFatSystem(uint8_t DriveNumber, FSStruct* FSP);
+        void WriteFatSystem(uint8_t DriveNumber, FSStruct* FSP, uint16_t* Data);
 
     private: 
         typedef enum{
@@ -24,7 +24,7 @@ class FAT{
             FatFileSystemType FFT;
         }FatExtendedStructure;
 
-        FatFileSystemType DetermineFileSystemType(uint8_t DriveNumber, uint8_t DriveType, FSStruct* FSS);
+        FatFileSystemType DetermineFileSystemType(uint8_t DriveNumber, FSStruct* FSS);
 };
 
 #endif

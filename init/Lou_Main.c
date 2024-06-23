@@ -79,14 +79,13 @@ void VirtualizationException();
 void ControlProtectionException();
 
 void ParseMBootTags(struct multiboot_tag* MBOOT);
-
 void CreateNewPageSystem();
-
 uint64_t GetRamSize();
-
 void InitializeSystemCalls();
-
 void SYSCALLS();
+
+LOUSTATUS InitializeDirecAccess();
+
 
 LOUSTATUS Lou_kernel_early_initialization(){
 
@@ -131,11 +130,8 @@ void UpdateDeviceInformationTable();
 LOUSTATUS Set_Up_Devices(){
 
     PCI_Setup();
-   
     LastSataRun();
-
     UpdateDeviceInformationTable();
-
     //FileSystemSetup();
 
     return LOUSTATUS_GOOD;
@@ -197,7 +193,6 @@ KERNEL_ENTRY Lou_kernel_start(uint32_t foo, uint32_t Apic){
 
 
     LouPrint("Hello World\n");
-
     
 
     while (1) {

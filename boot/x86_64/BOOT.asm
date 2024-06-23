@@ -31,7 +31,7 @@ global start
 
 MBoot dd 0
 
-;FOO dd 0
+FOO dd 0
 
 extern SetUpPages
 extern Lou_kernel_start
