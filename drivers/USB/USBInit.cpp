@@ -1,8 +1,44 @@
 #include <LouDDK.h>
 
 
-void USB_INIT(uint8_t bus, uint8_t slot, uint8_t function);
+typedef enum{
+	UHCI = 0,
+	OHCI = 1,
+	EHCI = 2,
+	XHCI = 3
+}USB_HARDWARE_TYPE;
 
+void
+USB_INIT(
+uint8_t bus, 
+uint8_t slot, 
+uint8_t function
+);
+
+void 
+InitializeUHCIController(
+P_PCI_DEVICE_OBJECT PDEV
+);
+
+void 
+InitializeOHCIController(
+P_PCI_DEVICE_OBJECT PDEV
+);
+
+uint8_t 
+LouKePciReadProgIf(
+P_PCI_DEVICE_OBJECT PDEV
+);
+
+void 
+InitializeEHCIController(
+P_PCI_DEVICE_OBJECT PDEV
+);
+
+void 
+InitializeXHCIController(
+P_PCI_DEVICE_OBJECT PDEV
+);
 
 bool isUsb(uint8_t bus, uint8_t slot, uint8_t function) {
 
@@ -348,7 +384,6 @@ bool isUsb(uint8_t bus, uint8_t slot, uint8_t function) {
 		case INTEL_RAPTOR_LAKE_P_THUNDERBOLT_4_USB_CONTROLLER:
 		case INTEL_LUNAR_LAKE_M_THUNDERBOLT_4_USB_CONTROLLER:
 		case INTEL_LUNAR_LAKE_M_USB_3_2_GEN_2X1_XHCI_HOST_CONTROLLER:
-
 			LouPrint("Intel USB Host Found\n");
 			USB_INIT(bus, slot, function);
 			return true;
@@ -357,7 +392,34 @@ bool isUsb(uint8_t bus, uint8_t slot, uint8_t function) {
 			break;
 		}
 	default:
-		//vendor not supported
+		//vendor not supported check informations
+		
+		P_PCI_DEVICE_OBJECT PDEV = (P_PCI_DEVICE_OBJECT)LouMalloc(sizeof(PCI_DEVICE_OBJECT));
+		
+		static uint8_t PciClass = LouKePciReadClass(PDEV);
+		static uint8_t PciSubClass = LouKePciReadSubClass(PDEV);
+		static uint8_t PciInterfaceValue = LouKePciReadProgIf(PDEV);
+
+		if(((PciClass == 0x0C)
+	 	&&(PciSubClass == 0x03)
+	 	&&(PciInterfaceValue == 0x00)) || 
+		((PciClass == 0x0C)
+	 	&&(PciSubClass == 0x03)
+	 	&&(PciInterfaceValue == 0x10)) || 
+		((PciClass == 0x0C)
+	 	&&(PciSubClass == 0x03)
+	 	&&(PciInterfaceValue == 0x20)) ||
+		((PciClass == 0x0C)
+	 	&&(PciSubClass == 0x03)
+	 	&&(PciInterfaceValue == 0x30)) 
+		){
+			LouFree((RAMADD)PDEV, sizeof(PCI_DEVICE_OBJECT));
+			USB_INIT(bus,slot,function);
+			return true;
+		}
+		else{
+			LouFree((RAMADD)PDEV, sizeof(PCI_DEVICE_OBJECT));
+		}
 		break;
 	}
 	return false;
@@ -366,5 +428,40 @@ bool isUsb(uint8_t bus, uint8_t slot, uint8_t function) {
 void USB_INIT(uint8_t bus,uint8_t slot, uint8_t function) {
 
 	LouPrint("Initializing USB Controller\n");
+
+	P_PCI_DEVICE_OBJECT USB_DEV = (P_PCI_DEVICE_OBJECT)LouMalloc(sizeof(PCI_DEVICE_OBJECT));
+
+	USB_DEV->bus = bus;
+	USB_DEV->slot = slot;
+	USB_DEV->func = function;
+
+	static uint8_t Class = LouKePciReadClass(USB_DEV);
+	static uint8_t SubClass = LouKePciReadSubClass(USB_DEV);
+	static uint8_t InterfaceValue = LouKePciReadProgIf(USB_DEV);
+
+	if((Class == 0x0C)
+	 &&(SubClass == 0x03)
+	 &&(InterfaceValue == 0x00)){
+		//Uhci Device
+		InitializeUHCIController(USB_DEV);
+	 }
+	else if((Class == 0x0C)
+	 &&(SubClass == 0x03)
+	 &&(InterfaceValue == 0x20)){
+		//EHCI Device
+		InitializeEHCIController(USB_DEV);
+	}
+	else if((Class == 0x0C)
+	&&(SubClass == 0x03)
+	&&(InterfaceValue == 0x30)){
+		InitializeXHCIController(USB_DEV);
+	}
+	else if((Class == 0x0C)
+	 &&(SubClass == 0x03)
+	 &&(InterfaceValue == 0x10)){
+		//OHCI Device
+		InitializeOHCIController(USB_DEV);
+	}
+
 
 }

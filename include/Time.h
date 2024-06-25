@@ -6,12 +6,15 @@
 #define MilliSec 1
 #define Sec 2
 
-#include <LouAPI.h>
+#include <LouDDK.h>
 
-extern "C" void sleep(uint64_t Time);
-extern "C" void sleepEx(uint8_t Interval, uint64_t Time);
+KERNEL_IMPORT void sleep(uint64_t Time);
+KERNEL_IMPORT void sleepEx(uint8_t Interval, uint64_t Time);
+
+
 
 #else
+
 
 
 
@@ -25,5 +28,3 @@ void sleepEx(uint8_t Interval, uint64_t Time);
 #endif
 #endif
 #endif
-// Mikaela 
-// glass shop 

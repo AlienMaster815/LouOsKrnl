@@ -62,13 +62,13 @@ uint8_t Drive
 
 
 typedef enum{
-	SATA,
-	SATAPI,
-	SEMB,
-	PM,
+	SATA = 1,
+	SATAPI = 2,
+	SEMB = 3,
+	PM = 4,
 }AHCI_TYPE;
 
-typedef struct _AHCI_DEVICE{
+typedef struct __attribute__((packed)) _AHCI_DEVICE{
 	AHCI_TYPE Type;
 	uintptr_t PortAddress;
 	uint8_t PortNumber;

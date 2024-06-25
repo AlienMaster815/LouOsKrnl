@@ -316,6 +316,14 @@ uint32_t count,
 uint16_t *buf
 );
 
+bool 
+ReadSATAPI(
+HBA_PORT *port, 
+uint32_t lba, 
+uint32_t count, 
+uint16_t *buf
+);
+
 LOUDDK_API_ENTRY 
 void 
 ReadDrive(
@@ -325,11 +333,12 @@ uint32_t LBA_HIGH,
 uint32_t SectorCount,
 void* Read_Buffer
 ){
-    uint16_t NumberOfDevices = GetNumberOfDevices();
-    PDeviceInformationTable Devices = GetDeviceInformationTable();
+	//all the statics are to save the stack
+    static uint16_t NumberOfDevices = GetNumberOfDevices();
+    static PDeviceInformationTable Devices = GetDeviceInformationTable();
 
-    uint8_t j = 0;
-    for(uint16_t i = 0; i < NumberOfDevices; i++){
+    static uint8_t j = 0;
+    for(static uint16_t i = 0; i < NumberOfDevices; i++){
 
         if((j == Drive) 
          &&(Devices[i].DeviceType == DEV_TYPE_STORAGE)){
@@ -348,6 +357,18 @@ void* Read_Buffer
                         LouPrint("Done Reading Sata Device\n");
                     return;
                 }
+				else if(Devices[i].DeviceSubType == DEV_SUB_TYPE_SATAPI){
+					PAHCI_DEVICE PAhciDevice = (PAHCI_DEVICE)Devices[i].DeviceObject;
+					LouPrint("Reading To Satapi Drive\n");
+					ReadSATAPI(
+					(HBA_PORT*)PAhciDevice->PortAddress, 
+					LBA_LOW,
+					SectorCount,
+					(uint16_t*)Read_Buffer
+					);
+					return;
+				}
+
                 else{
                     LouPrint("Unsupported AHCI Device\n");
                     
@@ -371,7 +392,12 @@ void* Read_Buffer
             }
         }
         else if(Devices[i].DeviceType == DEV_TYPE_STORAGE){
-            j++;
+            j++;                
+                LouPrint("Device Type:%h\n", Devices[i].DeviceType);
+                LouPrint("Device Sub Type:%h\n", Devices[i].DeviceSubType);
+                LouPrint("Device Arch:%h\n", Devices[i].DeviceArchitecture);
+                LouPrint("Device Number:%h\n", Devices[i].DeviceNumber);
+                LouPrint("Device Object:%h\n", Devices[i].DeviceObject);
         }
     }
     
@@ -389,57 +415,5 @@ uint32_t LBA_HIGH,
 uint32_t SectorCount,
 void* Data
 ){
-    uint16_t NumberOfDevices = GetNumberOfDevices();
-    PDeviceInformationTable Devices = GetDeviceInformationTable();
 
-    uint8_t j = 0;
-    for(uint16_t i = 0; i < NumberOfDevices; i++){
-
-        if((j == Drive) 
-         &&(Devices[i].DeviceType == DEV_TYPE_STORAGE)){
-            if(DEV_ARCH_AHCI == Devices[i].DeviceArchitecture){
-
-                if(Devices[i].DeviceSubType == DEV_SUB_TYPE_SATA){
-                    LouPrint("Writing To Sata Device\n");
-                    PAHCI_DEVICE PAhciDevice = (PAHCI_DEVICE)Devices[i].DeviceObject;
-                    WriteSATA(
-                        (HBA_PORT*)PAhciDevice->PortAddress, 
-                        LBA_LOW, 
-                        LBA_HIGH, 
-                        SectorCount,
-                        (uint16_t*)Data
-                        );
-                        LouPrint("Done Writing Sata To Device\n");
-                    return;
-                }
-                else{
-                    LouPrint("Unsupported AHCI Device\n");
-                    
-                    //LouPrint("Device Type:%h\n", Devices[i].DeviceType);
-                    //LouPrint("Device Sub Type:%h\n", Devices[i].DeviceSubType);
-                    //LouPrint("Device Arch:%h\n", Devices[i].DeviceArchitecture);
-                    //LouPrint("Device Number:%h\n", Devices[i].DeviceNumber);
-                    //LouPrint("Device Object:%h\n", Devices[i].DeviceObject);
-                    return;
-                }
-            }
-            else{
-                LouPrint("Storage Device Not Supported\n");
-                
-                //LouPrint("Device Type:%h\n", Devices[i].DeviceType);
-                //LouPrint("Device Sub Type:%h\n", Devices[i].DeviceSubType);
-                //LouPrint("Device Arch:%h\n", Devices[i].DeviceArchitecture);
-                //LouPrint("Device Number:%h\n", Devices[i].DeviceNumber);
-                //LouPrint("Device Object:%h\n", Devices[i].DeviceObject);
-                return;
-            }
-        }
-        else if(Devices[i].DeviceType == DEV_TYPE_STORAGE){
-            j++;
-        }
-    }
-    
-    LouPrint("Sotrage Device Not Found\n");
-
-    return;
 }

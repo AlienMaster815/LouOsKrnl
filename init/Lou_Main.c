@@ -130,8 +130,8 @@ void UpdateDeviceInformationTable();
 LOUSTATUS Set_Up_Devices(){
 
     PCI_Setup();
-    LastSataRun();
-    UpdateDeviceInformationTable();
+    //LastSataRun();
+    //UpdateDeviceInformationTable();
     //FileSystemSetup();
 
     return LOUSTATUS_GOOD;
@@ -190,10 +190,9 @@ KERNEL_ENTRY Lou_kernel_start(uint32_t foo, uint32_t Apic){
     // Initialize User Mode
     // if(User_Mode_Initialization() != LOUSTATUS_GOOD)LouPanic("User Mode Initialiation Failed",BAD);
 
-
-
     LouPrint("Hello World\n");
     
+    //TODO:Creaate A trim function that takes origninal size and size after trim and trim the end off
 
     while (1) {
         asm("hlt");

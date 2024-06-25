@@ -20,11 +20,27 @@ uint16_t GetNumberOfStorageDevices(){
 
 void UpdateDeviceInformationTable(){
 
+    DeviceTable = (PDeviceInformationTable)LouMalloc(sizeof(DeviceInformationTable) * 512);
+
+
     LouPrint("Initializing Device Info\n");
-    DeviceTable = ScanConnectedAhciDevices(
+    ScanConnectedAhciDevices(
     DeviceTable,
     &NumberOfConnectedDevices
     );
+    LouFree((RAMADD)DeviceTable + (NumberOfConnectedDevices * sizeof(DeviceInformationTable)), (512 - NumberOfConnectedDevices) *sizeof(DeviceInformationTable));
+
+    /*
+    for(uint16_t i = 0; i < NumberOfConnectedDevices; i++){
+        LouPrint("Device Type:%h\n",   DeviceTable[i].DeviceType);
+        LouPrint("Device Sub Type:%h\n", DeviceTable[i].DeviceSubType);
+        LouPrint("Device Arch:%h\n", DeviceTable[i].DeviceArchitecture);
+        LouPrint("Device Number:%h\n", DeviceTable[i].DeviceNumber);
+        LouPrint("Device Object:%h\n", DeviceTable[i].DeviceObject);
+    }
+    LouPrint(PRINT_NEW_LINE);
+    */
+
     LouPrint("Initializing Device Info:Complete\n");
 }
 
@@ -46,7 +62,7 @@ uint16_t* NumberOfCurrentEtries
 
 
 
-PDeviceInformationTable 
+void 
 LouKeInitializeDeviceInformationTable(
 PDeviceInformationTable Table,
 uint16_t* NumberOfCurrentEntries,
@@ -59,40 +75,18 @@ uintptr_t DeviceObject,
 uintptr_t DriverObject
 ){
 
-    //time to do the memory tango;
 
-    *NumberOfCurrentEntries = *NumberOfCurrentEntries + 1; //this is due to a weird compiler bug
+    uint16_t e = *NumberOfCurrentEntries;
 
-    if(Table == 0x00){ 
-        Table = (PDeviceInformationTable)LouMalloc(sizeof(DeviceInformationTable) * (*NumberOfCurrentEntries));
-    }
-    else{
-        PDeviceInformationTable TEMPTable = (PDeviceInformationTable)LouMalloc(sizeof(DeviceInformationTable) * (*NumberOfCurrentEntries + 1));
-                
-        for(uint8_t i = 0; i < (*NumberOfCurrentEntries - 1); i++){
-            TEMPTable[i].DeviceType = Table[i].DeviceType;
-            TEMPTable[i].DeviceSubType = Table[i].DeviceSubType;
-            TEMPTable[i].DeviceArchitecture = Table[i].DeviceArchitecture;
-            TEMPTable[i].DeviceNumber = Table[i].DeviceNumber;
-            TEMPTable[i].DeviceObject = Table[i].DeviceObject;
-            TEMPTable[i].DriverObject = Table[i].DriverObject;        
-        }
-        
-        //cleanup
-        LouFree((RAMADD) Table, sizeof(DeviceInformationTable) * (*NumberOfCurrentEntries - 1));
-        Table = TEMPTable;
-    }
 
-    uint16_t TableIndex = (*NumberOfCurrentEntries - 1);
-
-    Table[TableIndex].DeviceType = DeviceType;
-    Table[TableIndex].DeviceSubType = DeviceSubType;
-    Table[TableIndex].DeviceArchitecture = DeviceArchitecture;
-    Table[TableIndex].DeviceNumber = DeviceNumber;
-    Table[TableIndex].DeviceObject = DeviceObject;
-    Table[TableIndex].DriverObject = DriverObject;
+    Table[e].DeviceType = DeviceType;
+    Table[e].DeviceSubType = DeviceSubType;
+    Table[e].DeviceArchitecture = DeviceArchitecture;
+    Table[e].DeviceNumber = DeviceNumber;
+    Table[e].DeviceObject = DeviceObject;
+    Table[e].DriverObject = DriverObject;
     /*
-    for(uint16_t i = 0; i < *NumberOfCurrentEntries; i++){
+    for(uint16_t i = 0; i <= e; i++){
         LouPrint("Device Type:%h\n", Table[i].DeviceType);
         LouPrint("Device Sub Type:%h\n", Table[i].DeviceSubType);
         LouPrint("Device Arch:%h\n", Table[i].DeviceArchitecture);
@@ -101,7 +95,7 @@ uintptr_t DriverObject
     }
     LouPrint(PRINT_NEW_LINE);
     */
-    return Table;
+    *NumberOfCurrentEntries = e + 1;
 
 }
 
@@ -131,11 +125,11 @@ uint16_t* NumberOfCurrentEntries
 
     PAHCI_DEVICE AHCI_Devices = (PAHCI_DEVICE)GetSataDeviceObjects();
     uint16_t NumDevs = GetNumberOfAhciDevices();
-    PDeviceInformationTable TEMPTable = Table;
+    LouPrint("Scaning For Ahci Devices\n");    
     for(uint16_t i = 0; i < NumDevs; i++){
         if(AHCI_Devices[i].Type == SATA){
-            TEMPTable = LouKeInitializeDeviceInformationTable(
-                TEMPTable, 
+            LouKeInitializeDeviceInformationTable(
+                Table, 
                 NumberOfCurrentEntries,
                 DEV_TYPE_STORAGE,
                 DEV_SUB_TYPE_SATA,
@@ -144,10 +138,11 @@ uint16_t* NumberOfCurrentEntries
                 (uintptr_t)&AHCI_Devices[i], 0x00 //Null
                 );
             NumberOfStorageControllers++;
+            continue;
         }
-        if(AHCI_Devices[i].Type == SATAPI){
-            TEMPTable = LouKeInitializeDeviceInformationTable(
-                TEMPTable, 
+        else if(AHCI_Devices[i].Type == SATAPI){
+            LouKeInitializeDeviceInformationTable(
+                Table, 
                 NumberOfCurrentEntries,
                 DEV_TYPE_STORAGE,
                 DEV_SUB_TYPE_SATAPI,
@@ -156,10 +151,11 @@ uint16_t* NumberOfCurrentEntries
                 (uintptr_t)&AHCI_Devices[i], 0x00 //Null
                 );
             NumberOfStorageControllers++;
+            continue;
         }
-        if(AHCI_Devices[i].Type == SEMB){
-            TEMPTable = LouKeInitializeDeviceInformationTable(
-                TEMPTable, 
+        else if(AHCI_Devices[i].Type == SEMB){
+            LouKeInitializeDeviceInformationTable(
+                Table, 
                 NumberOfCurrentEntries,
                 DEV_TYPE_STORAGE,
                 DEV_SUB_TYPE_SEMB,
@@ -168,10 +164,11 @@ uint16_t* NumberOfCurrentEntries
                 (uintptr_t)&AHCI_Devices[i], 0x00 //Null
                 );
             NumberOfStorageControllers++;
+            continue;
         }
-        if(AHCI_Devices[i].Type == PM){
-            TEMPTable = LouKeInitializeDeviceInformationTable(
-                TEMPTable, 
+        else if(AHCI_Devices[i].Type == PM){
+            LouKeInitializeDeviceInformationTable(
+                Table, 
                 NumberOfCurrentEntries,
                 DEV_TYPE_STORAGE,
                 DEV_SUB_TYPE_PM,
@@ -180,7 +177,11 @@ uint16_t* NumberOfCurrentEntries
                 (uintptr_t)&AHCI_Devices[i], 0x00 //Null
                 );
             NumberOfStorageControllers++;
+            continue;
+        }
+        else{
+            LouPrint("Fuck\n");
         }
     }
-    return TEMPTable;
+    LouPrint("Done\n");
 }

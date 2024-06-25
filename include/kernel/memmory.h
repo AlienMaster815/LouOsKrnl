@@ -90,6 +90,10 @@ uint64_t GetPageOfFaultValue(uint64_t VAddress);
 extern uint64_t GetPageValue(uint64_t PAddress, uint64_t FLAGS);
 uint64_t GetRamSize();
 
+bool LouCreateMemoryPool(uint64_t* MemoryAddressVirtual,uint64_t* RequestedMemoryAddressPhysical,uint64_t PoolSizeNeeded,uint64_t AlignmentNeeded, uint64_t PageAttributes);
+void LouFreeAlignedMemory(uint8_t* alignedAddr, size_t size);
+void* LouMallocAlligned(size_t size, uint64_t allignment);
+
 //Directory Entry FLAGS
 
 //2mb Entry
@@ -129,6 +133,9 @@ KERNEL_IMPORT LOUSTATUS LouKeMapIO(uint64_t PADDRESS, uint64_t MemoryBuffer, uin
 KERNEL_IMPORT bool LouMapAddressEx(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize);
 KERNEL_IMPORT void* LouMallocEx(size_t BytesToAllocate, size_t Aligned);
 KERNEL_IMPORT void* memset(void* dest, int value, size_t count);
+KERNEL_IMPORT void* LouMallocAlligned(size_t size, uint64_t allignment);
+KERNEL_IMPORT bool LouCreateMemoryPool(uint64_t* MemoryAddressVirtual,uint64_t* RequestedMemoryAddressPhysical, uint64_t PoolSizeNeeded,uint64_t AlignmentNeeded, uint64_t PageAttributes);
+KERNEL_IMPORT void LouFreeAlignedMemory(uint8_t* alignedAddr, size_t size);
 
 #endif
 #endif
