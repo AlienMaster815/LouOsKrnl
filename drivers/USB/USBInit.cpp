@@ -460,6 +460,7 @@ void USB_INIT(uint8_t bus,uint8_t slot, uint8_t function) {
 	 &&(SubClass == 0x03)
 	 &&(InterfaceValue == 0x10)){
 		//OHCI Device
+		//TODO: get interrupt number & set interrupt enable
 		InitializeOHCIController(USB_DEV);
 	}
 
