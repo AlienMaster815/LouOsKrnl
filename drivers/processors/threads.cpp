@@ -2,6 +2,7 @@
 #include <NtAPI.h>
 #include "Processors.h"
 
+#pragma pack(push, 1)
 typedef struct _GPRs{
 	uint64_t RAX;
 	uint64_t RBX;
@@ -131,6 +132,8 @@ PThreadStackEntry TStack[TSTACKLENGTH] = {0};
 
 KERNEL_IMPORT uint64_t LouKeGetStackSize();
 KERNEL_IMPORT LOUSTATUS LouKeCreateStack(Stack* Stack, uint64_t StackSize);
+#pragma pack(pop)
+
 
 int ExecuteThread(uint16_t ThreadNumber) {
 
@@ -193,7 +196,7 @@ LOUDDK_API_ENTRY LOUSTATUS InitThreadManager() {
 	return Status;
 }
 
-LOUDDK_API_ENTRY LOUSTATUS LouKeCreateThread(uint16_t ThreadNumber,ThreadStackEntry TSEntry, PVOID Function) {
+LOUDDK_API_ENTRY LOUSTATUS LouKeCreateThread(PVOID Function,PVOID FunctionParameters, uint32_t StackSize) {
 	LOUSTATUS Status = LOUSTATUS_GOOD;
 	uint16_t i;
 	for (i = 0; i < TSTACKLENGTH; i++) {
@@ -202,9 +205,11 @@ LOUDDK_API_ENTRY LOUSTATUS LouKeCreateThread(uint16_t ThreadNumber,ThreadStackEn
 	
 	TStack[i] = (PThreadStackEntry)LouMalloc(STACKENTRY);
 
-	if(LouKeCreateStack(&TStack[i]->stack, 2 * MEGABYTE) != LOUSTATUS_GOOD)return STATUS_UNSUCCESSFUL;
+	if(LouKeCreateStack(&TStack[i]->stack, StackSize) != LOUSTATUS_GOOD)return STATUS_UNSUCCESSFUL;
 
 	//TODO Finish creating Threads
+
+	
 
 	return Status;
 }
@@ -215,14 +220,3 @@ LOUDDK_API_ENTRY VOID LouKeDestroyThread(uint16_t ThreadNumber) {
 }
 
 
-void TestLoop1() {
-	while (1) {
-		LouPrint("Thread 1 Execution\n");
-	}
-}
-
-void TestLoop2() {
-	while (1) {
-		LouPrint("Thread  Execution\n");
-	}
-}

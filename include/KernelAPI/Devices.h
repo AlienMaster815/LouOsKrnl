@@ -60,6 +60,11 @@ IsIdeDriveAvailable(
 uint8_t Drive
 );
 
+//global device information
+typedef struct __attribute__((packed)) _GLOBAL_DEVICE_INFORMATON{
+	bool UsingDma;
+}GLOBAL_DEVICE_INFORMATON, * PGLOBAL_DEVICE_INFORMATON;
+
 
 typedef enum{
 	SATA = 1,
@@ -68,10 +73,40 @@ typedef enum{
 	PM = 4,
 }AHCI_TYPE;
 
+typedef struct _SATA_CAP_TAG{
+	bool ExternalSata;
+	bool EnclosureManagement;
+	bool CommandCompletionCoalesing;
+	bool PartialStateCapable;
+	bool SlumberStateCapable;
+	bool PIOMultipleDRQBlock;
+	bool FisBasedSwitching;
+	bool PortMultiplier;
+	bool AhciOnly;
+	uint8_t HbaSpeed;
+	bool CommandListOveride;
+	bool ActivityLED;
+	bool AggressiveLinkPoweManagement;
+	bool StaggeringSpinUp;
+	bool MechanicalPresenceSwitch;
+	bool SNotificationRegister;
+	bool NativeCommandQueing;
+	bool HighMemSupport;
+	uint32_t SectorSize;
+}SATA_CAPABILITIES, * P_SATA_CAPABILITIES;
+
+
+
 typedef struct __attribute__((packed)) _AHCI_DEVICE{
 	AHCI_TYPE Type;
 	uintptr_t PortAddress;
 	uint8_t PortNumber;
+	uint8_t InterruptRequestNumber;
+	uintptr_t DriverObject;
+	uintptr_t HBA_Address;
+	P_SATA_CAPABILITIES PCap;
+	PGLOBAL_DEVICE_INFORMATON Setup;
+	LOUSTATUS InititializationStatus;
 }AHCI_DEVICE, * PAHCI_DEVICE;
 
 void 
@@ -82,14 +117,15 @@ uint32_t LBA_HIGH,
 uint32_t SectorCount,
 void* Data
 );
-
-void 
+ 
+void* 
 ReadDrive(
 uint8_t Drive,
 uint32_t LBA_LOW,
 uint32_t LBA_HIGH,
 uint32_t SectorCount,
-void* Read_Buffer
+uint64_t* BufferSize,
+LOUSTATUS* State
 );
 
 #ifdef __cplusplus

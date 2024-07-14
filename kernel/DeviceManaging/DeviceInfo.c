@@ -41,7 +41,7 @@ void UpdateDeviceInformationTable(){
     LouPrint(PRINT_NEW_LINE);
     */
 
-    LouPrint("Initializing Device Info:Complete\n");
+    LouPrint("Initializing Device Info:Complete\n\n");
 }
 
 PDeviceInformationTable
@@ -135,7 +135,8 @@ uint16_t* NumberOfCurrentEntries
                 DEV_SUB_TYPE_SATA,
                 DEV_ARCH_AHCI,
                 i,
-                (uintptr_t)&AHCI_Devices[i], 0x00 //Null
+                (uintptr_t)&AHCI_Devices[i],
+                AHCI_Devices[i].DriverObject
                 );
             NumberOfStorageControllers++;
             continue;
@@ -148,7 +149,8 @@ uint16_t* NumberOfCurrentEntries
                 DEV_SUB_TYPE_SATAPI,
                 DEV_ARCH_AHCI,
                 i,
-                (uintptr_t)&AHCI_Devices[i], 0x00 //Null
+                (uintptr_t)&AHCI_Devices[i], 
+                AHCI_Devices[i].DriverObject
                 );
             NumberOfStorageControllers++;
             continue;
@@ -161,7 +163,8 @@ uint16_t* NumberOfCurrentEntries
                 DEV_SUB_TYPE_SEMB,
                 DEV_ARCH_AHCI,
                 i,
-                (uintptr_t)&AHCI_Devices[i], 0x00 //Null
+                (uintptr_t)&AHCI_Devices[i],
+                AHCI_Devices[i].DriverObject
                 );
             NumberOfStorageControllers++;
             continue;
@@ -174,7 +177,8 @@ uint16_t* NumberOfCurrentEntries
                 DEV_SUB_TYPE_PM,
                 DEV_ARCH_AHCI,
                 i,
-                (uintptr_t)&AHCI_Devices[i], 0x00 //Null
+                (uintptr_t)&AHCI_Devices[i],
+                AHCI_Devices[i].DriverObject
                 );
             NumberOfStorageControllers++;
             continue;

@@ -179,3 +179,12 @@ NTSTATUS IoDecrementKeepAliveCount(
 
 	return STATUS_SUCCESS;
 }
+
+bool NT_SUCCESS(NTSTATUS Status){
+	switch(Status){
+		case 0:
+			return true;
+		default:
+			return false;
+	}
+}

@@ -33,6 +33,8 @@ void clear_row(size_t row) {
     }
 }
 void init_terminal() {  
+    static Mutex m;
+    MutexGuard(&m);
     STATUS Continue_vga = register_new_mode(vga_new, VGA_MODE_80x25);    
     if((Continue_vga) == (GOOD)){
         vga_current = vga_new;        
@@ -44,6 +46,7 @@ void init_terminal() {
     col = 0;
     row = 0;
     print_clear();
+    MutexFree(&m);
 }
 
 void print_clear() {

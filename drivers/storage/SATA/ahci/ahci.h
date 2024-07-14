@@ -7,6 +7,7 @@
 
 //DEAR Tyler:
 //Hey Stupid C++ is LSB TO MSB
+#pragma pack(push, 1)
 
 typedef enum
 {
@@ -336,5 +337,5 @@ typedef volatile struct tagHBA_MEM
 #define ATAPI_CMD_READ 0xA8
 
  
-
+#pragma pack(pop)
 #endif

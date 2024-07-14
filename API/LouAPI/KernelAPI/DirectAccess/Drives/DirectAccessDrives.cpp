@@ -296,42 +296,35 @@ typedef volatile struct tagHBA_MEM
 	// 0x100 - 0x10FF, Port control registers
 	HBA_PORT	ports[1];	// 1 ~ 32
 } HBA_MEM;
- 
 
-bool 
-ReadSATA(
-HBA_PORT *port, 
+void* ReadSata(
+HBA_PORT* port,
+uintptr_t DeviceObject,
 uint32_t startl, 
-uint32_t starth, 
-uint32_t count, 
-uint16_t *buf
+uint32_t starth,
+uint32_t count,
+LOUSTATUS* StatusOfOperation
 );
 
-bool 
-WriteSATA(
-HBA_PORT *port, 
-uint32_t startl, 
-uint32_t starth, 
+void* ReadSATAPI(
+HBA_PORT *Port, 
+uintptr_t DriverObject,
+uint32_t lba_low,
+uint32_t lba_hi, 
 uint32_t count, 
-uint16_t *buf
-);
-
-bool 
-ReadSATAPI(
-HBA_PORT *port, 
-uint32_t lba, 
-uint32_t count, 
-uint16_t *buf
+LOUSTATUS* StateOfOperation,
+uint64_t* BufferSize
 );
 
 LOUDDK_API_ENTRY 
-void 
+void* 
 ReadDrive(
 uint8_t Drive,
 uint32_t LBA_LOW,
 uint32_t LBA_HIGH,
 uint32_t SectorCount,
-void* Read_Buffer
+uint64_t* BufferSize,
+LOUSTATUS* State
 ){
 	//all the statics are to save the stack
     static uint16_t NumberOfDevices = GetNumberOfDevices();
@@ -347,26 +340,28 @@ void* Read_Buffer
                 if(Devices[i].DeviceSubType == DEV_SUB_TYPE_SATA){
                     LouPrint("Reading Sata Device\n");
                     PAHCI_DEVICE PAhciDevice = (PAHCI_DEVICE)Devices[i].DeviceObject;
-                    ReadSATA(
-                        (HBA_PORT*)PAhciDevice->PortAddress, 
+					*BufferSize = PAhciDevice->PCap->SectorSize * SectorCount;
+                    return ReadSata(
+                        (HBA_PORT*)PAhciDevice->PortAddress,
+						(uintptr_t)PAhciDevice, 
                         LBA_LOW, 
                         LBA_HIGH, 
                         SectorCount,
-                        (uint16_t*)Read_Buffer
-                        );
-                        LouPrint("Done Reading Sata Device\n");
-                    return;
+						State
+                        );                    
                 }
 				else if(Devices[i].DeviceSubType == DEV_SUB_TYPE_SATAPI){
-					PAHCI_DEVICE PAhciDevice = (PAHCI_DEVICE)Devices[i].DeviceObject;
-					LouPrint("Reading To Satapi Drive\n");
-					ReadSATAPI(
-					(HBA_PORT*)PAhciDevice->PortAddress, 
-					LBA_LOW,
-					SectorCount,
-					(uint16_t*)Read_Buffer
-					);
-					return;
+                    LouPrint("Reading SATAPI Device\n");
+                    PAHCI_DEVICE PAhciDevice = (PAHCI_DEVICE)Devices[i].DeviceObject;
+                    return ReadSATAPI(
+                        (HBA_PORT*)PAhciDevice->PortAddress,
+						PAhciDevice->DriverObject, 
+                        LBA_LOW, LBA_HIGH, 
+                        SectorCount,
+						State,
+						BufferSize
+                        );  
+					//return 0x00;  
 				}
 
                 else{
@@ -377,7 +372,7 @@ void* Read_Buffer
                     //LouPrint("Device Arch:%h\n", Devices[i].DeviceArchitecture);
                     //LouPrint("Device Number:%h\n", Devices[i].DeviceNumber);
                     //LouPrint("Device Object:%h\n", Devices[i].DeviceObject);
-                    return;
+                    return 0x00;
                 }
             }
             else{
@@ -388,22 +383,23 @@ void* Read_Buffer
                 //LouPrint("Device Arch:%h\n", Devices[i].DeviceArchitecture);
                 //LouPrint("Device Number:%h\n", Devices[i].DeviceNumber);
                 //LouPrint("Device Object:%h\n", Devices[i].DeviceObject);
-                return;
+                return 0x00;
             }
         }
         else if(Devices[i].DeviceType == DEV_TYPE_STORAGE){
             j++;                
-                LouPrint("Device Type:%h\n", Devices[i].DeviceType);
-                LouPrint("Device Sub Type:%h\n", Devices[i].DeviceSubType);
-                LouPrint("Device Arch:%h\n", Devices[i].DeviceArchitecture);
-                LouPrint("Device Number:%h\n", Devices[i].DeviceNumber);
-                LouPrint("Device Object:%h\n", Devices[i].DeviceObject);
+            //LouPrint("Device Type:%h\n", Devices[i].DeviceType);
+            //LouPrint("Device Sub Type:%h\n", Devices[i].DeviceSubType);
+            //LouPrint("Device Arch:%h\n", Devices[i].DeviceArchitecture);
+            //LouPrint("Device Number:%h\n", Devices[i].DeviceNumber);
+            //LouPrint("Device Object:%h\n", Devices[i].DeviceObject);
         }
+		
     }
     
     LouPrint("Sotrage Device Not Found\n");
 
-    return;
+    return 0x00;
 }
 
 LOUDDK_API_ENTRY 

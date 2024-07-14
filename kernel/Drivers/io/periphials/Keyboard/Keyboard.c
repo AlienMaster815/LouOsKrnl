@@ -21,19 +21,6 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-
-void WaitForKeyboardReadiness(uint8_t devtype){
-    //uint8_t readyornot;
-    switch(devtype){
-        case PS2: {
-            break;
-        }
-        case USB:{
-            break;
-        }
-    }
-}
-
 static bool CAPSLOCK = false;
 static bool SHIFT = false;
 
@@ -198,7 +185,8 @@ char GetPS2CharecterData(uint8_t KBL,uint8_t keyData){
                     return -1;
 
                 default:
-                    LouPrint("QWERTY Keyboard Decimal: %d\n", keyData);
+                    //LouPrint("QWERTY Keyboard Decimal: %d\n", keyData);
+                    break;
             }
             break;
         
@@ -210,16 +198,13 @@ char GetPS2CharecterData(uint8_t KBL,uint8_t keyData){
     return -1;
 }
 
+
 void PS2KeyboardHandler(){
-    WaitForKeyboardReadiness(PS2);
+    
     uint8_t keyData = inb(0x60);
+
+    if(!keyData & 0x01)return;
     
     char Charecter = GetPS2CharecterData(KBDLNG,keyData);
     if(Charecter >= 0)SendCharecterToUserSpace(Charecter);
-}
-
-void USBKeyboardHandler(){
-    WaitForKeyboardReadiness(USB);
-
-
 }

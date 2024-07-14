@@ -122,9 +122,9 @@ LOUDDK_API_ENTRY void FileSystemSetup(){
         
 
     //for(uint8_t i = 0; i < GetNumberOfStorageDevices(); i++){ 
-        //Fss = iso.ISOFileSystemScan(i);
+        Fss = iso.ISOFileSystemScan(1);
         //if(Fss.FSType == ISO)continue; 
-        Fss = Fat.InitializeFatSystem(0);
+        //Fss = Fat.InitializeFatSystem(0);
             
         //LouPrint("Drive:%d: Has No Filesystem\n",i);
     //}

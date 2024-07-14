@@ -15,6 +15,11 @@
 
 bool DEBUG = true;
 
+static inline
+uint16_t convert_endian(uint16_t data) {
+    return ((data & 0x00FF) << 8) | ((data & 0xFF00) >> 8);
+}
+
 FSStruct ISO9660::ISOFileSystemScan(uint8_t DrvNum){
     //Allocate Memory For Our Structures   
 
@@ -100,21 +105,44 @@ void ISO9660::ISOFormatDevice(uint8_t DrvNum,uintptr_t Base, uintptr_t height){
 }
 
 
+
+
+
 VolumeDescriptor ISO9660::ReadVolumeDescriptor(uint8_t DrvNum,uint32_t sector, uint32_t buffer){
     
     VolumeDescriptor VD;
 
-    uint16_t* Test = (uint16_t*)LouMalloc(buffer);
-    
-    ReadDrive(
+    LOUSTATUS Status = LOUSTATUS_GOOD;
+    uint64_t BufferSize = 0x00;
+
+    uint16_t* Test = (uint16_t*)ReadDrive(
         DrvNum,
         sector,
         0,
         1,
-        Test
+        &BufferSize,
+        &Status
         );
-        // Logic For Parseing The Volume Descriptor
-                        
+
+        if(Test == 0x00){
+            LouPrint("ISO FileSystem Has Not Been Found\n");
+            VD.Type = 0;
+            VD.Identifier = 0x0000;
+            VD.Version = 0;
+            LouPrint("VD Parsed\n");
+            LouFree((RAMADD)Test, BufferSize);
+            return VD;
+        }
+        //LouPrint("Test:%bs\n",Test[0]);
+
+        //for (uint64_t i = 0; i < 0x200/2; ++i) {
+        //    LouPrint("%h ", Test[i]);
+        //}
+
+        LouPrint("Done\n");
+
+        //while (1);
+
         LouPrint("Parseing VD\n");
 
         VD.Type = Test[0] & 0xFF;
@@ -131,17 +159,20 @@ VolumeDescriptor ISO9660::ReadVolumeDescriptor(uint8_t DrvNum,uint32_t sector, u
 
 
 
-        //LouPrint("Type is: %d\n", VD.Type);
-        //LouPrint("Identifier is: %s \n",VD.Identifier);
-        //LouPrint("Version is: %d\n", VD.Version);
+        LouPrint("Type is: %d\n", VD.Type);
+        LouPrint("Identifier is: %s \n",VD.Identifier);
+        LouPrint("Version is: %d\n", VD.Version);
 
-        if ((VD.Type != 1) && (strcmp(VD.Identifier, "CD001") != 0) && (VD.Version != 1)) {
+        while(1);
+
+
+        if ((VD.Type != 1) || (strcmp(VD.Identifier, "CD001") != 0) || (VD.Version != 1)) {
             LouPrint("ISO FileSystem Has Not Been Found\n");
             VD.Type = 0;
             VD.Identifier = 0x0000;
             VD.Version = 0;
             LouPrint("VD Parsed\n");
-            LouFree((RAMADD)Test, buffer);
+            LouFree((RAMADD)Test, BufferSize);
             return VD;
         }
             
@@ -170,7 +201,7 @@ VolumeDescriptor ISO9660::ReadVolumeDescriptor(uint8_t DrvNum,uint32_t sector, u
 
         LouPrint("VD Parsed\n");
 
-        LouFree((RAMADD)Test, buffer);
+        LouFree((RAMADD)Test, BufferSize);
 
         return VD;
 }
@@ -190,9 +221,11 @@ FSStruct ISO9660::DetectFileSystems(uint8_t DrvNum){
         VolumeSetSize.MSB = (PVD.Data[122] << 8) | PVD.Data[123];
         
         uint32_t VolumeSize = (VolumeSetSize.LSB << 8) | VolumeSetSize.MSB;
-        
+
         ISOReadDirectoryStructure(DrvNum);
-              
+        
+        LouPrint("Figureing Out If this is a system disk\n");
+
         FSS.FSNum = VolumeSize;
         FSS.FSType = ISO;
         FILE* Kernel = ISOLouKefopen(DrvNum, "/ANNYA/SYSTEM64/LOUOSKRNL.EXE");
@@ -228,15 +261,16 @@ FILE* ISO9660::ISOLouKeFindDirectory(
     string Dir
     ){
 
+    LOUSTATUS Status = LOUSTATUS_GOOD;
+    uint64_t BufferSize = 0x00;
 
-    uint16_t* Test = (uint16_t*)LouMalloc(RootSize);
-    
-    ReadDrive(
+    uint16_t* Test = (uint16_t*)ReadDrive(
         DrvNum,
         RootLBA,
         0,
         1,
-        Test
+        &BufferSize,
+        &Status
     );
 
     UNUSED uint8_t* FOO = (uint8_t*)(uint64_t)Test;
@@ -256,14 +290,14 @@ FILE* ISO9660::ISOLouKeFindDirectory(
                 RootLBA = ISOGetLBA(FOO);
                 RootSize = ISOGetDirecotrySize(FOO);
 
-                LouFree((RAMADD)Test,RootSize);
-                uint16_t* Test = (uint16_t*)LouMalloc(RootSize);
-                ReadDrive(
+                LouFree((RAMADD)Test,BufferSize);
+                uint16_t* Test = (uint16_t*)ReadDrive(
                     DrvNum,
                     RootLBA,
                     0,
                     1,
-                    Test
+                    &BufferSize,
+                    &Status
                 );
                 FOO = (uint8_t*)(uint64_t)Test;
                 

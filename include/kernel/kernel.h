@@ -26,6 +26,7 @@
 #include <kernel/atomic.h>
 #include <kernel/SystemCalls.h>
 #include <kernel/Binarys.h>
+#include "threads.h"
 
 #define KERNEL_ENTRY extern void
 

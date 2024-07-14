@@ -57,7 +57,6 @@ bool LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS ,uint64_
     && (L4Entry == 0)
     && (L3Entry == 0)
     ){
-        //if(((PML4->PML2.entries[L2Entry] >> 8) & 0x01) != 1)LouFree((RAMADD)(PML4->PML2.entries[L2Entry] & ~(KILOBYTE_PAGE - 1)), sizeof(uint64_t) * 512);
         PML4->PML2.entries[L2Entry] = GetPageValue(PAddress, (1 << 7) | FLAGS);
         PageFlush(PML4->PML2.entries[L2Entry]);
     }
@@ -133,7 +132,7 @@ bool LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS ,uint64_
                 PageDirectoryL1 = LouMallocEx(sizeof(uint64_t) * 512, PAGE_TABLE_ALLIGNMENT);
                 uint64_t PageIndex = PML4->PML2.entries[L2Entry] & ~(FLAGSSPACE);
                 for(uint16_t i = 0; i < 512; i++){
-                    PageDirectoryL1[i] = GetPageValue(PageIndex, 0xb11);
+                    PageDirectoryL1[i] = GetPageValue(PageIndex, 0b11);
                     PageIndex += KILOBYTE_PAGE;
                     PageFlush(PageDirectoryL1[i]);
                 }
@@ -237,12 +236,11 @@ bool LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS ,uint64_
 }
 
 
-
-
-
-bool LouUnMapAddress(uint64_t VAddress) {
+bool LouUnMapAddress(uint64_t VAddress, uint64_t PageSize) {
 
 }
+
+
 
 uint64_t GetPageOfFaultValue(uint64_t VAddress) {
 

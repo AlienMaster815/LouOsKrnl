@@ -1948,4 +1948,6 @@ NTSYSAPI NTSTATUS ZwTerminateProcess(
   _In_           NTSTATUS ExitStatus
 );
 
+bool NT_SUCCESS(NTSTATUS Status);
+
 #endif

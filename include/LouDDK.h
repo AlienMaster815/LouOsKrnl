@@ -115,6 +115,8 @@ KERNEL_IMPORT void sleep(uint64_t Time);
 
 #define ERRMAPPINGIO -1
 
+LOUDDK_API_ENTRY LOUSTATUS RegisterHardwareInterruptHandler(void(*Handler)(), uint8_t InterruptNumber);
+
 #else
 
 

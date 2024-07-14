@@ -8,53 +8,31 @@ string DRV_UNLOAD_STRING_FAILURE = "Driver Execution Failed To Execute Properly 
 
 int find_cmdslot(HBA_PORT *port);
 
-bool GetSectorSize(HBA_PORT *port, uint32_t *sectorSize) {
-    // Assuming cmdtable and cmdheader setup is similar to your ReadSATAPI function
-	LouPrint("Retrieveing Sector Size\n");
-    HBA_CMD_HEADER* cmdheader = (HBA_CMD_HEADER*)(uintptr_t)(port->clb);
-    HBA_CMD_TBL* cmdtbl = (HBA_CMD_TBL*)(uintptr_t)(cmdheader->ctba);
-    memset(cmdtbl, 0, sizeof(HBA_CMD_TBL));
-
-    // Setup command FIS for IDENTIFY PACKET DEVICE
-    FIS_REG_H2D* cmdfis = (FIS_REG_H2D*)(uintptr_t)(&cmdtbl->cfis);
-    cmdfis->fis_type = FIS_TYPE_REG_H2D;
-    cmdfis->c = 1;
-    cmdfis->command = ATA_CMD_IDENTIFY_PACKET_DEVICE;
-
-    // Setup buffer for response
-    uint16_t* identifyData = (uint16_t*)(uintptr_t)cmdtbl->prdt_entry[0].dba;
-    memset(identifyData, 0, 512); // Size of the IDENTIFY data buffer
-
-	LouPrint("issueing Command\n");
-
-    // Issue command
-    port->ci = 1 << find_cmdslot(port); // Set the appropriate command slot
-    while (port->ci & 1) { // Wait for completion
-		sleep(100);
-    }
-	LouPrint("Checking For Errors\n");
-    // Check for errors
-    if (port->is & HBA_PxIS_TFES) {
-        return false;
-    }
-	LouPrint("Parseing Data\n");
-    // Parse IDENTIFY data for sector size
-    // Note: Adjust these indexes based on actual IDENTIFY data layout for your device
-    // For example, we use index 106 for sector size as per some specifications; this is hypothetical.
-    if (identifyData[106] & 0x4000) { // Check if word 106 indicates that the logical sector size is reported
-        if (identifyData[106] & 0x1000) {
-            *sectorSize = 4096; // The device uses 4K logical sectors
-        } else {
-            *sectorSize = 512; // The device uses 512-byte logical sectors
-        }
-    } else {
-        *sectorSize = 2048; // Default or traditional sector size for optical drives
-    }
-
-    return true;
-}
+uint8_t InterruptRequest;
+bool ExternalSata;
+bool EnclosureManagement;
+bool CommandCompletionCoalesing;
+bool PartialStateCapable;
+bool SlumberStateCapable;
+bool PIOMultipleDRQBlock;
+bool FisBasedSwitching;
+bool PortMultiplier;
+bool AhciOnly;
+uint8_t HbaSpeed;
+bool CommandListOveride;
+bool ActivityLED;
+bool AggressiveLinkPoweManagement;
+bool StaggeringSpinUp;
+bool MechanicalPresenceSwitch;
+bool SNotificationRegister;
+bool NativeCommandQueing;
+bool HighMemSupport;
 
 
+static inline
+LOUSTATUS ResetAhciToKnowState(
+HBA_MEM* Hba
+);
 
 // Start command engine
 void start_cmd(HBA_PORT *port){
@@ -163,6 +141,20 @@ int find_cmdslot(HBA_PORT *port){
 }
 
 
+void ClearCommandSlot(HBA_PORT *port, int slot_index) {
+    // Check if command has completed by checking the PxCI register
+    if ((port->ci & (1 << slot_index)) == 0) {
+        // Command has completed, now clear the command slot
+		HBA_CMD_HEADER* Headers = (HBA_CMD_HEADER*)(uintptr_t)port->clb;
+        HBA_CMD_HEADER *cmd_header = &Headers[slot_index];
+        memset((void *)(uintptr_t)cmd_header->ctba, 0, sizeof(HBA_CMD_TBL));  // Assuming ctba points to the command table
+
+        // Optionally, reset any command header fields if necessary
+        cmd_header->cfl = 0; // Clear command FIS length
+        cmd_header->prdtl = 0; // Clear PRDT length
+        // Clear any implemented status or error flags
+    }
+}
 
 
 /*
@@ -177,6 +169,7 @@ typedef struct _AHCI_DEVICE{
 	AHCI_TYPE Type;
 	uintptr_t PortAddress;
 	uint8_t PortNumber;
+	uintptr_t DeviceObject
 }AHCI_DEVICE, * PAHCI_DEVICE;
 */
 static uint16_t AhciDevice = 0;
@@ -202,7 +195,94 @@ LOUDDK_API_ENTRY uintptr_t GetSataDeviceObjects(){
 	return (uintptr_t)AhciBase;
 }
 
-void ProbePorts(HBA_MEM* Hba){
+uintptr_t GetSatapiDriverObjectPointer(
+HBA_PORT* Port
+);
+
+static inline void ProbePorts(HBA_MEM* Hba);
+
+bool GetSataSectorSize(HBA_PORT *port, uint32_t *sectorSize);
+
+KERNEL_IMPORT
+void LouKePrintLittleEndianBufferHex(
+    uintptr_t DataPointer,
+    uint64_t Offset,
+    uint64_t Length
+);
+
+void* ReadSATAPI(
+HBA_PORT *port, 
+uintptr_t DriverObject,
+uint32_t lba, 
+uint32_t count, 
+LOUSTATUS* StateOfOperation,
+uint32_t* BufferSize
+);
+
+static inline 
+LOUSTATUS LoadMedia(
+    HBA_PORT* Port,
+    uintptr_t DriverObject
+){
+
+    LouPrint("Starting Mount\n");
+    int FreeSlot = find_cmdslot(Port);
+
+    if(FreeSlot == -1){//no slot available
+        return (LOUSTATUS)STATUS_INSUFFICIENT_RESOURCES;
+    }
+    
+    //cleanup slot just in case it was already used
+    //and the system forgot to clean it already
+    ClearCommandSlot(Port,FreeSlot);
+
+    //get the address of the command headers
+    HBA_CMD_HEADER* CmdHeaders = (HBA_CMD_HEADER*)(uintptr_t)Port->clb;
+    //get the address of the free header
+    HBA_CMD_HEADER* SelectedHeader = (HBA_CMD_HEADER*)&CmdHeaders[FreeSlot];
+    //Get the Command Table
+    HBA_CMD_TBL* SelectedTable = (HBA_CMD_TBL*)(uintptr_t)((uintptr_t)SelectedHeader->ctba | ((uintptr_t)SelectedHeader->ctbau << 32));
+
+    FIS_REG_H2D* Fis = (FIS_REG_H2D*)&(SelectedTable->cfis);
+
+    Fis->fis_type = FIS_TYPE_REG_H2D;
+    Fis->c = 1; //packet is a command
+    Fis->command = 0xA0; //ATAPI Packet Command
+    Fis->device = 0x40; //master device
+    
+    // Setup command header
+    SelectedHeader->cfl = sizeof(FIS_REG_H2D) / sizeof(uint32_t); // Command FIS length in DWORDs (should be 5)
+    SelectedHeader->w = 0; // Not a write operation
+    SelectedHeader->prdtl = 0; // No PRDT entries required for this command
+
+    uint8_t* atapi_command = SelectedTable->acmd;
+	atapi_command[0] = 0x1B;
+	atapi_command[1] = 0x00;
+	atapi_command[2] = 0x00;
+	atapi_command[3] = 0x00;
+	atapi_command[4] = 0x03;
+	atapi_command[5] = 0x00;
+	atapi_command[6] = 0x00;
+	atapi_command[7] = 0x00;
+	atapi_command[8] = 0x00;
+	atapi_command[9] = 0x00;
+	atapi_command[10] = 0x00;
+	atapi_command[11] = 0x00;
+
+    Port->ci = 1 << FreeSlot; // Issue command to the slot found earlier
+
+    while ((Port->ci >> FreeSlot) & 0x01) {
+        // Wait for command completion
+        sleep(100);
+    }
+    if (Port->is & HBA_PxIS_TFES) { // Task File Error Status
+        // Handle error
+    }
+
+    return STATUS_SUCCESS;
+}
+
+static inline void ProbePorts(HBA_MEM* Hba){
 	LouPrint("Probing Hba Pi Port For Implemented Ports (PI)\n");
 	
 	uint32_t Pi = Hba->pi;
@@ -216,6 +296,33 @@ void ProbePorts(HBA_MEM* Hba){
 				AhciBase[AhciDevice].Type = SATA;
 				AhciBase[AhciDevice].PortAddress = (uintptr_t)&Hba->ports[i];
 				AhciBase[AhciDevice].PortNumber = i;
+				AhciBase[AhciDevice].HBA_Address = (uintptr_t)Hba;
+				AhciBase[AhciDevice].InterruptRequestNumber = InterruptRequest;
+				//for each implemented device check their hba properties and features
+				//and initialize them
+				AhciBase[AhciDevice].PCap = (P_SATA_CAPABILITIES)LouMalloc(sizeof(SATA_CAPABILITIES));
+				AhciBase[AhciDevice].Setup = (PGLOBAL_DEVICE_INFORMATON)LouMalloc(sizeof(GLOBAL_DEVICE_INFORMATON));
+				AhciBase[AhciDevice].PCap->ExternalSata = ExternalSata;
+				AhciBase[AhciDevice].PCap->EnclosureManagement = EnclosureManagement;
+				AhciBase[AhciDevice].PCap->CommandCompletionCoalesing = CommandCompletionCoalesing;
+				AhciBase[AhciDevice].PCap->PartialStateCapable = PartialStateCapable;
+				AhciBase[AhciDevice].PCap->SlumberStateCapable = SlumberStateCapable;
+				AhciBase[AhciDevice].PCap->PIOMultipleDRQBlock = PIOMultipleDRQBlock;
+				AhciBase[AhciDevice].PCap->FisBasedSwitching = FisBasedSwitching;
+				AhciBase[AhciDevice].PCap->PortMultiplier = PortMultiplier;
+				AhciBase[AhciDevice].PCap->AhciOnly = AhciOnly;
+				AhciBase[AhciDevice].PCap->HbaSpeed = HbaSpeed;
+				AhciBase[AhciDevice].PCap->CommandListOveride = CommandListOveride;
+				AhciBase[AhciDevice].PCap->ActivityLED = ActivityLED;
+				AhciBase[AhciDevice].PCap->AggressiveLinkPoweManagement = AggressiveLinkPoweManagement;
+				AhciBase[AhciDevice].PCap->StaggeringSpinUp = StaggeringSpinUp;
+				AhciBase[AhciDevice].PCap->MechanicalPresenceSwitch = MechanicalPresenceSwitch;
+				AhciBase[AhciDevice].PCap->SNotificationRegister = SNotificationRegister;
+				AhciBase[AhciDevice].PCap->NativeCommandQueing = NativeCommandQueing;
+				AhciBase[AhciDevice].PCap->HighMemSupport = HighMemSupport;
+				GetSataSectorSize(&Hba->ports[i] , &AhciBase[AhciDevice].PCap->SectorSize);
+				AhciBase[AhciDevice].InititializationStatus = true;
+				AhciBase[AhciDevice].Setup->UsingDma = true;
 				AhciDevice++;
 			}
 			else if(dt == AHCI_DEV_SATAPI){
@@ -224,6 +331,37 @@ void ProbePorts(HBA_MEM* Hba){
 				AhciBase[AhciDevice].Type = SATAPI;
 				AhciBase[AhciDevice].PortAddress = (uintptr_t)&Hba->ports[i];
 				AhciBase[AhciDevice].PortNumber = i;
+				AhciBase[AhciDevice].DriverObject = GetSatapiDriverObjectPointer(&Hba->ports[i]);
+				AhciBase[AhciDevice].HBA_Address = (uintptr_t)Hba;
+				AhciBase[AhciDevice].InterruptRequestNumber = InterruptRequest;
+				//for each implemented device check their hba properties and features
+				//and initialize them
+				AhciBase[AhciDevice].PCap = (P_SATA_CAPABILITIES)LouMalloc(sizeof(SATA_CAPABILITIES));
+				AhciBase[AhciDevice].Setup = (PGLOBAL_DEVICE_INFORMATON)LouMalloc(sizeof(GLOBAL_DEVICE_INFORMATON));
+				AhciBase[AhciDevice].PCap->ExternalSata = ExternalSata;
+				AhciBase[AhciDevice].PCap->EnclosureManagement = EnclosureManagement;
+				AhciBase[AhciDevice].PCap->CommandCompletionCoalesing = CommandCompletionCoalesing;
+				AhciBase[AhciDevice].PCap->PartialStateCapable = PartialStateCapable;
+				AhciBase[AhciDevice].PCap->SlumberStateCapable = SlumberStateCapable;
+				AhciBase[AhciDevice].PCap->PIOMultipleDRQBlock = PIOMultipleDRQBlock;
+				AhciBase[AhciDevice].PCap->FisBasedSwitching = FisBasedSwitching;
+				AhciBase[AhciDevice].PCap->PortMultiplier = PortMultiplier;
+				AhciBase[AhciDevice].PCap->AhciOnly = AhciOnly;
+				AhciBase[AhciDevice].PCap->HbaSpeed = HbaSpeed;
+				AhciBase[AhciDevice].PCap->CommandListOveride = CommandListOveride;
+				AhciBase[AhciDevice].PCap->ActivityLED = ActivityLED;
+				AhciBase[AhciDevice].PCap->AggressiveLinkPoweManagement = AggressiveLinkPoweManagement;
+				AhciBase[AhciDevice].PCap->StaggeringSpinUp = StaggeringSpinUp;
+				AhciBase[AhciDevice].PCap->MechanicalPresenceSwitch = MechanicalPresenceSwitch;
+				AhciBase[AhciDevice].PCap->SNotificationRegister = SNotificationRegister;
+				AhciBase[AhciDevice].PCap->NativeCommandQueing = NativeCommandQueing;
+				AhciBase[AhciDevice].PCap->HighMemSupport = HighMemSupport;
+				AhciBase[AhciDevice].InititializationStatus = true;
+				AhciBase[AhciDevice].Setup->UsingDma = true;
+				//LoadMedia(
+        		//	&Hba->ports[i],
+        		//	AhciBase[AhciDevice].DriverObject
+    			//);
 				AhciDevice++;
 			}
 			else if(dt == AHCI_DEV_SEMB){
@@ -232,6 +370,32 @@ void ProbePorts(HBA_MEM* Hba){
 				AhciBase[AhciDevice].Type = SEMB;
 				AhciBase[AhciDevice].PortAddress = (uintptr_t)&Hba->ports[i];
 				AhciBase[AhciDevice].PortNumber = i;
+				AhciBase[AhciDevice].HBA_Address = (uintptr_t)Hba;
+				AhciBase[AhciDevice].InterruptRequestNumber = InterruptRequest;
+				//for each implemented device check their hba properties and features
+				//and initialize them
+				AhciBase[AhciDevice].PCap = (P_SATA_CAPABILITIES)LouMalloc(sizeof(SATA_CAPABILITIES));
+				AhciBase[AhciDevice].Setup = (PGLOBAL_DEVICE_INFORMATON)LouMalloc(sizeof(GLOBAL_DEVICE_INFORMATON));
+				AhciBase[AhciDevice].PCap->ExternalSata = ExternalSata;
+				AhciBase[AhciDevice].PCap->EnclosureManagement = EnclosureManagement;
+				AhciBase[AhciDevice].PCap->CommandCompletionCoalesing = CommandCompletionCoalesing;
+				AhciBase[AhciDevice].PCap->PartialStateCapable = PartialStateCapable;
+				AhciBase[AhciDevice].PCap->SlumberStateCapable = SlumberStateCapable;
+				AhciBase[AhciDevice].PCap->PIOMultipleDRQBlock = PIOMultipleDRQBlock;
+				AhciBase[AhciDevice].PCap->FisBasedSwitching = FisBasedSwitching;
+				AhciBase[AhciDevice].PCap->PortMultiplier = PortMultiplier;
+				AhciBase[AhciDevice].PCap->AhciOnly = AhciOnly;
+				AhciBase[AhciDevice].PCap->HbaSpeed = HbaSpeed;
+				AhciBase[AhciDevice].PCap->CommandListOveride = CommandListOveride;
+				AhciBase[AhciDevice].PCap->ActivityLED = ActivityLED;
+				AhciBase[AhciDevice].PCap->AggressiveLinkPoweManagement = AggressiveLinkPoweManagement;
+				AhciBase[AhciDevice].PCap->StaggeringSpinUp = StaggeringSpinUp;
+				AhciBase[AhciDevice].PCap->MechanicalPresenceSwitch = MechanicalPresenceSwitch;
+				AhciBase[AhciDevice].PCap->SNotificationRegister = SNotificationRegister;
+				AhciBase[AhciDevice].PCap->NativeCommandQueing = NativeCommandQueing;
+				AhciBase[AhciDevice].PCap->HighMemSupport = HighMemSupport;
+				AhciBase[AhciDevice].InititializationStatus = true;
+				AhciBase[AhciDevice].Setup->UsingDma = true;
 				AhciDevice++;
 			}
 			else if(dt == AHCI_DEV_PM){
@@ -240,6 +404,32 @@ void ProbePorts(HBA_MEM* Hba){
 				AhciBase[AhciDevice].Type = PM;
 				AhciBase[AhciDevice].PortAddress = (uintptr_t)&Hba->ports[i];
 				AhciBase[AhciDevice].PortNumber = i;
+				AhciBase[AhciDevice].HBA_Address = (uintptr_t)Hba;
+				AhciBase[AhciDevice].InterruptRequestNumber = InterruptRequest;
+				//for each implemented device check their hba properties and features
+				//and initialize them
+				AhciBase[AhciDevice].PCap = (P_SATA_CAPABILITIES)LouMalloc(sizeof(SATA_CAPABILITIES));
+				AhciBase[AhciDevice].Setup = (PGLOBAL_DEVICE_INFORMATON)LouMalloc(sizeof(GLOBAL_DEVICE_INFORMATON));
+				AhciBase[AhciDevice].PCap->ExternalSata = ExternalSata;
+				AhciBase[AhciDevice].PCap->EnclosureManagement = EnclosureManagement;
+				AhciBase[AhciDevice].PCap->CommandCompletionCoalesing = CommandCompletionCoalesing;
+				AhciBase[AhciDevice].PCap->PartialStateCapable = PartialStateCapable;
+				AhciBase[AhciDevice].PCap->SlumberStateCapable = SlumberStateCapable;
+				AhciBase[AhciDevice].PCap->PIOMultipleDRQBlock = PIOMultipleDRQBlock;
+				AhciBase[AhciDevice].PCap->FisBasedSwitching = FisBasedSwitching;
+				AhciBase[AhciDevice].PCap->PortMultiplier = PortMultiplier;
+				AhciBase[AhciDevice].PCap->AhciOnly = AhciOnly;
+				AhciBase[AhciDevice].PCap->HbaSpeed = HbaSpeed;
+				AhciBase[AhciDevice].PCap->CommandListOveride = CommandListOveride;
+				AhciBase[AhciDevice].PCap->ActivityLED = ActivityLED;
+				AhciBase[AhciDevice].PCap->AggressiveLinkPoweManagement = AggressiveLinkPoweManagement;
+				AhciBase[AhciDevice].PCap->StaggeringSpinUp = StaggeringSpinUp;
+				AhciBase[AhciDevice].PCap->MechanicalPresenceSwitch = MechanicalPresenceSwitch;
+				AhciBase[AhciDevice].PCap->SNotificationRegister = SNotificationRegister;
+				AhciBase[AhciDevice].PCap->NativeCommandQueing = NativeCommandQueing;
+				AhciBase[AhciDevice].PCap->HighMemSupport = HighMemSupport;
+				AhciBase[AhciDevice].InititializationStatus = true;
+				AhciBase[AhciDevice].Setup->UsingDma = true;
 				AhciDevice++;
 			}
 			else{
@@ -252,11 +442,180 @@ void ProbePorts(HBA_MEM* Hba){
 
 }
 
+KERNEL_IMPORT uint8_t FindTrueIRQ(uint8_t IRQ);
 
+#define ESATA_BIT 5
+#define EMS_BIT 6
+#define CCC_BIT 7
+#define PS_BIT 13
+#define SS_BIT 14
+#define PMD_BIT 15
+#define FBSS_BIT 16
+#define SPM_BIT 17
+#define SAM_BIT 18
+#define ISS_BIT 20
+#define SCLO_BIT 24
+#define SAL_BIT 25
+#define SALP_BIT 26
+#define SSS_BIT 27
+#define SMPS_BIT 28
+#define SSNTF_BIT 29
+#define SNCQ_BIT 30
+#define S64A_BIT 31
+
+static inline LOUSTATUS InitializeHostBusAdapter(
+HBA_MEM* Hba
+){
+
+	static uint32_t Capiabilities = Hba->cap;
+
+	//check ExternalSATA Support
+	if((Capiabilities >> ESATA_BIT) & 0x01){
+		LouPrint("One Or More Drives May Be:%s\n", "ESATA");
+		ExternalSata = true;;
+	}
+	else{
+		ExternalSata = false;
+	}
+	//check for enclosure Managemnet
+	if((Capiabilities >> EMS_BIT) & 0x01){
+		LouPrint("Host Bus Adapter Supports:%s\n", "Enclosure Management");
+		EnclosureManagement = true;
+	}
+	else {
+		EnclosureManagement = false;
+	}
+	//check for Communist Party
+	if((Capiabilities >> CCC_BIT) & 0x01){
+		LouPrint("Host Bus Adapter Supports:%s\n", "Command Completion Coalesing");
+		CommandCompletionCoalesing = true;
+	}
+	else {
+		CommandCompletionCoalesing = false;
+	}
+	//check for Partial State
+	if((Capiabilities >> PS_BIT) & 0x01){
+		LouPrint("Host Bus Adapter Supports:%s\n", "Partial State");
+		PartialStateCapable = true;
+	}
+	else{
+		PartialStateCapable = false;
+	}
+	//check slumber state
+	if((Capiabilities >> SS_BIT) & 0x01){
+		LouPrint("Host Bus Adapter Supports:%s\n", "Slumber State");
+		SlumberStateCapable = true;
+	}
+	else {
+		SlumberStateCapable = false;
+	}
+	//Check PMD
+	if((Capiabilities >> PMD_BIT) & 0x01){
+		LouPrint("Host Bus Adapter Supports:%s\n", "PIO Multiple DRQ Block");
+		PIOMultipleDRQBlock = true;
+	}
+	else{
+		PIOMultipleDRQBlock = false;
+	}
+	//check Fis Base
+	if((Capiabilities >> FBSS_BIT) & 0x01){
+		LouPrint("Host Bus Adapter Supports:%s\n", "Fis Based Switching");
+		FisBasedSwitching = true;
+	}
+	else{
+		FisBasedSwitching = false;
+	}
+	//Check for SPM
+	if((Capiabilities >> SPM_BIT) & 0x01){
+		LouPrint("Host Bus Adapter Supports:%s\n", "Port Multipliers");
+		PortMultiplier = true;
+	}
+	else{
+		PortMultiplier = false;
+	}
+	//check for SAM
+	if((Capiabilities >> SAM_BIT) & 0x01){
+		LouPrint("Host Bus Adapter Supports:%s\n", "AHCI ONLY MODE");
+		AhciOnly = true;
+	}
+	else {
+		AhciOnly = true;
+	}
+	//assign ISS
+	HbaSpeed = (Capiabilities >> ISS_BIT) & 0xF; //grab the 4 bits
+	//check for sclo
+	if((Capiabilities >> SCLO_BIT) & 0x01){
+		LouPrint("Host Bus Adapter Supports:%s\n", "Command List Overide");
+		CommandListOveride = true;
+	}
+	else{
+		CommandListOveride = false;
+	}
+	//check sal
+	if((Capiabilities >> SAL_BIT) & 0x01){
+		LouPrint("Host Bus Adapter Supports:%s\n", "Activity LED");
+		ActivityLED = true;
+	}
+	else{
+		ActivityLED = false;
+	}
+	//check for salp
+	if((Capiabilities >> SALP_BIT) & 0x01){
+		LouPrint("Host Bus Adapter Supports:%s\n", "Aggresive Link Power Management");
+		AggressiveLinkPoweManagement = true;
+	}
+	else{
+		AggressiveLinkPoweManagement = false;
+	}
+	//check for the super N@zis
+	if((Capiabilities >> SSS_BIT) & 0x0){
+		LouPrint("Host Bus Adapter Supports:%s\n", "Staggered Spinup");
+		StaggeringSpinUp = true;
+	}
+	else{
+		StaggeringSpinUp = false;
+	}
+	//check for simps
+	if((Capiabilities >> SMPS_BIT) & 0x01){
+		LouPrint("Host Bus Adapter Supports:%s\n", "Mechanical Presence Switching");
+		MechanicalPresenceSwitch = true;
+	}
+	else{
+		MechanicalPresenceSwitch = false;
+	}
+	//check for ssntf
+	if((Capiabilities >> SSNTF_BIT) & 0x01){
+		LouPrint("Host Bus Adapter Supports:%s\n", "SNotification");
+		SNotificationRegister = true;
+	}
+	else{
+		SNotificationRegister = false;
+	}
+	//check for SNCQ
+	if((Capiabilities >> SNCQ_BIT) & 0x01){
+		LouPrint("Host Bus Adapter Supports:%s\n", "Native Command Queing");
+		NativeCommandQueing = true;
+	}
+	else{
+		NativeCommandQueing = false;
+	}
+	//check for s64a
+	if((Capiabilities >> S64A_BIT) & 0x01){
+		LouPrint("Host Bus Adapter Supports:%s\n", "Supports 64 bit Memory Managment");
+		HighMemSupport = true;
+	}
+	else{
+		HighMemSupport = false;
+	}
+
+	return STATUS_SUCCESS;
+}
 
 LOUSTATUS InitAHCIController(P_PCI_DEVICE_OBJECT PDEV) {
 
 	LouPrint(DRV_VERSION);
+
+	InterruptRequest = FindTrueIRQ(LouKeGetPciInterruptPin(PDEV));
 
 	if(FirstRunTrue)FirstRun();
 
@@ -272,10 +631,63 @@ LOUSTATUS InitAHCIController(P_PCI_DEVICE_OBJECT PDEV) {
 	
 	Hba = (HBA_MEM*)AhciVBase;
 
+	//for each implemented device check their hba properties and features
+	//and initialize them
+
+	ResetAhciToKnowState(Hba);
+	
+	InitializeHostBusAdapter(Hba);
+
 	ProbePorts(Hba);
 
-	
 	LouPrint(DRV_UNLOAD_STRING_SUCCESS);
 
 	return LOUSTATUS_GOOD;
+}
+
+
+LOUDDK_API_ENTRY void AHCI_Interrupt_Handler(){
+
+	//open devices 
+	static uint16_t NumDev = GetNumberOfDevices();
+	static PDeviceInformationTable Devices = GetDeviceInformationTable();
+	//parse devices for ahci devices
+	for(uint16_t i = 0; i < NumDev; i++){
+		if(Devices[i].DeviceArchitecture == DEV_ARCH_AHCI){
+			//for all implemented devices check:
+			//the port interrupt status registers
+			//to see if and what needs to be serviced
+
+
+
+		}
+	}
+}
+
+static inline
+LOUSTATUS ResetAhciToKnowState(
+HBA_MEM* Hba
+){
+	if(!(Hba->ghc >> 31) & 0x01)Hba->ghc |= (1 << 31);
+
+	//first Fase:INIT && //Fase 2:WaitForAhciEnable
+	Hba->ghc |= 1;
+	while(
+		Hba->ghc & 0x01 &&
+		(((Hba->ghc >> 31) & 0x01) == 0)
+	){
+		sleep(100);
+	}
+
+	//check if we are idleing
+
+	if(
+		(((Hba->ghc >> 31) & 0x01) == 0) //AHCI Not Enabled
+	&&	((Hba->ccc_ctl & 0x01) == 1) 	 //CCC_CTL Not Disabled
+	){
+		return STATUS_UNSUCCESSFUL;
+	}
+
+	LouPrint("Ahci Device Reset To Known State\n");
+	return STATUS_SUCCESS;
 }

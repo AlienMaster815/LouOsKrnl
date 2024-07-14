@@ -85,13 +85,17 @@ void InitializeSystemCalls();
 void SYSCALLS();
 
 LOUSTATUS InitializeDirecAccess();
+LOUSTATUS InitializeDynamicHardwareInterruptHandleing();
+void RegisterHardwareInterruptHandler(void(*InterruptHandler)(), uint8_t PIN);
+void initializeInterruptRouter();
 
+void HardwareInterruptManager();
 
 LOUSTATUS Lou_kernel_early_initialization(){
 
     //basic kernel initialization for IR Exseptions
     InitializeStartupInterruptHandleing();
-
+    initializeInterruptRouter();
     RegisterInterruptHandler(DivideByZero, INTERRUPT_SERVICE_ROUTINE_0);
     RegisterInterruptHandler(Debug, INTERRUPT_SERVICE_ROUTINE_1);
     RegisterInterruptHandler(NMI, INTERRUPT_SERVICE_ROUTINE_2);
@@ -113,13 +117,15 @@ LOUSTATUS Lou_kernel_early_initialization(){
     RegisterInterruptHandler(SIMDFloatPointException, INTERRUPT_SERVICE_ROUTINE_19);
     RegisterInterruptHandler(VirtualizationException, INTERRUPT_SERVICE_ROUTINE_20);
     RegisterInterruptHandler(ControlProtectionException, INTERRUPT_SERVICE_ROUTINE_21);
-
     RegisterInterruptHandler(SYSCALLS, 0x80);
-    RegisterInterruptHandler(PS2KeyboardHandler, INTERRUPT_SERVICE_ROUTINE_33);
     RegisterInterruptHandler(Clock, INTERRUPT_SERVICE_ROUTINE_32);
 
-    SetUpTimers();
+    for(uint8_t i = 33; i < 48; i++){
+        RegisterInterruptHandler(HardwareInterruptManager, i);
+    }
 
+
+    SetUpTimers();
     DeterminCPU();
 
     return LOUSTATUS_GOOD;
@@ -130,16 +136,15 @@ void UpdateDeviceInformationTable();
 LOUSTATUS Set_Up_Devices(){
 
     PCI_Setup();
-    //LastSataRun();
-    //UpdateDeviceInformationTable();
-    //FileSystemSetup();
+    LastSataRun();
+    UpdateDeviceInformationTable();
+    FileSystemSetup();
 
     return LOUSTATUS_GOOD;
 }
 
 LOUSTATUS Advanced_Kernel_Initialization(){
     LOUSTATUS Status = LOUSTATUS_GOOD;
-    if (InitializeMainInterruptHandleing() != LOUSTATUS_GOOD)LouPrint("Unable To Start APIC System\n");
     //if(LOUSTATUS_GOOD != InitFADT())LouPrint("Unable To Start FADT Handleing\n");
     //if(LOUSTATUS_GOOD != InitDSDT())LouPrint("Unable To Start DSDT Handleing\n");
     //if(LOUSTATUS_GOOD != InitSSDT())LouPrint("Unable To Start SSDT Handleing\n");
@@ -149,8 +154,11 @@ LOUSTATUS Advanced_Kernel_Initialization(){
     //if(LOUSTATUS_GOOD != InitECDT())LouPrint("Unable To Start ECDT Handleing\n");
     //if(LOUSTATUS_GOOD != InitSLIT())LouPrint("Unable To Start SLIT Handleing\n");
     //if(LOUSTATUS_GOOD != InitMCFG())LouPrint("Unable To Start MCFG Handleing\n");
-    
-    //if (LOUSTATUS_GOOD != InitThreadManager())LouPrint("SHIT!!!:I Hope You Hate Efficency: No Thread Management\n");
+    if (InitializeMainInterruptHandleing() != LOUSTATUS_GOOD)LouPrint("Unable To Start APIC System\n");
+    InitializeDynamicHardwareInterruptHandleing();
+    RegisterHardwareInterruptHandler(PS2KeyboardHandler, 1);
+
+    if (LOUSTATUS_GOOD != InitThreadManager())LouPrint("SHIT!!!:I Hope You Hate Efficency: No Thread Management\n");
 
     SetInterruptFlags();
 
@@ -163,6 +171,9 @@ LOUSTATUS User_Mode_Initialization(){
 }
 
  bool LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize);
+
+LOUSTATUS LouKeCreateThread(void* Function,void* FunctionParameters, uint32_t StackSize);
+void TestLoop1();
 
 KERNEL_ENTRY Lou_kernel_start(uint32_t foo, uint32_t Apic){
     
@@ -194,6 +205,10 @@ KERNEL_ENTRY Lou_kernel_start(uint32_t foo, uint32_t Apic){
     
     //TODO:Creaate A trim function that takes origninal size and size after trim and trim the end off
 
+    //uint16_t* FOOBAR = LouMalloc(2*KILOBYTE);
+
+    //ReadDrive(1,0,0,1,FOOBAR);
+
     while (1) {
         asm("hlt");
     }
@@ -203,3 +218,16 @@ KERNEL_ENTRY Lou_kernel_start(uint32_t foo, uint32_t Apic){
 	// IF the Kernel returns from this
 	// the whole thing crashes
 }
+/*
+void TestLoop1() {
+	while (1) {
+		LouPrint("Thread 1 Execution\n");
+	}
+}
+
+void TestLoop2() {
+	while (1) {
+		LouPrint("Thread 2 Execution\n");
+	}
+}
+*/

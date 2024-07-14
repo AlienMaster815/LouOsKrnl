@@ -85,7 +85,7 @@ typedef struct __attribute__((packed, aligned(4096))) _PML {
 }PML;
 
 bool LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize);
-bool LouUnMapAddress(uint64_t VAddress);
+bool LouUnMapAddress(uint64_t VAddress, uint64_t PageSize);
 uint64_t GetPageOfFaultValue(uint64_t VAddress);
 extern uint64_t GetPageValue(uint64_t PAddress, uint64_t FLAGS);
 uint64_t GetRamSize();
@@ -136,6 +136,30 @@ KERNEL_IMPORT void* memset(void* dest, int value, size_t count);
 KERNEL_IMPORT void* LouMallocAlligned(size_t size, uint64_t allignment);
 KERNEL_IMPORT bool LouCreateMemoryPool(uint64_t* MemoryAddressVirtual,uint64_t* RequestedMemoryAddressPhysical, uint64_t PoolSizeNeeded,uint64_t AlignmentNeeded, uint64_t PageAttributes);
 KERNEL_IMPORT void LouFreeAlignedMemory(uint8_t* alignedAddr, size_t size);
+KERNEL_IMPORT bool LouUnMapAddress(uint64_t VAddress, uint64_t PageSize);
 
+#endif
+
+#ifdef __cplusplus
+KERNEL_IMPORT{
+#endif
+void* MallocVariacHeap(size_t InitialSize);
+void FreeVariacHeap(
+void* VariacPointerToFree, 
+size_t HeapSize
+);
+void* IncreaseVariacHeap(
+    void* LocationOfCurrentHeap,
+    size_t SizeOfNewHeap,
+    size_t SizeOfCurrentHeap
+);
+void* TrimVariacHeap(
+    void* LocationOfCurrentHeap,
+    void* TRIMStartLocation,
+    size_t SizeToTrim,
+    size_t SizeOfCurrentHeap
+);
+#ifdef __cplusplus
+}
 #endif
 #endif

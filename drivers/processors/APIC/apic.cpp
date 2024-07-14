@@ -102,16 +102,17 @@ typedef struct {
     uint32_t ioapic_id;
     uint64_t ioapic_address;
     uint32_t gsi_base;
+    uint64_t ioapic_vaddress;
 } IOAPICInfo;
 
 #define MAX_IOAPICS 16
 
 IOAPICInfo ioapics[MAX_IOAPICS];
 int ioapic_count = 0;
-
+int OverideCount = 0;
 #define APICADDRESSCAST (volatile uint32_t*)(uintptr_t)
+#define LEGACY_IRQ_SCOPE 16
 
-uint64_t localAPICOverrideAddress = 0xFEE00000; // Default APIC base address
 KERNEL_IMPORT uint64_t read_msr(uint32_t msr);
 KERNEL_IMPORT void write_msr(uint32_t msr, uint64_t Value);
 
@@ -127,6 +128,7 @@ string DRV_UNLOAD_STRING_FAILURE_APIC = "Driver Execution Failed To Execute Prop
 uint64_t ApicBase;
 
 static uint64_t LocalApicBase = 0xFEE00000;
+ACPI_MADT_INTERRUPT_SOURCE_OVERRIDE* ISOPointer[LEGACY_IRQ_SCOPE];
 
 bool InitializeIoApic(uint64_t IoApicNumber, uint64_t MappedArea);
 LOUSTATUS EnableAdvancedBspFeatures(CPU::FEATURE Feature);
@@ -155,6 +157,8 @@ void ParseAPIC(uint8_t* entryAddress, uint8_t* endAddress) {
         }
         case 2: {
             ACPI_MADT_INTERRUPT_SOURCE_OVERRIDE* iso = (ACPI_MADT_INTERRUPT_SOURCE_OVERRIDE*)entryAddress;
+            ISOPointer[OverideCount] = iso;
+            OverideCount++;
             LouPrint("Bus: %d, Source:%d, Global System Interrupt:%d, Flags:%d\n", iso->Bus, iso->Source, iso->GlobalSystemInterrupt, iso->Flags);
             break;
         }
@@ -313,7 +317,19 @@ bool APIC::LAPIC::InitializeBspLapic(){
         //initiailize x2 standard
         LouPrint("Using X2 Standard\n");
         //Set the Spurious Interrupt Vector Register bit 8 to start receiving interrupts
+        WRITE_REGISTER_ULONG(SPURRIOUS_INTERRUPT_REGISTER, READ_REGISTER_ULONG(SPURRIOUS_INTERRUPT_REGISTER) | APIC_ENABLE);
+        
+        WRITE_REGISTER_ULONG(LVT_DIVIDE_CONFIGURATION_REGISTER, 0b1010); //divide by 128
+        WRITE_REGISTER_ULONG(LVT_INITIAL_COUNT_REGISTER, 0xFFFFFFFF);
+        sleep(1); //sleep 1 ms for 1 ms acuracy
 
+        uint32_t CRC = 0xFFFFFFFF - READ_REGISTER_ULONG(LVT_CURRENT_COUNT_REGISTER);
+
+        LouPrint("CRC IS:%h\n",CRC);
+        // Start timer as periodic on IRQ 0, divider 128, with the number of ticks we counted
+        WRITE_REGISTER_ULONG(LVT_TIMER_REGISTER, 32 | 0x20000);
+        WRITE_REGISTER_ULONG(LVT_DIVIDE_CONFIGURATION_REGISTER, 0b1010);
+        WRITE_REGISTER_ULONG(LVT_INITIAL_COUNT_REGISTER, CRC);
     }
     else if (Cpu->IsFeatureSupported(CPU::XAPIC)){
         //initialize x1 standard

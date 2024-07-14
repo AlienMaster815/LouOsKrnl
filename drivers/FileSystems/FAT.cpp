@@ -171,16 +171,16 @@ void FAT::WriteFatSystem(uint8_t DriveNumber, FSStruct* FSP, uint16_t* Data){
 
     LouPrint("Drive Number:%d\n",DriveNumber);
 
-    char* FatBuffer = (char*)LouMalloc(512);
+    LOUSTATUS Status = LOUSTATUS_GOOD;
+    uint64_t BufferSize = 0x00;
 
-    LouPrint("Fat Buffer Is:%h\n", FatBuffer);
-
-    ReadDrive(
+    char* FatBuffer = (char*)ReadDrive(
         DriveNumber,
         0,
         0,
-        1,
-        FatBuffer
+        1, 
+        &BufferSize,
+        &Status
     );
 
 

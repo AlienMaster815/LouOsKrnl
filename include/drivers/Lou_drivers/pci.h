@@ -95,7 +95,7 @@ uint8_t LouKePciReadSubClass(P_PCI_DEVICE_OBJECT PDEV);
 uint8_t LouKePciReadClass(P_PCI_DEVICE_OBJECT PDEV);
 uint8_t LouKeGetPciInterruptPin(P_PCI_DEVICE_OBJECT PDEV);
 uint8_t LouKeGetPciInterruptLine(P_PCI_DEVICE_OBJECT PDEV);
-void LouKeConfigureInterrupt(uint8_t IRQ,  bool Mask, uint8_t Pin, uint8_t Destination);
+void LouKeConfigureInterrupt(P_PCI_DEVICE_OBJECT PDEV,  bool Mask, uint8_t Pin, uint8_t Destination);
 void LouKeWritePciCommandRegister(P_PCI_DEVICE_OBJECT PDEV,uint16_t Value);
 uint16_t LouKeReadPciCommandRegister(P_PCI_DEVICE_OBJECT PDEV);
 
