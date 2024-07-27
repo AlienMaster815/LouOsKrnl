@@ -27,6 +27,7 @@
 #include <kernel/SystemCalls.h>
 #include <kernel/Binarys.h>
 #include "threads.h"
+#include "exec.h"
 
 #define KERNEL_ENTRY extern void
 

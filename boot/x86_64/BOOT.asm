@@ -38,7 +38,6 @@ extern Lou_kernel_start
 extern enable_paging
 
 start:
-    
     ;mov eax, [ebx]
     ;mov [multiboot_info_ptr], eax
     mov [multiboot_info_ptr], ebx

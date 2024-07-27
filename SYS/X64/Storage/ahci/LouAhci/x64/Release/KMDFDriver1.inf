@@ -13,7 +13,7 @@ PnpLockdown = 1
 
 [DestinationDirs]
 DefaultDestDir = 13
-
+ 
 [SourceDisksNames]
 1 = %DiskName%,,,""
 
@@ -28,7 +28,7 @@ KMDFDriver1.sys  = 1,,
 %ManufacturerName% = Standard,NTamd64.10.0...16299 ; %13% support introduced in build 16299
 
 [Standard.NTamd64.10.0...16299]
-%KMDFDriver1.DeviceDesc% = KMDFDriver1_Device, Root\KMDFDriver1 ; TODO: edit hw-id
+%KMDFDriver1.DeviceDesc% = KMDFDriver1_Device, Root\KMDFDriver1 , PCI\CC_0106, PCI\CC_01061; TODO: edit hw-id
 
 [KMDFDriver1_Device.NT]
 CopyFiles = File_Copy

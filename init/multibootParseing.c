@@ -8,6 +8,11 @@ LOUSTATUS LouKeSetSmbios(uintptr_t SMBIOS);
 LOUSTATUS LouKeSetRsdp(uintptr_t RSDP, uint8_t Type);
 LOUSTATUS LouKeSetApm(struct multiboot_tag_apm* APM);
 
+void handle_module(
+    uintptr_t ModuleStart,
+    uintptr_t ModuleEnd
+);
+
 void ParseMBootTags(struct multiboot_tag* MBOOT) {
 
     // Iterate through tags until end tag is encountered
@@ -50,6 +55,11 @@ void ParseMBootTags(struct multiboot_tag* MBOOT) {
             LouKeSetApm(apm_tag);
             break;
         }
+        case (MULTIBOOT_TAG_TYPE_MODULE): {
+            struct multiboot_tag_module *mod = (struct multiboot_tag_module *) MBOOT;
+            handle_module(mod->mod_start, mod->mod_end);
+            break;
+        }
         default:
             break;
         }
@@ -59,5 +69,5 @@ void ParseMBootTags(struct multiboot_tag* MBOOT) {
         else
             MBOOT = (struct multiboot_tag*)((uint8_t*)MBOOT + MBOOT->size + (8 - MBOOT->size % 8));
     }
-
+    //while(1);
 }

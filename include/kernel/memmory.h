@@ -159,6 +159,10 @@ void* TrimVariacHeap(
     size_t SizeToTrim,
     size_t SizeOfCurrentHeap
 );
+
+uint64_t GetKernelLoadedAddress();
+void SetKernelLoadedAddress(uint64_t Address);
+
 #ifdef __cplusplus
 }
 #endif

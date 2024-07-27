@@ -158,6 +158,8 @@ LOUSTATUS InitAHCIController(P_PCI_DEVICE_OBJECT PDEV);
 KERNEL_IMPORT void ioapic_unmask_irq(uint8_t irq);
 LOUDDK_API_ENTRY void AHCI_Interrupt_Handler();
 
+KERNEL_IMPORT void GetAhciMouduleStart(uintptr_t* Start, uintptr_t* End);
+
 LOUDDK_API_ENTRY void Sata_init(uint8_t bus, uint8_t slot, uint8_t func) {
 
 	LouPrint("Initializing Sata Controller\n");
@@ -170,20 +172,27 @@ LOUDDK_API_ENTRY void Sata_init(uint8_t bus, uint8_t slot, uint8_t func) {
 	SataDev->DeviceID = PciGetDeviceID(bus, slot, func);
 	SataDev->VendorID = PciGetVendorID(bus, slot);
 
-	uint8_t IPin = LouKeGetPciInterruptPin(SataDev);
+	//uint8_t IPin = LouKeGetPciInterruptPin(SataDev);
 
 	uint16_t CMD = LouKeReadPciCommandRegister(SataDev);
 	CMD |= (PCI_INTERRUPT_ENABLE | MEMORY_SPACE_ENABLE | IO_SPACE_ENABLE);
 	LouKeWritePciCommandRegister(SataDev, CMD);
 
-	InitAHCIController(SataDev);
+	uintptr_t Start = 0 ,End = 0;
 
+	GetAhciMouduleStart(&Start, &End);
 
-	RegisterHardwareInterruptHandler(
-		AHCI_Interrupt_Handler, 
-		IPin
-	);
+	UNUSED HANDLE Handle = LoadAhciModule(Start, End);
 
+	LouPrint("System Loaded\n");
+	
+	//InitAHCIController(SataDev);
+
+	//RegisterHardwareInterruptHandler(
+	//	AHCI_Interrupt_Handler, 
+	//	IPin
+	//);
+	while (1);
 }
 
 int find_cmdslot(HBA_PORT *port);
