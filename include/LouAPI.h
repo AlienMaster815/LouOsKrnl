@@ -22,6 +22,8 @@
 
 #include <Random.h>
 
+#include <windows.h>
+
 #define ACPIBUFFER 512
 #define ERRMAPPINGIO -1
 

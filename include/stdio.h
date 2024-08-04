@@ -43,6 +43,8 @@ KERNEL_IMPORT bool LouKeIsLittleEndianBufferEqualTo(
 #else
 #include <LouAPI.h>
 
+void VgaPutPixelRgb(int x, int y, uint8_t r, uint8_t g, uint8_t b);
+
 int LouPrint(char *format, ...);
 int putchar(int ic);
 void uintToHexString(uint64_t number, char* hexString);

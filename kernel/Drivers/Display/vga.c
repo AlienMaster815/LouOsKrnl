@@ -122,31 +122,35 @@ void clear_row(size_t row) {
     }
 }
 void init_terminal() {
-    //if(FramebufferInformation->common.framebuffer_type == 2){  
-    //    static Mutex m;
-    //    MutexGuard(&m);
-    //    vga_current == VGA_MODE_80x25;
-    //    col = 0;
-    //    row = 0;
-    //    print_clear();
-    //    MutexFree(&m);
-    //}
 
-    if(FramebufferInformation != 0x00){
-        for(uint64_t i = 0; i < (FramebufferInformation->common.framebuffer_width * FramebufferInformation->common.framebuffer_height * (FramebufferInformation->common.framebuffer_bpp/8)); i+=MEGABYTE_PAGE){
-            LouMapAddress(FramebufferInformation->common.framebuffer_addr + i,FramebufferInformation->common.framebuffer_addr + i, KERNEL_PAGE_WRITE_PRESENT, MEGABYTE_PAGE);
+
+    if(true){
+
+        if(FramebufferInformation != 0x00){
+            for(uint64_t i = 0; i < (FramebufferInformation->common.framebuffer_width * FramebufferInformation->common.framebuffer_height * (FramebufferInformation->common.framebuffer_bpp/8)); i+=MEGABYTE_PAGE){
+                LouMapAddress(FramebufferInformation->common.framebuffer_addr + i,FramebufferInformation->common.framebuffer_addr + i, KERNEL_PAGE_WRITE_PRESENT, MEGABYTE_PAGE);
+            }
+        }   
+        else{
+            for(uint64_t i = 0; i < (VBE_INFO->vbe_mode_info.width * VBE_INFO->vbe_mode_info.height * (VBE_INFO->vbe_mode_info.bpp / 8)); i+=MEGABYTE_PAGE){
+                LouMapAddress(VBE_INFO->vbe_mode_info.framebuffer + i,VBE_INFO->vbe_mode_info.framebuffer + i, KERNEL_PAGE_WRITE_PRESENT, MEGABYTE_PAGE);
+            }
         }
-    }   
-    else{
-        for(uint64_t i = 0; i < (VBE_INFO->vbe_mode_info.width * VBE_INFO->vbe_mode_info.height * (VBE_INFO->vbe_mode_info.bpp / 8)); i+=MEGABYTE_PAGE){
-            LouMapAddress(VBE_INFO->vbe_mode_info.framebuffer + i,VBE_INFO->vbe_mode_info.framebuffer + i, KERNEL_PAGE_WRITE_PRESENT, MEGABYTE_PAGE);
-        }
+        static Mutex m;
+        MutexGuard(&m);
+        vga_current = VGA_RGB_FRAMEBUFFER;
+        print_clear();
+        MutexFree(&m);
     }
-    static Mutex m;
-    MutexGuard(&m);
-    vga_current = VGA_RGB_FRAMEBUFFER;
-    print_clear();
-    MutexFree(&m);
+    else{  
+        static Mutex m;
+        MutexGuard(&m);
+        vga_current == VGA_MODE_80x25;
+        col = 0;
+        row = 0;
+        print_clear();
+        MutexFree(&m);
+    }
 
 }
 
@@ -158,11 +162,11 @@ void print_clear() {
     }
     else if(vga_current == VGA_RGB_FRAMEBUFFER){
         if(FramebufferInformation != 0x00){
-            //for(uint32_t y = 0 ; y < FramebufferInformation->common.framebuffer_height; y++){
-            //    for(uint32_t x = 0; x < FramebufferInformation->common.framebuffer_width; x++){
-            //        VgaPutPixelRgb(5,5, 0, 255, 0);
-            //    }
-            //}
+            for(uint32_t y = 0 ; y < FramebufferInformation->common.framebuffer_height; y++){
+                for(uint32_t x = 0; x < FramebufferInformation->common.framebuffer_width; x++){
+                    VgaPutPixelRgb(x,y, 0, 255, 0);
+                }
+            }
         }
         else if(VBE_INFO != 0x00){//VBE_INFO->vbe_mode_info.height
             for(uint32_t y = 0 ; y < VBE_INFO->vbe_mode_info.height; y++){

@@ -54,6 +54,7 @@ LOUSTATUS SetUpTimers();
 void LastSataRun();
 
 void PS2KeyboardHandler();
+void PS2MouseHandler();
 void PageFault();
 void GPF();
 void DoubleFault();
@@ -96,6 +97,8 @@ void InitializeGenericTables();
 
 void InitializeVesaSystem();
 
+PWINDHANDLE HWind;
+
 LOUSTATUS Lou_kernel_early_initialization(){
 
     //basic kernel initialization for IR Exseptions
@@ -127,6 +130,7 @@ LOUSTATUS Lou_kernel_early_initialization(){
     RegisterInterruptHandler(CookieCheckFail, 0x29);
     //for(uint8_t i = 33; i < 48; i++){
         RegisterInterruptHandler(HardwareInterruptManager, 33);
+        //RegisterInterruptHandler(HardwareInterruptManager, 44);
     //}
 
 
@@ -163,6 +167,7 @@ LOUSTATUS Advanced_Kernel_Initialization(){
     if (InitializeMainInterruptHandleing() != LOUSTATUS_GOOD)LouPrint("Unable To Start APIC System\n");
     InitializeDynamicHardwareInterruptHandleing();
     RegisterHardwareInterruptHandler(PS2KeyboardHandler, 1);
+    //RegisterHardwareInterruptHandler(PS2MouseHandler, 12);
 
     if (LOUSTATUS_GOOD != InitThreadManager())LouPrint("SHIT!!!:I Hope You Hate Efficency: No Thread Management\n");
 
@@ -181,21 +186,13 @@ LOUSTATUS User_Mode_Initialization(){
 LOUSTATUS LouKeCreateThread(void* Function,void* FunctionParameters, uint32_t StackSize);
 void TestLoop1();
 
-bool LouCreateWindow(uint16_t x, uint16_t y,
-                     uint16_t width, uint16_t height){
-
-
-    return true;
-}
-
 KERNEL_ENTRY Lou_kernel_start(uint32_t foo, uint32_t Apic){
     
-	//vga set for debug
 	struct multiboot_tag* mboot = (struct multiboot_tag*)(uintptr_t)(foo + 8);
     ParseMBootTags(mboot);
-
+	//vga set for debug
     setup_vga_systems();
-    /*
+    
 	LouPrint("Lou Version %s %s\n", KERNEL_VERSION ,KERNEL_ARCH);
     LouPrint("Hello Im Lousine Getting Things Ready\n");
     
@@ -208,7 +205,7 @@ KERNEL_ENTRY Lou_kernel_start(uint32_t foo, uint32_t Apic){
     if (Advanced_Kernel_Initialization() != LOUSTATUS_GOOD)LouPrint("WARNING: CertainFeatures Are Not Available\n");
 
     //SETUP DEVICES AND DRIVERS
-    if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);		
+    //if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);		
     
     // Initialize User Mode
     // if(User_Mode_Initialization() != LOUSTATUS_GOOD)LouPanic("User Mode Initialiation Failed",BAD);
@@ -220,7 +217,9 @@ KERNEL_ENTRY Lou_kernel_start(uint32_t foo, uint32_t Apic){
     //uint16_t* FOOBAR = LouMalloc(2*KILOBYTE);
 
     //ReadDrive(1,0,0,1,FOOBAR);
-    */
+    
+    HWind = LouCreateWindow(10, 10,500,300,0x00);
+
     while (1) {
         asm("hlt");
     }
