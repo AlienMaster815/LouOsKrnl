@@ -10,7 +10,7 @@ NTSTATUS WdmlibIoGetAffinityInterrupt(
 
 
 NTSTATUS WdmlibIoDisconnectInterruptEx(
-	_In _Out_ PIO_DISCONNECT_INTERRUPT_PARAMETERS Parameters
+	_In_ _Out_ PIO_DISCONNECT_INTERRUPT_PARAMETERS Parameters
 );
 
 NTSTATUS WdmlibIoConnectInterruptEx(

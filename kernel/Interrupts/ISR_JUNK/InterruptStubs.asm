@@ -7,9 +7,11 @@ section .data
 global InterruptCode
 raxp dq 0
 global InterruptNum
+global InstructionPointer
 
 InterruptNum db 0
 InterruptCode dq 0
+InstructionPointer dq 0
 
 global SYSTEMCALL
 
@@ -42,6 +44,12 @@ extern PIC_sendEOI
 	push r13
 	push r14
 	push r15
+
+	mov rax, [rsp + 8 * 14]
+	mov [InstructionPointer], rax
+	xor rax, rax
+
+
 
 	;push rbp
 	;push rsp
@@ -76,8 +84,6 @@ extern PIC_sendEOI
 	call InterruptRouter
 	mov rcx, [InterruptNum]
 %endmacro
-
-
 
 global ISR0
 global ISR1

@@ -631,15 +631,15 @@ void READ_PORT_BUFFER_USHORT(
 );
 
 UCHAR READ_PORT_UCHAR(
-	_In_ PUCHAR Port
+	_In_ PVOID Port
 );
 
 ULONG READ_PORT_ULONG(
-	_In_ PULONG Port
+	_In_ PVOID Port
 );
 
 USHORT READ_PORT_USHORT(
-	_In_ PUSHORT Port
+	_In_ PVOID Port
 );
 
 void READ_REGISTER_BUFFER_UCHAR(
@@ -660,17 +660,17 @@ void READ_REGISTER_BUFFER_USHORT(
 	_In_  ULONG           Count
 );
 
-UCHAR READ_REGISTER_UCHAR(
-	_In_ volatile UCHAR* Register
-);
+//UCHAR READ_REGISTER_UCHAR(
+//	_In_ volatile UCHAR* Register
+//);
 
-ULONG READ_REGISTER_ULONG(
-	_In_ volatile ULONG* Register
-);
+//ULONG READ_REGISTER_ULONG(
+//	_In_ volatile ULONG* Register
+//);
 
-USHORT READ_REGISTER_USHORT(
-	_In_ volatile USHORT* Register
-);
+//USHORT READ_REGISTER_USHORT(
+//	_In_ volatile USHORT* Register
+//);
 
 UCHAR ReadBooleanRaw(
 	_In_ BOOLEAN const volatile* Source
@@ -717,7 +717,7 @@ void WRITE_PORT_BUFFER_USHORT(
 	_In_ PUSHORT Buffer,
 	_In_ ULONG   Count
 );
-
+/*
 void WRITE_PORT_UCHAR(
 	_In_ PUCHAR Port,
 	_In_ UCHAR  Value
@@ -732,7 +732,7 @@ void WRITE_PORT_USHORT(
 	_In_ PUSHORT Port,
 	_In_ USHORT  Value
 );
-
+*/
 void WRITE_REGISTER_BUFFER_UCHAR(
 	_In_ volatile UCHAR* Register,
 	_In_ PUCHAR         Buffer,
@@ -751,20 +751,20 @@ void WRITE_REGISTER_BUFFER_USHORT(
 	_In_ ULONG           Count
 );
 
-void WRITE_REGISTER_UCHAR(
-	_In_ volatile UCHAR* Register,
-	_In_ UCHAR          Value
-);
+//void WRITE_REGISTER_UCHAR(
+//	_In_ volatile UCHAR* Register,
+//	_In_ UCHAR          Value
+//);
 
-void WRITE_REGISTER_ULONG(
-	_In_ volatile ULONG* Register,
-	_In_ ULONG          Value
-);
+//void WRITE_REGISTER_ULONG(
+//	_In_ volatile ULONG* Register,
+//	_In_ ULONG          Value
+//);
 
-void WRITE_REGISTER_USHORT(
-	_In_ volatile USHORT* Register,
-	_In_ USHORT          Value
-);
+//void WRITE_REGISTER_USHORT(
+//	_In_ volatile USHORT* Register,
+//	_In_ USHORT          Value
+//);
 
 void WriteInt32NoFence(
 	_Out_ INT32 volatile* Destination,

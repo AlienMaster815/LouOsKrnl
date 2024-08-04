@@ -1,6 +1,10 @@
 #include <NtAPI.h>
 #include <LouDDK.h>
 
+VOID RtlZeroMemory(void* Location ,size_t Size){
+	memset(Location, 0 , Size);
+}
+
 NTSTATUS IoAllocateAdapterChannel(
 	PADAPTER_OBJECT AdapterObject,
 	PDEVICE_OBJECT  DeviceObject,
@@ -64,12 +68,64 @@ void ExRaiseAccessViolation() {
 }
 
 void ExRaiseDatatypeMisalignment() {
+	LouPrint("DataTypeMissAlligned\n");
+}
+
+KERNEL_IMPORT uint64_t GetCurrentTimeInMilliseconds();
+
+void KeQuerySystemTime(LARGE_INTEGER* TimeCurrent){ //T = OUT
+    // Validate the output pointer
+    if (TimeCurrent == 0x00) {
+		return;
+    }
+
+    // Get the current time in milliseconds
+    uint64_t current_time_ms = GetCurrentTimeInMilliseconds();
+    
+    // Convert milliseconds to 100-nanosecond intervals
+    uint64_t time_100ns = current_time_ms * 10000;
+    
+    // Fill the LARGE_INTEGER with the calculated time
+    TimeCurrent->QuadPart = time_100ns;
 
 }
 
 NTSTATUS ExUuidCreate(
 	_Out_ UUID* Uuid
 ) {
+    //LARGE_INTEGER currentTime;
+    //static USHORT clockSequence = 0;
+    //static BOOLEAN initialized = FALSE;
+    //static UCHAR node[6] = {0};
+
+    // Validate the output pointer
+    //if (Uuid == NULL) {
+    //    return STATUS_INVALID_PARAMETER;
+    //}
+
+    // Get the current system time in 100-nanosecond intervals since January 1, 1601 (UTC)
+    //KeQuerySystemTime(&currentTime);
+
+    // Initialize clock sequence and node identifier if not already done
+    //if (!initialized) {
+        // Generate a random clock sequence
+    //    clockSequence = (USHORT)RtlRandomEx(&currentTime.LowPart);
+        
+        // Get a random node identifier (in a real scenario, this would use the MAC address)
+    //    RtlCopyMemory(node, "\x01\x23\x45\x67\x89\xab", sizeof(node));
+        
+    //    initialized = TRUE;
+    //}
+
+    // Populate the UUID structure
+    //Uuid->Data1 = currentTime.LowPart;
+    //Uuid->Data2 = (USHORT)(currentTime.HighPart & 0xFFFF);
+    //Uuid->Data3 = (USHORT)((currentTime.HighPart >> 16) & 0x0FFF) | 0x4000; // Version 4
+    //Uuid->Data4[0] = (UCHAR)((clockSequence >> 8) & 0x3F) | 0x80; // Variant 1
+    //Uuid->Data4[1] = (UCHAR)(clockSequence & 0xFF);
+    //RtlCopyMemory(&Uuid->Data4[2], node, sizeof(node));
+
+	
 
 	return STATUS_SUCCESS;
 }
@@ -180,6 +236,12 @@ NTSTATUS IoDecrementKeepAliveCount(
 	return STATUS_SUCCESS;
 }
 
+void IoDeleteController(
+  _In_ PCONTROLLER_OBJECT ControllerObject
+){
+
+}
+
 bool NT_SUCCESS(NTSTATUS Status){
 	switch(Status){
 		case 0:
@@ -187,4 +249,71 @@ bool NT_SUCCESS(NTSTATUS Status){
 		default:
 			return false;
 	}
+}
+
+void IoFreeController(
+  _In_ PCONTROLLER_OBJECT ControllerObject
+){
+
+}
+
+NTSTATUS IoGetActivityIdIrp(
+  _In_  PIRP   Irp,
+  _Out_ LPGUID Guid
+){
+
+
+	return STATUS_SUCCESS;
+}
+
+LPCGUID IoGetActivityIdThread(){
+
+	return 0x00;
+}
+
+PCONFIGURATION_INFORMATION IoGetConfigurationInformation(){
+	
+
+
+	return 0x00;
+}
+
+PGENERIC_MAPPING IoGetFileObjectGenericMapping(){
+
+
+	return 0x00;
+}
+
+PEPROCESS IoGetInitiatorProcess(
+  _In_ PFILE_OBJECT FileObject
+){
+
+
+
+	return 0x00;
+}
+
+IO_PAGING_PRIORITY IoGetPagingIoPriority(
+  _In_ PIRP Irp
+){
+
+	return IoPagingPriorityInvalid;
+
+}
+
+NTSTATUS IoIncrementKeepAliveCount(
+	_In_ _Out_ PFILE_OBJECT FileObject,
+	_In_ _Out_ PEPROCESS    Process
+){
+
+
+	return STATUS_SUCCESS;
+}
+
+LOGICAL IoIsValidIrpStatus(
+  _In_ NTSTATUS Status
+){
+
+
+	return 0x00;
 }

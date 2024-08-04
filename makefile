@@ -210,7 +210,6 @@ release: lou.exe
 	
 	mkdir -p release/x86 && \
 	cp dist/x86/LOUOSKRNL.bin release/x86/LOUOSKRNL.exe
-	strip $(EXPORT) \
 	release/x86/LOUOSKRNL.exe
 
 endif

@@ -77,6 +77,7 @@ void MachineCheck();
 void SIMDFloatPointException();
 void VirtualizationException();
 void ControlProtectionException();
+void CookieCheckFail();
 
 void ParseMBootTags(struct multiboot_tag* MBOOT);
 void CreateNewPageSystem();
@@ -90,6 +91,10 @@ void RegisterHardwareInterruptHandler(void(*InterruptHandler)(), uint8_t PIN);
 void initializeInterruptRouter();
 
 void HardwareInterruptManager();
+
+void InitializeGenericTables();
+
+void InitializeVesaSystem();
 
 LOUSTATUS Lou_kernel_early_initialization(){
 
@@ -119,10 +124,11 @@ LOUSTATUS Lou_kernel_early_initialization(){
     RegisterInterruptHandler(ControlProtectionException, INTERRUPT_SERVICE_ROUTINE_21);
     RegisterInterruptHandler(SYSCALLS, 0x80);
     RegisterInterruptHandler(Clock, INTERRUPT_SERVICE_ROUTINE_32);
+    RegisterInterruptHandler(CookieCheckFail, 0x29);
+    //for(uint8_t i = 33; i < 48; i++){
+        RegisterInterruptHandler(HardwareInterruptManager, 33);
+    //}
 
-    for(uint8_t i = 33; i < 48; i++){
-        RegisterInterruptHandler(HardwareInterruptManager, i);
-    }
 
 
     SetUpTimers();
@@ -136,9 +142,9 @@ void UpdateDeviceInformationTable();
 LOUSTATUS Set_Up_Devices(){
 
     PCI_Setup();
-    LastSataRun();
+    //LastSataRun();
     UpdateDeviceInformationTable();
-    FileSystemSetup();
+    //FileSystemSetup();
 
     return LOUSTATUS_GOOD;
 }
@@ -175,15 +181,21 @@ LOUSTATUS User_Mode_Initialization(){
 LOUSTATUS LouKeCreateThread(void* Function,void* FunctionParameters, uint32_t StackSize);
 void TestLoop1();
 
+bool LouCreateWindow(uint16_t x, uint16_t y,
+                     uint16_t width, uint16_t height){
+
+
+    return true;
+}
+
 KERNEL_ENTRY Lou_kernel_start(uint32_t foo, uint32_t Apic){
     
-    setup_vga_systems();
-
 	//vga set for debug
 	struct multiboot_tag* mboot = (struct multiboot_tag*)(uintptr_t)(foo + 8);
     ParseMBootTags(mboot);
 
-
+    setup_vga_systems();
+    /*
 	LouPrint("Lou Version %s %s\n", KERNEL_VERSION ,KERNEL_ARCH);
     LouPrint("Hello Im Lousine Getting Things Ready\n");
     
@@ -192,7 +204,7 @@ KERNEL_ENTRY Lou_kernel_start(uint32_t foo, uint32_t Apic){
 
     //INITIALIZE IMPORTANT THINGS FOR US LATER
     if(Lou_kernel_early_initialization() != LOUSTATUS_GOOD)LouPanic("Early Initialization Failed",BAD);
-
+    InitializeGenericTables();
     if (Advanced_Kernel_Initialization() != LOUSTATUS_GOOD)LouPrint("WARNING: CertainFeatures Are Not Available\n");
 
     //SETUP DEVICES AND DRIVERS
@@ -208,11 +220,10 @@ KERNEL_ENTRY Lou_kernel_start(uint32_t foo, uint32_t Apic){
     //uint16_t* FOOBAR = LouMalloc(2*KILOBYTE);
 
     //ReadDrive(1,0,0,1,FOOBAR);
-
+    */
     while (1) {
         asm("hlt");
     }
-
 
 	LouPanic("error kernel has gone too far terminating system\n",BAD);
 	// IF the Kernel returns from this

@@ -29,6 +29,7 @@ void reverse_string(string str, int length);
 void double_to_string(string Buffer, long double value);
 void float_to_string(string Buffer, float value);
 void long_double_to_string(string Buffer, long double value);
+char* ConvertWCharToChar(const wchar_t* wstr);
 #else
 #include <LouDDK.h>
 
@@ -53,6 +54,7 @@ KERNEL_IMPORT void reverse_string(string str, int length);
 KERNEL_IMPORT void double_to_string(string Buffer, long double value);
 KERNEL_IMPORT void float_to_string(string Buffer, float value);
 KERNEL_IMPORT void long_double_to_string(string Buffer, long double value);
+KERNEL_IMPORT char* ConvertWCharToChar(const wchar_t* wstr);
 #endif
 
 

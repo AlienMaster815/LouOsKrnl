@@ -3,6 +3,8 @@
 #include <NtAPI.h>
 #pragma once
 
+#define min(a, b) ((a) < (b) ? (a) : (b))
+
 typedef void* HANDLE;
 
 
@@ -27,9 +29,6 @@ typedef struct _IMAGE_EXPORT_DIRECTORY {
     DWORD   AddressOfNames;         // RVA from base of image
     DWORD   AddressOfNameOrdinals;  // RVA from base of image
 } IMAGE_EXPORT_DIRECTORY, * PIMAGE_EXPORT_DIRECTORY;
-
-typedef void* PKINTERRUPT;
-
 
 typedef enum {
     KernelMode,
@@ -446,10 +445,7 @@ typedef void* PGUID;
 typedef void* PKTM;
 typedef void* TRACEHANDLE;
 typedef void* SECTION_INHERIT;
-
-
-
-
+typedef void* PKINTERRUPT_ROUTINE;
 
 #define POOL_EXTENDED_PARAMETER_TYPE_BITS 1
 #define POOL_EXTENDED_PARAMETER_REQUIRED_FIELD_BITS 1
@@ -484,7 +480,7 @@ typedef uintptr_t PHYSICAL_ADDRESS;
 typedef size_t SIZE_T, * PSIZE_T;
 
 
-VOID RtlCopyUnicodeString(_Inout_ PUNICODE_STRING DestinationString, _In_opt_ PUNICODE_STRING SourceString);
+//VOID RtlCopyUnicodeString(_Inout_ PUNICODE_STRING DestinationString, _In_opt_ PUNICODE_STRING SourceString);
 ULONG DbgPrint(_In_z_ _Printf_format_string_ PCSTR Format, ...);
 ULONG DbgPrintEx ( _In_ ULONG ComponentId, _In_ ULONG Level, _In_z_ _Printf_format_string_ PCSTR Format, ...);
 
@@ -512,5 +508,6 @@ ULONG DbgPrintEx ( _In_ ULONG ComponentId, _In_ ULONG Level, _In_z_ _Printf_form
 #include "pepfx.h"
 #include "wdm.h"
 #include "ntstatus.h"
+#include "iointx.h"
 
 #endif

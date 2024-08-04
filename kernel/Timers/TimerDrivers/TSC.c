@@ -80,3 +80,7 @@ void busy_wait_TSC(uint32_t milliseconds) {
 
     while (read_tsc() < end_tsc);
 }
+
+uint64_t GetTscMaster(){
+    return tsc_frequency_master;
+}

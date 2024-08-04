@@ -88,7 +88,7 @@ enum BaseAddressRegisterType {
 
 #ifdef __cplusplus
 #include <LouDDK.h>
-
+uint8_t LouKePciReadHeaderType(P_PCI_DEVICE_OBJECT PDEV);
 uint32_t LouKeReadPciVendorId(P_PCI_DEVICE_OBJECT PDEV);
 uint32_t LouKeReadPciDeviceId(P_PCI_DEVICE_OBJECT PDEV);
 uint8_t LouKePciReadSubClass(P_PCI_DEVICE_OBJECT PDEV);

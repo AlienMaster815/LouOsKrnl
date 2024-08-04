@@ -38,7 +38,7 @@
 /*  Alignment of the multiboot info structure. */
 #define MULTIBOOT_INFO_ALIGN                    0x00000008
 
-/*  Flags set in the ’flags’ member of the multiboot header. */
+/*  Flags set in the ï¿½flagsï¿½ member of the multiboot header. */
 
 #define MULTIBOOT_TAG_ALIGN                  8
 #define MULTIBOOT_TAG_TYPE_END               0
@@ -268,10 +268,50 @@ struct multiboot_vbe_info_block
     multiboot_uint8_t external_specification[512];
 };
 
-struct multiboot_vbe_mode_info_block
-{
-    multiboot_uint8_t external_specification[256];
+//struct multiboot_vbe_mode_info_block
+//{
+//    multiboot_uint8_t external_specification[256];
+//};
+
+
+struct multiboot_vbe_mode_info_block {
+    multiboot_uint16_t attributes;
+    multiboot_uint8_t  window_a;
+    multiboot_uint8_t  window_b;
+    multiboot_uint16_t granularity;
+    multiboot_uint16_t window_size;
+    multiboot_uint16_t segment_a;
+    multiboot_uint16_t segment_b;
+    multiboot_uint32_t win_func_ptr;
+    multiboot_uint16_t pitch;  // bytes per scanline
+    multiboot_uint16_t width;  // width in pixels
+    multiboot_uint16_t height; // height in pixels
+    multiboot_uint8_t  w_char;
+    multiboot_uint8_t  y_char;
+    multiboot_uint8_t  planes;
+    multiboot_uint8_t  bpp;    // bits per pixel
+    multiboot_uint8_t  banks;
+    multiboot_uint8_t  memory_model;
+    multiboot_uint8_t  bank_size;
+    multiboot_uint8_t  image_pages;
+    multiboot_uint8_t  reserved0;
+
+    multiboot_uint8_t  red_mask;
+    multiboot_uint8_t  red_position;
+    multiboot_uint8_t  green_mask;
+    multiboot_uint8_t  green_position;
+    multiboot_uint8_t  blue_mask;
+    multiboot_uint8_t  blue_position;
+    multiboot_uint8_t  reserved_mask;
+    multiboot_uint8_t  reserved_position;
+    multiboot_uint8_t  direct_color_attributes;
+
+    multiboot_uint32_t framebuffer;       // physical address of the framebuffer
+    multiboot_uint32_t off_screen_mem_off;
+    multiboot_uint16_t off_screen_mem_size;
+    multiboot_uint8_t  reserved1[206];
 };
+
 
 struct multiboot_tag_vbe
 {

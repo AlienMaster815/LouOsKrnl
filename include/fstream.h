@@ -10,6 +10,7 @@ KERNEL_IMPORT{
 typedef void* FILE;
 #endif
 
+typedef char* FILE_NAME;
 
 string GetNextDirectoryName(string PATH);
 uint8_t CurrenDirectoryStringLength(string Dir);

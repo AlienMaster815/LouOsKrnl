@@ -10,6 +10,13 @@
 #include <stat.h>
 #include <kernel/memmory.h>
 
+#ifdef __cplusplus
+LOUDDK_API_ENTRY{
+#endif
+void LouKePutPixelVga(int x, int y, uint8_t r, uint8_t g, uint8_t b);
+#ifdef __cplusplus
+}
+#endif
 
 #ifdef __x86_64__
 
@@ -35,6 +42,7 @@ enum vga_color {
 	VGA_COLOR_LIGHT_BROWN = 14,
 	VGA_COLOR_WHITE = 15,
 };
+
 static inline uint16_t vga_entry(unsigned char uc, uint8_t color);
 static inline uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg);
 
@@ -163,4 +171,3 @@ void Set_X(uint16_t x);
 #endif
 
 #endif
-

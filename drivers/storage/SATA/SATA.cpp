@@ -184,15 +184,26 @@ LOUDDK_API_ENTRY void Sata_init(uint8_t bus, uint8_t slot, uint8_t func) {
 
 	UNUSED HANDLE Handle = LoadAhciModule(Start, End);
 
+	UNUSED NTSTATUS(*AHCI_SYS_DRIVER)(PDRIVER_OBJECT, PUNICODE_STRING) = (NTSTATUS(*)(PDRIVER_OBJECT, PUNICODE_STRING))Handle;
+
+	UNUSED DRIVER_OBJECT FOO;
+	UNUSED UNICODE_STRING BAR;
+
+	LouPrint("Starting System Module\n");
+
+	//if(!NT_SUCCESS(AHCI_SYS_DRIVER(&FOO , &BAR))){
+	//	LouPanic("Storage Device Unreachable", GOOD);
+	//}
+
 	LouPrint("System Loaded\n");
-	
+
 	//InitAHCIController(SataDev);
 
 	//RegisterHardwareInterruptHandler(
 	//	AHCI_Interrupt_Handler, 
 	//	IPin
 	//);
-	while (1);
+	//while (1);
 }
 
 int find_cmdslot(HBA_PORT *port);

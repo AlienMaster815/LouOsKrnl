@@ -69,6 +69,12 @@ ULONG DbgPrint(_In_z_ _Printf_format_string_ PCSTR Format, ...){
 }
 
 ULONG DbgPrintEx ( _In_ ULONG ComponentId, _In_ ULONG Level, _In_z_ _Printf_format_string_ PCSTR Format, ...){
- 
+    
+    LouPrint("Hello DbgPrint\n");
+    while (1);
     return 0;
 }
+
+
+//0x2b992ddfa232
+//0x2b992ddfa232

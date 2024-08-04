@@ -83,6 +83,7 @@ KERNEL_IMPORT int LouPrint(char *format, ...);
 #include <KernelAPI/Devices.h>
 #include <Time.h>
 #include <Kernel/exec.h>
+#include <Random.h>
 
 KERNEL_IMPORT uint8_t inb(uint64_t port);
 KERNEL_IMPORT void outb(uint64_t port, uint8_t data);

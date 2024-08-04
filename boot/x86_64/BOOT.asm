@@ -9,12 +9,12 @@ MBOOTHEADER:
     dd 0x100000000 - (0xE85250D6 + 0x00 + (MBOOTEND - MBOOTHEADER)) 
     ;TAGS
     ;FrameBuffer Tag
-    ;dw 5 ;Framebuffer Type
-    ;dw 0 ;Reserved
-    ;dw 20 ;Tag Size
-    ;dd 480 ;V
-    ;dd 640 ;H
-    ;dd 32 ;D
+    dw 5 ;Framebuffer Type
+    dw 0 ;Reserved
+    dw 20 ;Tag Size
+    dd 1024 ;V
+    dd 768 ;H
+    dd 32 ;D
     dw 0
     dw 0
     dd 8

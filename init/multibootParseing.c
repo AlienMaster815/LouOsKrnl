@@ -2,11 +2,13 @@
 #include <bootloader/grub/multiboot2.h>
 
 void ParseMemoryMap(struct multiboot_tag* MBOOT);
-
+void InitializeFrameBuffer(struct multiboot_tag_framebuffer* Frambuffer);
 LOUSTATUS LouKeSetEfiTable(uint64_t Address);
 LOUSTATUS LouKeSetSmbios(uintptr_t SMBIOS);
 LOUSTATUS LouKeSetRsdp(uintptr_t RSDP, uint8_t Type);
 LOUSTATUS LouKeSetApm(struct multiboot_tag_apm* APM);
+
+struct multiboot_tag_vbe* VBE_INFO = 0;
 
 void handle_module(
     uintptr_t ModuleStart,
@@ -48,6 +50,7 @@ void ParseMBootTags(struct multiboot_tag* MBOOT) {
             struct multiboot_tag_vbe* vbe_tag = (struct multiboot_tag_vbe*)MBOOT;
             // Access VBE information from vbe_tag
             // Example: uint16_t vbe_mode = vbe_tag->vbe_mode;
+            VBE_INFO = vbe_tag;
             break;
         }
         case (MULTIBOOT_TAG_TYPE_APM): {
@@ -59,6 +62,10 @@ void ParseMBootTags(struct multiboot_tag* MBOOT) {
             struct multiboot_tag_module *mod = (struct multiboot_tag_module *) MBOOT;
             handle_module(mod->mod_start, mod->mod_end);
             break;
+        }
+        case (MULTIBOOT_TAG_TYPE_FRAMEBUFFER):{
+            struct multiboot_tag_framebuffer* frame = (struct multiboot_tag_framebuffer*)MBOOT;
+            InitializeFrameBuffer(frame);
         }
         default:
             break;

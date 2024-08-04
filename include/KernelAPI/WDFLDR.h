@@ -12,7 +12,6 @@ typedef struct _WDF_CLASS_VERSION
     uint32_t Build;
 }WDF_CLASS_VERSION, *PWDF_CLASS_VERSION;
 
-
 typedef struct _WDF_VERSION
 {
     uint32_t Major;
@@ -77,7 +76,7 @@ struct _WDF_LIBRARY_INFO
 int32_t WdfLdrDiagnosticsValueByNameAsULONG(UNICODE_STRING const* arg1, uint32_t* arg2);
 int32_t DllInitialize(UNICODE_STRING* arg1);
 int32_t DllUnload();
-int32_t WdfVersionBindClass(WDF_BIND_INFO* arg1, void** arg2, WDF_CLASS_BIND_INFO* arg3);
+int32_t WdfVersionBindClass(PDRIVER_OBJECT DrvObj,WDF_BIND_INFO* arg1, PWSTR arg2, WDF_CLASS_BIND_INFO* arg3);
 void WdfVersionUnbindClass(struct _WDF_BIND_INFO* arg1, void** arg2, struct _WDF_CLASS_BIND_INFO* arg3);
 
 int32_t WdfLdrQueryInterface(struct _WDF_INTERFACE_HEADER* arg1);

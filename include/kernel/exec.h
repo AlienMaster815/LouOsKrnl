@@ -12,6 +12,14 @@ extern "C" {
 typedef void* HANDLE;
 typedef HANDLE* PHANDLE;
 
+typedef struct __attribute__((packed)) _IMPORT_DIRECTORY_ENTRY{
+    uint32_t ImportLookupRva;
+    uint32_t TimeDateStamp;
+    uint32_t ForwarderChain;
+    uint32_t NameRva;
+    uint32_t ImportAddressTableRva;
+}IMPORT_DIRECTORY_ENTRY, * PIMPORT_DIRECTORY_ENTRY;
+
 typedef struct __attribute__((packed)) _SECTION_HEADER{
     char name[0x8];
     uint32_t virtualSize;
@@ -132,7 +140,58 @@ void GetAllPEHeaders(
 
 PHANDLE LoadAhciModule(uintptr_t Start, uintptr_t End);
 
-
+typedef struct __attribute__((packed)) _CONFIG_TABLE_TAG{
+    uint32_t Charecteristics;
+    uint32_t TimeDateStamp;
+    uint16_t MajorVersion;
+    uint16_t MinorVersion;
+    uint32_t GlobalFlagsClear;
+    uint32_t GlobalFlagsSet;
+    uint32_t CriticalSectionDefaultTimeout;
+    uint64_t DeCommitFreeBlockThreshold;
+    uint64_t DeCommitTotalFreeThreshold;
+    uint64_t LockPrefixTable;
+    uint64_t MaximumAllocationSize;
+    uint64_t VirtualMemoryThreshold;
+    uint64_t ProcessAffinityMask;
+    uint32_t ProcessHeapFlags;
+    uint16_t CsdVersion;
+    uint16_t Reserved;
+    uint64_t EditList;
+    uint64_t SecurityCookie;
+    uint64_t SetHandlerTable;
+    uint64_t SetHandlerCount;
+    uint64_t guardCFCheckFunctionPointer;
+    uint64_t guardCFDispatchFunctionPointer;
+    uint64_t guardCFFunctionTable;
+    uint64_t guardCFFunctionCount;
+    uint32_t guardFlags;
+    uint16_t Flags;
+    uint16_t Catalog;
+    uint32_t CatalogOffset;
+    uint32_t reserved;
+    uint64_t guardAddressTakenIatEntryTable;
+    uint64_t guardAddressTakenIatEntryCount;
+    uint64_t guardLongJumpTargetTable;
+    uint64_t guardLongJumpTargetCount;
+    uint64_t dynamicValueRelocTable;
+    uint64_t CHPEMetadataPointer;
+    uint64_t guardRFFailureRoutine;
+    uint64_t guardRFFailureRoutineFunctionPointer;
+    uint32_t dynamicValueRelocTableOffset;
+    uint16_t dynamicValueRelocTableSection;
+    uint16_t reserved2;
+    uint64_t guardRFVerifyStackPointerFunctionPointer;
+    uint32_t hotPatchTableOffset;
+    uint32_t reserved3;
+    uint64_t enclaveConfigurationPointer;
+    uint64_t volatileMetadataPointer;
+    uint64_t guardEHContinuationTable;
+    uint64_t guardEHContinuationCount;
+    uint64_t guardXFGCheckFunctionPointer;
+    uint64_t guardXFGDispatchFunctionPointer;
+    uint64_t guardXFGTableDispatchFunctionPointer;
+}CONFIG_TABLE, * PCONFIG_TABLE;
 
 #ifdef __cplusplus
 }

@@ -20,6 +20,8 @@
 
 #include "WinAPI/NtAPI/ntstatus.h"
 
+#include <Random.h>
+
 #define ACPIBUFFER 512
 #define ERRMAPPINGIO -1
 

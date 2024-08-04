@@ -5,6 +5,11 @@
 #include "ntoapi.h"
 #include <NtAPI.h>
 
+#define CONNECT_FULLY_SPECIFIED 1
+#define CONNECT_LINE_BASED 2
+#define CONNECT_MESSAGE_BASED 3
+
+
 typedef enum _IO_NOTIFICATION_EVENT_CATEGORY {
     EventCategoryReserved,
     EventCategoryHardwareProfileChange,
@@ -3378,15 +3383,6 @@ LONG InterlockedXor(
 );
 
 
-typedef struct _IO_CONNECT_INTERRUPT_PARAMETERS {
-  ULONG Version;
-  union {
-    IO_CONNECT_INTERRUPT_FULLY_SPECIFIED_PARAMETERS FullySpecified;
-    IO_CONNECT_INTERRUPT_LINE_BASED_PARAMETERS      LineBased;
-    IO_CONNECT_INTERRUPT_MESSAGE_BASED_PARAMETERS   MessageBased;
-  };
-} IO_CONNECT_INTERRUPT_PARAMETERS, *PIO_CONNECT_INTERRUPT_PARAMETERS;
-
 typedef enum _IO_CONTAINER_INFORMATION_CLASS {
   IoSessionStateInformation,
   IoMaxContainerInformationClass
@@ -3413,6 +3409,31 @@ typedef struct _IO_ERROR_LOG_PACKET {
   LARGE_INTEGER DeviceOffset;
   ULONG         DumpData[1];
 } IO_ERROR_LOG_PACKET, *PIO_ERROR_LOG_PACKET;
+
+#define DISPATCH_LENGTH 106
+
+typedef struct _KINTERRUPT {
+    CSHORT Type;
+    CSHORT Size;
+    LIST_ENTRY InterruptListEntry;
+    KSPIN_LOCK SpinLock;
+    PKSERVICE_ROUTINE ServiceRoutine;
+    PVOID ServiceContext;
+    KIRQL Irql;
+    KIRQL SynchronizeIrql;
+    BOOLEAN FloatingSave;
+    BOOLEAN Connected;
+    KINTERRUPT_MODE Mode;
+    ULONG Vector;
+    KAFFINITY ProcessorEnableMask;
+    BOOLEAN ShareVector;
+    BOOLEAN IrqlFlags;
+    BOOLEAN IrqlRequested;
+    BOOLEAN Reserved;
+    PKINTERRUPT_ROUTINE DispatchAddress;
+    ULONG DispatchCode[DISPATCH_LENGTH];
+} KINTERRUPT, *PKINTERRUPT;
+
 
 
 typedef struct _IO_INTERRUPT_MESSAGE_INFO_ENTRY {
@@ -3963,8 +3984,8 @@ NTSTATUS IoCheckShareAccessEx(
 NTSTATUS IoConnectInterrupt(
   _Out_          PKINTERRUPT       *InterruptObject,
   _In_           PKSERVICE_ROUTINE ServiceRoutine,
-  _In_opt_ PVOID             ServiceContext,
-  _In_opt_ PKSPIN_LOCK       SpinLock,
+  _In_opt_ PVOID                   ServiceContext,
+  _In_opt_ PKSPIN_LOCK             SpinLock,
   _In_           ULONG             Vector,
   _In_           KIRQL             Irql,
   _In_           KIRQL             SynchronizeIrql,
@@ -3974,9 +3995,6 @@ NTSTATUS IoConnectInterrupt(
   _In_           BOOLEAN           FloatingSave
 );
 
-NTSTATUS IoConnectInterruptEx(
-   PIO_CONNECT_INTERRUPT_PARAMETERS Parameters
-);
 
 void IoCopyCurrentIrpStackLocationToNext(
    PIRP Irp
@@ -7874,5 +7892,48 @@ NTSYSCALLAPI NTSTATUS ZwSinglePhaseReject(
   _In_opt_ PULONG           Key
 );
 
+
+typedef struct _IO_CONNECT_INTERRUPT_PARAMETERS {
+    ULONG Version;
+    union {
+        struct {
+            ULONG InterfaceType;
+            ULONG BusNumber;
+            ULONG Vector;
+            KIRQL Irql;
+            KINTERRUPT_MODE InterruptMode;
+            PKSERVICE_ROUTINE ServiceRoutine;
+            PVOID ServiceContext;
+            BOOLEAN FloatingSave;
+            BOOLEAN ShareVector;
+            KAFFINITY ProcessorEnableMask;
+            PKSPIN_LOCK SpinLock;
+            PKINTERRUPT *InterruptObject;
+        } FullySpecified;
+
+        struct {
+            PKSERVICE_ROUTINE ServiceRoutine;
+            PVOID ServiceContext;
+            PKINTERRUPT *InterruptObject;
+            ULONG Vector;
+            KIRQL Irql;
+            KINTERRUPT_MODE InterruptMode;
+            BOOLEAN ShareVector;
+        } LineBased;
+
+        struct {
+            PKSERVICE_ROUTINE ServiceRoutine;
+            PVOID ServiceContext;
+            PKINTERRUPT *InterruptObject;
+            PIO_INTERRUPT_MESSAGE_INFO MessageInfo;
+            ULONG MessageCount;
+            KINTERRUPT_MODE InterruptMode;
+        } MessageBased;
+    };
+} IO_CONNECT_INTERRUPT_PARAMETERS, *PIO_CONNECT_INTERRUPT_PARAMETERS;
+
+NTSTATUS IoConnectInterruptEx(
+   PIO_CONNECT_INTERRUPT_PARAMETERS Parameters
+);
 
 #endif
