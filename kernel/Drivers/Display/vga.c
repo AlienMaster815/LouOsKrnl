@@ -4,24 +4,11 @@
 
 #define VGA_RGB_FRAMEBUFFER 0xFF
 
+
+
 extern struct multiboot_tag_framebuffer* FramebufferInformation;
 extern struct multiboot_tag_vbe* VBE_INFO;
-
-
-void InitializeVesaSystem(){
-
-
-
-    LouPrint("Hello Vesa\n");
-
-    while(1);
-}
-
-// Assuming these are your tag values defined elsewhere
-#define FLAGS 0 // specify your flags here
-#define WIDTH 1024 // specify your width here
-#define HEIGHT 768 // specify your height here
-#define BPP 232 // specify your BPP here
+CharMapping* GetCharecterMap(char Charecter);
 
 void VgaPutPixelRgb(int x, int y, uint8_t r, uint8_t g, uint8_t b) {
 
@@ -154,6 +141,14 @@ void init_terminal() {
 
 }
 
+void VgaRgbModeFillBackground(uint8_t r,uint8_t g, uint8_t b){
+    for(uint32_t y = 0 ; y < VBE_INFO->vbe_mode_info.height; y++){
+        for(uint32_t x = 0; x < VBE_INFO->vbe_mode_info.width; x++){
+            VgaPutPixelRgb(x,y, r, g, b);
+        }
+    }
+}
+
 void print_clear() {
     if(vga_current == VGA_MODE_80x25){
         for (size_t i = 0; i < NUM_ROWS; i++) {
@@ -169,11 +164,7 @@ void print_clear() {
             }
         }
         else if(VBE_INFO != 0x00){//VBE_INFO->vbe_mode_info.height
-            for(uint32_t y = 0 ; y < VBE_INFO->vbe_mode_info.height; y++){
-                for(uint32_t x = 0; x < VBE_INFO->vbe_mode_info.width; x++){
-                    VgaPutPixelRgb(x,y, 0, 128, 128);
-                }
-            }
+            VgaRgbModeFillBackground(0,128,128);
         }
 
     }
@@ -242,4 +233,52 @@ void print_str(char* str) {
 
 void print_set_color(uint8_t foreground, uint8_t background) {
     if(vga_current == VGA_MODE_80x25)color = foreground + (background << 4);
+}
+
+bool LouUpdateTextWindow(PWINDHANDLE WindowHandle,TEXT_WINDOW_EVENT Update);
+
+void VgaPutCharecterRgb(char Charecter,PWINDHANDLE Handle, uint8_t r, uint8_t g, uint8_t b){
+    uint16_t xz,yz;
+
+
+    CharMapping* Map = GetCharecterMap(Charecter);
+
+    if(Map == 0x00){
+        return;
+    }
+
+    if(Charecter == '\n'){
+        Handle->Cursor.x = 0;
+        Handle->Cursor.y += 12;
+        return;
+    }
+    else if(Charecter == ' '){
+        Handle->Cursor.x += 4;
+        return;
+    }
+
+    if(Handle->Cursor.y + > Handle->Charecteristics.Dimentions.height){
+        LouUpdateTextWindow(Handle , TEXT_WINDOW_BUFFER_OVERFLOW);
+    }
+
+    if((Handle->Cursor.x + Map->width) > Handle->Charecteristics.Dimentions.width){
+        Handle->Cursor.x = 0;
+        Handle->Cursor.y += 12;
+    }
+
+
+    uint16_t x = Handle->Charecteristics.Dimentions.x + Handle->Cursor.x;
+    uint16_t y = Handle->Charecteristics.Dimentions.y + Handle->Cursor.y;
+
+    for(yz = 0; yz < 11; yz++){
+        uint8_t Ybyte = Map->pixels[yz];
+        for(xz = 0 ; xz < 8; xz++){
+            if((Ybyte >> (7 - xz)) & 0x01){
+                VgaPutPixelRgb(x + xz, y + yz, r, g, b);
+            }
+        }
+    }
+
+    Handle->Cursor.x = (Map->width + Handle->Cursor.x);
+
 }

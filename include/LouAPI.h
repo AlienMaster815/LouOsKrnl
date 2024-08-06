@@ -23,6 +23,7 @@
 #include <Random.h>
 
 #include <windows.h>
+#include <geometry.h>
 
 #define ACPIBUFFER 512
 #define ERRMAPPINGIO -1

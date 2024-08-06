@@ -15,24 +15,16 @@ LOUSTATUS SilentPanic() {
 	return Status;
 }
 
+void VgaRgbModeFillBackground(uint8_t r,uint8_t g, uint8_t b);
+
 void LouPanic(char* error_message,STATUS recoverable) {
 	
 	if (true == recoverable) {
 		if(LOUSTATUS_GOOD == SilentPanic()) return;
 	}
 
-	Set_Color(PRINT_COLOR_WHITE, PRINT_COLOR_BLUE);
-	
-	init_terminal();
-	
-	
-	LouPrint("%x%y!!!SYSTEM CRASH!!!",27,7);
-
-	LouPrint("%x%yReason For Crash:", 27, 8);
-	LouPrint("%x%y%s", 27, 9, error_message);
-	
-	LouPrint("%x%ySystem Is NOT Recoverable: System Halted", 17, 11);
-	
+	//VgaRgbModeFillBackground(0,120,215);
+	LouPrint(error_message);
     asm volatile("cli");
     asm volatile("hlt");
 	while (1);

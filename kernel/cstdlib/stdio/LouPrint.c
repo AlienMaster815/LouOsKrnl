@@ -13,7 +13,27 @@
 #include <stdint.h>
 #include <drivers/display/vga.h>
 
+void VgaPutCharecterRgb(char Charecter, PWINDHANDLE Handle, uint8_t r, uint8_t g, uint8_t b);
 
+PWINDHANDLE DebugWindow = 0x00; 
+
+#define INCREASE_Y 16+1
+#define INCREASE_X 16+1
+
+bool AttatchWindowToKrnlDebug(
+    PWINDHANDLE WindowToAtttch
+){
+    if(DebugWindow != 0x00){
+        return false;
+    }
+    DebugWindow = WindowToAtttch;
+    //LouPrint("Lousine Kernel Debugger Succesfully Attatched To Window Handle(%h)\n", WindowToAtttch);
+    
+    for(uint8_t i = 0 ; i < 10; i++){
+        LouPrint("Aa Bb\n");
+    }
+    while(1);
+}
 
 #ifdef __x86_64__
 void print_binary64(uint64_t number);
@@ -57,6 +77,7 @@ void uintToHexString(uint64_t number, char* hexString);
             }
             case 'c': {
                 char c = va_arg(args, int);
+                
                 putchar(c);
                 break;
             }
@@ -133,8 +154,15 @@ void uintToHexString(uint64_t number, char* hexString);
             format++; // Move to the next character in the format string
         }
         else {
-            putchar(*format);
-            format++;
+            if(DebugWindow != 0x00){
+
+                VgaPutCharecterRgb(*format,DebugWindow,0,0,0);
+                format++;
+            }
+            else{
+                //putchar(*format);
+                format++;
+            }
         }
     }
     va_end(args);

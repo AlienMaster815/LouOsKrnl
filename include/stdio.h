@@ -95,7 +95,6 @@ int putchar(int ic);
 void uintToHexString(uint32_t number, char* hexString);
 
 
-
 #endif
 #endif
 

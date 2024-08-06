@@ -186,6 +186,8 @@ LOUSTATUS User_Mode_Initialization(){
 LOUSTATUS LouKeCreateThread(void* Function,void* FunctionParameters, uint32_t StackSize);
 void TestLoop1();
 
+void TestFontFunction();
+
 KERNEL_ENTRY Lou_kernel_start(uint32_t foo, uint32_t Apic){
     
 	struct multiboot_tag* mboot = (struct multiboot_tag*)(uintptr_t)(foo + 8);
@@ -218,7 +220,25 @@ KERNEL_ENTRY Lou_kernel_start(uint32_t foo, uint32_t Apic){
 
     //ReadDrive(1,0,0,1,FOOBAR);
     
-    HWind = LouCreateWindow(10, 10,500,300,0x00);
+    WINDOW_CHARECTERISTICS Charecteristics;
+
+    Charecteristics.Type = TEXT_WINDOW;
+
+    HWind = LouCreateWindow(
+        10, 10,
+        500,300,
+        0x00, 
+        &Charecteristics
+    );
+
+    LouUpdateWindow(
+        10,10,
+        100,100,
+        HWind
+    );
+    //plot_Line(0,0,30,30,255,0,0);
+
+    AttatchWindowToKrnlDebug(HWind);
 
     while (1) {
         asm("hlt");

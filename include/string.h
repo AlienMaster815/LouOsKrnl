@@ -57,5 +57,15 @@ KERNEL_IMPORT void long_double_to_string(string Buffer, long double value);
 KERNEL_IMPORT char* ConvertWCharToChar(const wchar_t* wstr);
 #endif
 
+#define CHAR_WIDTH 16
+#define CHAR_HEIGHT 16
+
+#define SupportedCharecters 36
+
+typedef struct {
+    char character;    
+    uint16_t width;
+    wchar_t pixels[CHAR_HEIGHT];
+} CharMapping;
 
 #endif
