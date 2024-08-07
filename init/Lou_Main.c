@@ -169,7 +169,7 @@ LOUSTATUS Advanced_Kernel_Initialization(){
     RegisterHardwareInterruptHandler(PS2KeyboardHandler, 1);
     //RegisterHardwareInterruptHandler(PS2MouseHandler, 12);
 
-    if (LOUSTATUS_GOOD != InitThreadManager())LouPrint("SHIT!!!:I Hope You Hate Efficency: No Thread Management\n");
+    //if (LOUSTATUS_GOOD != InitThreadManager())LouPrint("SHIT!!!:I Hope You Hate Efficency: No Thread Management\n");
 
     SetInterruptFlags();
 
@@ -195,6 +195,18 @@ KERNEL_ENTRY Lou_kernel_start(uint32_t foo, uint32_t Apic){
 	//vga set for debug
     setup_vga_systems();
     
+    WINDOW_CHARECTERISTICS Charecteristics;
+
+    Charecteristics.Type = TEXT_WINDOW;
+
+    HWind = LouCreateWindow(
+        10, 10,
+        600,400,
+        0x00, 
+        &Charecteristics
+    );
+    AttatchWindowToKrnlDebug(HWind);
+
 	LouPrint("Lou Version %s %s\n", KERNEL_VERSION ,KERNEL_ARCH);
     LouPrint("Hello Im Lousine Getting Things Ready\n");
     
@@ -219,26 +231,6 @@ KERNEL_ENTRY Lou_kernel_start(uint32_t foo, uint32_t Apic){
     //uint16_t* FOOBAR = LouMalloc(2*KILOBYTE);
 
     //ReadDrive(1,0,0,1,FOOBAR);
-    
-    WINDOW_CHARECTERISTICS Charecteristics;
-
-    Charecteristics.Type = TEXT_WINDOW;
-
-    HWind = LouCreateWindow(
-        10, 10,
-        500,300,
-        0x00, 
-        &Charecteristics
-    );
-
-    LouUpdateWindow(
-        10,10,
-        100,100,
-        HWind
-    );
-    //plot_Line(0,0,30,30,255,0,0);
-
-    AttatchWindowToKrnlDebug(HWind);
 
     while (1) {
         asm("hlt");

@@ -14,6 +14,8 @@
 #include <drivers/display/vga.h>
 
 void VgaPutCharecterRgb(char Charecter, PWINDHANDLE Handle, uint8_t r, uint8_t g, uint8_t b);
+bool LouUpdateTextWindow(PWINDHANDLE WindowHandle,TEXT_WINDOW_EVENT Update);
+
 
 PWINDHANDLE DebugWindow = 0x00; 
 
@@ -28,11 +30,15 @@ bool AttatchWindowToKrnlDebug(
     }
     DebugWindow = WindowToAtttch;
     //LouPrint("Lousine Kernel Debugger Succesfully Attatched To Window Handle(%h)\n", WindowToAtttch);
-    
-    for(uint8_t i = 0 ; i < 10; i++){
-        LouPrint("Aa Bb\n");
+    if(DebugWindow == 0x00){
+        return false;
     }
-    while(1);
+
+    DebugWindow->ForgroundColor.r = 0;
+    DebugWindow->ForgroundColor.g = 0;
+    DebugWindow->ForgroundColor.b = 0;
+
+    LouUpdateWindow(DebugWindow->CurrentX, DebugWindow->CurrentY,DebugWindow->CurrentWidth,DebugWindow->CurrentHight, DebugWindow);
 }
 
 #ifdef __x86_64__
@@ -78,7 +84,7 @@ void uintToHexString(uint64_t number, char* hexString);
             case 'c': {
                 char c = va_arg(args, int);
                 
-                putchar(c);
+                VgaPutCharecterRgb(c,DebugWindow,0,255,0);
                 break;
             }
             case 'h':{
@@ -147,7 +153,15 @@ void uintToHexString(uint64_t number, char* hexString);
             }
             default: {
                 putchar('%');
-                putchar(*format);
+                if(DebugWindow != 0x00){
+                    VgaPutCharecterRgb('%',DebugWindow,0,255,0);
+                    VgaPutCharecterRgb(*format,DebugWindow,0,255,0);
+                    //format++;
+                }
+                else{
+                    //putchar(*format);
+                    //format++;
+                }                
                 break;
             }
             }
@@ -155,8 +169,7 @@ void uintToHexString(uint64_t number, char* hexString);
         }
         else {
             if(DebugWindow != 0x00){
-
-                VgaPutCharecterRgb(*format,DebugWindow,0,0,0);
+                VgaPutCharecterRgb(*format,DebugWindow,0,255,0);
                 format++;
             }
             else{

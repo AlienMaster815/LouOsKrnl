@@ -86,4 +86,25 @@ typedef enum{
     TEXT_WINDOW_BUFFER_OVERFLOW = 1,
 }TEXT_WINDOW_EVENT;
 
+typedef struct __attribute__((packed)) _FramebufferHandle{
+    uint16_t x;
+    uint16_t y;
+    uint16_t width;
+    uint16_t height;
+}FRAME_BUFFER_HANDLE, * PFRAME_BUFFER_HANDLE;
+
+void* GetFrameBufferAddress(
+    uint16_t x, uint16_t y
+);
+
+void FrameBufferMemMov(
+    PFRAME_BUFFER_HANDLE FrameHandle, 
+    PWINDHANDLE WindowOfCopy,
+    uint64_t xDest, 
+    uint64_t yDest
+); 
+
+bool LouUpdateTextWindow(PWINDHANDLE WindowHandle,TEXT_WINDOW_EVENT Update);
+
+
 #endif

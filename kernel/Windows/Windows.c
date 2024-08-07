@@ -81,10 +81,10 @@ bool LouUpdateWindow(
     WindHandle->CurrentWidth = width;
     WindHandle->CurrentHight = height;
 
-    WindHandle->Charecteristics.Dimentions.x = x+6+1;
+    WindHandle->Charecteristics.Dimentions.x = x+6;
     WindHandle->Charecteristics.Dimentions.y = y+2+27+1;
-    WindHandle->Charecteristics.Dimentions.width = (width-x + 1);
-    WindHandle->Charecteristics.Dimentions.height = height -(y + 24 + 1);
+    WindHandle->Charecteristics.Dimentions.width = (width-x + 1)- 2;
+    WindHandle->Charecteristics.Dimentions.height = height -(y + 24 + 1) + 1;
 
     DrawRectangle(
         x,y,
@@ -238,9 +238,22 @@ bool LouUpdateTextWindow(PWINDHANDLE WindowHandle,TEXT_WINDOW_EVENT Update){
 
     switch (Update){
         case TEXT_WINDOW_BUFFER_OVERFLOW:{
-        
+            
+            FRAME_BUFFER_HANDLE FrameHandle;
+            FrameHandle.x = WindowHandle->Charecteristics.Dimentions.x;
+            FrameHandle.y = WindowHandle->Charecteristics.Dimentions.y + 17;
+            FrameHandle.width = WindowHandle->Charecteristics.Dimentions.width;
+            FrameHandle.height = WindowHandle->Charecteristics.Dimentions.height - 19;
 
-            while(1);
+            FrameBufferMemMov(
+                &FrameHandle,
+                WindowHandle,
+                WindowHandle->Charecteristics.Dimentions.x,
+                WindowHandle->Charecteristics.Dimentions.y   
+            );
+
+
+            //Draw2DBorder(FrameHandle.x,FrameHandle.y,FrameHandle.width, FrameHandle.height,255,0,0);
             break;
         }
 
@@ -297,9 +310,9 @@ PWINDHANDLE LouCreateWindow(
 
     //fill out windows charecteristics
     WindHandle->Charecteristics.Type = Charecteristics->Type;
-    WindHandle->Charecteristics.Dimentions.x = x+6+1;
+    WindHandle->Charecteristics.Dimentions.x = x+6;
     WindHandle->Charecteristics.Dimentions.y = y+2+27+1;
-    WindHandle->Charecteristics.Dimentions.width = (width-x + 1);
+    WindHandle->Charecteristics.Dimentions.width = (width-x + 1)- 3;
     WindHandle->Charecteristics.Dimentions.height = height -(y + 24 + 1);
 
     WindHandle->Cursor.x = 0;

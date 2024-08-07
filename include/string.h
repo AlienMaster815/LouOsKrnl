@@ -60,7 +60,7 @@ KERNEL_IMPORT char* ConvertWCharToChar(const wchar_t* wstr);
 #define CHAR_WIDTH 16
 #define CHAR_HEIGHT 16
 
-#define SupportedCharecters 36
+#define SupportedCharecters 48 * 2
 
 typedef struct {
     char character;    

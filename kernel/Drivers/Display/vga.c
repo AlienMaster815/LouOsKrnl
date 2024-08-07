@@ -235,50 +235,134 @@ void print_set_color(uint8_t foreground, uint8_t background) {
     if(vga_current == VGA_MODE_80x25)color = foreground + (background << 4);
 }
 
-bool LouUpdateTextWindow(PWINDHANDLE WindowHandle,TEXT_WINDOW_EVENT Update);
+bool LouUpdateTextWindow(PWINDHANDLE WindowHandle, TEXT_WINDOW_EVENT Update);
 
-void VgaPutCharecterRgb(char Charecter,PWINDHANDLE Handle, uint8_t r, uint8_t g, uint8_t b){
-    uint16_t xz,yz;
+void VgaPutCharecterRgb(char Character, PWINDHANDLE Handle, uint8_t r, uint8_t g, uint8_t b) {
+    uint16_t xz, yz;
 
-
-    CharMapping* Map = GetCharecterMap(Charecter);
-
-    if(Map == 0x00){
-        return;
-    }
-
-    if(Charecter == '\n'){
+    if (Character == '\n') {
         Handle->Cursor.x = 0;
-        Handle->Cursor.y += 12;
+        if ((Handle->Cursor.y + 34) > Handle->Charecteristics.Dimentions.height) {
+            LouUpdateTextWindow(Handle, TEXT_WINDOW_BUFFER_OVERFLOW);
+            }else{
+            Handle->Cursor.y += 17;
+        }
+        return;
+    } else if (Character == ' ') {
+        Handle->Cursor.x += 8;
         return;
     }
-    else if(Charecter == ' '){
-        Handle->Cursor.x += 4;
+
+    CharMapping* Map = GetCharecterMap(Character);
+
+    if (Map == 0x00) {
         return;
     }
 
-    if(Handle->Cursor.y + > Handle->Charecteristics.Dimentions.height){
-        LouUpdateTextWindow(Handle , TEXT_WINDOW_BUFFER_OVERFLOW);
+    if ((Handle->Cursor.x + Map->width + 8) > Handle->Charecteristics.Dimentions.width) {
+        VgaPutCharecterRgb('\n', Handle , 0, 0, 0);
     }
-
-    if((Handle->Cursor.x + Map->width) > Handle->Charecteristics.Dimentions.width){
-        Handle->Cursor.x = 0;
-        Handle->Cursor.y += 12;
-    }
-
 
     uint16_t x = Handle->Charecteristics.Dimentions.x + Handle->Cursor.x;
     uint16_t y = Handle->Charecteristics.Dimentions.y + Handle->Cursor.y;
 
-    for(yz = 0; yz < 11; yz++){
-        uint8_t Ybyte = Map->pixels[yz];
-        for(xz = 0 ; xz < 8; xz++){
-            if((Ybyte >> (7 - xz)) & 0x01){
+    for (yz = 0; yz < 16; yz++) {
+        wchar_t Ybyte = Map->pixels[yz];
+        for (xz = 0; xz < 16; xz++) {
+            if ((Ybyte >> (15 - xz)) & 0x01) {
                 VgaPutPixelRgb(x + xz, y + yz, r, g, b);
             }
         }
     }
 
-    Handle->Cursor.x = (Map->width + Handle->Cursor.x);
+    Handle->Cursor.x += Map->width;
+}
 
+void* GetFrameBufferAddress(
+    uint16_t x, uint16_t y
+){
+
+    if(FramebufferInformation != 0x00){
+
+        // Calculate the offset in the framebuffer
+        uint32_t bytes_per_pixel = FramebufferInformation->common.framebuffer_bpp / 8;
+        uint8_t* framebuffer = (uint8_t*)(uintptr_t)FramebufferInformation->common.framebuffer_addr;
+
+        // Ensure x and y are within the screen bounds
+        if ((x >= FramebufferInformation->common.framebuffer_width) || (y >= FramebufferInformation->common.framebuffer_height)) {
+            return false; // Out of bounds, do nothing
+        }
+
+        // Calculate the position in the framebuffer
+        uint32_t pixel_offset = (y * FramebufferInformation->common.framebuffer_pitch) + (x * bytes_per_pixel);
+
+        return(void*)&framebuffer[pixel_offset];
+    }
+    else if(VBE_INFO != 0x00){
+        // Calculate the offset in the framebuffer
+        uint32_t bytes_per_pixel = VBE_INFO->vbe_mode_info.bpp / 8;
+        uint8_t* framebuffer = (uint8_t*)(uintptr_t)VBE_INFO->vbe_mode_info.framebuffer;
+
+        // Ensure x and y are within the screen bounds
+        if (x >= VBE_INFO->vbe_mode_info.width || y >= VBE_INFO->vbe_mode_info.height) {
+            return false; // Out of bounds, do nothing
+        }
+
+        //Calculate the position in the framebuffer
+        uint32_t pixel_offset = (y * VBE_INFO->vbe_mode_info.pitch) + (x * bytes_per_pixel);
+
+        return(void*)&framebuffer[pixel_offset];
+
+    }
+}
+
+void FrameBufferMemMov(
+    PFRAME_BUFFER_HANDLE FrameHandle, 
+    PWINDHANDLE WindowOfCopy,
+    uint64_t xDest, 
+    uint64_t yDest
+    ){
+    
+    uint8_t BytesPerPixel = 0;
+    uint16_t Width =  FrameHandle->width;
+    uint16_t Height = FrameHandle->height;
+    uint16_t StartX = FrameHandle->x;
+    uint16_t StartY = FrameHandle->y;
+
+    if (FramebufferInformation != 0x00) {
+        BytesPerPixel = FramebufferInformation->common.framebuffer_bpp / 8;
+    } else if (VBE_INFO != 0x00) {
+        BytesPerPixel = VBE_INFO->vbe_mode_info.bpp / 8;
+    } else {
+        return; // Handle case where neither FramebufferInformation nor VBE_INFO is valid
+    }
+
+    for (uint16_t y = 0; y <= Height; y++) {
+        for(uint16_t x = 0 ; x <= Width; x++){
+            void* dest = GetFrameBufferAddress(xDest + x, yDest + y);
+            void* src = GetFrameBufferAddress(StartX + x, StartY + y);
+        
+            if (BytesPerPixel == 4) {
+                *(uint8_t*)(dest) = *(uint8_t*)(src);
+                *(uint8_t*)(dest+1) = *(uint8_t*)(src+1);
+                *(uint8_t*)(dest+2) = *(uint8_t*)(src+2);
+                *(uint8_t*)(dest+3) = *(uint8_t*)(src+3);
+                
+                *(uint8_t*)(src)   = 0;
+                *(uint8_t*)(src+1) = 0;
+                *(uint8_t*)(src+2) = 0;
+                *(uint8_t*)(src+3) = 0;
+
+            } else if (BytesPerPixel == 3) {
+                *(uint8_t*)(dest) = *(uint8_t*)(src);
+                *(uint8_t*)(dest+1) = *(uint8_t*)(src+1);
+                *(uint8_t*)(dest+2) = *(uint8_t*)(src+2);
+
+                *(uint8_t*)(src)   = 0;
+                *(uint8_t*)(src+1) = 0;
+                *(uint8_t*)(src+2) = 0;
+            }
+
+        }
+    }
 }
