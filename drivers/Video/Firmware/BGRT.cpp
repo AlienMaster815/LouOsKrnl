@@ -53,6 +53,6 @@ LOUDDK_API_ENTRY LOUSTATUS InitBGRT() {
         parseBGRT(bgrt);
     }
 
-    LouFree(Buffer, ACPIBUFFER);
+    LouFree(Buffer);
     return Status;
 }

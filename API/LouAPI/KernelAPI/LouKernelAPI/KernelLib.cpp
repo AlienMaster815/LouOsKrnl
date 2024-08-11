@@ -58,13 +58,17 @@ LOUSTATUS LouKeGetSystemFirmwareTable(
 		LouPrint("Firmware Table Id Could Not Be Found:ID NUMBER:%d\n",FirmwareTabeId);
 		return Status;
 	}
-	
+
+
 	Status = LouKeGetSystemFirmwareTableBuffer(
 		FirmwareTableProviderSignature,
 		(void*)TablePointer,
 		FirmwareTableBuffer,
 		&BufferLength
 	);
+	
+
+
 	if (Status != LOUSTATUS_GOOD) {
 		LouPrint("Firmware Table Could Not Be Created\nREASON: ");
 		if(Status == (LOUSTATUS)STATUS_BUFFER_TOO_SMALL)LouPrint("Buffer Too Small\n");
@@ -72,6 +76,7 @@ LOUSTATUS LouKeGetSystemFirmwareTable(
 	}
 
 	*ReturnLength = BufferLength;
+
 
 	return Status;
 }

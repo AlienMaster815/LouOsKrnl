@@ -55,6 +55,6 @@ LOUDDK_API_ENTRY LOUSTATUS InitECDT() {
         parseECDT(ecdt);
     }
 
-    LouFree(Buffer, ACPIBUFFER);
+    LouFree(Buffer);
     return Status;
 }

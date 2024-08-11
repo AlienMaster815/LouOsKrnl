@@ -2,6 +2,8 @@ bits 32
 ;=======================================================
 ;                 Multiboot Header
 section .multiboot_header
+global MBOOTHEADER
+align 4
 MBOOTHEADER:
     dd 0xE85250D6             ;Magic number
     dd 0                      ;ARCHITECTURE
@@ -166,8 +168,12 @@ long_mode_start:
 
 
 global LouKeGetStackSize
+global LouKeGetBspStackBottom
 
 LouKeGetStackSize:
     mov rax, STACK_SIZE 
     ret
 
+LouKeGetBspStackBottom:
+    mov rax, stack_bottom
+    ret

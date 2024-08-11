@@ -60,6 +60,7 @@ void ParseMBootTags(struct multiboot_tag* MBOOT) {
         }
         case (MULTIBOOT_TAG_TYPE_MODULE): {
             struct multiboot_tag_module *mod = (struct multiboot_tag_module *) MBOOT;
+
             handle_module(mod->mod_start, mod->mod_end);
             break;
         }

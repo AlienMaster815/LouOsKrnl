@@ -29,7 +29,7 @@ uintptr_t RBP_Current;
 
 
 
-char* KERNEL_VERSION = "0.0.438 RSC-1 Multiboot 2";
+char* KERNEL_VERSION = "0.0.441 RSC-1 Multiboot 2";
 
 
 #ifdef __x86_64__
@@ -58,7 +58,7 @@ void PS2MouseHandler();
 void PageFault();
 void GPF();
 void DoubleFault();
-void Clock();
+void Clock(uint64_t SavedState);
 void INTERRUPT(uint8_t interrupt_number);
 void NMI();
 void BreakPoint();
@@ -85,6 +85,8 @@ void CreateNewPageSystem();
 uint64_t GetRamSize();
 void InitializeSystemCalls();
 void SYSCALLS();
+void InitializePs2Mouse();
+void initialize_ps2_keyboard();
 
 LOUSTATUS InitializeDirecAccess();
 LOUSTATUS InitializeDynamicHardwareInterruptHandleing();
@@ -96,6 +98,8 @@ void HardwareInterruptManager();
 void InitializeGenericTables();
 
 void InitializeVesaSystem();
+
+uint64_t getTrampolineAddress();
 
 PWINDHANDLE HWind;
 
@@ -128,10 +132,10 @@ LOUSTATUS Lou_kernel_early_initialization(){
     RegisterInterruptHandler(SYSCALLS, 0x80);
     RegisterInterruptHandler(Clock, INTERRUPT_SERVICE_ROUTINE_32);
     RegisterInterruptHandler(CookieCheckFail, 0x29);
-    //for(uint8_t i = 33; i < 48; i++){
-        RegisterInterruptHandler(HardwareInterruptManager, 33);
-        //RegisterInterruptHandler(HardwareInterruptManager, 44);
-    //}
+    RegisterInterruptHandler((void(*))getTrampolineAddress(), 0x50);
+
+    RegisterInterruptHandler(HardwareInterruptManager, 33);
+    RegisterInterruptHandler(HardwareInterruptManager, 44);
 
 
 
@@ -142,18 +146,20 @@ LOUSTATUS Lou_kernel_early_initialization(){
 }
 
 void UpdateDeviceInformationTable();
+void StorPortInitializeAllDevices();
 
 LOUSTATUS Set_Up_Devices(){
-
+    initialize_ps2_keyboard();
+    //InitializePs2Mouse();
     PCI_Setup();
     //LastSataRun();
-    UpdateDeviceInformationTable();
+    //UpdateDeviceInformationTable();
     //FileSystemSetup();
 
     return LOUSTATUS_GOOD;
 }
 
-LOUSTATUS Advanced_Kernel_Initialization(){
+void Advanced_Kernel_Initialization(){
     LOUSTATUS Status = LOUSTATUS_GOOD;
     //if(LOUSTATUS_GOOD != InitFADT())LouPrint("Unable To Start FADT Handleing\n");
     //if(LOUSTATUS_GOOD != InitDSDT())LouPrint("Unable To Start DSDT Handleing\n");
@@ -167,13 +173,9 @@ LOUSTATUS Advanced_Kernel_Initialization(){
     if (InitializeMainInterruptHandleing() != LOUSTATUS_GOOD)LouPrint("Unable To Start APIC System\n");
     InitializeDynamicHardwareInterruptHandleing();
     RegisterHardwareInterruptHandler(PS2KeyboardHandler, 1);
-    //RegisterHardwareInterruptHandler(PS2MouseHandler, 12);
-
-    //if (LOUSTATUS_GOOD != InitThreadManager())LouPrint("SHIT!!!:I Hope You Hate Efficency: No Thread Management\n");
-
+    RegisterHardwareInterruptHandler(PS2MouseHandler, 12);
+    if (LOUSTATUS_GOOD != InitThreadManager())LouPrint("SHIT!!!:I Hope You Hate Efficency: No Thread Management\n");
     SetInterruptFlags();
-
-    return Status;
 }
 
 LOUSTATUS User_Mode_Initialization(){
@@ -184,20 +186,22 @@ LOUSTATUS User_Mode_Initialization(){
  bool LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize);
 
 LOUSTATUS LouKeCreateThread(void* Function,void* FunctionParameters, uint32_t StackSize);
+void LouKeDestroyThread();
+
 void TestLoop1();
+void TestLoop2();
 
 void TestFontFunction();
+extern void MachineCodeDebug(uint64_t FOO);
 
-KERNEL_ENTRY Lou_kernel_start(uint32_t foo, uint32_t Apic){
-    
-	struct multiboot_tag* mboot = (struct multiboot_tag*)(uintptr_t)(foo + 8);
-    ParseMBootTags(mboot);
-	//vga set for debug
-    setup_vga_systems();
+
+
+void StartDebugger(){
     
     WINDOW_CHARECTERISTICS Charecteristics;
 
     Charecteristics.Type = TEXT_WINDOW;
+    Charecteristics.WindowName = "KrnlDebugger.exe";
 
     HWind = LouCreateWindow(
         10, 10,
@@ -206,17 +210,29 @@ KERNEL_ENTRY Lou_kernel_start(uint32_t foo, uint32_t Apic){
         &Charecteristics
     );
     AttatchWindowToKrnlDebug(HWind);
+}
+
+void LouKeRunOnNewStack(void (*func)(void), void* FunctionParameters, size_t stack_size);
+
+
+KERNEL_ENTRY Lou_kernel_start(uint32_t foo){
+    
+	struct multiboot_tag* mboot = (struct multiboot_tag*)(uintptr_t)(foo + 8);
+    ParseMBootTags(mboot);
+	//vga set for debug
+    setup_vga_systems();
+
+    StartDebugger();
 
 	LouPrint("Lou Version %s %s\n", KERNEL_VERSION ,KERNEL_ARCH);
     LouPrint("Hello Im Lousine Getting Things Ready\n");
-    
 
-
+    LouPrint("Hello World\n");
 
     //INITIALIZE IMPORTANT THINGS FOR US LATER
-    if(Lou_kernel_early_initialization() != LOUSTATUS_GOOD)LouPanic("Early Initialization Failed",BAD);
-    InitializeGenericTables();
-    if (Advanced_Kernel_Initialization() != LOUSTATUS_GOOD)LouPrint("WARNING: CertainFeatures Are Not Available\n");
+    Lou_kernel_early_initialization();
+    Advanced_Kernel_Initialization();
+    //InitializeGenericTables();
 
     //SETUP DEVICES AND DRIVERS
     //if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);		
@@ -224,13 +240,14 @@ KERNEL_ENTRY Lou_kernel_start(uint32_t foo, uint32_t Apic){
     // Initialize User Mode
     // if(User_Mode_Initialization() != LOUSTATUS_GOOD)LouPanic("User Mode Initialiation Failed",BAD);
 
+
     LouPrint("Hello World\n");
     
-    //TODO:Creaate A trim function that takes origninal size and size after trim and trim the end off
 
+    //LouKeCreateThread(TestLoop1, 0x00 , 2 * MEGABYTE);
+    //LouKeCreateThread(TestLoop2, 0x00 , 2 * MEGABYTE);
+    //LouPrint("Address of test loop:%h\n",TestLoop1);
     //uint16_t* FOOBAR = LouMalloc(2*KILOBYTE);
-
-    //ReadDrive(1,0,0,1,FOOBAR);
 
     while (1) {
         asm("hlt");
@@ -240,16 +257,18 @@ KERNEL_ENTRY Lou_kernel_start(uint32_t foo, uint32_t Apic){
 	// IF the Kernel returns from this
 	// the whole thing crashes
 }
-/*
+
+void TestLoop3();
+
+
 void TestLoop1() {
-	while (1) {
-		LouPrint("Thread 1 Execution\n");
-	}
+
+    LouPrint("Thread 1 Execution\n");
+    while(1);
 }
 
+
+
 void TestLoop2() {
-	while (1) {
-		LouPrint("Thread 2 Execution\n");
-	}
+	LouPrint("Thread 2 Execution\n");
 }
-*/

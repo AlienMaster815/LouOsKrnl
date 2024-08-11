@@ -25,9 +25,10 @@ section .text
 extern InterruptRouter
 extern PIC_sendEOI
 
+
+
 %macro pusha 0	
 	
-
 	push rax
 	push rbx
 	push rcx
@@ -49,16 +50,12 @@ extern PIC_sendEOI
 	mov [InstructionPointer], rax
 	xor rax, rax
 
-
-
-	;push rbp
-	;push rsp
 %endmacro
 
 %macro popa 0
 	;pop rsp
 	;pop rbp
-	
+
 	pop r15
 	pop r14
 	pop r13
@@ -291,6 +288,9 @@ global ISR197
 global ISR198
 global ISR199
 global ISR200
+
+global HandleSwitch
+global StoreContext 
 
 ISR0:
 	pusha
@@ -1692,3 +1692,4 @@ ISR200:
 	mov [InterruptNum], ah
 	Handle
 	hlt
+

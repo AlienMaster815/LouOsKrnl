@@ -531,15 +531,15 @@ AhciInterruptHandler(
 
     // Normal Command Completion
     // 3.3.5
-    // A D2H Register FIS has been received with the ‘I’ bit set, and has been copied into system memory.
+    // A D2H Register FIS has been received with the ï¿½Iï¿½ bit set, and has been copied into system memory.
     PxISMasked.DHRS = PxIS.DHRS;
-    // A PIO Setup FIS has been received with the ‘I’ bit set, it has been copied into system memory.
+    // A PIO Setup FIS has been received with the ï¿½Iï¿½ bit set, it has been copied into system memory.
     PxISMasked.PSS = PxIS.PSS;
-    // A DMA Setup FIS has been received with the ‘I’ bit set and has been copied into system memory.
+    // A DMA Setup FIS has been received with the ï¿½Iï¿½ bit set and has been copied into system memory.
     PxISMasked.DSS = PxIS.DSS;
-    // A Set Device Bits FIS has been received with the ‘I’ bit set and has been copied into system memory/
+    // A Set Device Bits FIS has been received with the ï¿½Iï¿½ bit set and has been copied into system memory/
     PxISMasked.SDBS = PxIS.SDBS;
-    // A PRD with the ‘I’ bit set has transferred all of its data.
+    // A PRD with the ï¿½Iï¿½ bit set has transferred all of its data.
     PxISMasked.DPS = PxIS.DPS;
 
     if (PxISMasked.Status != 0)
@@ -549,7 +549,7 @@ AhciInterruptHandler(
 
     // 10.7.1.1
     // Clear port interrupt
-    // It is set by the level of the virtual interrupt line being a set, and cleared by a write of ‘1’ from the software.
+    // It is set by the level of the virtual interrupt line being a set, and cleared by a write of ï¿½1ï¿½ from the software.
     is = (1 << PortExtension->PortNumber);
     StorPortWriteRegisterUlong(AdapterExtension, AdapterExtension->IS, is);
 
@@ -772,6 +772,7 @@ AhciHwFindAdapter(
     __in PBOOLEAN Reserved3
 )
 {
+    
     AHCI_GHC ghc;
     ULONG index, pci_cfg_len;
     PACCESS_RANGE accessRange;
@@ -811,7 +812,7 @@ AhciHwFindAdapter(
     adapterExtension->VendorID = pciConfigData->VendorID;
     adapterExtension->DeviceID = pciConfigData->DeviceID;
     adapterExtension->RevisionID = pciConfigData->RevisionID;
-    // The last PCI base address register (BAR[5], header offset 0x24) points to the AHCI base memory, it’s called ABAR (AHCI Base Memory Register).
+    // The last PCI base address register (BAR[5], header offset 0x24) points to the AHCI base memory, itï¿½s called ABAR (AHCI Base Memory Register).
     adapterExtension->AhciBaseAddress = pciConfigData->u.type0.BaseAddresses[5] & (0xFFFFFFF0);
 
     DbgPrint("\tVendorID: %04x  DeviceID: %04x  RevisionID: %02x\n",
@@ -848,7 +849,7 @@ AhciHwFindAdapter(
     adapterExtension->LastInterruptPort = (ULONG)-1;
 
     // 10.1.2
-    // 1. Indicate that system software is AHCI aware by setting GHC.AE to ‘1’.
+    // 1. Indicate that system software is AHCI aware by setting GHC.AE to ï¿½1ï¿½.
     // 3.1.2 -- AE bit is read-write only if CAP.SAM is '0'
     ghc.Status = StorPortReadRegisterUlong(adapterExtension, &abar->GHC);
     // AE := Highest Significant bit of GHC
@@ -1206,7 +1207,7 @@ AhciActivatePort(
     }
 
     // section 3.3.14
-    // Bits in this field shall only be set to ‘1’ by software when PxCMD.ST is set to ‘1’
+    // Bits in this field shall only be set to ï¿½1ï¿½ by software when PxCMD.ST is set to ï¿½1ï¿½
     cmd.Status = StorPortReadRegisterUlong(AdapterExtension, &PortExtension->Port->CMD);
 
     if (cmd.ST == 0) // PxCMD.ST == 0

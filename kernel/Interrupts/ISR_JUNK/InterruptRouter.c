@@ -1,5 +1,5 @@
 #include <LouAPI.h>
-
+void LouKeRunOnNewStack(void (*func)(void*), void* FunctionParameters, size_t stack_size);
 
 void(*InterruptHandler[256])();
 
@@ -37,7 +37,8 @@ void InterruptRouter(uint8_t Interrupt) {
 	InterruptGlobalCheck = Interrupt;
 
 	if (NULL != InterruptHandler[Interrupt]) {
-		InterruptHandler[Interrupt]();
+		//InterruptHandler[Interrupt]();
+		LouKeRunOnNewStack(InterruptHandler[Interrupt], 0x00, 16 * KILOBYTE);
 		if (!GetAPICStatus())PIC_sendEOI(Interrupt);
 		else local_apic_send_eoi();
 		return;

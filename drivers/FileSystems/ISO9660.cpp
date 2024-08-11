@@ -130,7 +130,7 @@ VolumeDescriptor ISO9660::ReadVolumeDescriptor(uint8_t DrvNum,uint32_t sector, u
             VD.Identifier = 0x0000;
             VD.Version = 0;
             LouPrint("VD Parsed\n");
-            LouFree((RAMADD)Test, BufferSize);
+            LouFree((RAMADD)Test);
             return VD;
         }
         //LouPrint("Test:%bs\n",Test[0]);
@@ -172,7 +172,7 @@ VolumeDescriptor ISO9660::ReadVolumeDescriptor(uint8_t DrvNum,uint32_t sector, u
             VD.Identifier = 0x0000;
             VD.Version = 0;
             LouPrint("VD Parsed\n");
-            LouFree((RAMADD)Test, BufferSize);
+            LouFree((RAMADD)Test);
             return VD;
         }
             
@@ -201,7 +201,7 @@ VolumeDescriptor ISO9660::ReadVolumeDescriptor(uint8_t DrvNum,uint32_t sector, u
 
         LouPrint("VD Parsed\n");
 
-        LouFree((RAMADD)Test, BufferSize);
+        LouFree((RAMADD)Test);
 
         return VD;
 }
@@ -290,7 +290,7 @@ FILE* ISO9660::ISOLouKeFindDirectory(
                 RootLBA = ISOGetLBA(FOO);
                 RootSize = ISOGetDirecotrySize(FOO);
 
-                LouFree((RAMADD)Test,BufferSize);
+                LouFree((RAMADD)Test);
                 uint16_t* Test = (uint16_t*)ReadDrive(
                     DrvNum,
                     RootLBA,
@@ -374,9 +374,9 @@ FILE* ISO9660::ISOLouKefopen(uint8_t DrvNum,string Path){
 
 FILE* ISO9660::ISOLouKefclose(FILE* File){
 
-    uint64_t FOO = *(uint64_t*)File;
+    //uint64_t FOO = *(uint64_t*)File;
 
-    LouFree((RAMADD)File,FOO);
+    LouFree((RAMADD)File);
 
     return 0;
 }

@@ -186,17 +186,38 @@ LOUDDK_API_ENTRY void Sata_init(uint8_t bus, uint8_t slot, uint8_t func) {
 
 	UNUSED NTSTATUS(*AHCI_SYS_DRIVER)(PDRIVER_OBJECT, PUNICODE_STRING) = (NTSTATUS(*)(PDRIVER_OBJECT, PUNICODE_STRING))Handle;
 
-	UNUSED DRIVER_OBJECT FOO;
-	UNUSED UNICODE_STRING BAR;
+	UNUSED PDRIVER_OBJECT FOO = (PDRIVER_OBJECT)LouMalloc(sizeof(DRIVER_OBJECT));
+	UNUSED PUNICODE_STRING BAR = (PUNICODE_STRING)LouMalloc(sizeof(UNICODE_STRING));
 
 	LouPrint("Starting System Module\n");
 
-	//if(!NT_SUCCESS(AHCI_SYS_DRIVER(&FOO , &BAR))){
-	//	LouPanic("Storage Device Unreachable", GOOD);
-	//}
+	if(!NT_SUCCESS(AHCI_SYS_DRIVER(FOO , BAR))){
+		LouPanic("Storage Device Unreachable", GOOD);
+	}
+
 
 	LouPrint("System Loaded\n");
 
+	LouPrint("Initializing Port\n");
+	//UNUSED PSTOR_PORT_STACK_OBJECT StorPortStackObject = GetStorPortObject(FOO);
+
+	//PHW_FIND_ADAPTER FindAhci = (PHW_FIND_ADAPTER)((uint64_t)StorPortStackObject->FindAdapter);
+	//PVOID DeviceExtention = StorPortStackObject->DeviceExtention;
+	//PPORT_CONFIGURATION_INFORMATION ConfigInfo = StorPortStackObject->ConfigInfo;
+	//ConfigInfo->SystemIoBusNumber
+	//__in PVOID DeviceExtension,
+    //__in PVOID HwContext,
+    //__in PVOID BusInformation,
+    //__in PCHAR ArgumentString,
+    //__inout PPORT_CONFIGURATION_INFORMATION ConfigInfo,
+    //__in PBOOLEAN Reserved3
+
+	//LouPrint("Find Adapter:%h\n",FindAhci);
+	
+	//LouPrint("Bus:%h:Slot:%h:Function:%h\n",bus,slot,func);
+	//FindAhci(DeviceExtention, 0,0, 0, ConfigInfo, 0);
+
+	LouPrint("Port Initialized\n");
 	//InitAHCIController(SataDev);
 
 	//RegisterHardwareInterruptHandler(
@@ -487,7 +508,7 @@ LOUSTATUS* StatusOfOperation
 	);
 
 	if(!NT_SUCCESS(*StatusOfOperation) || (returnBuffer == 0x00) | (PhysicalAdress == 0x00)){
-		LouFree((RAMADD)returnBuffer, RequestedBuffer);
+		LouFree((RAMADD)returnBuffer);
 		return 0x00;
 	}
 

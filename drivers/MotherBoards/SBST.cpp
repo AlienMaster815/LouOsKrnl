@@ -45,6 +45,6 @@ LOUDDK_API_ENTRY LOUSTATUS InitSBST() {
 		parseSBST(sbst);
 	}
 
-	LouFree(Buffer, ACPIBUFFER);
+	LouFree(Buffer);
 	return Status;
 }

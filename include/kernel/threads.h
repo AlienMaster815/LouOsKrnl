@@ -1,7 +1,13 @@
 #ifndef _THREADS_H
 #define _THREADS_H
 
+
+#ifdef __cplusplus
+#include <LouDDK.h>
+extern "C" {
+#else
 #include <LouAPI.h>
+#endif
 
 #define MUTEX_FREE 0
 #define MUTEX_LOCKED 1
@@ -11,28 +17,28 @@
 
 
 
+typedef struct {
+    bool locked;
+} mutex_t;
 
-
-typedef struct _Mutex{
-    volatile int Locked;
-}Mutex;
-
-LOUSTATUS ThreadShove(Mutex* m);
-
-
-static inline void MutexGuard(Mutex* m){
-    while (m->Locked){
-        //wait for thread completion
+static inline void MutexLock(mutex_t* m){
+    while(m->locked == true){
+        //spinlock
     }
-    m->Locked = MUTEX_LOCKED;
+    m->locked = true;
 }
 
-static inline void MutexFree(Mutex* m){
-    //mark thread as completed
-    m->Locked = MUTEX_FREE;
+static inline void MutexUnlock(mutex_t* m){
+    m->locked = false;
 }
 
+#ifdef __cplusplus
+}
+#endif
 
-
+typedef enum{
+    KERNEL_THREAD = 1,
+    USER_THREAD = 2,
+}THREAD_TYPE;
 
 #endif

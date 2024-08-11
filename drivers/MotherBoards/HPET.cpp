@@ -59,6 +59,6 @@ LOUDDK_API_ENTRY LOUSTATUS InitHPET() {
         parseHPET(hpet);
     }
 
-    LouFree(Buffer, ACPIBUFFER);
+    LouFree(Buffer);
 	return Status;
 }

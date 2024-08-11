@@ -17,7 +17,7 @@ void VgaPutCharecterRgb(char Charecter, PWINDHANDLE Handle, uint8_t r, uint8_t g
 bool LouUpdateTextWindow(PWINDHANDLE WindowHandle,TEXT_WINDOW_EVENT Update);
 
 
-PWINDHANDLE DebugWindow = 0x00; 
+static PWINDHANDLE DebugWindow = 0x00; 
 
 #define INCREASE_Y 16+1
 #define INCREASE_X 16+1
@@ -50,138 +50,145 @@ void intToString(uint64_t num, char* str);
 //void uintToLittleEndianHexString(uint64_t number, char* hexString);
 void uintToHexString(uint64_t number, char* hexString);
 
- int LouPrint(char* format, ...){
+static mutex_t PrintMutex; 
+
+int LouPrint(char* format, ...) {
+    MutexLock(&PrintMutex);
     va_list args;
     va_start(args, format);
+    
+    if(DebugWindow != 0x00){
 
     while (*format) {
         if (*format == '%') {
             format++; // Move past '%'
-            // Handle format specifiers
             switch (*format) {
-            case 'd': {
-                int64_t num = va_arg(args, int64_t);  // Use int64_t instead of uint64_t
-                char str[21];  // Space for the largest 64-bit integer in base 10
-                intToString((uint64_t)num, str);  // Convert to uint64_t and then to string
-                LouPrint("%s", str);
-                break;
-            }
-            case 's': {
-                char* text = va_arg(args, char*);
-                LouPrint(text);
-                break;
-            }
-            case 'x': {
-                uint64_t X = va_arg(args, uint64_t);
-                Set_X(X);
-                break;
-            }
-            case 'y': {
-                uint64_t Y = va_arg(args, uint64_t);
-                Set_Y(Y);
-                break;
-            }
-            case 'c': {
-                char c = va_arg(args, int);
-                
-                VgaPutCharecterRgb(c,DebugWindow,0,255,0);
-                break;
-            }
-            case 'h':{
-                
-                int64_t num = va_arg(args, int32_t); // get the Number in integer Form
-                char hexString[21]; //Define A string To Print
-                uintToHexString((uint32_t)num,hexString); // Change The Integer To A Hex String
-                LouPrint("%s", hexString); // Print Hex String;
-                break;
-            }
-            case 'b': {
-                format++;
-                switch (*format) {
-                    case 'l' : {
-                        uint64_t num = va_arg(args, int64_t);  // Use int64_t instead of uint64_t
-                        print_binary64(num);
-                        break;
+                case 'd': {
+                    int64_t num = va_arg(args, int64_t);
+                    char str[21];
+                    intToString((uint64_t)num, str);
+                    char* p = str;
+                    while (*p != '\0') {
+                        VgaPutCharecterRgb(*p++, DebugWindow, 0, 255, 0);
                     }
-                    case 'i': {
-                        uint64_t num = va_arg(args, int64_t);
-                        print_binary32((uint32_t)num);
-                        break;
-                    }
-                    case 's' : {
-                        uint64_t num = va_arg(args, int64_t);
-                        print_binary16((uint16_t)num);
-                        break;
-                    }
-                    case 'c': {
-                        uint64_t num = va_arg(args, int64_t);
-                        print_binary8((uint8_t)num);
-                        break;
-                    }
-                    default: {
-                        format--;
-                        break;
-                    }
+                    break;
                 }
-                break;
-            }
-            case 'f':{
-                while(1);
-                format++;
-                switch (*format){
-                    case 'l':{
-                            long double num = va_arg(args,long double);
-                            char str[21];  // Space for the largest 64-bit integer in base 10
-                            long_double_to_string(str,num);
-                            LouPrint(str);
+                case 's': {
+                    char* text = va_arg(args, char*);
+                    while (*text != '\0') {
+                        VgaPutCharecterRgb(*text++, DebugWindow, 0, 255, 0);
+                    }
+                    break;
+                }
+                case 'x': {
+                    uint64_t X = va_arg(args, uint64_t);
+                    Set_X(X);
+                    break;
+                }
+                case 'y': {
+                    uint64_t Y = va_arg(args, uint64_t);
+                    Set_Y(Y);
+                    break;
+                }
+                case 'c': {
+                    char c = va_arg(args, int);
+                    VgaPutCharecterRgb(c, DebugWindow, 0, 255, 0);
+                    break;
+                }
+                case 'h': {
+                    int64_t num = va_arg(args, int32_t);
+                    char hexString[21];
+                    uintToHexString((uint32_t)num, hexString);
+                    char* p = hexString;
+                    while (*p  != '\0') {
+                        VgaPutCharecterRgb(*p++, DebugWindow, 0, 255, 0);
+                    }
+                    break;
+                }
+                case 'b': {
+                    format++;
+                    switch (*format) {
+                        case 'l': {
+                            uint64_t num = va_arg(args, int64_t);
+                            print_binary64(num);
+                            break;
                         }
-                        case 'd':{
-                            double num = va_arg(args, long double);
-                            char str[21];  // Space for the largest 64-bit integer in base 10
-                            double_to_string(str,num);
-                            LouPrint(str);
+                        case 'i': {
+                            uint64_t num = va_arg(args, int64_t);
+                            print_binary32((uint32_t)num);
+                            break;
                         }
-                default:{      
-                    format--;                      
-                    float num = va_arg(args, double);
-                    char str[21];  // Space for the largest 64-bit integer in base 10
-                    float_to_string(str,num);
-                    LouPrint(str);      
+                        case 's': {
+                            uint64_t num = va_arg(args, int64_t);
+                            print_binary16((uint16_t)num);
+                            break;
+                        }
+                        case 'c': {
+                            uint64_t num = va_arg(args, int64_t);
+                            print_binary8((uint8_t)num);
+                            break;
+                        }
+                        default: {
+                            format--;
+                            break;
+                        }
+                    }
+                    break;
                 }
+                case 'f': {
+                    format++;
+                    switch (*format) {
+                        case 'l': {
+                            long double num = va_arg(args, long double);
+                            char str[21];
+                            long_double_to_string(str, num);
+                            char* p = str;
+                            while (*p  != '\0') {
+                                VgaPutCharecterRgb(*p++, DebugWindow, 0, 255, 0);
+                            }
+                            break;
+                        }
+                        case 'd': {
+                            double num = va_arg(args, double);
+                            char str[21];
+                            double_to_string(str, num);
+                            char* p = str;
+                            while (*p  != '\0') {
+                                VgaPutCharecterRgb(*p++, DebugWindow, 0, 255, 0);
+                            }
+                            break;
+                        }
+                        default: {
+                            format--;
+                            float num = va_arg(args, double);
+                            char str[21];
+                            float_to_string(str, num);
+                            char* p = str;
+                            while (*p  != '\0') {
+                                VgaPutCharecterRgb(*p++, DebugWindow, 0, 255, 0);
+                            }
+                            break;
+                        }
+                    }
+                    break;
                 }
-
-            }
-            default: {
-                putchar('%');
-                if(DebugWindow != 0x00){
-                    VgaPutCharecterRgb('%',DebugWindow,0,255,0);
-                    VgaPutCharecterRgb(*format,DebugWindow,0,255,0);
-                    //format++;
+                default: {
+                    VgaPutCharecterRgb('%', DebugWindow, 0, 255, 0);
+                    VgaPutCharecterRgb(*format, DebugWindow, 0, 255, 0);
+                    break;
                 }
-                else{
-                    //putchar(*format);
-                    //format++;
-                }                
-                break;
-            }
             }
             format++; // Move to the next character in the format string
-        }
-        else {
-            if(DebugWindow != 0x00){
-                VgaPutCharecterRgb(*format,DebugWindow,0,255,0);
-                format++;
-            }
-            else{
-                //putchar(*format);
-                format++;
-            }
+        } else {
+            VgaPutCharecterRgb(*format++, DebugWindow, 0, 255, 0);
         }
     }
     va_end(args);
+    }
+    MutexUnlock(&PrintMutex);
     return 0;
-}
 
+}
 #endif
 
 #ifdef __i386__

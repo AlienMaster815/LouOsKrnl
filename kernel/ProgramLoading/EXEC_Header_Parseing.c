@@ -1,76 +1,57 @@
 #include <LouAPI.h>
 
-#define TotalNeededVM SectionHeader[CoffHeader->numberOfSections - 1].virtualAddress + SectionHeader[CoffHeader->numberOfSections - 1].virtualSize
+#define TotalNeededVM (SectionHeader[CoffHeader->numberOfSections - 1].virtualAddress + SectionHeader[CoffHeader->numberOfSections - 1].virtualSize)
 
+uint64_t FindWdkFunctionAddress(string ModuleName, string FunctionName);
 
-uint64_t FindWdkFunctionAddress(
-    string ModuleName,
-    string FunctionName
-);
-
-bool 
-CheckDosHeaderValidity(
-    PDOS_HEADER PHeader
-){
-
-    LouPrint("PHEADER:%h\n",PHeader);
+bool CheckDosHeaderValidity(PDOS_HEADER PHeader) {
+    LouPrint("PHEADER:%h\n", PHeader);
     LouPrint("Magic Value:%c%c\n", PHeader->e_magic[0], PHeader->e_magic[1]);
 
-    if((PHeader->e_magic[0] == 'M') && (PHeader->e_magic[1] == 'Z')) return true;
+    if ((PHeader->e_magic[0] == 'M') && (PHeader->e_magic[1] == 'Z')) return true;
     return false;
 }
 
-typedef enum{
+typedef enum {
     COFF_T,
     PE64_T,
     SECTION_T,
     RICH_T,
-}HeaderType;
+} HeaderType;
 
 #define ISOLATE_COFF (uintptr_t)((uintptr_t)DosHeader->e_lfanew + (uintptr_t)DosHeader)
 #define ISOLATE_PE64 (uintptr_t)(ISOLATE_COFF + (uintptr_t)sizeof(COFF_HEADER))
 
-static inline uintptr_t GetPEHeader(PDOS_HEADER DosHeader,HeaderType T){
-
-    if(T == COFF_T){
+static inline uintptr_t GetPEHeader(PDOS_HEADER DosHeader, HeaderType T) {
+    if (T == COFF_T) {
         return ISOLATE_COFF;
-    }
-    else if(T == PE64_T){
+    } else if (T == PE64_T) {
         return ISOLATE_PE64;
-    }
-    else if(T == SECTION_T){
+    } else if (T == SECTION_T) {
         PPE64_OPTIONAL_HEADER Pe64 = (PPE64_OPTIONAL_HEADER)ISOLATE_PE64;
         return (uintptr_t)&Pe64->PE_Data_Directory_Entries[Pe64->numberOfRvaAndSizes - 1] + sizeof(PE_DATA_DIRECTORY_ENTRY);
     }
-
     return 0x00;
 }
 
 void GetAllPEHeaders(
-    PDOS_HEADER DosHeader,          //in
-    PCOFF_HEADER* CoffHeader,       //out opt
-    PPE64_OPTIONAL_HEADER* PE64Opt, //out opt
-    PSECTION_HEADER* SectionHeaders,//out opt
-    PRICH_HEADER* RichHeader        //out opt
-){
-    //this function retrieves the locations of each header
-    // and respectively gives the header loacation to a 
-    //pointer pointer of its respective header type if
-    // there is a valid address to give it to .e.g if the
-    // pointer pointer is not 0x00 (NULL) 
-
-    //volatile for bug
+    PDOS_HEADER DosHeader,          // in
+    PCOFF_HEADER* CoffHeader,       // out opt
+    PPE64_OPTIONAL_HEADER* PE64Opt, // out opt
+    PSECTION_HEADER* SectionHeaders,// out opt
+    PRICH_HEADER* RichHeader        // out opt
+) {
     volatile PCOFF_HEADER COFF = (volatile PCOFF_HEADER)GetPEHeader(DosHeader, COFF_T);
     volatile PPE64_OPTIONAL_HEADER PE64 = (volatile PPE64_OPTIONAL_HEADER)GetPEHeader(DosHeader, PE64_T);
     volatile PSECTION_HEADER SECTIONS = (volatile PSECTION_HEADER)GetPEHeader(DosHeader, SECTION_T);
 
-    if(CoffHeader != 0x00){
+    if (CoffHeader != 0x00) {
         *CoffHeader = COFF;
     }
-    if(PE64Opt != 0x00){
+    if (PE64Opt != 0x00) {
         *PE64Opt = PE64;
     }
-    if(SectionHeaders != 0x00){
+    if (SectionHeaders != 0x00) {
         *SectionHeaders = SECTIONS;
     }
 }
@@ -78,41 +59,33 @@ void GetAllPEHeaders(
 void ParseImportTables(
     uint64_t ModuleStart,
     PIMPORT_DIRECTORY_ENTRY ImportTable
-){
+) {
     uint8_t i = 0;
     uint8_t j = 0;
     uint64_t TableEntry;
     uint64_t TableOffset;
     string FunctionName;
     string SYSName;
-    while(1){
-        if(ImportTable[j].ImportLookupRva == 0x00){
+    while (1) {
+        if (ImportTable[j].ImportLookupRva == 0x00) {
             break;
         }
-        while(1){
-            
+        while (1) {
             TableEntry = *(uint64_t*)(uintptr_t)(ModuleStart + ImportTable[j].ImportLookupRva + i);
-            if(TableEntry == 0){
+            if (TableEntry == 0) {
                 break;
             }
-            //TableOffset = *(uint16_t*)(uintptr_t)(ModuleStart + TableEntry);
             TableOffset = (i + ImportTable[j].ImportAddressTableRva + ModuleStart);
             FunctionName = (string)(TableEntry + ModuleStart + sizeof(uint16_t));
             SYSName = (string)(ModuleStart + ImportTable[j].NameRva);
 
-            //LouPrint("Table Offset:%h\n", TableOffset);
-            //LouPrint("%s:%s\n", SYSName, FunctionName);
-            //LouPrint("%h\n", FindWdkFunctionAddress(SYSName, FunctionName));
-
             *(uint64_t*)TableOffset = FindWdkFunctionAddress(SYSName, FunctionName);
 
-            i+=sizeof(uint64_t);
-
+            i += sizeof(uint64_t);
         }
         i = 0;
         j++;
     }
-
 }
 
 #define IMAGE_REL_BASED_ABSOLUTE        0x00
@@ -126,7 +99,7 @@ void ParseImportTables(
 #define IMAGE_REL_BASED_MIPS_JMPADDR16  0x08
 #define IMAGE_REL_BASED_IA64_IMM64      0x09
 #define IMAGE_REL_BASED_DIR64           0x0A
-#define IMAGE_REL_BASED_HIGH3ADJ        0x0B      
+#define IMAGE_REL_BASED_HIGH3ADJ        0x0B
 
 typedef struct _IMAGE_BASE_RELOCATION {
     uint32_t VirtualAddress;
@@ -134,21 +107,26 @@ typedef struct _IMAGE_BASE_RELOCATION {
     // Followed by an array of TypeOffset entries
 } IMAGE_BASE_RELOCATION;
 
-static inline 
-void GetNewRelocVariableAddress(
+uintptr_t ConfigCookie = 0;
+
+static inline void GetNewRelocVariableAddress(
     uint64_t NewBase,
     uint64_t VirtualAddress,
     uint64_t offsetWithinPage,
     uint64_t BaseDelta,
     bool AddressDrop
-    ){
-        uint32_t* address = (uint32_t*)(NewBase + VirtualAddress + offsetWithinPage);
-        if(AddressDrop){
-            *address -= BaseDelta;
-        }
-        else{
-            *address += BaseDelta;
-        }
+) {
+    volatile uint32_t* address = (volatile uint32_t*)(NewBase + VirtualAddress + offsetWithinPage);
+
+    if (ConfigCookie == *address) {
+        return;
+    }
+
+    if (AddressDrop) {
+        *address -= BaseDelta;
+    } else {
+        *address += BaseDelta;
+    }
 }
 
 void RelocateBaseAddresses(
@@ -156,18 +134,16 @@ void RelocateBaseAddresses(
     uint64_t NewBase,
     uint64_t OldBase,
     uint32_t size
-){
-    bool AddressDrop = false; //variable for base delta sign
-    uint64_t BaseDelta = 0; //initialize memort
-    if(NewBase < OldBase){
+) {
+    bool AddressDrop = false; // variable for base delta sign
+    uint64_t BaseDelta = 0; // initialize memory
+    if (NewBase < OldBase) {
         AddressDrop = true;
         BaseDelta = OldBase - NewBase;
-    } 
-    else if(NewBase > OldBase){
+    } else if (NewBase > OldBase) {
         BaseDelta = NewBase - OldBase;
-    }
-    else{
-        //nothing to be done
+    } else {
+        // nothing to be done
         return;
     }
 
@@ -182,8 +158,7 @@ void RelocateBaseAddresses(
             uint16_t type = typeOffset >> 12;
             uint16_t offsetWithinPage = typeOffset & 0xFFF;
 
-            switch(type){
-
+            switch (type) {
                 case IMAGE_REL_BASED_HIGH:
                 case IMAGE_REL_BASED_LOW:
                 case IMAGE_REL_BASED_HIGHLOW:
@@ -194,66 +169,64 @@ void RelocateBaseAddresses(
                 case IMAGE_REL_BASED_MIPS_JMPADDR16:
                 case IMAGE_REL_BASED_IA64_IMM64:
                 case IMAGE_REL_BASED_DIR64:
-                case IMAGE_REL_BASED_HIGH3ADJ:{
-
+                case IMAGE_REL_BASED_HIGH3ADJ: {
                     GetNewRelocVariableAddress(
                         NewBase,
                         relocationBlock->VirtualAddress,
                         offsetWithinPage,
                         BaseDelta,
                         AddressDrop
-                    );                   
+                    );
                     continue;
-                    //cuntinue; //BUGBUG im leaving this here for good fortune
                 }
                 case IMAGE_REL_BASED_ABSOLUTE:
                 default:
-                continue;
+                    continue;
             }
         }
-
         offset += relocationBlock->SizeOfBlock;
     }
 }
 
-static inline
-void SetupConfigTable(
+static inline void SetupConfigTable(
     uint64_t ProgramBase,
     uint64_t ImageBase,
     uint64_t Location,
     uint64_t size
-){
+) {
     PCONFIG_TABLE Conf = (PCONFIG_TABLE)Location;
 
     Conf->SecurityCookie = (Conf->SecurityCookie - ImageBase) + ProgramBase;
-    
+
+    ConfigCookie = (uintptr_t)Conf->SecurityCookie;
+
     *(volatile uint64_t*)Conf->SecurityCookie = (uint64_t)Random(ImageBase);
 }
 
-PHANDLE LoadModule(uintptr_t Start){
-	PCOFF_HEADER CoffHeader;
-	PPE64_OPTIONAL_HEADER PE64Header;
-	PSECTION_HEADER SectionHeader;
+PHANDLE LoadModule(uintptr_t Start) {
+    PCOFF_HEADER CoffHeader;
+    PPE64_OPTIONAL_HEADER PE64Header;
+    PSECTION_HEADER SectionHeader;
 
-	if(CheckDosHeaderValidity((PDOS_HEADER)(Start))){
-		LouPrint("Found A Valid Module\n");
-		GetAllPEHeaders(
-			(PDOS_HEADER)Start,
-			&CoffHeader,
-			&PE64Header,
-			&SectionHeader,
-			0x00
-		);
-
-        uint64_t allocatedModuleVirtualAddress = 
-        (uint64_t)LouMallocEx(
-            TotalNeededVM,
-            KILOBYTE_PAGE
+    if (CheckDosHeaderValidity((PDOS_HEADER)(Start))) {
+        LouPrint("Found A Valid Module\n");
+        GetAllPEHeaders(
+            (PDOS_HEADER)Start,
+            &CoffHeader,
+            &PE64Header,
+            &SectionHeader,
+            0x00
         );
 
-        for(uint32_t i = 0; i < TotalNeededVM; i += KILOBYTE_PAGE){
+        uint64_t allocatedModuleVirtualAddress =
+            (uint64_t)LouMallocEx(
+                TotalNeededVM,
+                KILOBYTE_PAGE
+            );
+
+        for (uint32_t i = 0; i < TotalNeededVM; i += KILOBYTE_PAGE) {
             LouMapAddress(
-                allocatedModuleVirtualAddress + i, 
+                allocatedModuleVirtualAddress + i,
                 allocatedModuleVirtualAddress + i,
                 KERNEL_PAGE_WRITE_PRESENT,
                 KILOBYTE_PAGE
@@ -262,19 +235,22 @@ PHANDLE LoadModule(uintptr_t Start){
 
         memset((void*)allocatedModuleVirtualAddress, 0, TotalNeededVM);
 
-		for(uint16_t i = 0; i < CoffHeader->numberOfSections; i++){
-			//LouPrint("Section Header:%s\n", SectionHeader[i].name);
-            //LouPrint("Virtual Size:%h\n",SectionHeader[i].virtualSize);
-            //LouPrint("RawData Address:%h\n", SectionHeader[i].pointerToRawData);
-            //LouPrint("Virtual Address:%h\n", SectionHeader[i].virtualAddress);
+        // Align section addresses
+        uint64_t sectionAlignment = PE64Header->sectionAlignment;
 
-                memcpy(
-                    (void*)(allocatedModuleVirtualAddress + SectionHeader[i].virtualAddress),
-                    (void*)(Start + SectionHeader[i].pointerToRawData), 
-                    SectionHeader[i].sizeOfRawData
-                );
+        for (uint16_t i = 0; i < CoffHeader->numberOfSections; i++) {
+            uint64_t alignedVirtualAddress = (allocatedModuleVirtualAddress + SectionHeader[i].virtualAddress + sectionAlignment - 1) & ~(sectionAlignment - 1);
 
-		}
+            //LouPrint("Section %s: aligned address %h\n", SectionHeader[i].name, alignedVirtualAddress);
+
+            memcpy(
+                (void*)alignedVirtualAddress,
+                (void*)(Start + SectionHeader[i].pointerToRawData),
+                SectionHeader[i].sizeOfRawData
+            );
+
+            //LouPrint("Copied section %s to address %h\n", SectionHeader[i].name, alignedVirtualAddress);
+        }
 
         PIMPORT_DIRECTORY_ENTRY ImportTable = (PIMPORT_DIRECTORY_ENTRY)(allocatedModuleVirtualAddress + PE64Header->PE_Data_Directory_Entries[1].VirtualAddress);
 
@@ -286,7 +262,7 @@ PHANDLE LoadModule(uintptr_t Start){
         // Locate the relocation table
         uint64_t relocationTable = (uint64_t)((uint64_t)allocatedModuleVirtualAddress + (uint64_t)PE64Header->PE_Data_Directory_Entries[5].VirtualAddress);
         size_t relocationTableSize = PE64Header->PE_Data_Directory_Entries[5].Size;
-        
+
         SetupConfigTable(
             allocatedModuleVirtualAddress,
             PE64Header->imageBase,
@@ -302,15 +278,17 @@ PHANDLE LoadModule(uintptr_t Start){
         );
 
         LouPrint("Program Base:%h\n", allocatedModuleVirtualAddress);
-        //while (1);
+        // Print function address debug info
+        LouPrint("Entry Point Address:%h\n", (uint64_t)PE64Header->addressOfEntryPoint + allocatedModuleVirtualAddress);
+        
+
+
         return (PHANDLE)((uint64_t)PE64Header->addressOfEntryPoint + allocatedModuleVirtualAddress);
-    }
-    else{
+    } else {
         return 0x00;
     }
 }
 
-
-PHANDLE LoadAhciModule(uintptr_t Start, uintptr_t End){
+PHANDLE LoadAhciModule(uintptr_t Start, uintptr_t End) {
     return LoadModule(Start);
 }

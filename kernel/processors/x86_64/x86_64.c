@@ -196,6 +196,49 @@ void DowngradeNPROC(){
 
 extern void init_fpu();
 
-void InitializeFloatPointUnit(){
+extern void enable_sse();
 
+void InitializeFloatPointUnit(){
+    enable_sse();
+}
+
+uint64_t GetGdtAsmTailCall(){
+    return 0x00;
+}
+
+uint64_t GetIdtAsmTailCall(){
+    return 0x00;
+}
+
+extern void WakeTheFuckUpBoys();
+
+void TrampolineFinalInit(){
+
+}
+
+void TrampolineFinalInitTailCall(){
+    TrampolineFinalInit();
+}
+
+extern uint64_t GetSmpBase();
+
+void WakeTheFuckUpBoysTailCall(){
+}
+
+uint64_t getTrampolineAddress();
+
+uint64_t getTrampolineAddressTailCall(){
+   return GetSmpBase();
+}
+
+extern uint64_t GetWakeTheFuckUpBoysEnd();
+
+uint64_t GetWakeTheFuckUpBoysEndTailCall(){
+    return GetWakeTheFuckUpBoysEnd();
+}
+
+extern uint64_t CheckApCompletionTailCall();
+
+uint64_t CheckApCompletion(){   
+    return CheckApCompletionTailCall();
 }

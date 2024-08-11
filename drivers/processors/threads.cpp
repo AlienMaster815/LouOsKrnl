@@ -2,221 +2,218 @@
 #include <NtAPI.h>
 #include "Processors.h"
 
-#pragma pack(push, 1)
-typedef struct _GPRs{
-	uint64_t RAX;
-	uint64_t RBX;
-	uint64_t RCX;
-	uint64_t RDX;
-	uint64_t RSI;
-	uint64_t RDI;
-	uint64_t RBP;
-	uint64_t RSP;
-	uint64_t R8;
-	uint64_t R9;
-	uint64_t R10;
-	uint64_t R11;
-	uint64_t R12;
-	uint64_t R13;
-	uint64_t R14;
-	uint64_t R15;
-}GPRs;
+#define MAX_THREADS 6550
+#define MAX_CORES 256
 
-typedef struct _FPRs{
-	uint64_t XMM0;
-	uint64_t XMM1;
-	uint64_t XMM2;
-	uint64_t XMM3;
-	uint64_t XMM4;
-	uint64_t XMM5;
-	uint64_t XMM6;
-	uint64_t XMM7;
-	uint64_t XMM8;
-	uint64_t XMM9;
-	uint64_t XMM10;
-	uint64_t XMM11;
-	uint64_t XMM12;
-	uint64_t XMM13;
-	uint64_t XMM14;
-	uint64_t XMM15;
-}FPRs;
+typedef enum {
+    THREAD_READY = 1,
+    THREAD_RUNNING = 2,
+    THREAD_TERMINATED = 0,
+} thread_state_t;
 
-typedef struct _VRs {
-	uint64_t YMM0;
-	uint64_t YMM1;
-	uint64_t YMM2;
-	uint64_t YMM3;
-	uint64_t YMM4;
-	uint64_t YMM5;
-	uint64_t YMM6;
-	uint64_t YMM7;
-	uint64_t YMM8;
-	uint64_t YMM9;
-	uint64_t YMM10;
-	uint64_t YMM11;
-	uint64_t YMM12;
-	uint64_t YMM13;
-	uint64_t YMM14;
-	uint64_t YMM15;
-}VRs;
+typedef struct  __attribute__((packed)){
+    // General-Purpose Registers    
+    uint64_t rax;
+    uint64_t rbx;
+    uint64_t rcx;
+    uint64_t rdx;
+    uint64_t rbp;
+    uint64_t rsi;
+    uint64_t rdi;
+    uint64_t r8;
+    uint64_t r9;
+    uint64_t r10;
+    uint64_t r11;
+    uint64_t r12;
+    uint64_t r13;
+    uint64_t r14;
+    uint64_t r15;
 
-typedef struct _SRs {
-	uint16_t CS;
-	uint16_t DS;
-	uint16_t ES;
-	uint16_t FS;
-	uint16_t GS;
-}SRs;
+    uint64_t rsp;       // Stack Pointer (pushed on privilege change)
 
-typedef struct _CRs{
-	uint64_t CR0;
-	uint64_t CR2;
-	uint64_t CR3;
-	uint64_t CR4;
-}CRs;
-
-typedef struct _DRs {
-	uint64_t DR0;
-	uint64_t DR1;
-	uint64_t DR2;
-	uint64_t DR3;
-	uint64_t DR4;
-	uint64_t DR5;
-	uint64_t DR6;
-	uint64_t DR7;
-}DRs;
-
-typedef struct _RegisterTrace {
-	GPRs GeneralPurpose;
-	FPRs FloatingPoints;
-	VRs VectorRegisters;
-	uint64_t IP;
-	SRs Segments;
-	CRs Controls;
-	DRs Debug;
-}RegisterTrace, * PRegisterTrace;
-
-typedef struct _ThreadStackEntry {
-	uint8_t ThreadPresent : 1; //defines if a thread is attached
-	uint8_t ProcesTmeLimitMS : 7;
-	uint8_t ProcesTmeLimitUsedMS;
-	uint8_t Priority;
-	uint64_t StackSize;
-	uint8_t PRIVLAGE;
-	uint16_t ProcessorNumber;
-	uint16_t ProcessID;
-	PVOID ReturnValue;
-	PVOID Arguments;
-	RegisterTrace Registers;
-	Stack stack;
-}ThreadStackEntry, * PThreadStackEntry;
-
-#define TSTACKLENGTH 0xFFFF
-#define STACKENTRY sizeof(ThreadStackEntry)
-
-PThreadStackEntry TStack[TSTACKLENGTH] = {0};
-
-#define PRIRT 0
-#define PRIHI 1
-#define PRIMI 2
-#define PRILO 3
-#define BLOCKEDwasent it actually telling the cpu core/ 4
-
-#define PRIKRNL 0
-#define PRIUSER 1
-
-#define THREADNOTPRESENT 0
-#define THREADPRESENT 1
-
-//static uint16_t TotalProcessors;
-
-KERNEL_IMPORT uint64_t LouKeGetStackSize();
-KERNEL_IMPORT LOUSTATUS LouKeCreateStack(Stack* Stack, uint64_t StackSize);
-#pragma pack(pop)
+    uint64_t rip;       // Instruction Pointer
+    uint64_t cs;        // Code Segment
+    uint64_t rflags;    // Flags Register
+    //uint64_t rsp2;      //might not be here
+    //uint64_t ss;        //also might not be here 
+} CPUContext;
 
 
-int ExecuteThread(uint16_t ThreadNumber) {
+typedef struct {
+    uint64_t stack_pointer;
+    CPUContext* cpu_state;
+    thread_state_t state;
+    int thread_id;
+    int core_id; // Core assigned to the thread
+} thread_t;
 
-	return 0;
+
+UNUSED static thread_t threads[MAX_THREADS];
+UNUSED static int current_thread[MAX_CORES]; // Track current thread per core
+UNUSED static int thread_count = 1;
+
+UNUSED static uint16_t core_count = 1;
+
+KERNEL_IMPORT void SetInterruptFlags();
+KERNEL_IMPORT void UnSetInterruptFlags();
+
+
+static inline uint32_t get_processor_id() {
+    uint32_t eax, ebx, ecx, edx;
+    eax = 1; // Processor info and feature bits
+    __asm__ volatile(
+        "cpuid"
+        : "=b" (ebx), "=d" (edx), "=c" (ecx)
+        : "a" (eax)
+    );
+    uint32_t processor_id = ebx >> 24;
+    return processor_id;
+}
+
+KERNEL_IMPORT void local_apic_send_eoi();
+
+
+UNUSED static uint32_t timeQuantum[MAX_CORES] = {0}; // Array to track the load on each core
+
+// Placeholder function for finding the next thread to run across all cores
+int find_next_thread(int CurrentThread) {
+    //implement mr round robin
+    int i = CurrentThread;
+    while(1){
+        i++;
+        if((threads[i].state == THREAD_READY) && (i != CurrentThread)){
+            return i;
+        }  
+        else if(i == thread_count){
+            i = 0;
+        }
+        else if(i == CurrentThread){
+            return -1;
+        }
+    }
+    return -1; // No ready thread found
 }
 
 
-uint64_t GetThreadStackSize(uint16_t ThreadNumber) {
-
-	return 0;
+LOUDDK_API_ENTRY void UpdateThreadManager(uint64_t CpuCurrentState) {
+    /*
+    if(thread_count >= 2){
+        int core_id = get_processor_id();
+        if (timeQuantum[core_id] == 4) {
+            timeQuantum[core_id] = 0;
+            int next = find_next_thread(current_thread[core_id]);
+            if(next == -1){
+                return CpuCurrentState;
+            }
+            threads[current_thread[core_id]].cpu_state = CpuCurrentState;
+            threads[current_thread[core_id]].state = THREAD_READY;
+            return threads[next].cpu_state;
+        } else {
+            // Increment the time quantum for this core
+            timeQuantum[core_id]++;
+        }
+    }
+    */
+    return;
 }
 
-void SaveThreadInstance(uint16_t JumpingThread) {
-	TStack[JumpingThread]->ThreadPresent = THREADNOTPRESENT;
-	TStack[JumpingThread]->StackSize = GetThreadStackSize(JumpingThread);
+
+static inline uint64_t GetRsp() {
+    uint64_t rsp;
+    __asm__ volatile ("mov %%rsp, %0" : "=r"(rsp));
+    return rsp;
 }
 
-void StartNextThread(uint16_t JumpingThread) {
-	for (uint16_t Priority = 0; Priority <= PRILO; Priority++) {
-		for (uint16_t i = 0; i < TSTACKLENGTH; i++) {
-			if (TStack[i] == 0x0000)break;
-			else if ((TStack[i]->ThreadPresent == THREADNOTPRESENT) 
-				&& (TStack[i]->Priority == Priority)
-				){
-				//Save Registers and shit
-				SaveThreadInstance(JumpingThread);
-			}
-		}
-	}
-}
+KERNEL_IMPORT uint64_t LouKeGetBspStackBottom();
 
-LOUDDK_API_ENTRY VOID UpdateThreadManager() {
-
-	//LouPrint("ThreadManager Recieved A CLock\n");
-	for (uint16_t i = 0; i < TSTACKLENGTH; i++) {
-		if (TStack[i] == 0x0000)return;
-		else if((TStack[i]->ThreadPresent == THREADPRESENT) 
-			&& (TStack[i]->Priority != PRIRT)) { 
-			TStack[i]->ProcesTmeLimitUsedMS++;
-			if (TStack[i]->ProcesTmeLimitUsedMS >= TStack[i]->ProcesTmeLimitMS) {
-				StartNextThread(i);
-			}
-		}
-	}
-
-}
 
 LOUDDK_API_ENTRY LOUSTATUS InitThreadManager() {
-	LOUSTATUS Status = LOUSTATUS_GOOD;
-	
-	TStack[0] = (PThreadStackEntry)LouMalloc(STACKENTRY);
+    LOUSTATUS Status = LOUSTATUS_GOOD;
 
-	if (!GetNPROC())return STATUS_UNSUCCESSFUL;
+    if (!GetNPROC()) return STATUS_UNSUCCESSFUL;
 
-	TStack[0]->Priority = PRIRT; TStack[0]->ProcessorNumber = 1;
-	TStack[0]->StackSize = LouKeGetStackSize(); TStack[0]->ThreadPresent = THREADPRESENT;
+    core_count = 1;
+    LouPrint("Thread Manager Starting\nNumber Of Processors: %d\n", GetNPROC());
 
-	LouPrint("Thread Manager Starting\nNumber Of Processors:%d\n",GetNPROC());
+    for (int i = 0; i < core_count; i++) {
+        current_thread[i] = 0; // Set the first thread as the current thread for the core
+    }
 
-	return Status;
-}
+    // Initialize the first thread structure as the current context (Thread 0)
+    threads[0].state = THREAD_RUNNING;
+    threads[0].cpu_state = (CPUContext*)LouMalloc(sizeof(CPUContext));
+    threads[0].thread_id = 0;
+    threads[0].core_id = get_processor_id(); // Assign it to the current core
 
-LOUDDK_API_ENTRY LOUSTATUS LouKeCreateThread(PVOID Function,PVOID FunctionParameters, uint32_t StackSize) {
-	LOUSTATUS Status = LOUSTATUS_GOOD;
-	uint16_t i;
-	for (i = 0; i < TSTACKLENGTH; i++) {
-		if (TStack[i] == 0x0000)break;
-	}
-	
-	TStack[i] = (PThreadStackEntry)LouMalloc(STACKENTRY);
+    LouPrint("Initialized Processor:%d as Thread 0\n", get_processor_id());
 
-	if(LouKeCreateStack(&TStack[i]->stack, StackSize) != LOUSTATUS_GOOD)return STATUS_UNSUCCESSFUL;
+    LouPrint("Thread Manager Successfully Started\n");
 
-	//TODO Finish creating Threads
-
-	
-
-	return Status;
-}
-
-LOUDDK_API_ENTRY VOID LouKeDestroyThread(uint16_t ThreadNumber) {
-
-
+    return Status;
 }
 
 
+LOUDDK_API_ENTRY VOID LouKeDestroyThread() {
+	UnSetInterruptFlags();
+
+    while(1);
+
+    SetInterruptFlags();
+}
+
+mutex_t FuckThis;
+
+LOUDDK_API_ENTRY LOUSTATUS LouKeCreateThread(PVOID Function, PVOID FunctionParameters, uint32_t StackSize, THREAD_TYPE Ttype) {
+    UnSetInterruptFlags();
+    LouPrint("Creating A New Thread\n");
+    // Lock the mutex to ensure thread safety
+    if((thread_count + 1) >= MAX_THREADS){
+        SetInterruptFlags();
+        return STATUS_INSUFFICIENT_RESOURCES;
+    }
+    // Allocate memory for the new stack
+    uint8_t* new_stack = (uint8_t*)LouMalloc(StackSize);
+    if (!new_stack) {
+        // Handle memory allocation failure
+        SetInterruptFlags();
+        return STATUS_INSUFFICIENT_RESOURCES;
+    }
+    CPUContext* NewContext = (CPUContext*)LouMalloc(sizeof(CPUContext));
+
+    memset(new_stack, 0, StackSize);
+    memset(NewContext, 0 , sizeof(CPUContext));
+    // Calculate the stack pointer, assuming the stack grows downwards
+    uint8_t* stack_top = new_stack + StackSize;
+    stack_top = (uint8_t*)((uint64_t)stack_top & ~(16 - 1));
+
+    NewContext->rsp = (uint64_t)stack_top;    
+    NewContext->rbp = (uint64_t)stack_top;
+    NewContext->rip = (uint64_t)Function;
+    NewContext->rflags = 0x202; // Set IF (Interrupt Flag) and default reserved bits
+    NewContext->rcx = (uint64_t)FunctionParameters;
+    // Push the exit function address onto the stack
+    stack_top -= sizeof(uint64_t);
+    //*(uint64_t*)stack_top = (uint64_t)LouKeDestroyThread;
+
+    if(Ttype == KERNEL_THREAD){
+        NewContext->cs = 0x08;
+        //NewContext->ds = 0x16;
+        //NewContext->gs = 0x16;
+        //NewContext->es = 0x16;
+        //NewContext->fs = 0x16;
+        //NewContext->ss = 0x10;
+    }
+    if(Ttype == USER_THREAD){
+        //NewContext->cs = 
+    }
+
+    threads[thread_count].cpu_state = NewContext;
+    threads[thread_count].core_id = -1;
+    threads[thread_count].thread_id = thread_count;
+    threads[thread_count].state = THREAD_READY;
+    threads[thread_count].stack_pointer = (uint64_t)new_stack;
+    LouPrint("Thread Successfully Created\n");
+    thread_count++;
+    SetInterruptFlags();
+    return STATUS_SUCCESS;
+}

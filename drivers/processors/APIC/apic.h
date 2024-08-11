@@ -161,38 +161,6 @@ void AssignInterruptVector(uint8_t VectorNumber, uint8_t Offset);
 uint64_t GetLocaApicBase();
 
 
-namespace APIC {
-
-	class APIC_TIMER{
-	public:
-		APIC_TIMER();
-		~APIC_TIMER();
-
-		void ApicEnableTimer();
-		
-	private:
-		BOOLEAN IsX6CpuIdSupported();
-		long double GetApicTimerFrequency();
-
-		void ApicSetTimer();
-
-		BOOLEAN IsX6Supported;
-	};
-
-	class LAPIC{
-
-		public:
-			LAPIC();
-			~LAPIC();
-			CPU::FEATURE APIC_VERSION;
-			bool InitializeApic();
-			uint8_t MaxLVTEntries;
-			bool EOI_Suppressable;
-			uint16_t APIC_ID;
-		private:
-			bool InitializeBspLapic();
-	};
-}
 
 
 

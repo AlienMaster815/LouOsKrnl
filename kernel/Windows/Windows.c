@@ -7,6 +7,7 @@ PWINDHANDLE Handles[500];
 static bool UpdateInProgress;
 
 void print_clear();
+void VgaPutCharecterRgb(char Character, PWINDHANDLE Handle, uint8_t r, uint8_t g, uint8_t b);
 
 bool DrawRectangle(
     uint16_t x, 
@@ -57,13 +58,37 @@ bool Draw3DBorder(
         plot_Line(x,y+height,x+width,y+height,rb,gb,bb);
 }
 
-bool LouUpdateWindow(
-    uint16_t x, 
-    uint16_t y, 
+static inline
+void DrawWindowTitle(
+    PWINDHANDLE WindowHandle
+){
+    WINDHANDLE Title;
+    
+    Title.Charecteristics.Dimentions.x = WindowHandle->CurrentX - 3;
+    Title.Charecteristics.Dimentions.y = WindowHandle->CurrentY + 5;
+    Title.Charecteristics.Dimentions.height = (17 * 2);
+    Title.Charecteristics.Dimentions.width = WindowHandle->CurrentWidth - 6;
+    Title.Cursor.x = 0;
+    Title.Cursor.y = 0;
+
+    for(uint8_t i = 0; i < strlen(WindowHandle->WindowName); i++){
+        VgaPutCharecterRgb(WindowHandle->WindowName[i], &Title , 255, 255, 255);
+        if((Title.Cursor.x + 17) > (Title.Charecteristics.Dimentions.width/2)){
+            break;
+        }
+    }
+
+}
+
+static inline
+bool DrawWindow(
+    uint16_t x,
+    uint16_t y,
     uint16_t width,
     uint16_t height,
-    PWINDHANDLE WindHandle){
-    
+    PWINDHANDLE WindHandle
+){
+
     if((width < 50) || (height < 50)){
         return false;
     }
@@ -232,6 +257,30 @@ bool LouUpdateWindow(
         x+width-14+10-2,y+4+1,
         0,0,0
     );
+
+    return true;
+
+}
+
+bool LouUpdateWindow(
+    uint16_t x, 
+    uint16_t y, 
+    uint16_t width,
+    uint16_t height,
+    PWINDHANDLE WindHandle){
+        
+    if(DrawWindow(
+        x, y,
+        width, height,
+        WindHandle) != true){
+        return false;
+    }
+
+    DrawWindowTitle(
+        WindHandle
+    );
+
+    return true;
 }
 
 bool LouUpdateTextWindow(PWINDHANDLE WindowHandle,TEXT_WINDOW_EVENT Update){
@@ -276,6 +325,7 @@ PWINDHANDLE LouCreateWindow(
     }
     
     PWINDHANDLE WindHandle = LouMalloc(sizeof(WINDHANDLE));
+    
     Handles[OpenWindows] = WindHandle;
 
     if(WindHandle == 0x00){
@@ -318,43 +368,18 @@ PWINDHANDLE LouCreateWindow(
     WindHandle->Cursor.x = 0;
     WindHandle->Cursor.y = 0;
 
-    //fill the handle with the basic information
-    DrawRectangle(x,y,width,height,255,255,255);
-    
-    //left Front Higlight
-    plot_Line(x,y,x,y+height,255,255,255);
-    //top Front Higlight
-    plot_Line(x,y,x+width,y,255,255,255);
-    //right AftHiglight
-    plot_Line(x+width,y,x+width,y+height,64,64,64);
-    //bottom AftHiglight
-    plot_Line(x,y+height,x+width,y+height,64,64,64);
-    //top Border
-    plot_Line(x+1,y+1, x+width-1, y+1, 198,198,198);
-    //Left Border
-    plot_Line(x+1,y+2, x+1, y+height-1, 198,198,198);
-    //bottom Border
-    plot_Line(x+1,y+height-1,x+width-1,y+height-1, 192,192,192);
-    //right Border
-    plot_Line(x+width-1,y+1,x+width-1,y+height-1, 192,192,192);
-    //Right Background
-    DrawRectangle(x+width-4,y+2,2,height-3,198,198,198);
-    //Left Background
-    DrawRectangle(x+2,y+2,2,height-3,198,198,198);
-    //bottom BackGround
-    DrawRectangle(x+2,y+height-3,width-3,2,198,198,198);
-    //Top BackGround
-    DrawRectangle(x+2,y+2,width-3,27,198,198,198);
+    WindHandle->WindowName = Charecteristics->WindowName;
 
-    DrawRectangle(x+3,y+3,width-6,12,0,0,128);
-    
-    //plot_Line(x+5,y+2+27,x+width-5,y+2+27,64,64,64);
-    Draw2DBorder(x+5,y+2+27,width-x,height-(y+24),64,64,64);
+    if(DrawWindow(
+        x, y,
+        width, height,
+        WindHandle) != true){
+        return false;
+    }
 
-    DrawRectangle(x+width-14,y+4,10,10,198,198,198);
-    Draw3DBorder(x+width-14,y+4,10,10,255,255,255,64,64,64);
-    plot_Line(x+width-14+1,y+4+1,x+width-14+10-2,y+4+10-2,64,64,64);
-    plot_Line(x+width-14+1,y+4+10-2,x+width-14+10-2,y+4+1,64,64,64);
+    DrawWindowTitle(
+        WindHandle
+    );
 
     OpenWindows++;
     return WindHandle;

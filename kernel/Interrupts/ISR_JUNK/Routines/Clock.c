@@ -1,18 +1,26 @@
 
 #include <LouAPI.h>
 
-void UpdateThreadManager();
+void UpdateThreadManager(uint64_t Rsp);
 
 bool GetAPICStatus();
 
+void ChangeBasePointer(uint64_t NewBase){
+
+}
+void ChangerStackPointer(uint64_t BasePointer){
+
+}
+
+void local_apic_send_eoi();
+
+void Clock(uint64_t Rsp) {
 
 
-void Clock() {
+	//LOUSTATUS Status = LOUSTATUS_GOOD;
 
-	LOUSTATUS Status = LOUSTATUS_GOOD;
-
-	//Later We Will Find The Clock Caller
-	UpdateThreadManager();
+	//UpdateThreadManager(Rsp);
 	//LouPrint("Clock Was Used\n");
-	return;
+	//local_apic_send_eoi();
+	return;// Rsp;
 }

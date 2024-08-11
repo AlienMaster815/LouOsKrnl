@@ -117,6 +117,9 @@ x86_64_API_cpp_object_filee := $(patsubst API/%.cpp, build/x86_64/API/%.o, $(x86
 x86_64_API_asm_source_files := $(shell find API -name *.asm)
 x86_64_API_asm_object_files := $(patsubst API/%.asm, build/x86_64/asm/API/%.o, $(x86_64_API_asm_source_files))
 
+kernel_s_source_files := $(shell find kernel -name *.s)
+kernel_s_object_files := $(patsubst kernel/%.s, build/kernel/%.o, $(kernel_s_source_files))
+
 
 ifeq ($(TARGET_ARCH), x86_64)
 x86_64_asm_source_files = boot/x86_64/BOOT.asm
@@ -135,7 +138,7 @@ kernel_asm_source_files := $(shell find kernel -name *.asm)
 kernel_asm_object_files := $(patsubst kernel/%.asm, build/x86_64/kernelasm/%.o, $(kernel_asm_source_files))
 
 ifeq ($(FIRMWARE_TARGET),BIOS)
-x86_64_object_files := $(kernel_object_files) $(x86_64_c_object_files) $(x86_64_asm_object_files) $(driver_cpp_object_files) $(x86_64_API_asm_object_files) $(x86_64_API_cpp_object_files) $(kernel_asm_object_files)
+x86_64_object_files := $(kernel_object_files) $(x86_64_c_object_files) $(x86_64_asm_object_files) $(driver_cpp_object_files) $(x86_64_API_asm_object_files) $(x86_64_API_cpp_object_files) $(kernel_asm_object_files) $(kernel_s_object_files)
 endif
 
 
@@ -173,6 +176,9 @@ $(kernel_asm_object_files): build/x86_64/kernelasm/%.o : kernel/%.asm
 	nasm -f $(NASM_COMPILE_FLAGS) $(patsubst build/x86_64/kernelasm/%.o, kernel/%.asm, $@) -o $@
 
 
+$(kernel_s_object_files): build/kernel/%.o : kernel/%.s
+	mkdir -p $(dir $@) && \
+	$(CC) -c $(C_COMPILE_FLAGS) $(patsubst build/kernel/%.o, kernel/%.s, $@) -o $@
 
 
 

@@ -6,6 +6,40 @@
 //I appologise if this is messy but at this point i just need this to work
 // I WILL FIX IT LATER BEFORE 1.0
 
+namespace APIC {
+
+	class APIC_TIMER{
+	public:
+		APIC_TIMER();
+		~APIC_TIMER();
+
+		void ApicEnableTimer();
+		
+	private:
+		BOOLEAN IsX6CpuIdSupported();
+		long double GetApicTimerFrequency();
+
+		void ApicSetTimer();
+
+		BOOLEAN IsX6Supported;
+	};
+
+	class LAPIC{
+
+		public:
+			LAPIC();
+			~LAPIC();
+			CPU::FEATURE APIC_VERSION;
+			bool InitializeApic();
+			uint8_t MaxLVTEntries;
+			bool EOI_Suppressable;
+			uint16_t APIC_ID;
+		private:
+			bool InitializeBspLapic();
+	};
+}
+
+
 // Structure representing the lower 32 bits of an IOAPIC redirection table entry
 typedef struct {
     uint32_t vector : 8;          // Bits 0-7
@@ -127,6 +161,10 @@ string DRV_UNLOAD_STRING_FAILURE_APIC = "Driver Execution Failed To Execute Prop
 
 uint64_t ApicBase;
 
+uint64_t GetApicBase(){
+    return ApicBase;
+}
+
 static uint64_t LocalApicBase = 0xFEE00000;
 ACPI_MADT_INTERRUPT_SOURCE_OVERRIDE* ISOPointer[LEGACY_IRQ_SCOPE];
 
@@ -136,7 +174,7 @@ LOUSTATUS EnableAdvancedBspFeatures(CPU::FEATURE Feature);
 void ParseAPIC(uint8_t* entryAddress, uint8_t* endAddress) {
     while (entryAddress < endAddress) {
         ACPI_MADT_ENTRY_HEADER* header = (ACPI_MADT_ENTRY_HEADER*)entryAddress;
-
+        LouPrint("EntryAddress\n");
         switch (header->Type) {
         case 0: {
             UpgradeNPROC();
@@ -217,9 +255,9 @@ LOUDDK_API_ENTRY LOUSTATUS InitApicSystems(bool LateStage) {
     uint8_t* Buffer = (uint8_t*)LouMalloc(ACPIBUFFER);
     ULONG ReturnLength = 0x0000;
 
+
     //UnSetInterruptFlags();
     LouPrint(DRV_VERSION_APIC);
-    
 
     Status = AuxKlibGetSystemFirmwareTable(
         'ACPI', 
@@ -228,6 +266,7 @@ LOUDDK_API_ENTRY LOUSTATUS InitApicSystems(bool LateStage) {
         ACPIBUFFER, 
         &ReturnLength
     );
+
     if (Status != LOUSTATUS_GOOD) {
         Status = AuxKlibGetSystemFirmwareTable(
             'ACPI', 
@@ -238,30 +277,33 @@ LOUDDK_API_ENTRY LOUSTATUS InitApicSystems(bool LateStage) {
         );
     }
 
+
     if (Status != LOUSTATUS_GOOD) return STATUS_UNSUCCESSFUL;
 
     PACPI_MADT ApicTable = (PACPI_MADT)Buffer;
 
+
     uint8_t* EntryHeaderAddress = ((uint8_t*)Buffer + sizeof(ACPI_MADT));
     uint8_t* HeaderEndAddress = ((uint8_t*)Buffer + ApicTable->Header.Length);
+
 
     ParseAPIC(
         EntryHeaderAddress,
         HeaderEndAddress
     );
+
+    if(Lapic->InitializeApic())LouPrint("APIC ENABLED SUCCESSFULLY\n");
+    
     Cpu = (CPU::CPUID*)LouMalloc(sizeof(CPU::CPUID));
     Lapic = (APIC::LAPIC*)LouMalloc(sizeof(APIC::LAPIC));
     //configure FPU for BSP
     EnableAdvancedBspFeatures(CPU::FPU);
-    //enable apic mode 
-
-    if(Lapic->InitializeApic())LouPrint("APIC ENABLED SUCCESSFULLY\n");
     Cpu->~CPUID();
     
     ApicSet = true;
 
-    LouFree((RAMADD)Cpu, sizeof(CPU::CPUID));
-    LouFree((RAMADD)Cpu, sizeof(APIC::LAPIC));
+    LouFree((RAMADD)Cpu);
+    LouFree((RAMADD)Cpu);
 
     for(uint8_t i = 0 ; i < ioapic_count; i++){
         if(!InitializeIoApic(i,ApicBase)){
@@ -337,6 +379,7 @@ bool APIC::LAPIC::InitializeBspLapic(){
 
         //Set the Spurious Register
         WRITE_REGISTER_ULONG(SPURRIOUS_INTERRUPT_REGISTER, READ_REGISTER_ULONG(SPURRIOUS_INTERRUPT_REGISTER) | APIC_ENABLE);
+        WRITE_REGISTER_ULONG(TPR_REGISTER, 0x00);
         
         WRITE_REGISTER_ULONG(LVT_DIVIDE_CONFIGURATION_REGISTER, 0b1010); //divide by 128
         WRITE_REGISTER_ULONG(LVT_INITIAL_COUNT_REGISTER, 0xFFFFFFFF);

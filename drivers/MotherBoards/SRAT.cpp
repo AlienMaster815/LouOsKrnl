@@ -116,6 +116,6 @@ LOUDDK_API_ENTRY LOUSTATUS InitSRAT() {
 
 	}
 
-	LouFree(Buffer, ACPIBUFFER);
+	LouFree(Buffer);
 	return Status;
 }

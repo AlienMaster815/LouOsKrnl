@@ -260,9 +260,9 @@ HBA_PORT* Port
     if(Status != STATUS_SUCCESS){
         LouPrint("FUCK\nIdPacket Faild To Send\n");
         //identifying the drive didnt take free up the used resources
-        LouFree((RAMADD)DriverObject->NtDriverObject, sizeof(DRIVER_OBJECT));
-        LouFree((RAMADD)DriverObject, sizeof(SATAPI_DRIVER_OBJECT));
-        LouFree((RAMADD)IdentifyPacket, sizeof(IDENTIFY_DEVICE_PACKET));
+        LouFree((RAMADD)DriverObject->NtDriverObject);
+        LouFree((RAMADD)DriverObject);
+        LouFree((RAMADD)IdentifyPacket);
         return 0x00;
     }
 
@@ -351,7 +351,7 @@ void* AhciBuild_PRDT(
 	);
 
 	if(!NT_SUCCESS(*StateOfOperation) || (returnBuffer == 0x00) | (PhysicalAdress == 0x00)){
-		LouFree((RAMADD)returnBuffer, RequestedBuffer);
+		LouFree((RAMADD)returnBuffer);
 		return 0x00;
 	}
 

@@ -7,7 +7,7 @@
 
 KERNEL_IMPORT void InitializeFloatPointUnit();
 
-
+LOUDDK_API_ENTRY void SMPInit();
 
 LOUSTATUS EnableAdvancedBspFeatures(CPU::FEATURE Feature){
     LOUSTATUS Status = LOUSTATUS_GOOD;
@@ -16,7 +16,7 @@ LOUSTATUS EnableAdvancedBspFeatures(CPU::FEATURE Feature){
 
     CPU::CPUID cpu;
 
-    if((cpu.IsProcessorBrand(CPU::INTEL)) && (cpu.IsProcessorId(CPU::INTEL_CORE))){
+    //if((cpu.IsProcessorBrand(CPU::INTEL)) && (cpu.IsProcessorId(CPU::INTEL_CORE))){
         //Initialize FPU
         if(Feature == CPU::FPU){
             if(cpu.IsFeatureSupported(CPU::FPU)){
@@ -29,20 +29,18 @@ LOUSTATUS EnableAdvancedBspFeatures(CPU::FEATURE Feature){
                 if(result == 16)LouPrint("FPU Set Up\n");
             }
         }
-        if(Feature == CPU::SMP){
-            if(cpu.IsFeatureSupported(CPU::SMP)){
-                LouPrint("Setting SMP\n");
-            }
-        }
+
+        //SMPInit();
+
         //Initialize Hypertheading
             if(Feature == CPU::HYPERTHREAD){
             if(cpu.IsFeatureSupported(CPU::HYPERTHREAD)){
                 LouPrint("Setting Up Hyperthreading\n");
             }
         }
-    }
+    //}
 
     cpu.~CPUID();
-
+    
     return Status;
 }

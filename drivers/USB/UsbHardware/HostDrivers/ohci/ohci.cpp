@@ -264,7 +264,7 @@ P_PCI_DEVICE_OBJECT PDEV
 
     if(!ResetOhciDevice(OHCIMem)){
         LouPrint("Could Not Reset Controller\n");
-        LouFree((RAMADD)OHCIMem, KILOBYTE_PAGE);
+        LouFree((RAMADD)OHCIMem);
         LouPrint(LOU_OHCI_DRIVER_EXIT_STRING_FAILURE);
         return;
     }
@@ -280,7 +280,7 @@ P_PCI_DEVICE_OBJECT PDEV
     HCCA* HcHCCA = (HCCA*)LouMallocEx(sizeof(HCCA),256);//ensures alignment by 256
     if((uint64_t)HcHCCA > (4ULL * GIGABYTE)){
         LouPrint("Allocation cannot meet 32 bit requirement\n");
-        LouFree((RAMADD)HcHCCA,sizeof(HCCA));
+        LouFree((RAMADD)HcHCCA);
         LouPrint(LOU_OHCI_DRIVER_EXIT_STRING_FAILURE);
         return;
     }

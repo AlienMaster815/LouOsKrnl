@@ -453,8 +453,9 @@ typedef void* PKINTERRUPT_ROUTINE;
 #define MEM_EXTENDED_PARAMETER_TYPE_BITS 1
 //ENDOF: TODO LIST\n
 
-typedef uintptr_t PHYSICAL_ADDRESS;
-
+typedef struct _PHYSICAL_ADDRESS {
+    LARGE_INTEGER QuadPart;
+} PHYSICAL_ADDRESS, *PPHYSICAL_ADDRESS;
 
 
 #ifdef __cplusplus
@@ -509,5 +510,7 @@ ULONG DbgPrintEx ( _In_ ULONG ComponentId, _In_ ULONG Level, _In_z_ _Printf_form
 #include "wdm.h"
 #include "ntstatus.h"
 #include "iointx.h"
+
+
 
 #endif

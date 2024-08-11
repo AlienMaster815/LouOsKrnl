@@ -124,10 +124,10 @@ LOUDDK_API_ENTRY LOUSTATUS InitDSDT() {
         parseDSDT(dsdt);
     }
     else {
-        LouFree(Buffer, sizeof(uint8_t) * 256);
+        LouFree(Buffer);
         return STATUS_UNSUCCESSFUL;
     }
-    LouFree(Buffer, sizeof(uint8_t) * 256);
+    LouFree(Buffer);
 
     return Status;
 

@@ -120,7 +120,7 @@ CPU::CPUID::CPUID(){
 
 CPU::CPUID::~CPUID(){
 
-    LouFree((RAMADD)CpuIdPacket,sizeof(CPUID_PACKET));
+    LouFree((RAMADD)CpuIdPacket);
 
 }
 

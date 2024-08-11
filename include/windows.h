@@ -32,6 +32,7 @@ typedef struct __attribute__((packed)) _WINDOW_DIMENTIONS{
 typedef struct __attribute__((packed)) _WINDOW_CHARECTERISTICS{
     WINDOW_TYPE Type;
     WINDOW_DIMENTIONS Dimentions;
+    string WindowName;
 }WINDOW_CHARECTERISTICS, * PWINDOW_CHARECTERISTICS;
 
 typedef struct __attribute__((packed)) _WINDHANDLE{

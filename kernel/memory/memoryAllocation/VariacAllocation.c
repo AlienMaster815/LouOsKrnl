@@ -8,7 +8,7 @@ void FreeVariacHeap(
 void* VariacPointerToFree, 
 size_t HeapSize
 ) {
-    LouFree(VariacPointerToFree, HeapSize);
+    LouFree(VariacPointerToFree);
 }
 
 void* IncreaseVariacHeap(
@@ -21,7 +21,7 @@ void* IncreaseVariacHeap(
         return 0x00;
     }
     memcpy(LocationOfNewHeap, LocationOfCurrentHeap, SizeOfCurrentHeap);
-    LouFree(LocationOfCurrentHeap, SizeOfCurrentHeap);
+    LouFree(LocationOfCurrentHeap);
     return LocationOfNewHeap;
 }
 
@@ -46,6 +46,6 @@ void* TrimVariacHeap(
         (void*)((uintptr_t)LocationOfCurrentHeap + Offset + SizeToTrim),
         SizeOfCurrentHeap - Offset - SizeToTrim
     );
-    LouFree(LocationOfCurrentHeap, SizeOfCurrentHeap);
+    LouFree(LocationOfCurrentHeap);
     return LocationOfNewHeap;
 }

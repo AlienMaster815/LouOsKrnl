@@ -53,11 +53,11 @@ LOUDDK_API_ENTRY LOUSTATUS InitSSDT() {
 
     }
     else {
-        LouFree(Buffer, ACPIBUFFER);
+        LouFree(Buffer);
         return STATUS_UNSUCCESSFUL;
     }
 
-    LouFree(Buffer, ACPIBUFFER);
+    LouFree(Buffer);
 
     return Status;
 

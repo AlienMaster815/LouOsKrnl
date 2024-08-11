@@ -6,9 +6,9 @@
 #define APM_S 658077
 #define FACP 70656780
 
-uintptr_t EFI_TABLE = 0x00;
-uintptr_t RSDP_MASTER = 0x00;
-uint8_t TYPE_MASTER = 0x00;
+static uintptr_t EFI_TABLE = 0x00;
+static uintptr_t RSDP_MASTER = 0x00;
+static uint8_t TYPE_MASTER = 0x00;
 
 typedef struct _ACPI_STD_HEADER {
 	char Signature[4];
@@ -51,21 +51,21 @@ typedef struct _SMBIOS_LOOKUP{
 	uintptr_t SMBIOS_TabeStart;
 }SMBIOS_LOOKUP;
 
-SMBIOS_LOOKUP* SMBIOS_MASTER = 0x00;
+static SMBIOS_LOOKUP* SMBIOS_MASTER = 0x00;
 
-struct multiboot_tag_apm* APM_MASTER = 0x00;
+static struct multiboot_tag_apm* APM_MASTER = 0x00;
 
 LOUSTATUS LouKeSetEfiTable(uint64_t Address) {
 	EFI_TABLE = (uintptr_t)Address;
 
-	LouPrint("EFI Table Address Is:%d\n", EFI_TABLE);
+	//LouPrint("EFI Table Address Is:%d\n", EFI_TABLE);
 }
 
 LOUSTATUS LouKeSetSmbios(uintptr_t SMBIOS) {
 
 	SMBIOS_MASTER = (SMBIOS_LOOKUP*)SMBIOS;
 	
-	LouPrint("SMBIOS Address Is:%d\n", SMBIOS_MASTER);
+	//LouPrint("SMBIOS Address Is:%d\n", SMBIOS_MASTER);
 	return LOUSTATUS_GOOD;
 }
 
@@ -73,8 +73,7 @@ LOUSTATUS LouKeSetRsdp(uintptr_t RSDP,uint8_t Type) {
 
 	RSDP_MASTER = RSDP;
 	TYPE_MASTER = Type;
-
-	LouPrint("RSDP Address Is:%d:Version:%d\n",RSDP_MASTER,TYPE_MASTER);
+	//LouPrint("RSDP Address Is:%d:Version:%d\n",RSDP_MASTER,TYPE_MASTER);
 
 	return LOUSTATUS_GOOD;
 }
@@ -228,7 +227,7 @@ LOUSTATUS LouKeGetSystemFirmwareTableBuffer(
 ) {
 
 	uint32_t ResultBufferLength = *BufferLength;
-
+	
 	if (SystemType == 'ACPI') {
 		PACPI_STD_HEADER Fubar = (PACPI_STD_HEADER)FirmwareTableBufferSrc;
 		
@@ -239,6 +238,9 @@ LOUSTATUS LouKeGetSystemFirmwareTableBuffer(
 		else if ((ResultBufferLength >= Fubar->Size) || (ResultBufferLength == 0))ResultBufferLength = Fubar->Size;
 	}
 
+	//BUGBUG MEMCPY is acting weird investigate tommorow
+	
+	//memcpy has been being weird
 	memcpy(FirmwareTableBufferDest, FirmwareTableBufferSrc, ResultBufferLength);
 
 	*BufferLength = ResultBufferLength;

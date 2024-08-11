@@ -28,7 +28,7 @@ void UpdateDeviceInformationTable(){
     DeviceTable,
     &NumberOfConnectedDevices
     );
-    LouFree((RAMADD)DeviceTable + (NumberOfConnectedDevices * sizeof(DeviceInformationTable)), (512 - NumberOfConnectedDevices) *sizeof(DeviceInformationTable));
+    LouFree((RAMADD)DeviceTable + (NumberOfConnectedDevices * sizeof(DeviceInformationTable)));
 
     /*
     for(uint16_t i = 0; i < NumberOfConnectedDevices; i++){

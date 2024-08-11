@@ -187,7 +187,7 @@ void FAT::WriteFatSystem(uint8_t DriveNumber, FSStruct* FSP, uint16_t* Data){
     ReadFat32((uintptr_t)FatBuffer,0);
 
 
-    LouFree((RAMADD)FatBuffer, 512);
+    LouFree((RAMADD)FatBuffer);
 
     LouPrint("Done Reading\n");
 

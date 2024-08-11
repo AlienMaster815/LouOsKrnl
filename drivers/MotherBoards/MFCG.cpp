@@ -60,6 +60,6 @@ LOUDDK_API_ENTRY LOUSTATUS InitMCFG() {
         parseMCFG(mcfg);
     }
 
-    LouFree(Buffer, ACPIBUFFER);
+    LouFree(Buffer);
     return Status;
 }

@@ -24,6 +24,43 @@
 static bool CAPSLOCK = false;
 static bool SHIFT = false;
 
+
+void wait_for_ps2_ready(uint8_t type) {
+    uint32_t timeout = 100000;
+    if (type == 0) {
+        while (timeout--) {
+            if ((inb(0x64) & 1) == 1) {
+                return;
+            }
+        }
+    } else {
+        while (timeout--) {
+            if ((inb(0x64) & 2) == 0) {
+                return;
+            }
+        }
+    }
+}
+
+void ps2_write_command(uint8_t command) {
+    wait_for_ps2_ready(1);
+    outb(0x64, command);
+}
+
+void ps2_write_data(uint8_t data) {
+    wait_for_ps2_ready(1);
+    outb(0x60, data);
+}
+
+uint8_t ps2_read_data() {
+    wait_for_ps2_ready(0);
+    return inb(0x60);
+}
+
+void initialize_ps2_keyboard() {
+    
+}
+
 char GetPS2CharecterData(uint8_t KBL,uint8_t keyData){
     
     switch (KBL){

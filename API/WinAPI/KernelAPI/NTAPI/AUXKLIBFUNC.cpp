@@ -55,6 +55,8 @@ NTSTATUS AuxKlibGetSystemFirmwareTable(
 ) {
 	LOUSTATUS LouKStatus = LOUSTATUS_GOOD;
 	NTSTATUS DriverApiTranslatedStatus = STATUS_SUCCESS;
+	
+
 	LouKStatus = LouKeGetSystemFirmwareTable(
 		FirmwareTableProviderSignature,
 		FirmwareTableID,

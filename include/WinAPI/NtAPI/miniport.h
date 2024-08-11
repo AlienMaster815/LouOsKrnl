@@ -7,20 +7,19 @@
 #ifndef _BUS_DATA_TYPE
 #define _BUS_DATA_TYPE
 typedef enum _BUS_DATA_TYPE {
-	ConfigurationSpaceUndefined,
-	Cmos,
-	EisaConfiguration,
-	Pos,
-	CbusConfiguration,
-	PCIConfiguration,
-	VMEConfiguration,
-	NuBusConfiguration,
-	PCMCIAConfiguration,
-	MPIConfiguration,
-	MPSAConfiguration,
-	PNPISAConfiguration,
-	SgiInternalConfiguration,
-	MaximumBusDataType
+	Cmos = 0,
+	EisaConfiguration = 1,
+	Pos = 2,
+	CbusConfiguration = 3,
+	PCIConfiguration = 4,
+	VMEConfiguration = 5,
+	NuBusConfiguration = 6,
+	PCMCIAConfiguration = 7,
+	MPIConfiguration = 8,
+	MPSAConfiguration = 9,
+	PNPISAConfiguration = 10,
+	SgiInternalConfiguration = 11,
+	MaximumBusDataType = 12,
 } BUS_DATA_TYPE, * PBUS_DATA_TYPE;
 #endif
 
@@ -795,4 +794,166 @@ void WriteUInt32Release(
 	_Out_ UINT32 volatile* Destination,
 	_In_  UINT32          Value
 );
+
+typedef struct _ACCESS_RANGE {
+    PHYSICAL_ADDRESS RangeStart;
+    ULONG RangeLength;
+    BOOLEAN RangeInMemory;
+} ACCESS_RANGE, *PACCESS_RANGE;
+
+
+typedef struct _PORT_CONFIGURATION_INFORMATION {
+    ULONG Length;
+    ULONG SystemIoBusNumber;
+    INTERFACE_TYPE AdapterInterfaceType;
+    ULONG BusInterruptLevel;
+    ULONG BusInterruptVector;
+    KINTERRUPT_MODE InterruptMode;
+    ULONG MaximumTransferLength;
+    ULONG NumberOfPhysicalBreaks;
+    ULONG DmaChannel;
+    ULONG DmaPort;
+    DMA_WIDTH DmaWidth;
+    DMA_SPEED DmaSpeed;
+    ULONG AlignmentMask;
+    ULONG NumberOfAccessRanges;
+    PACCESS_RANGE AccessRanges;
+    PVOID Reserved;
+    UCHAR NumberOfBuses;
+    CCHAR InitiatorBusId[8];
+    ULONG ScatterGather;
+    ULONG Master;
+    ULONG MapBuffers;
+    BOOLEAN NeedPhysicalAddresses;
+    BOOLEAN TaggedQueuing;
+    BOOLEAN AutoRequestSense;
+    BOOLEAN MultipleRequestPerLu;
+    ULONG ReceiveEvent;
+    ULONG Dma32BitAddresses;
+    ULONG DemandMode;
+    ULONG MapRegistersPerChannel;
+    BOOLEAN CachesData;
+    BOOLEAN AdapterScansDown;
+    BOOLEAN AtdiskPrimaryClaimed;
+    BOOLEAN AtdiskSecondaryClaimed;
+    BOOLEAN IsaBusMaster;
+    ULONG MaximumNumberOfTargets;
+    UCHAR SlotNumber;
+    UCHAR ReservedBus;
+    PVOID MiniportHwDeviceExtension;
+    ULONG DeviceExtensionSize;
+    ULONG SpecificLuExtensionSize;
+    ULONG SrbExtensionSize;
+    ULONG Dma64BitAddresses;
+    ULONG WmiDataProvider;
+    ULONG Flags;
+    _PORT_CONFIGURATION_INFORMATION* Version1Extension;
+    struct _ADAPTER_EXTENSION *MiniportAdapterExtension;
+    PVOID Reserved1;
+    UCHAR Reserved2[2];
+    ULONG Reserved3[2];
+} PORT_CONFIGURATION_INFORMATION, *PPORT_CONFIGURATION_INFORMATION;
+
+
+typedef struct _SCSI_REQUEST_BLOCK {
+    USHORT Length;
+    UCHAR Function;
+    UCHAR SrbStatus;
+    UCHAR ScsiStatus;
+    UCHAR PathId;
+    UCHAR TargetId;
+    UCHAR Lun;
+    UCHAR QueueTag;
+    UCHAR QueueAction;
+    UCHAR CdbLength;
+    UCHAR SenseInfoBufferLength;
+    ULONG SrbFlags;
+    ULONG DataTransferLength;
+    ULONG TimeOutValue;
+    PVOID DataBuffer;
+    PVOID SenseInfoBuffer;
+    struct _SCSI_REQUEST_BLOCK *NextSrb;
+    PVOID OriginalRequest;
+    PVOID SrbExtension;
+    union {
+        ULONG InternalStatus;
+        ULONG QueueSortKey;
+        ULONG LinkTimeoutValue;
+    };
+    ULONG Reserved;
+    UCHAR Cdb[16];
+} SCSI_REQUEST_BLOCK, *PSCSI_REQUEST_BLOCK;
+
+typedef BOOLEAN (*PHW_ADAPTER_STATE)(PVOID, PVOID, BOOLEAN);
+typedef BOOLEAN (*PHW_ADAPTER_CONTROL)(PVOID, PVOID, BOOLEAN);
+typedef BOOLEAN (*PHW_INITIALIZE)(PVOID);
+typedef void (*PHW_DMA_STARTED)(PVOID);
+typedef BOOLEAN (*PHW_RESET_BUS)(PVOID, ULONG);
+typedef ULONG (*PHW_FIND_ADAPTER)(PVOID, PVOID,PVOID, PCHAR, PPORT_CONFIGURATION_INFORMATION, PBOOLEAN);
+typedef BOOLEAN (*PHW_INTERRUPT)(PVOID);
+typedef BOOLEAN (*PHW_STARTIO)(PVOID DeviceExtension, PSCSI_REQUEST_BLOCK);
+
+
+typedef struct _HW_INITIALIZATION_DATA {
+  ULONG               HwInitializationDataSize;
+  INTERFACE_TYPE      AdapterInterfaceType;
+  PHW_INITIALIZE      HwInitialize;
+  PHW_STARTIO         HwStartIo;
+  PHW_INTERRUPT       HwInterrupt;
+  PHW_FIND_ADAPTER    HwFindAdapter;
+  PHW_RESET_BUS       HwResetBus;
+  PHW_DMA_STARTED     HwDmaStarted;
+  PHW_ADAPTER_STATE   HwAdapterState;
+  ULONG               DeviceExtensionSize;
+  ULONG               SpecificLuExtensionSize;
+  ULONG               SrbExtensionSize;
+  ULONG               NumberOfAccessRanges;
+  PVOID               Reserved;
+  BOOLEAN             MapBuffers;
+  BOOLEAN             NeedPhysicalAddresses;
+  BOOLEAN             TaggedQueuing;
+  BOOLEAN             AutoRequestSense;
+  BOOLEAN             MultipleRequestPerLu;
+  BOOLEAN             ReceiveEvent;
+  USHORT              VendorIdLength;
+  PVOID               VendorId;
+  union {
+    USHORT ReservedUshort;
+    USHORT PortVersionFlags;
+  };
+  USHORT              DeviceIdLength;
+  PVOID               DeviceId;
+  PHW_ADAPTER_CONTROL HwAdapterControl;
+} HW_INITIALIZATION_DATA, *PHW_INITIALIZATION_DATA;
+
+typedef struct __attribute__((packed)) _STOR_PORT_STACK_OBJECT{
+    PDRIVER_OBJECT DrvObj;
+    PUNICODE_STRING RegistryEntry;
+	uint64_t FindAdapter;
+	uint64_t InitAdapter;
+    PVOID DeviceExtention;
+    PVOID SpecificLuExtention;
+    PVOID SrbExtension;
+	PPORT_CONFIGURATION_INFORMATION ConfigInfo;
+}STOR_PORT_STACK_OBJECT, * PSTOR_PORT_STACK_OBJECT;
+
+PSTOR_PORT_STACK_OBJECT GetStorPortObject(PDRIVER_OBJECT DrvObject);
+
+typedef enum _SCSI_NOTIFICATION_TYPE {
+    RequestComplete,
+    NextRequest,
+    NextLuRequest,
+    ResetDetected,
+    CallDisableInterrupts,
+    CallEnableInterrupts,
+    RequestTimerCall,
+    BusChangeDetected,
+    WMIEvent,
+    WMIReregister,
+    LinkUp,
+    LinkDown,
+    ProcessingErrorDetected
+} SCSI_NOTIFICATION_TYPE, *PSCSI_NOTIFICATION_TYPE;
+
+
 #endif

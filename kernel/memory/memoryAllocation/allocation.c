@@ -20,7 +20,7 @@ RAMADD Lou_Alloc_Mem(SIZE size) {
 }
 
 STATUS Lou_Free_Mem(RAMADD Addr, SIZE size) {
-    LouFree(Addr,size);
+    LouFree(Addr);
     return GOOD;
 }
 
@@ -95,73 +95,12 @@ void SendMapToAllocation(struct master_multiboot_mmap_entry* mmap) {
 #define LongLongBitDemention 64
 #define LongLongBitDimension 64
 #define BlockDemention 1024
-#define StartMap (10ULL * MEGABYTE)
 
-
+#define BitMapDivisor 8
 
 static uint64_t* BitMap;
+#define StartMap (512ULL * MEGABYTE)/BitMapDivisor
 
-void LouFree(RAMADD Addr, SIZE size) {
-    uint16_t Number_Of_Entries = (LousineMemoryMapTable->tag.size - sizeof(struct master_multiboot_mmap_entry)) / LousineMemoryMapTable->entry_size;
-    if (LousineMemoryMapTable->entry_version == 0) {
-        struct multiboot_mmap_entry* mmap_entry;
-        for (uint16_t i = 0; i < Number_Of_Entries; i++) {
-            mmap_entry = (struct multiboot_mmap_entry*)(uintptr_t)((uint64_t)LousineMemoryMapTable + (uint64_t)sizeof(struct master_multiboot_mmap_entry) + (uint64_t)i * (uint64_t)LousineMemoryMapTable->entry_size);
-            uint64_t limit = mmap_entry->len;
-            uint64_t address = mmap_entry->addr;
-            if (mmap_entry->type == 0) continue; // don't touch
-            else if (mmap_entry->type == 1) {
-                // skip if system memory or not part of the address table
-                if ((mmap_entry->addr + mmap_entry->len) < StartMap) continue;
-                else if (mmap_entry->addr < StartMap) {
-                    limit = (mmap_entry->addr + mmap_entry->len) - StartMap;
-                    address = StartMap;
-                }
-
-                if ((Addr > (RAMADD)(address + limit)) || Addr < (RAMADD)address) continue;
-
-                
-                //for (uint64_t i = address; i < limit; i += PAGE_SIZE) {
-                    //LouMapAddress(i, i, KERNEL_PAGE_WRITE_PRESENT);
-                //}
-
-                uint64_t Sector = limit - address;
-                uint64_t TotalAllocation = (Sector / 72) / 8;
-
-                uint64_t* Mapping = (uint64_t*)(uintptr_t)address;
-
-                uint64_t TableSelect = 0, TableEntry = 0;
-
-                while(1){
-                    if((uint64_t)((uint64_t)&Mapping[TableSelect] + (uint64_t)TableEntry + (uint64_t)TotalAllocation) == (uint64_t)Addr)break;
-                    if(TableEntry > (LongLongBitDimension - 1)){
-                        TableEntry = 0;
-                        TableSelect++;
-                    }
-                    else TableEntry++;
-                }
-
-                while(size > 0){
-                    uint64_t Foowy = Mapping[TableSelect];
-                    while(TableEntry < (LongLongBitDimension - 1)){
-                        Foowy &= ~(1 << TableEntry);
-                        TableEntry++;
-                        Mapping[TableSelect] = Foowy;
-                        if(TableEntry < (LongLongBitDimension - 1))break;
-                     }
-                    TableEntry = 0;
-                    TableSelect++;
-                    size--;
-                } 
-
-
-            }
-            else if (mmap_entry->type == 2) continue;
-            else if (mmap_entry->type == 3) continue;
-            else continue;
-        }
-    }
-}
 
 
 bool is_aligned(void *address, size_t alignment) {
@@ -179,10 +118,56 @@ bool GetNextAllignedBitmap(){
     return true;
 }
 
-void* LouMallocEx(size_t BytesToAllocate, uint64_t Alignment){
-    uint64_t Flags = KERNEL_PAGE_WRITE_PRESENT;
+typedef struct __attribute__((packed)) _AllocationBlock{
+    uint64_t Address;
+    uint64_t size;
+}AllocationBlock;
 
-    //if (BytesToAllocate >= (LongLongBitDemention * BlockDemention)) return NULL;
+uint8_t DataSlab[(512ULL * MEGABYTE)/BitMapDivisor];
+
+static AllocationBlock* AddressBlock = (AllocationBlock*)&DataSlab;
+
+static uint32_t AddressesLogged = 0;
+
+bool RegisterSystemMemory(
+    uint64_t Address, 
+    uint64_t size
+){
+
+    for(uint64_t i = 0; i < AddressesLogged; i++){
+        if(AddressBlock[i].Address == Address){//fuck its already being used            
+            return false;
+        }
+    }
+
+    //once the check is done
+
+    for(uint64_t i = 0; i < AddressesLogged; i++){
+        if(AddressBlock[i].Address == 0x00){//fuck its already being used
+            AddressBlock[i].Address = Address;      
+            AddressBlock[i].size = size;      
+        }
+    }
+
+    AddressBlock[AddressesLogged].Address = Address;      
+    AddressBlock[AddressesLogged].size = size;  
+
+    AddressesLogged++;
+
+}
+
+void LouFree(RAMADD Addr) {
+    for(uint32_t i = 0 ; i < AddressesLogged; i++){
+        if(AddressBlock[i].Address == (uint64_t)Addr){
+            AddressBlock[i].Address = 0x00;
+            AddressBlock[i].size = 0x00;
+        }
+    }
+}
+
+
+void* LouMallocEx(size_t BytesToAllocate, uint64_t Alignment) {
+    uint64_t Flags = KERNEL_PAGE_WRITE_PRESENT;
 
     uint16_t Number_Of_Entries = (LousineMemoryMapTable->tag.size - sizeof(struct master_multiboot_mmap_entry)) / LousineMemoryMapTable->entry_size;
     if (LousineMemoryMapTable->entry_version == 0) {
@@ -191,84 +176,71 @@ void* LouMallocEx(size_t BytesToAllocate, uint64_t Alignment){
             mmap_entry = (struct multiboot_mmap_entry*)(uintptr_t)((uint64_t)LousineMemoryMapTable + (uint64_t)sizeof(struct master_multiboot_mmap_entry) + (uint64_t)i * (uint64_t)LousineMemoryMapTable->entry_size);
             uint64_t limit = mmap_entry->len;
             uint64_t address = mmap_entry->addr;
-            if (mmap_entry->type == 0)continue;//dont touch shit
+            if (mmap_entry->type == 0) continue; // Skip unusable memory
             else if (mmap_entry->type == 1) {
-                //skip if system memory
+                // Skip if system memory
 
-
-                if ((mmap_entry->addr + mmap_entry->len) < (StartMap))continue;
-                else if (mmap_entry->addr < (StartMap)) {
-                    limit = (mmap_entry->addr + mmap_entry->len) - (StartMap);
-                    address = (StartMap);
+                if ((mmap_entry->addr + mmap_entry->len) < StartMap) continue;
+                else if (mmap_entry->addr < StartMap) {
+                    limit = (mmap_entry->addr + mmap_entry->len) - StartMap;
+                    address = StartMap;
                 }
-                uint64_t Sector = limit - address;
-                uint64_t TotoalAllocation = (Sector / 72) / 8; //Calculate the bitmap ratio of the memory by 8 for 64 bits per 64 bytes
 
-
-                uint64_t TEMPBTA = BytesToAllocate;
-                BitMap = (uint64_t*)(uintptr_t)address;
-                uint64_t TableSelect = 0;
-                uint64_t StartTableSelect = 0;
-                uint8_t TableEntry = 0;
-                uint64_t StartTableEntry = 0;
-
-                uint64_t AddressCheck = (uint64_t)&BitMap[BITMAP_TABLE_BASE] + (uint64_t)TotoalAllocation;  //create an address to check address alignment
-                AddressCheck &= ~(Alignment - 1);                                                           //align address by setting the bits that arent aligned to 0
-                AddressCheck += Alignment;                                                                  //add an alignment to get back to the bitmap space
-                                                                                                            //calculate the new table select and TableEntry
-                uint64_t CheckMap = AddressCheck;                                                           //create a temp value so we dont overwrite data
-                CheckMap -= ((uint64_t)&BitMap[BITMAP_TABLE_BASE] + (uint64_t)TotoalAllocation);            //Subtract the offset of the table and the bitmaps base
-                TableSelect = CheckMap / TABLE_SIZE;                                                        //divide the check for the Table Select
-                TableEntry = CheckMap - (TableSelect * TABLE_SIZE);                                         //subtract the diference due to the fload affect
-                                                                                                            //Start To Find An Open Address
-                for(size_t BytesAllocated = 0; BytesAllocated < BytesToAllocate; BytesAllocated++){         //iterate until number of free bytes found
-                    if((BitMap[TableSelect] >> TableEntry) & 0x01){                                         //check if the byte entry in the table is already being used
-                        AddressCheck += Alignment;                                                          //if it is get the next alligned address
-                        CheckMap = AddressCheck;                                                            //do what we did before to get the map entry
-                        CheckMap -= ((uint64_t)&BitMap[BITMAP_TABLE_BASE] + (uint64_t)TotoalAllocation);            
-                        TableSelect = CheckMap / TABLE_SIZE;                                                        
-                        TableEntry = CheckMap - (TableSelect * TABLE_SIZE);
-                        BytesAllocated = 0;
-                    }
-                    else{                                                                                   //otherwise continue with the checks
-                        if(TableEntry > (LongLongBitDemention - 1)){
-                            TableEntry = 0;
-                            TableSelect++;
-                        }
-                        else{
-                            TableEntry++;
-                        }   
-                    }
-                }
-                CheckMap = AddressCheck;                                                                    //create a temp value so we dont overwrite data
-                CheckMap -= ((uint64_t)&BitMap[BITMAP_TABLE_BASE] + (uint64_t)TotoalAllocation);            //Subtract the offset of the table and the bitmaps base
-                TableSelect = CheckMap / TABLE_SIZE;                                                        //divide the check for the Table Select
-                TableEntry = CheckMap - (TableSelect * TABLE_SIZE);                                         //subtract the diference due to the fload affect
-                //define the result as taken
+                uint64_t AlignmentCheck = (address & ~(Alignment - 1));
                 
-                for(size_t BytesAllocated = 0; BytesAllocated < BytesToAllocate; BytesAllocated++){
-                    if(TableEntry > (LongLongBitDemention - 1)){
-                        BytesAllocated--;
-                        TableEntry = 0;
-                        TableSelect++;
-                    }
-                    else{
-                        uint64_t TEMP = BitMap[TableSelect];
-                        TEMP |= (1 << TableEntry);
-                        BitMap[TableSelect] = TEMP;
-                        TableEntry++;
-                    }
+                if (AddressesLogged == 0) {
+                    AddressBlock[0].Address = AlignmentCheck;
+                    AddressBlock[0].size = BytesToAllocate;
+                    AddressesLogged++; // Increment after logging the first address
+                    return (void*)AlignmentCheck;
                 }
-                if (AddressCheck < GetRamSize()) return (void*)AddressCheck;
-                else return 0;//null
+
+                while (1) {
+                    if (AlignmentCheck > limit) {
+                        break;
+                    }
+                    AlignmentCheck += Alignment;
+
+                    bool addrssSpaceCheck = true;
+
+                    for (uint32_t i = 0; i < AddressesLogged; i++) {
+                        if ((AlignmentCheck >= AddressBlock[i].Address) && 
+                            (AlignmentCheck < (AddressBlock[i].Address + AddressBlock[i].size))) {
+                            addrssSpaceCheck = false;
+                            break;
+                        }
+                    }
+
+                    if (!addrssSpaceCheck) {
+                        continue;
+                    }
+
+                    // Found an address
+                    for (uint32_t i = 0; i < AddressesLogged; i++) {
+                        if (AddressBlock[i].Address == 0x00) {
+                            AddressBlock[i].Address = AlignmentCheck;
+                            AddressBlock[i].size = BytesToAllocate;
+                            return (void*)AlignmentCheck;
+                        }
+                    }
+
+                    if (AddressesLogged >= (33554432)/BitMapDivisor) {
+                        // System overload
+                        return NULL;
+                    }
+
+                    AddressBlock[AddressesLogged].Address = AlignmentCheck;
+                    AddressBlock[AddressesLogged].size = BytesToAllocate;
+                    AddressesLogged++; // Increment after logging the new address
+                    return (void*)AlignmentCheck;
+                }
             }
             else if (mmap_entry->type == 2) continue;
             else if (mmap_entry->type == 3) continue;
             else continue;
         }
     }
-    return (void*)0x00000000;    
-
+    return NULL;    
 }
 
 void* LouMalloc(size_t BytesToAllocate) {

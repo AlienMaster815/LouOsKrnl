@@ -188,7 +188,7 @@ static inline void FirstRun(){
 }
 
 LOUDDK_API_ENTRY void LastSataRun(){
-	LouFree((RAMADD)(AhciBase + (AhciDevice * sizeof(AHCI_DEVICE))), sizeof(AHCI_DEVICE) * (512 - AhciDevice));
+	LouFree((RAMADD)(AhciBase + (AhciDevice * sizeof(AHCI_DEVICE))));
 }
 
 LOUDDK_API_ENTRY uintptr_t GetSataDeviceObjects(){

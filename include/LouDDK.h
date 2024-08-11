@@ -19,6 +19,8 @@
 #include <stdio.h>
 #include <KernelAPI/BitCheck.h>
 
+#include <Kernel/threads.h>
+
 typedef void* FILE;
 
 #define RAMADD unsigned char*

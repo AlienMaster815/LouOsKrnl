@@ -373,6 +373,10 @@ int8_t LouKeXorOperationChar(
 	int8_t Value
 );
 
+
+
 #endif
+
+#define STATIC_ASSERT(cond, msg) typedef char static_assertion_##msg[(cond) ? 1 : -1]
 
 #endif

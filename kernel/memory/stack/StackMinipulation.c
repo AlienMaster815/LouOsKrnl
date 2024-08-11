@@ -19,7 +19,14 @@ LOUSTATUS LouKeCreateStack(Stack* stack,uint64_t StackSize) {
     return Status;
 }
 
+extern uint64_t LouKeGetBspStackBottom();
+
+uint64_t GetKernelStackBase(){
+    return LouKeGetBspStackBottom();
+}
+
 /*
+
 // Function to initialize the stack
 void initializeStack(Stack* stack, int capacity) {
     stack->top = -1;

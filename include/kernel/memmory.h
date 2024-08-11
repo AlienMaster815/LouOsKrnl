@@ -62,7 +62,7 @@ STATUS Lou_Free_Mem(RAMADD Addr, SIZE size);
 void* Lou_Calloc_Mem(size_t numElements, size_t sizeOfElement);
 RAMADD Lou_Alloc_Mem_Alligned(SIZE size,uint64_t allignment);
 void* LouMalloc(size_t BytesToAllocate);
-void LouFree(RAMADD Addr, SIZE size);
+void LouFree(RAMADD Addr);
 void* LouMalloc(size_t BytesToAllocate);
 void* LouMallocEx(size_t BytesToAllocate, size_t Aligned);
 
@@ -93,6 +93,10 @@ uint64_t GetRamSize();
 bool LouCreateMemoryPool(uint64_t* MemoryAddressVirtual,uint64_t* RequestedMemoryAddressPhysical,uint64_t PoolSizeNeeded,uint64_t AlignmentNeeded, uint64_t PageAttributes);
 void LouFreeAlignedMemory(uint8_t* alignedAddr, size_t size);
 void* LouMallocAlligned(size_t size, uint64_t allignment);
+bool RegisterSystemMemory(
+    uint64_t Address, 
+    uint64_t size
+);
 
 //Directory Entry FLAGS
 
@@ -127,7 +131,7 @@ void* align_memory(void* ptr, size_t alignment);
 
 KERNEL_IMPORT bool LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize);
 KERNEL_IMPORT void remove_padding(const void* struct_ptr, size_t struct_size, uint8_t* buffer);
-KERNEL_IMPORT void LouFree(uint8_t* Addr, uint32_t size);
+KERNEL_IMPORT void LouFree(uint8_t* Addr);
 KERNEL_IMPORT void* LouMalloc(size_t BytesToAllocate);
 KERNEL_IMPORT LOUSTATUS LouKeMapIO(uint64_t PADDRESS, uint64_t MemoryBuffer, uint64_t FLAGS);
 KERNEL_IMPORT bool LouMapAddressEx(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize);
@@ -137,7 +141,10 @@ KERNEL_IMPORT void* LouMallocAlligned(size_t size, uint64_t allignment);
 KERNEL_IMPORT bool LouCreateMemoryPool(uint64_t* MemoryAddressVirtual,uint64_t* RequestedMemoryAddressPhysical, uint64_t PoolSizeNeeded,uint64_t AlignmentNeeded, uint64_t PageAttributes);
 KERNEL_IMPORT void LouFreeAlignedMemory(uint8_t* alignedAddr, size_t size);
 KERNEL_IMPORT bool LouUnMapAddress(uint64_t VAddress, uint64_t PageSize);
-
+KERNEL_IMPORT bool RegisterSystemMemory(
+    uint64_t Address, 
+    uint64_t size
+);
 #endif
 
 #ifdef __cplusplus
@@ -166,4 +173,7 @@ void SetKernelLoadedAddress(uint64_t Address);
 #ifdef __cplusplus
 }
 #endif
+
+typedef __uint128_t uint128_t;
+
 #endif

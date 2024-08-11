@@ -171,14 +171,34 @@ void InitializeWDFLDR_SYS(){
 
 void StorPortGetPhysicalAddress();
 void StorPortStallExecution();
-void StorPortNotification();
+
+void StorPortNotification(
+    SCSI_NOTIFICATION_TYPE NotificationType,
+    PVOID HwDeviceExtension,
+    ...
+);
+
 void StorPortSetDeviceQueueDepth();
 void StorPortGetUncachedExtension();
-void StorPortInitialize();
+
+NTSTATUS StorPortInitialize(
+    PDRIVER_OBJECT DevObj,
+    PUNICODE_STRING RegistryEntry,
+    PHW_INITIALIZATION_DATA HwInitializationData,
+    PVOID HwContext
+);
+
 void StorPortGetScatterGatherList();
 void StorPortGetDeviceBase();
-void StorPortGetBusData();
 
+NTSTATUS StorPortGetBusData(
+  PVOID HwDeviceExtension,
+  ULONG BusDataType,
+  ULONG SystemIoBusNumber,
+  ULONG SlotNumber,
+  PVOID Buffer,
+  ULONG Length
+);
 
 static inline
 void InitializeStorePort_SYS(){

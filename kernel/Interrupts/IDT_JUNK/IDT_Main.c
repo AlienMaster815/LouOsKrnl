@@ -430,6 +430,8 @@ void(*Handler[201])() = {
     ISR200
 }; 
 
+extern void HandleSwitch();
+
 #ifdef __x86_64__
 LOUSTATUS set_idt_gate(int num, void (*handler)(), uint16_t selector, uint8_t ist, uint8_t type_attr) {
     
@@ -479,8 +481,9 @@ LOUSTATUS SetBasicInterrupts(bool Init){
     if(Init){
 
         for (uint8_t i = 0; i <= 200; i++ ) {
-            set_idt_gate(i, Handler[i], 0x38, 0, 0);
+            set_idt_gate(i, Handler[i], 0x38, 0, 0); //0x38
         }
+        set_idt_gate(0x20, HandleSwitch, 0x38, 0, 0); //0x38
         return 0;
     }
     else{

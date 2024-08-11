@@ -49,6 +49,6 @@ LOUDDK_API_ENTRY LOUSTATUS InitSLIT() {
         parseSLIT(slit);
     }
 
-    LouFree(Buffer, ACPIBUFFER);
+    LouFree(Buffer);
     return Status;
 }

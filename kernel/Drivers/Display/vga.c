@@ -110,33 +110,31 @@ void clear_row(size_t row) {
 }
 void init_terminal() {
 
+    uint64_t FrameBufferVirtualAddress = GIGABYTE;
 
     if(true){
 
         if(FramebufferInformation != 0x00){
             for(uint64_t i = 0; i < (FramebufferInformation->common.framebuffer_width * FramebufferInformation->common.framebuffer_height * (FramebufferInformation->common.framebuffer_bpp/8)); i+=MEGABYTE_PAGE){
-                LouMapAddress(FramebufferInformation->common.framebuffer_addr + i,FramebufferInformation->common.framebuffer_addr + i, KERNEL_PAGE_WRITE_PRESENT, MEGABYTE_PAGE);
+                LouMapAddress(FramebufferInformation->common.framebuffer_addr + i,FrameBufferVirtualAddress + i, KERNEL_PAGE_WRITE_PRESENT, MEGABYTE_PAGE);
+                FramebufferInformation->common.framebuffer_addr = FrameBufferVirtualAddress;
             }
         }   
         else{
             for(uint64_t i = 0; i < (VBE_INFO->vbe_mode_info.width * VBE_INFO->vbe_mode_info.height * (VBE_INFO->vbe_mode_info.bpp / 8)); i+=MEGABYTE_PAGE){
-                LouMapAddress(VBE_INFO->vbe_mode_info.framebuffer + i,VBE_INFO->vbe_mode_info.framebuffer + i, KERNEL_PAGE_WRITE_PRESENT, MEGABYTE_PAGE);
+                LouMapAddress(VBE_INFO->vbe_mode_info.framebuffer + i,FrameBufferVirtualAddress + i, KERNEL_PAGE_WRITE_PRESENT, MEGABYTE_PAGE);
+                VBE_INFO->vbe_mode_info.framebuffer = FrameBufferVirtualAddress;
             }
         }
-        static Mutex m;
-        MutexGuard(&m);
+
         vga_current = VGA_RGB_FRAMEBUFFER;
         print_clear();
-        MutexFree(&m);
     }
     else{  
-        static Mutex m;
-        MutexGuard(&m);
         vga_current == VGA_MODE_80x25;
         col = 0;
         row = 0;
         print_clear();
-        MutexFree(&m);
     }
 
 }
