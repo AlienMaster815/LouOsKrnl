@@ -159,14 +159,15 @@ annya.iso: louX64.exe
 	mkdir iso
 	mkdir iso/boot
 	mkdir iso/boot/grub
+	mkdir iso/boot/efi
 	mkdir iso/Annya
 	mkdir iso/Annya/System64
 	mkdir iso/Annya/Profiles
 	mkdir iso/Annya/System64/drivers
-	
+	cp /boot/efi/EFI/GRUB/grubx64.efi iso/efi/boot/bootx64.efi
+
 	#Copy System Files To The Appropriate Directories
 	
-	cp SYS/KModeDrvRevEng.sys iso/Annya/System64/drivers/KModeDrvRevEng.sys
 	cp Registry/System64/Config iso/Annya/System64/Config
 	cp Registry/Profiles/Username iso/Annya/Profiles/Username
 	cp dist/x86_64/LOUOSKRNL.bin iso/Annya/System64/LOUOSKRNL.exe

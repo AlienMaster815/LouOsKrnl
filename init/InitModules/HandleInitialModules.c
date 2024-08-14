@@ -13,6 +13,8 @@ void handle_module(
     uintptr_t ModuleEnd
 ){
 
+    EnforceSystemMemoryMap(ModuleStart, ModuleEnd - ModuleStart);
+
     Track[0].ModuleStart = ModuleStart;
     Track[0].ModuleEnd = ModuleEnd;
 

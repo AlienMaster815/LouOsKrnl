@@ -160,6 +160,10 @@ LOUDDK_API_ENTRY void AHCI_Interrupt_Handler();
 
 KERNEL_IMPORT void GetAhciMouduleStart(uintptr_t* Start, uintptr_t* End);
 
+
+
+
+
 LOUDDK_API_ENTRY void Sata_init(uint8_t bus, uint8_t slot, uint8_t func) {
 
 	LouPrint("Initializing Sata Controller\n");
@@ -199,12 +203,11 @@ LOUDDK_API_ENTRY void Sata_init(uint8_t bus, uint8_t slot, uint8_t func) {
 	LouPrint("System Loaded\n");
 
 	LouPrint("Initializing Port\n");
-	//UNUSED PSTOR_PORT_STACK_OBJECT StorPortStackObject = GetStorPortObject(FOO);
+	UNUSED PSTOR_PORT_STACK_OBJECT StorPortStackObject = GetStorPortObject(FOO);
 
-	//PHW_FIND_ADAPTER FindAhci = (PHW_FIND_ADAPTER)((uint64_t)StorPortStackObject->FindAdapter);
-	//PVOID DeviceExtention = StorPortStackObject->DeviceExtention;
-	//PPORT_CONFIGURATION_INFORMATION ConfigInfo = StorPortStackObject->ConfigInfo;
-	//ConfigInfo->SystemIoBusNumber
+	PHW_FIND_ADAPTER FindAhci = (PHW_FIND_ADAPTER)((uint64_t)StorPortStackObject->FindAdapter);
+	PVOID DeviceExtention = StorPortStackObject->DeviceExtention;
+	PPORT_CONFIGURATION_INFORMATION ConfigInfo = StorPortStackObject->ConfigInfo;
 	//__in PVOID DeviceExtension,
     //__in PVOID HwContext,
     //__in PVOID BusInformation,
@@ -215,7 +218,7 @@ LOUDDK_API_ENTRY void Sata_init(uint8_t bus, uint8_t slot, uint8_t func) {
 	//LouPrint("Find Adapter:%h\n",FindAhci);
 	
 	//LouPrint("Bus:%h:Slot:%h:Function:%h\n",bus,slot,func);
-	//FindAhci(DeviceExtention, 0,0, 0, ConfigInfo, 0);
+	FindAhci(DeviceExtention, 0,0, 0, ConfigInfo, 0);
 
 	LouPrint("Port Initialized\n");
 	//InitAHCIController(SataDev);

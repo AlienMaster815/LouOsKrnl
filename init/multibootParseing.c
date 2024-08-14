@@ -20,26 +20,24 @@ void ParseMBootTags(struct multiboot_tag* MBOOT) {
     // Iterate through tags until end tag is encountered
     while (MBOOT->type != 0) {
         // Check if tag is memory map tag
+        EnforceSystemMemoryMap((uint64_t)MBOOT, MBOOT->size);
         switch (MBOOT->type) {
         case (MULTIBOOT_TAG_TYPE_MMAP): {
             ParseMemoryMap(MBOOT);
             break;
         }
         case (MULTIBOOT_TAG_TYPE_EFI64): {
-            uint64_t EFI_TABLE = *(uint64_t*)((uint8_t*)MBOOT + sizeof(struct multiboot_tag_efi64));
-            LouKeSetEfiTable(EFI_TABLE);
+            //uint64_t EFI_TABLE = *(uint64_t*)((uint8_t*)MBOOT + sizeof(struct multiboot_tag_efi64));
+            //LouKeSetEfiTable(EFI_TABLE);
             break;
         }
         case (MULTIBOOT_TAG_TYPE_SMBIOS): {
             uintptr_t SMBIOS_POINTER = *(uintptr_t*)((uint8_t*)MBOOT + sizeof(struct multiboot_tag_smbios));
             LouKeSetSmbios(SMBIOS_POINTER);
-            
-
             break;
         }
         case (MULTIBOOT_TAG_TYPE_ACPI_OLD): {
             LouKeSetRsdp((uint64_t)((uint8_t*)MBOOT + sizeof(struct multiboot_tag_old_acpi)), 1);
-
             break;
         }
         case (MULTIBOOT_TAG_TYPE_ACPI_NEW): {
@@ -60,7 +58,7 @@ void ParseMBootTags(struct multiboot_tag* MBOOT) {
         }
         case (MULTIBOOT_TAG_TYPE_MODULE): {
             struct multiboot_tag_module *mod = (struct multiboot_tag_module *) MBOOT;
-
+            EnforceSystemMemoryMap(mod->mod_start, mod->mod_end - mod->mod_start);
             handle_module(mod->mod_start, mod->mod_end);
             break;
         }

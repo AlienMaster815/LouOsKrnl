@@ -29,7 +29,7 @@ uintptr_t RBP_Current;
 
 
 
-char* KERNEL_VERSION = "0.0.441 RSC-1 Multiboot 2";
+char* KERNEL_VERSION = "0.0.442 RSC-2 Multiboot 2";
 
 
 #ifdef __x86_64__
@@ -149,7 +149,7 @@ void UpdateDeviceInformationTable();
 void StorPortInitializeAllDevices();
 
 LOUSTATUS Set_Up_Devices(){
-    initialize_ps2_keyboard();
+    //initialize_ps2_keyboard();
     //InitializePs2Mouse();
     PCI_Setup();
     //LastSataRun();
@@ -214,38 +214,44 @@ void StartDebugger(){
 
 void LouKeRunOnNewStack(void (*func)(void), void* FunctionParameters, size_t stack_size);
 
+void LouKeSwitchContext(void (*Function)(), uint64_t StackSize);
 
-KERNEL_ENTRY Lou_kernel_start(uint32_t foo){
+KERNEL_ENTRY Lou_kernel_start(
+    uint32_t MBOOT
+){
     
-	struct multiboot_tag* mboot = (struct multiboot_tag*)(uintptr_t)(foo + 8);
+	struct multiboot_tag* mboot = (struct multiboot_tag*)(uintptr_t)(MBOOT + 8);
     ParseMBootTags(mboot);
-	//vga set for debug
+    //vga set for debug
+  	
     setup_vga_systems();
+
 
     StartDebugger();
 
 	LouPrint("Lou Version %s %s\n", KERNEL_VERSION ,KERNEL_ARCH);
     LouPrint("Hello Im Lousine Getting Things Ready\n");
-
-    LouPrint("Hello World\n");
-
+    
     //INITIALIZE IMPORTANT THINGS FOR US LATER
     Lou_kernel_early_initialization();
+    InitializeGenericTables();
+
     Advanced_Kernel_Initialization();
-    //InitializeGenericTables();
 
     //SETUP DEVICES AND DRIVERS
     //if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);		
     
     // Initialize User Mode
     // if(User_Mode_Initialization() != LOUSTATUS_GOOD)LouPanic("User Mode Initialiation Failed",BAD);
-
-
+    LouPrint("Lousine Kernel Video Mode:%dx%d\n", GetBufferWidth(), GetBufferHeight());
     LouPrint("Hello World\n");
-    
 
+    //LouKeSwitchContext(TestLoop1, 2 * MEGABYTE);
     //LouKeCreateThread(TestLoop1, 0x00 , 2 * MEGABYTE);
     //LouKeCreateThread(TestLoop2, 0x00 , 2 * MEGABYTE);
+
+    
+
     //LouPrint("Address of test loop:%h\n",TestLoop1);
     //uint16_t* FOOBAR = LouMalloc(2*KILOBYTE);
 
@@ -262,8 +268,7 @@ void TestLoop3();
 
 
 void TestLoop1() {
-
-    LouPrint("Thread 1 Execution\n");
+        LouPrint("Thread 1 Execution\n");
     while(1);
 }
 
@@ -271,4 +276,5 @@ void TestLoop1() {
 
 void TestLoop2() {
 	LouPrint("Thread 2 Execution\n");
+    while(1);
 }

@@ -182,3 +182,14 @@ raster_circle (int x0, int y0, int radius,uint8_t r,uint8_t g,uint8_t b)
     VgaPutPixelRgb (x0 - y, y0 - x,r,g,b);
   }
 }
+
+uint16_t VgaGetBufferHeight();
+uint16_t VgaGetBufferWidth();
+
+uint16_t GetBufferWidth(){
+  return VgaGetBufferWidth();
+}
+
+uint16_t GetBufferHeight(){
+  return VgaGetBufferHeight();
+}

@@ -19,16 +19,22 @@ void RegisterRamMap(struct multiboot_mmap_entry* mmap_entry) {
     if((mmap_entry->addr + mmap_entry->len) > mlimit)mlimit = mmap_entry->addr + mmap_entry->len;
 }
 
+static struct multiboot_mmap_entry* AcpiMapEntry;
+
 void RegisterACPIMap(struct multiboot_mmap_entry* mmap_entry) {
 
+    EnforceSystemMemoryMap(mmap_entry->addr, mmap_entry->len);
     for(uint64_t i = mmap_entry->addr; i < (mmap_entry->addr + mmap_entry->len);i += KILOBYTE_PAGE){
-        LouMapAddress(mmap_entry->addr,i, KERNEL_PAGE_WRITE_PRESENT, KILOBYTE_PAGE);
+        LouMapAddress(i,i, KERNEL_PAGE_WRITE_PRESENT, KILOBYTE_PAGE);
     }
+    AcpiMapEntry = mmap_entry;
     if((mmap_entry->addr + mmap_entry->len) > mlimit)mlimit = mmap_entry->addr + mmap_entry->len;
 }
 
-void RegisterNotUsable(struct multiboot_mmap_entry* mmap_entry) {
 
+
+void RegisterNotUsable(struct multiboot_mmap_entry* mmap_entry) {
+    EnforceSystemMemoryMap(mmap_entry->addr, mmap_entry->len);
 }
 
 void ParseMemoryMap(struct multiboot_tag* MBOOT) {
@@ -51,7 +57,10 @@ void ParseMemoryMap(struct multiboot_tag* MBOOT) {
         for (uint16_t i = 0; i < Number_Of_Entries; i++) {
             mmap_entry = (struct multiboot_mmap_entry*)(uintptr_t)((uint64_t)mmap + (uint64_t)sizeof(struct master_multiboot_mmap_entry) + (uint64_t)i * (uint64_t)mmap->entry_size);
 
-            if (mmap_entry->type == 0);//dont touch shit
+            if (mmap_entry->type == 0){
+                //dont touch shit just map it
+                EnforceSystemMemoryMap(mmap_entry->addr, mmap_entry->len);
+            }
             else if (mmap_entry->type == 1)RegisterRamMap(mmap_entry);
             else if (mmap_entry->type == 2)RegisterNotUsable(mmap_entry);
             else if (mmap_entry->type == 3)RegisterACPIMap(mmap_entry);
@@ -63,6 +72,6 @@ void ParseMemoryMap(struct multiboot_tag* MBOOT) {
             }
         }
     }
-    LouPrint("Ram Installed is:%h BYTES\n", mlimit);
+    //LouPrint("Ram Installed is:%h BYTES\n", mlimit);
 
 }

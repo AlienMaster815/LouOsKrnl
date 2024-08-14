@@ -24,31 +24,34 @@ section .bss
 section .text
 extern InterruptRouter
 extern PIC_sendEOI
-
-
+extern UpdateThreadManager
+extern local_apic_send_eoi
 
 %macro pusha 0	
 	
-	push rax
-	push rbx
-	push rcx
-	push rdx
+	;push rsp
 
-	push rsi
-	push rdi
-
-	push r8
-	push r9
-	push r10
-	push r11
-	push r12
-	push r13
-	push r14
 	push r15
+	push r14
+	push r13
+	push r12
+	push r11
+	push r10
+	push r9
+	push r8
 
-	mov rax, [rsp + 8 * 14]
-	mov [InstructionPointer], rax
-	xor rax, rax
+	push rdi
+	push rsi
+	push rbp
+
+	push rdx
+	push rcx
+	push rbx
+	push rax
+
+	;mov rax, [rsp + 8 * 16]
+	;mov [InstructionPointer], rax
+	;xor rax, rax
 
 %endmacro
 
@@ -56,22 +59,25 @@ extern PIC_sendEOI
 	;pop rsp
 	;pop rbp
 
-	pop r15
-	pop r14
-	pop r13
-	pop r12
-	pop r11
-	pop r10
-	pop r9
-	pop r8
-
-	pop rdi
-	pop rsi
-
-	pop rdx
-	pop rcx
-	pop rbx
 	pop rax
+	pop rbx
+	pop rcx
+	pop rdx
+
+	pop rbp
+	pop rsi
+	pop rdi
+
+	pop r8
+	pop r9
+	pop r10
+	pop r11
+	pop r12
+	pop r13
+	pop r14
+	pop r15
+
+
 %endmacro
 
 ;PIC_sendEOI(unsigned char irq)
@@ -292,6 +298,22 @@ global ISR200
 global HandleSwitch
 global StoreContext 
 
+global ContextLiftoff
+extern RegisterLastKnownStackLocation
+section .text
+global getRsp
+
+SaveNext dd 0
+
+
+ContextLiftoff:
+	pusha
+	mov rsp, rcx;
+    popa
+	ret
+
+
+
 ISR0:
 	pusha
 	mov ah, 0
@@ -303,9 +325,7 @@ ISR1:
 	mov ah, 1
 	mov [InterruptNum], ah
 	popa
-	iretq
-	Handle
-
+	ret
 
 ISR2:
 	pusha
@@ -502,13 +522,11 @@ ISR31:
 
 
 ISR32:
-	cli
 	pusha
-	mov ah, 32
-	mov [InterruptNum], ah
-	Handle
+	mov rcx, rsp	
+	call UpdateThreadManager
+	mov rsp, rax 
 	popa
-	sti
 	iretq
 
 
@@ -1692,4 +1710,3 @@ ISR200:
 	mov [InterruptNum], ah
 	Handle
 	hlt
-

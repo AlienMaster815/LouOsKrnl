@@ -132,28 +132,28 @@ ULONG StorPortGetBusData(
     if(BusDataType == PCIConfiguration){
         LouPrint("StorPort: Retrieving PCI CONFIGURATION INFORMATION\n");
         // Ensure the buffer is not NULL and the length is valid
-        //if (Buffer == 0x00 || Length == 0) {
-        //    LouPrint("Invalid buffer or length\n");
-        //    return 0;
-        //}
+        if (Buffer == 0x00 || Length == 0) {
+            LouPrint("Invalid buffer or length\n");
+            return 0;
+        }
 
         // Calculate the number of bytes to read
-        //ULONG bytesToRead = (Length < sizeof(PCI_COMMON_CONFIG)) ? Length : sizeof(PCI_COMMON_CONFIG);
+        ULONG bytesToRead = (Length < sizeof(PCI_COMMON_CONFIG)) ? Length : sizeof(PCI_COMMON_CONFIG);
 
         // Read the PCI configuration space byte by byte and copy to the buffer
-        //for (ULONG offset = 0; offset < bytesToRead; ++offset) {
-        //    uint8_t value = pciConfigAddress(
-        //        (uint8_t)SystemIoBusNumber,
-        //        (uint8_t)SlotNumber,
-        //        0, // Assuming function 0 for simplicity
-        //        (uint8_t)offset
-        //    );
-        //    ((uint8_t*)Buffer)[offset] = value;
-        //}
+        for (ULONG offset = 0; offset < bytesToRead; ++offset) {
+            uint8_t value = pciConfigAddress(
+                (uint8_t)SystemIoBusNumber,
+                (uint8_t)SlotNumber,
+                0, // Assuming function 0 for simplicity
+                (uint8_t)offset
+            );
+            ((uint8_t*)Buffer)[offset] = value;
+        }
 	    //LouPrint("Bus:%h:Slot:%h:Function:%h\n",SystemIoBusNumber,SlotNumber,0); 
         LouPrint("void StorPortGetBusData() COMPLETE\n");
-        while(1);
-        //return bytesToRead;
+        //while(1);
+        return bytesToRead;
     }
 
     LouPrint("void StorPortGetBusData() FAILED\n");

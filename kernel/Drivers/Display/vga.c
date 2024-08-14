@@ -10,6 +10,26 @@ extern struct multiboot_tag_framebuffer* FramebufferInformation;
 extern struct multiboot_tag_vbe* VBE_INFO;
 CharMapping* GetCharecterMap(char Charecter);
 
+uint16_t VgaGetBufferWidth(){
+    if(VBE_INFO != 0x00){
+        return VBE_INFO->vbe_mode_info.width;
+    }
+    else if (FramebufferInformation != 0x00){
+        return FramebufferInformation->common.framebuffer_width;
+    }
+    else return 0x00;
+}
+
+uint16_t VgaGetBufferHeight(){
+    if(VBE_INFO != 0x00){
+        return VBE_INFO->vbe_mode_info.height;
+    }
+    else if (FramebufferInformation != 0x00){
+        return FramebufferInformation->common.framebuffer_height;
+    }
+    else return 0x00;
+}
+
 void VgaPutPixelRgb(int x, int y, uint8_t r, uint8_t g, uint8_t b) {
 
     if(FramebufferInformation != 0x00){
@@ -110,20 +130,18 @@ void clear_row(size_t row) {
 }
 void init_terminal() {
 
-    uint64_t FrameBufferVirtualAddress = GIGABYTE;
 
     if(true){
-
         if(FramebufferInformation != 0x00){
             for(uint64_t i = 0; i < (FramebufferInformation->common.framebuffer_width * FramebufferInformation->common.framebuffer_height * (FramebufferInformation->common.framebuffer_bpp/8)); i+=MEGABYTE_PAGE){
-                LouMapAddress(FramebufferInformation->common.framebuffer_addr + i,FrameBufferVirtualAddress + i, KERNEL_PAGE_WRITE_PRESENT, MEGABYTE_PAGE);
-                FramebufferInformation->common.framebuffer_addr = FrameBufferVirtualAddress;
+                //LouMapAddress(FramebufferInformation->common.framebuffer_addr + i,FrameBufferVirtualAddress + i, KERNEL_PAGE_WRITE_PRESENT, MEGABYTE_PAGE);
+                //FramebufferInformation->common.framebuffer_addr = FrameBufferVirtualAddress;
             }
         }   
-        else{
+        else if(VBE_INFO != 0x00){
+            EnforceSystemMemoryMap(VBE_INFO->vbe_mode_info.framebuffer, VBE_INFO->vbe_mode_info.framebuffer + (VBE_INFO->vbe_mode_info.width * VBE_INFO->vbe_mode_info.height * (VBE_INFO->vbe_mode_info.bpp / 8)));
             for(uint64_t i = 0; i < (VBE_INFO->vbe_mode_info.width * VBE_INFO->vbe_mode_info.height * (VBE_INFO->vbe_mode_info.bpp / 8)); i+=MEGABYTE_PAGE){
-                LouMapAddress(VBE_INFO->vbe_mode_info.framebuffer + i,FrameBufferVirtualAddress + i, KERNEL_PAGE_WRITE_PRESENT, MEGABYTE_PAGE);
-                VBE_INFO->vbe_mode_info.framebuffer = FrameBufferVirtualAddress;
+                LouMapAddress(VBE_INFO->vbe_mode_info.framebuffer + i,VBE_INFO->vbe_mode_info.framebuffer + i, KERNEL_PAGE_WRITE_PRESENT, MEGABYTE_PAGE);
             }
         }
 

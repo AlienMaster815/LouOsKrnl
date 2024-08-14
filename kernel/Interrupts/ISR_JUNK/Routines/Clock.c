@@ -19,8 +19,7 @@ void Clock(uint64_t Rsp) {
 
 	//LOUSTATUS Status = LOUSTATUS_GOOD;
 
-	//UpdateThreadManager(Rsp);
+	UpdateThreadManager(Rsp);
 	//LouPrint("Clock Was Used\n");
-	//local_apic_send_eoi();
 	return;// Rsp;
 }

@@ -7,6 +7,6 @@ struct multiboot_tag_framebuffer* FramebufferInformation;
 void InitializeFrameBuffer(
     struct multiboot_tag_framebuffer* Frambuffer
 ){
-    LouPrint("Parseing Framebuffer\n");
+    //LouPrint("Parseing Framebuffer\n");
     FramebufferInformation = Frambuffer;
 }

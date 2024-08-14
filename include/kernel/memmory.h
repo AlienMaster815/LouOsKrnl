@@ -93,7 +93,7 @@ uint64_t GetRamSize();
 bool LouCreateMemoryPool(uint64_t* MemoryAddressVirtual,uint64_t* RequestedMemoryAddressPhysical,uint64_t PoolSizeNeeded,uint64_t AlignmentNeeded, uint64_t PageAttributes);
 void LouFreeAlignedMemory(uint8_t* alignedAddr, size_t size);
 void* LouMallocAlligned(size_t size, uint64_t allignment);
-bool RegisterSystemMemory(
+bool EnforceSystemMemoryMap(
     uint64_t Address, 
     uint64_t size
 );
@@ -141,7 +141,7 @@ KERNEL_IMPORT void* LouMallocAlligned(size_t size, uint64_t allignment);
 KERNEL_IMPORT bool LouCreateMemoryPool(uint64_t* MemoryAddressVirtual,uint64_t* RequestedMemoryAddressPhysical, uint64_t PoolSizeNeeded,uint64_t AlignmentNeeded, uint64_t PageAttributes);
 KERNEL_IMPORT void LouFreeAlignedMemory(uint8_t* alignedAddr, size_t size);
 KERNEL_IMPORT bool LouUnMapAddress(uint64_t VAddress, uint64_t PageSize);
-KERNEL_IMPORT bool RegisterSystemMemory(
+KERNEL_IMPORT bool EnforceSystemMemoryMap(
     uint64_t Address, 
     uint64_t size
 );

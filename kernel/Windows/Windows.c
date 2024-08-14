@@ -258,6 +258,55 @@ bool DrawWindow(
         0,0,0
     );
 
+    DrawRectangle(
+        x+width-28,y+4,
+        10,10,        
+        WindHandle->BackgroundColor.r,
+        WindHandle->BackgroundColor.g,
+        WindHandle->BackgroundColor.b
+    );
+
+    DrawRectangle(
+        x+width-42,y+4,
+        10,10,        
+        WindHandle->BackgroundColor.r,
+        WindHandle->BackgroundColor.g,
+        WindHandle->BackgroundColor.b
+    );
+
+    Draw2DBorder(
+        x+width-42,y+4,10,10,        
+        WindHandle->AftHighLight.r,
+        WindHandle->AftHighLight.g,
+        WindHandle->AftHighLight.b
+    );
+
+    DrawRectangle(        
+        x+width-40,y+10,
+        6,2,        
+        WindHandle->AftHighLight.r,
+        WindHandle->AftHighLight.g,
+        WindHandle->AftHighLight.b
+        );
+
+    Draw3DBorder(
+        x+width-28,y+4,
+        10,10,
+        WindHandle->ForwardHighLite.r,
+        WindHandle->ForwardHighLite.g,
+        WindHandle->ForwardHighLite.b,
+        WindHandle->AftHighLight.r,
+        WindHandle->AftHighLight.g,
+        WindHandle->AftHighLight.b
+    );
+
+    Draw2DBorder(
+        x+width-26,y+6,6,6,        
+        WindHandle->AftHighLight.r,
+        WindHandle->AftHighLight.g,
+        WindHandle->AftHighLight.b
+    );
+
     return true;
 
 }

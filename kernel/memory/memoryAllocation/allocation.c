@@ -129,31 +129,26 @@ static AllocationBlock* AddressBlock = (AllocationBlock*)&DataSlab;
 
 static uint32_t AddressesLogged = 0;
 
-bool RegisterSystemMemory(
+
+
+bool EnforceSystemMemoryMap(
     uint64_t Address, 
     uint64_t size
 ){
 
-    for(uint64_t i = 0; i < AddressesLogged; i++){
-        if(AddressBlock[i].Address == Address){//fuck its already being used            
-            return false;
+    for(uint32_t i = 0 ; i < AddressesLogged; i++){
+        if(AddressBlock[i].Address == 0x00){
+            AddressBlock[i].Address = Address;
+            AddressBlock[i].size = size;
+            return true;
         }
     }
-
-    //once the check is done
-
-    for(uint64_t i = 0; i < AddressesLogged; i++){
-        if(AddressBlock[i].Address == 0x00){//fuck its already being used
-            AddressBlock[i].Address = Address;      
-            AddressBlock[i].size = size;      
-        }
-    }
-
-    AddressBlock[AddressesLogged].Address = Address;      
-    AddressBlock[AddressesLogged].size = size;  
-
+    
+    AddressBlock[AddressesLogged].Address = Address;
+    AddressBlock[AddressesLogged].size = size;
     AddressesLogged++;
 
+    return true;
 }
 
 void LouFree(RAMADD Addr) {

@@ -40,22 +40,11 @@ extern Lou_kernel_start
 extern enable_paging
 
 start:
-    ;mov eax, [ebx]
-    ;mov [multiboot_info_ptr], eax
+
     mov [multiboot_info_ptr], ebx
-    ;xor eax,eax
-    
-    ;mov [multiboot_info_ptr], ebx
+
     mov esp, stack_top
 
-    mov eax, 5
-    mov [1073741824], eax
-
-    ;mov eax, 0xFFFFFFFF
-    ;mov [0xFEE000E0], eax
-
-    mov eax, [0xFEE000E0]
-    mov [FOO], eax
 
     call check_cpuid
     call check_long_mode

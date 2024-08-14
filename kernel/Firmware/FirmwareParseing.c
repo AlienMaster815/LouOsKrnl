@@ -57,14 +57,15 @@ static struct multiboot_tag_apm* APM_MASTER = 0x00;
 
 LOUSTATUS LouKeSetEfiTable(uint64_t Address) {
 	EFI_TABLE = (uintptr_t)Address;
-
+	struct multiboot_tag_efi64* E = (struct multiboot_tag_efi64*)EFI_TABLE;
+	EnforceSystemMemoryMap(E->pointer, 72);
 	//LouPrint("EFI Table Address Is:%d\n", EFI_TABLE);
 }
 
 LOUSTATUS LouKeSetSmbios(uintptr_t SMBIOS) {
 
 	SMBIOS_MASTER = (SMBIOS_LOOKUP*)SMBIOS;
-	
+	EnforceSystemMemoryMap(SMBIOS, sizeof(struct multiboot_tag_smbios));
 	//LouPrint("SMBIOS Address Is:%d\n", SMBIOS_MASTER);
 	return LOUSTATUS_GOOD;
 }
@@ -73,6 +74,7 @@ LOUSTATUS LouKeSetRsdp(uintptr_t RSDP,uint8_t Type) {
 
 	RSDP_MASTER = RSDP;
 	TYPE_MASTER = Type;
+
 	//LouPrint("RSDP Address Is:%d:Version:%d\n",RSDP_MASTER,TYPE_MASTER);
 
 	return LOUSTATUS_GOOD;
