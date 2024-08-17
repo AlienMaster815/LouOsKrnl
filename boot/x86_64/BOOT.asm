@@ -11,12 +11,12 @@ MBOOTHEADER:
     dd 0x100000000 - (0xE85250D6 + 0x00 + (MBOOTEND - MBOOTHEADER)) 
     ;TAGS
     ;FrameBuffer Tag
-    dw 5 ;Framebuffer Type
-    dw 0 ;Reserved
-    dw 20 ;Tag Size
-    dd 1024 ;V
-    dd 768 ;H
-    dd 32 ;D
+    ;dw 5 ;Framebuffer Type
+    ;dw 0 ;Reserved
+    ;dw 20 ;Tag Size
+    ;dd 1024 ;V
+    ;dd 768 ;H
+    ;dd 32 ;D
     dw 0
     dw 0
     dd 8
@@ -140,6 +140,8 @@ gdt64:
 .pointer:
     dw $ - gdt64 - 1 ; length
     dq gdt64 ; address
+
+section .text
 
 bits 64
 long_mode_start:

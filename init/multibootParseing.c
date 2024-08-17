@@ -8,12 +8,14 @@ LOUSTATUS LouKeSetSmbios(uintptr_t SMBIOS);
 LOUSTATUS LouKeSetRsdp(uintptr_t RSDP, uint8_t Type);
 LOUSTATUS LouKeSetApm(struct multiboot_tag_apm* APM);
 
-struct multiboot_tag_vbe* VBE_INFO = 0;
+struct multiboot_tag_vbe VBE_INFO;
 
 void handle_module(
     uintptr_t ModuleStart,
     uintptr_t ModuleEnd
 );
+
+extern bool GOPIsUnsable;
 
 void ParseMBootTags(struct multiboot_tag* MBOOT) {
 
@@ -27,12 +29,12 @@ void ParseMBootTags(struct multiboot_tag* MBOOT) {
             break;
         }
         case (MULTIBOOT_TAG_TYPE_EFI64): {
-            //uint64_t EFI_TABLE = *(uint64_t*)((uint8_t*)MBOOT + sizeof(struct multiboot_tag_efi64));
-            //LouKeSetEfiTable(EFI_TABLE);
+            uint64_t EFI_TABLE = (uint64_t)((uint8_t*)MBOOT);
+            LouKeSetEfiTable(EFI_TABLE); 
             break;
         }
         case (MULTIBOOT_TAG_TYPE_SMBIOS): {
-            uintptr_t SMBIOS_POINTER = *(uintptr_t*)((uint8_t*)MBOOT + sizeof(struct multiboot_tag_smbios));
+            uintptr_t SMBIOS_POINTER = (uintptr_t)((uint8_t*)MBOOT + sizeof(struct multiboot_tag_smbios));
             LouKeSetSmbios(SMBIOS_POINTER);
             break;
         }
@@ -45,10 +47,10 @@ void ParseMBootTags(struct multiboot_tag* MBOOT) {
             break;
         }
         case (MULTIBOOT_TAG_TYPE_VBE): {
-            struct multiboot_tag_vbe* vbe_tag = (struct multiboot_tag_vbe*)MBOOT;
+            //struct multiboot_tag_vbe* vbe_tag = (struct multiboot_tag_vbe*)MBOOT;
             // Access VBE information from vbe_tag
             // Example: uint16_t vbe_mode = vbe_tag->vbe_mode;
-            VBE_INFO = vbe_tag;
+            //VBE_INFO = vbe_tag;
             break;
         }
         case (MULTIBOOT_TAG_TYPE_APM): {

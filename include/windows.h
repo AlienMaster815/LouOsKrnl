@@ -12,6 +12,7 @@ typedef struct __attribute__((packed)) _COLOR_MAP{
 typedef enum{
     GENERIC_WINDOW = 0,
     TEXT_WINDOW = 1,
+    CANVAS_WINDOW = 2,
 }WINDOW_TYPE;
 
 typedef struct __attribute__((packed)) _WINDOW_CURSOR{
@@ -28,6 +29,19 @@ typedef struct __attribute__((packed)) _WINDOW_DIMENTIONS{
     uint16_t width;     //Current Width
     uint16_t height;    //Current height
 }WINDOW_DIMENTIONS, * PWINDOW_DIMENTIONS;
+
+typedef enum{
+    GENRIC_BUTTON = 0,
+    PUSH_TEXT_BUTTON = 1,
+    MENU_TEXT_BUTTON = 2,
+}BUTTON_TYPE;
+
+typedef struct __attribute__((packed)) _BUTTON_CHARECTERISTICS{
+    bool IsButton3D;
+    BUTTON_TYPE Type;
+    string ButtonName;
+    string ButtonText;
+}BUTTON_CHARECTERISTICS, * PBUTTON_CHARECTERISTICS;
 
 typedef struct __attribute__((packed)) _WINDOW_CHARECTERISTICS{
     WINDOW_TYPE Type;
@@ -54,6 +68,46 @@ typedef struct __attribute__((packed)) _WINDHANDLE{
     uint16_t NumberOfChildWindows;
 } WINDHANDLE, * PWINDHANDLE;
 
+typedef struct __attribute__((packed)) _BUTTONHANDLE{
+    COLOR_MAP Letters;
+    COLOR_MAP ButtonColor;
+    //keep in mind the system will flip
+    //the data below if the button is 3D
+    COLOR_MAP ForwardHighLite;
+    COLOR_MAP AftHighLight;
+    uint16_t CurrentX;
+    uint16_t CurrentY;
+    uint16_t CurrentWidth;
+    uint16_t CurrentHight;
+    BUTTON_CHARECTERISTICS Charecteristics;
+    uintptr_t ParentWindow;
+    uintptr_t ChildWindow;
+    uint16_t NumberOfChildWindows; 
+} BUTTONHANDLE, * PBUTTONHANDLE;
+
+bool Draw3DBorder(
+    uint16_t x,
+    uint16_t y,
+    uint16_t width,
+    uint16_t height,
+    uint16_t rf,
+    uint16_t gf,
+    uint16_t bf,
+    uint16_t rb,
+    uint16_t gb,
+    uint16_t bb
+);
+
+bool Draw2DBorder(
+    uint16_t x, 
+    uint16_t y, 
+    uint16_t width, 
+    uint16_t height, 
+    uint8_t r,
+    uint8_t g,
+    uint8_t b
+);
+
 PWINDHANDLE LouCreateWindow(
     const uint16_t x, const uint16_t y,
     const uint16_t width, const uint16_t height, 
@@ -66,7 +120,8 @@ bool LouUpdateWindow(
     uint16_t NewY, 
     uint16_t NewWidth,
     uint16_t NewHeight,
-    PWINDHANDLE WindHandle);
+    PWINDHANDLE WindHandle
+);
 
 bool DrawRectangle(
     uint16_t x, 
@@ -107,5 +162,25 @@ void FrameBufferMemMov(
 
 bool LouUpdateTextWindow(PWINDHANDLE WindowHandle,TEXT_WINDOW_EVENT Update);
 
+PWINDHANDLE LouCreateCanvasBuffer(
+    uint16_t x, uint16_t y,
+    uint16_t width, uint16_t height,
+    uintptr_t ParentWindow,
+    PWINDOW_CHARECTERISTICS Charecteristics
+);
+
+void LouChangeCanvasBufferColor(
+    PWINDHANDLE WindHandle,
+    uint8_t r,
+    uint8_t g,
+    uint8_t b
+);
+
+PBUTTONHANDLE LouCreateButton(
+    uint16_t x, uint16_t y,
+    uint16_t Width, uint16_t Height,
+    uintptr_t ParentWindow,
+    PBUTTON_CHARECTERISTICS Charecteristics
+);
 
 #endif

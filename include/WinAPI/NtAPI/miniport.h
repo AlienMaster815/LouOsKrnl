@@ -95,9 +95,105 @@ typedef enum {
 	BusWidth64Bits
 } PCI_BUS_WIDTH;
 
+
+
+#define PCI_TYPE0_ADDRESSES             6
+#define PCI_TYPE1_ADDRESSES             2
+#define PCI_TYPE2_ADDRESSES             5
+
+typedef struct _PCI_COMMON_HEADER {
+    USHORT  VendorID;                   // (ro)
+    USHORT  DeviceID;                   // (ro)
+    USHORT  Command;                    // Device control
+    USHORT  Status;
+    UCHAR   RevisionID;                 // (ro)
+    UCHAR   ProgIf;                     // (ro)
+    UCHAR   SubClass;                   // (ro)
+    UCHAR   BaseClass;                  // (ro)
+    UCHAR   CacheLineSize;              // (ro+)
+    UCHAR   LatencyTimer;               // (ro+)
+    UCHAR   HeaderType;                 // (ro)
+    UCHAR   BIST;                       // Built in self test
+
+    union {
+        struct _PCI_HEADER_TYPE_0 {
+            ULONG   BaseAddresses[PCI_TYPE0_ADDRESSES];
+            ULONG   CIS;
+            USHORT  SubVendorID;
+            USHORT  SubSystemID;
+            ULONG   ROMBaseAddress;
+            UCHAR   CapabilitiesPtr;
+            UCHAR   Reserved1[3];
+            ULONG   Reserved2;
+            UCHAR   InterruptLine;      //
+            UCHAR   InterruptPin;       // (ro)
+            UCHAR   MinimumGrant;       // (ro)
+            UCHAR   MaximumLatency;     // (ro)
+        } type0;
+
+
+
+        //
+        // PCI to PCI Bridge
+        //
+
+        struct _PCI_HEADER_TYPE_1 {
+            ULONG   BaseAddresses[PCI_TYPE1_ADDRESSES];
+            UCHAR   PrimaryBus;
+            UCHAR   SecondaryBus;
+            UCHAR   SubordinateBus;
+            UCHAR   SecondaryLatency;
+            UCHAR   IOBase;
+            UCHAR   IOLimit;
+            USHORT  SecondaryStatus;
+            USHORT  MemoryBase;
+            USHORT  MemoryLimit;
+            USHORT  PrefetchBase;
+            USHORT  PrefetchLimit;
+            ULONG   PrefetchBaseUpper32;
+            ULONG   PrefetchLimitUpper32;
+            USHORT  IOBaseUpper16;
+            USHORT  IOLimitUpper16;
+            UCHAR   CapabilitiesPtr;
+            UCHAR   Reserved1[3];
+            ULONG   ROMBaseAddress;
+            UCHAR   InterruptLine;
+            UCHAR   InterruptPin;
+            USHORT  BridgeControl;
+        } type1;
+
+        //
+        // PCI to CARDBUS Bridge
+        //
+
+        struct _PCI_HEADER_TYPE_2 {
+            ULONG   SocketRegistersBaseAddress;
+            UCHAR   CapabilitiesPtr;
+            UCHAR   Reserved;
+            USHORT  SecondaryStatus;
+            UCHAR   PrimaryBus;
+            UCHAR   SecondaryBus;
+            UCHAR   SubordinateBus;
+            UCHAR   SecondaryLatency;
+            struct  {
+                ULONG   Base;
+                ULONG   Limit;
+            }       Range[PCI_TYPE2_ADDRESSES-1];
+            UCHAR   InterruptLine;
+            UCHAR   InterruptPin;
+            USHORT  BridgeControl;
+        } type2;
+
+
+
+    } u;
+
+} PCI_COMMON_HEADER, *PPCI_COMMON_HEADER;
+
 typedef struct _PCI_COMMON_CONFIG {
-	UCHAR DeviceSpecific[192];
-} PCI_COMMON_CONFIG, * PPCI_COMMON_CONFIG, PCI_COMMON_HEADER;
+    PCI_COMMON_HEADER Header;
+    UCHAR   DeviceSpecific[192];
+} PCI_COMMON_CONFIG, *PPCI_COMMON_CONFIG;
 
 typedef struct _GROUP_AFFINITY {
 	KAFFINITY Mask;
@@ -801,61 +897,17 @@ typedef struct _ACCESS_RANGE {
     BOOLEAN RangeInMemory;
 } ACCESS_RANGE, *PACCESS_RANGE;
 
-
-typedef struct _PORT_CONFIGURATION_INFORMATION {
+typedef struct __attribute__((packed)) _PORT_CONFIGURATION_INFORMATION {
     ULONG Length;
     ULONG SystemIoBusNumber;
-    INTERFACE_TYPE AdapterInterfaceType;
-    ULONG BusInterruptLevel;
-    ULONG BusInterruptVector;
-    KINTERRUPT_MODE InterruptMode;
-    ULONG MaximumTransferLength;
-    ULONG NumberOfPhysicalBreaks;
-    ULONG DmaChannel;
-    ULONG DmaPort;
-    DMA_WIDTH DmaWidth;
-    DMA_SPEED DmaSpeed;
-    ULONG AlignmentMask;
-    ULONG NumberOfAccessRanges;
-    PACCESS_RANGE AccessRanges;
-    PVOID Reserved;
-    UCHAR NumberOfBuses;
-    CCHAR InitiatorBusId[8];
-    ULONG ScatterGather;
-    ULONG Master;
-    ULONG MapBuffers;
-    BOOLEAN NeedPhysicalAddresses;
-    BOOLEAN TaggedQueuing;
-    BOOLEAN AutoRequestSense;
-    BOOLEAN MultipleRequestPerLu;
-    ULONG ReceiveEvent;
-    ULONG Dma32BitAddresses;
-    ULONG DemandMode;
-    ULONG MapRegistersPerChannel;
-    BOOLEAN CachesData;
-    BOOLEAN AdapterScansDown;
-    BOOLEAN AtdiskPrimaryClaimed;
-    BOOLEAN AtdiskSecondaryClaimed;
-    BOOLEAN IsaBusMaster;
-    ULONG MaximumNumberOfTargets;
-    UCHAR SlotNumber;
-    UCHAR ReservedBus;
-    PVOID MiniportHwDeviceExtension;
-    ULONG DeviceExtensionSize;
-    ULONG SpecificLuExtensionSize;
-    ULONG SrbExtensionSize;
-    ULONG Dma64BitAddresses;
-    ULONG WmiDataProvider;
-    ULONG Flags;
-    _PORT_CONFIGURATION_INFORMATION* Version1Extension;
-    struct _ADAPTER_EXTENSION *MiniportAdapterExtension;
-    PVOID Reserved1;
-    UCHAR Reserved2[2];
-    ULONG Reserved3[2];
+	uint8_t PADING1[0x30];
+	uint32_t NumberOfAccessRanges;
+    uint8_t PADDING[0x5C - 0x34];
+    ULONG SlotNumber;
 } PORT_CONFIGURATION_INFORMATION, *PPORT_CONFIGURATION_INFORMATION;
 
 
-typedef struct _SCSI_REQUEST_BLOCK {
+typedef struct __attribute__((packed)) _SCSI_REQUEST_BLOCK {
     USHORT Length;
     UCHAR Function;
     UCHAR SrbStatus;

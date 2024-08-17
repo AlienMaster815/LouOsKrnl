@@ -194,7 +194,41 @@ void TestLoop2();
 void TestFontFunction();
 extern void MachineCodeDebug(uint64_t FOO);
 
+static PWINDHANDLE TaskBarHandle = 0;
 
+void StartDesktop(){
+    WINDOW_CHARECTERISTICS TaskbarCharecteristics;
+    TaskbarCharecteristics.Type = CANVAS_WINDOW;
+    TaskbarCharecteristics.WindowName = "TaskBar";
+
+    BUTTON_CHARECTERISTICS ButtonCharecteristics;
+    ButtonCharecteristics.Type = PUSH_TEXT_BUTTON;
+    ButtonCharecteristics.IsButton3D = true;
+    ButtonCharecteristics.ButtonName = "StartButton";
+    ButtonCharecteristics.ButtonText = "Start";
+
+    TaskBarHandle = LouCreateCanvasBuffer(
+        0 , GetScreenBufferHeight() - 30, 
+        GetScreenBufferWidth() , 30,
+        0x00,
+        &TaskbarCharecteristics
+    );
+
+    LouChangeCanvasBufferColor(
+        TaskBarHandle,
+        198,
+        198,
+        198
+    );
+
+    LouCreateButton(
+        0 + 2, GetScreenBufferHeight() - 28, 
+        50 - 2, 25,
+        (uintptr_t)TaskBarHandle,
+        &ButtonCharecteristics
+    );
+
+}
 
 void StartDebugger(){
     
@@ -216,34 +250,43 @@ void LouKeRunOnNewStack(void (*func)(void), void* FunctionParameters, size_t sta
 
 void LouKeSwitchContext(void (*Function)(), uint64_t StackSize);
 
+void LookForStorageDevices();
+
+void SetupEfiTables();
+
 KERNEL_ENTRY Lou_kernel_start(
     uint32_t MBOOT
 ){
-    
 	struct multiboot_tag* mboot = (struct multiboot_tag*)(uintptr_t)(MBOOT + 8);
     ParseMBootTags(mboot);
     //vga set for debug
-  	
+
     setup_vga_systems();
 
 
+    StartDesktop();
     StartDebugger();
 
 	LouPrint("Lou Version %s %s\n", KERNEL_VERSION ,KERNEL_ARCH);
     LouPrint("Hello Im Lousine Getting Things Ready\n");
     
+    SetupEfiTables();
+
     //INITIALIZE IMPORTANT THINGS FOR US LATER
     Lou_kernel_early_initialization();
     InitializeGenericTables();
 
     Advanced_Kernel_Initialization();
 
+    LookForStorageDevices();
+
     //SETUP DEVICES AND DRIVERS
     //if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);		
     
     // Initialize User Mode
     // if(User_Mode_Initialization() != LOUSTATUS_GOOD)LouPanic("User Mode Initialiation Failed",BAD);
-    LouPrint("Lousine Kernel Video Mode:%dx%d\n", GetBufferWidth(), GetBufferHeight());
+    
+    LouPrint("Lousine Kernel Video Mode:%dx%d\n", GetScreenBufferWidth(), GetScreenBufferHeight());
     LouPrint("Hello World\n");
 
     //LouKeSwitchContext(TestLoop1, 2 * MEGABYTE);

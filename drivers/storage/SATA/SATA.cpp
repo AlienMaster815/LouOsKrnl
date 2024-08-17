@@ -163,7 +163,6 @@ KERNEL_IMPORT void GetAhciMouduleStart(uintptr_t* Start, uintptr_t* End);
 
 
 
-
 LOUDDK_API_ENTRY void Sata_init(uint8_t bus, uint8_t slot, uint8_t func) {
 
 	LouPrint("Initializing Sata Controller\n");
@@ -195,29 +194,32 @@ LOUDDK_API_ENTRY void Sata_init(uint8_t bus, uint8_t slot, uint8_t func) {
 
 	LouPrint("Starting System Module\n");
 
-	if(!NT_SUCCESS(AHCI_SYS_DRIVER(FOO , BAR))){
+	if(!NT_SUCCESS(AHCI_SYS_DRIVER(FOO, BAR))){
 		LouPanic("Storage Device Unreachable", GOOD);
 	}
-
 
 	LouPrint("System Loaded\n");
 
 	LouPrint("Initializing Port\n");
-	UNUSED PSTOR_PORT_STACK_OBJECT StorPortStackObject = GetStorPortObject(FOO);
+	PSTOR_PORT_STACK_OBJECT StorPortStackObject = GetStorPortObject(FOO);
+
+	if(StorPortStackObject == 0x00){
+		LouPrint("StorPort Could Not Initialize Port Data\n");
+		return;
+	}
 
 	PHW_FIND_ADAPTER FindAhci = (PHW_FIND_ADAPTER)((uint64_t)StorPortStackObject->FindAdapter);
 	PVOID DeviceExtention = StorPortStackObject->DeviceExtention;
 	PPORT_CONFIGURATION_INFORMATION ConfigInfo = StorPortStackObject->ConfigInfo;
-	//__in PVOID DeviceExtension,
-    //__in PVOID HwContext,
-    //__in PVOID BusInformation,
-    //__in PCHAR ArgumentString,
-    //__inout PPORT_CONFIGURATION_INFORMATION ConfigInfo,
-    //__in PBOOLEAN Reserved3
+
+	ConfigInfo->SystemIoBusNumber = bus;
+	ConfigInfo->SlotNumber = slot;
+
+	ConfigInfo->NumberOfAccessRanges = 1;
 
 	//LouPrint("Find Adapter:%h\n",FindAhci);
 	
-	//LouPrint("Bus:%h:Slot:%h:Function:%h\n",bus,slot,func);
+	//LouPrint("Bus:%h:Slot:%h:Function:%h\n",ConfigInfo->SystemIoBusNumber,ConfigInfo->SlotNumber,func);
 	FindAhci(DeviceExtention, 0,0, 0, ConfigInfo, 0);
 
 	LouPrint("Port Initialized\n");

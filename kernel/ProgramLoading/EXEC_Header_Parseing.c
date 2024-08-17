@@ -219,10 +219,10 @@ PHANDLE LoadModule(uintptr_t Start) {
         );
 
         uint64_t allocatedModuleVirtualAddress =
-            (uint64_t)LouMallocEx(
-                TotalNeededVM,
-                KILOBYTE_PAGE
-            );
+        (uint64_t)LouMallocEx(
+            TotalNeededVM,
+            KILOBYTE_PAGE
+        );
 
         for (uint32_t i = 0; i < TotalNeededVM; i += KILOBYTE_PAGE) {
             LouMapAddress(
@@ -281,8 +281,6 @@ PHANDLE LoadModule(uintptr_t Start) {
         // Print function address debug info
         LouPrint("Entry Point Address:%h\n", (uint64_t)PE64Header->addressOfEntryPoint + allocatedModuleVirtualAddress);
         
-
-
         return (PHANDLE)((uint64_t)PE64Header->addressOfEntryPoint + allocatedModuleVirtualAddress);
     } else {
         return 0x00;

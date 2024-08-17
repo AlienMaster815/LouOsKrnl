@@ -155,7 +155,7 @@ KERNEL_IMPORT void disable_pic();
 CPU::CPUID* Cpu;
 APIC::LAPIC* Lapic;
 
-string DRV_VERSION_APIC = "\nLousine Internal Kernel APIC.SYS Module Version 1.01\n";
+string DRV_VERSION_APIC = "\nLousine Internal Kernel APIC.SYS Module Version 1.04\n";
 string DRV_UNLOAD_STRING_SUCCESS_APIC = "Driver Execution Completed Successfully Exiting Proccess\n\n"; 
 string DRV_UNLOAD_STRING_FAILURE_APIC = "Driver Execution Failed To Execute Properly Exiting Proccess\n\n"; 
 
@@ -277,7 +277,6 @@ LOUDDK_API_ENTRY LOUSTATUS InitApicSystems(bool LateStage) {
         );
     }
 
-
     if (Status != LOUSTATUS_GOOD) return STATUS_UNSUCCESSFUL;
 
     PACPI_MADT ApicTable = (PACPI_MADT)Buffer;
@@ -286,14 +285,13 @@ LOUDDK_API_ENTRY LOUSTATUS InitApicSystems(bool LateStage) {
     uint8_t* EntryHeaderAddress = ((uint8_t*)Buffer + sizeof(ACPI_MADT));
     uint8_t* HeaderEndAddress = ((uint8_t*)Buffer + ApicTable->Header.Length);
 
-
     ParseAPIC(
         EntryHeaderAddress,
         HeaderEndAddress
     );
 
     if(Lapic->InitializeApic())LouPrint("APIC ENABLED SUCCESSFULLY\n");
-    
+
     Cpu = (CPU::CPUID*)LouMalloc(sizeof(CPU::CPUID));
     Lapic = (APIC::LAPIC*)LouMalloc(sizeof(APIC::LAPIC));
     //configure FPU for BSP

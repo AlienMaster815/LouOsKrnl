@@ -10,7 +10,7 @@ static uintptr_t EFI_TABLE = 0x00;
 static uintptr_t RSDP_MASTER = 0x00;
 static uint8_t TYPE_MASTER = 0x00;
 
-typedef struct _ACPI_STD_HEADER {
+typedef struct __attribute__((packed)) _ACPI_STD_HEADER {
 	char Signature[4];
 	uint32_t Size;
 	uint8_t Revision;
@@ -21,7 +21,20 @@ typedef struct _ACPI_STD_HEADER {
 	uint32_t CRevision;
 }ACPI_STD_HEADER, * PACPI_STD_HEADER;
 
-typedef struct _RSDP_Descriptor {
+typedef struct __attribute__((packed)) _XSDT_TABLE{
+    char Signature[4];       // 'XSDT'
+    uint32_t Length;         // Length of the entire XSDT, including the header and all entries
+    uint8_t Revision;        // ACPI revision
+    uint8_t Checksum;        // Checksum of the entire XSDT
+    char OEMID[6];           // OEM ID
+    char OEMTableID[8];      // OEM Table ID
+    uint32_t OEMRevision;    // OEM Revision number
+    uint32_t CreatorID;      // ID of the table's creator
+    uint32_t CreatorRevision;// Revision of the creator's utility
+} XSDT_TABLE;
+
+
+typedef struct __attribute__((packed)) _RSDP_Descriptor {
 	char signature[8];          // Signature, should be "RSD PTR "
 	uint8_t checksum;           // Checksum of the first 20 bytes
 	char oem_id[6];             // OEM ID
@@ -30,7 +43,7 @@ typedef struct _RSDP_Descriptor {
 }RSDP_Descriptor, * PRSDP_Descriptor;
 
 
-typedef struct _RSDP_Descriptor2 {
+typedef struct __attribute__((packed)) _RSDP_Descriptor2 {
 	char signature[8];          // Signature, should be "RSD PTR "
 	uint8_t checksum;           // Checksum of the first 20 bytes
 	char oem_id[6];             // OEM ID
@@ -42,7 +55,7 @@ typedef struct _RSDP_Descriptor2 {
 	uint8_t reserved[3];        // Reserved, must be zero
 }RSDP_Descriptor2, * PRSDP_Descriptor2;
 
-typedef struct _SMBIOS_LOOKUP{
+typedef struct __attribute__((packed)) _SMBIOS_LOOKUP{
 	uint32_t Type;
 	uint32_t Size;
 	uint8_t Major;
@@ -56,10 +69,12 @@ static SMBIOS_LOOKUP* SMBIOS_MASTER = 0x00;
 static struct multiboot_tag_apm* APM_MASTER = 0x00;
 
 LOUSTATUS LouKeSetEfiTable(uint64_t Address) {
-	EFI_TABLE = (uintptr_t)Address;
-	struct multiboot_tag_efi64* E = (struct multiboot_tag_efi64*)EFI_TABLE;
-	EnforceSystemMemoryMap(E->pointer, 72);
-	//LouPrint("EFI Table Address Is:%d\n", EFI_TABLE);
+    struct multiboot_tag_efi64* TableHeader = (struct multiboot_tag_efi64*)Address;
+    
+    // Cast the 32-bit pointer to a 64-bit pointer
+    EFI_TABLE = (uint64_t)(uintptr_t)TableHeader->pointer;
+
+    return STATUS_SUCCESS;  // Assuming LOUSTATUS_SUCCESS is your success code
 }
 
 LOUSTATUS LouKeSetSmbios(uintptr_t SMBIOS) {
@@ -176,7 +191,31 @@ LOUSTATUS LouKeGetSystemFirmwareTableId(
 			return Status;
 		}
 		
+		if(TableExtendedPointer != 0x00){
+			XSDT_TABLE* GenericTable2 = (XSDT_TABLE*)(*TableExtendedPointer);
+			
+			// Calculate the number of table entries
 
+			// Now you can iterate through the entries
+			for (
+				uint64_t i = ((uint64_t)GenericTable2 + sizeof(XSDT_TABLE)); 
+				i < ((uint64_t)GenericTable2 + GenericTable2->Length) ; 
+				i+= sizeof(uint64_t)
+				) {
+				ACPI_STD_HEADER *table = (ACPI_STD_HEADER *)*(uint64_t*)i;
+
+				//LouPrint("Table At:%h\n", i);
+				//LouPrint("Table Name:%s\n\n",table->Signature);
+				if (strncmp((const string)table->Signature, (const string)MasterString, 4) == 0) {
+					
+					
+					*TablePointer = (uintptr_t)table;
+					Status = LOUSTATUS_GOOD;
+					return Status;
+				}
+			}
+			while(1);
+		}
 
 		for (uint16_t i = sizeof(ACPI_STD_HEADER); i < GenericTable->Size; i += sizeof(uint32_t)) {
 			uint32_t foo = *(uint32_t*)((uintptr_t)GenericTable + (uintptr_t)i);
@@ -189,23 +228,6 @@ LOUSTATUS LouKeGetSystemFirmwareTableId(
 			}
 
 		}
-
-		PACPI_STD_HEADER GenericTable2 = (PACPI_STD_HEADER)(*TableExtendedPointer);
-
-		for (uint16_t i = sizeof(ACPI_STD_HEADER); i < GenericTable2->Size; i += sizeof(uint32_t)) {
-			uint32_t foo = *(uint32_t*)((uintptr_t)GenericTable2 + (uintptr_t)i);
-			PACPI_STD_HEADER Fubar = (PACPI_STD_HEADER)(uintptr_t)foo;
-
-			if (strncmp((const string)Fubar->Signature, (const string)MasterString, 4) == 0) {
-				*TablePointer = (uintptr_t)Fubar;
-				Status = LOUSTATUS_GOOD;
-				return Status;
-			}
-
-		}
-
-
-
 
 	}
 	else if (FirmwareTableProviderSignature == 'SMB') {
@@ -240,12 +262,98 @@ LOUSTATUS LouKeGetSystemFirmwareTableBuffer(
 		else if ((ResultBufferLength >= Fubar->Size) || (ResultBufferLength == 0))ResultBufferLength = Fubar->Size;
 	}
 
-	//BUGBUG MEMCPY is acting weird investigate tommorow
-	
+	//BUGBUG MEMCPY is acting weird investigate tommoro
+	//BUGBUG RESOLVED memory was leaking into the framebuffer system fixed
 	//memcpy has been being weird
 	memcpy(FirmwareTableBufferDest, FirmwareTableBufferSrc, ResultBufferLength);
 
 	*BufferLength = ResultBufferLength;
 
 	return LOUSTATUS_GOOD;
+}
+
+typedef struct {
+    uint32_t Signature;
+    uint32_t Length;
+    uint32_t Revision;
+    uint32_t Checksum;
+    uint32_t OEMID[6];
+    uint32_t OEMTableID[8];
+} EFI_TABLE_HEADER;
+
+typedef struct {
+    uint64_t Signature;
+    uint32_t Revision;
+    uint32_t HeaderSize;
+    uint32_t CRC32;
+    uint32_t Reserved;
+    string FirmwareVendor;
+    uint32_t FirmwareRevision;
+    void *ConsoleInHandle;
+    void *ConIn;
+    void *ConsoleOutHandle;
+    void *ConOut;
+    void *StandardErrorHandle;
+    void *StdErr;
+    void *RuntimeServices;
+    void *BootServices;
+    uint64_t NumberOfTableEntries;
+    void *ConfigurationTable;  // This is an array of EFI_CONFIGURATION_TABLE
+} EFI_SYSTEM_TABLE;
+
+typedef struct {
+    uint32_t Data1;
+    uint16_t Data2;
+    uint16_t Data3;
+    uint8_t  Data4[8];
+} EFI_GUID;
+
+typedef struct {
+    EFI_GUID VendorGuid;
+    void *VendorTable;
+} EFI_CONFIGURATION_TABLE;
+
+typedef struct {
+    uint64_t Signature;
+    uint8_t Checksum;
+    uint8_t OEMID[6];
+    uint8_t Revision;
+    uint32_t RsdtAddress;
+    uint32_t Length;
+    uint64_t XsdtAddress;
+    uint8_t ExtendedChecksum;
+    uint8_t Reserved[3];
+} RSDP_DESCRIPTOR_2;
+
+
+RSDP_DESCRIPTOR_2* find_rsdp_from_efi_table(uint64_t efi_system_table_address) {
+    EFI_SYSTEM_TABLE *SystemTable = (EFI_SYSTEM_TABLE *)efi_system_table_address;
+    EFI_CONFIGURATION_TABLE *ConfigTable = (EFI_CONFIGURATION_TABLE *)SystemTable->ConfigurationTable;
+
+    EFI_GUID Acpi20TableGuid = { 0x8868e871, 0xe4f1, 0x11d3, { 0xbc, 0x22, 0x00, 0x80, 0xc7, 0x3c, 0x88, 0x81 } };
+    EFI_GUID AcpiTableGuid = { 0xeb9d2d30, 0x2d88, 0x11d3, { 0x9a, 0x16, 0x00, 0x0c, 0x29, 0x27, 0x81, 0x98 } };
+
+    for (uint64_t i = 0; i < SystemTable->NumberOfTableEntries; i++) {
+        if (memcmp(&ConfigTable[i].VendorGuid, &Acpi20TableGuid, sizeof(EFI_GUID)) == 0 ||
+            memcmp(&ConfigTable[i].VendorGuid, &AcpiTableGuid, sizeof(EFI_GUID)) == 0) {
+            return (RSDP_DESCRIPTOR_2 *)ConfigTable[i].VendorTable;
+        }
+    }
+
+    return NULL;  // RSDP not found
+}
+
+void SetupEfiTables(){
+
+	//EFI_SYSTEM_TABLE *EfiTable = (EFI_SYSTEM_TABLE *)EFI_TABLE;
+	if(EFI_TABLE != 0x00){
+		LouPrint("EFI HEADER:%d\n", EFI_TABLE);
+		RSDP_DESCRIPTOR_2* TMPRSDP = find_rsdp_from_efi_table(EFI_TABLE);
+		LouPrint("TMPRSDP:%d\n", TMPRSDP);
+		if(TMPRSDP != 0x00){
+			LouPrint("RSDP Revision:%d\n",TMPRSDP->Revision);
+			LouKeSetRsdp((uintptr_t)TMPRSDP, TMPRSDP->Revision);
+		}
+	}
+
 }

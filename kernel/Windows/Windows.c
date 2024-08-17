@@ -274,8 +274,11 @@ bool DrawWindow(
         WindHandle->BackgroundColor.b
     );
 
-    Draw2DBorder(
-        x+width-42,y+4,10,10,        
+    Draw3DBorder(
+        x+width-42,y+4,10,10,  
+        WindHandle->ForwardHighLite.r,
+        WindHandle->ForwardHighLite.g,
+        WindHandle->ForwardHighLite.b,      
         WindHandle->AftHighLight.r,
         WindHandle->AftHighLight.g,
         WindHandle->AftHighLight.b
@@ -433,3 +436,4 @@ PWINDHANDLE LouCreateWindow(
     OpenWindows++;
     return WindHandle;
 }
+
