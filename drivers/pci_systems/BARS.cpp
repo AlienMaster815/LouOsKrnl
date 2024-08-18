@@ -25,19 +25,29 @@ BaseAddressRegister::BaseAddressRegister(P_PCI_DEVICE_OBJECT PDEV) {
 		type[BarNum] = (Bar[BarNum] & 0x01) ? InputOutPut : MemoryMapping;
 
 		if (type[BarNum] == MemoryMapping) {
-			// store temp
-			// write 1
-			// read value
-			// write back temp;
-			// device will cancel
-			// upper is how big the memory mapping is
+            // Store the original value of the BAR
+            uint32_t originalBarValue = Bar[BarNum];
+
+            // Write all 1s to the BAR
+            write_pci(PDEV->bus, PDEV->slot, PDEV->func, BAR0Offset + (BarNum * 4), 0xFFFFFFFF);
+
+            // Read back the value to determine the size
+            uint32_t sizeValue = pci_read(PDEV->bus, PDEV->slot, PDEV->func, BAR0Offset + (BarNum * 4));
+
+            // Restore the original BAR value
+            write_pci(PDEV->bus, PDEV->slot, PDEV->func, BAR0Offset + (BarNum * 4), originalBarValue);
+
+            // Calculate the size
+            uint32_t barSize = ~(sizeValue & 0xFFFFFFF0) + 1;
+            size[BarNum] = barSize;
+
 			LouPrint("Memory Map Is ");
 			switch ((Bar[BarNum] >> 1) & 0x03) {
 				case 0: { // 32 bit
 					LouPrint("32 Bit\n");
 					//LouPrint("Bar %d Is:%bi\n",BarNum,Bar[BarNum]);
 					
-					size[BarNum] = 32;
+					//size[BarNum] = 32;
 
 					address[BarNum] = (uint8_t*)(uintptr_t)(Bar[BarNum] & 0xFFFFFFF0);
 					
@@ -47,13 +57,13 @@ BaseAddressRegister::BaseAddressRegister(P_PCI_DEVICE_OBJECT PDEV) {
 				case 1: { // 20 bit
 					LouPrint("20 Bit\n");
 
-					size[BarNum] = 20;
+					//size[BarNum] = 20;
 
 					continue;
 				}
 				case 2: { // 64 bit
 					LouPrint("64 Bit\n");
-					size[BarNum] = 64;
+					//size[BarNum] = 64;
 
 					address[BarNum] = (uint8_t*)(uintptr_t)(Bar[BarNum] & 0xFFFFFFF0);
 

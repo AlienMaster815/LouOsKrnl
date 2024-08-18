@@ -10,11 +10,11 @@ typedef struct __attribute__((packed)) _VBoxVideoControllerData{
 static PVBVCD VirtualboxVGAC = 0x00;
 
 
-void RemapVirtualboxVRam(){
+void RemapVirtualboxVRam(uint64_t size){
 
     for(
         uint64_t i = 0; 
-        i < (VBE_INFO.vbe_mode_info.width * VBE_INFO.vbe_mode_info.height * (VBE_INFO.vbe_mode_info.bpp / 8)); 
+        i < (size); 
         i+=MEGABYTE_PAGE
     ){
         LouMapAddress(VBE_INFO.vbe_mode_info.framebuffer + i, VBE_INFO.vbe_mode_info.framebuffer + i, KERNEL_PAGE_WRITE_PRESENT, MEGABYTE_PAGE);
@@ -46,8 +46,6 @@ LOUDDK_API_ENTRY void VirtualBoxChangeResolution(
     VBE_INFO.vbe_mode_info.bpp = 32;
     VBE_INFO.vbe_mode_info.pitch = Width * (32 / 8);
     
-    RemapVirtualboxVRam();
-
 
     print_clear();
 
@@ -65,8 +63,10 @@ void InitializeVirtualBoxVgaAdapter(P_PCI_DEVICE_OBJECT PDEV){
 
     LouPrint("Total VRam:%h\n",VirtualboxVGAC->VRamTotalSize);
     BaseAddressRegister BARS(PDEV);
-    
+
     VBE_INFO.vbe_mode_info.framebuffer = (uint64_t)BARS.address[0];
+
+    RemapVirtualboxVRam(VirtualboxVGAC->VRamTotalSize);
 
     VirtualBoxChangeResolution(640, 480);
 }

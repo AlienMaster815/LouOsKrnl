@@ -900,9 +900,9 @@ typedef struct _ACCESS_RANGE {
 typedef struct __attribute__((packed)) _PORT_CONFIGURATION_INFORMATION {
     ULONG Length;
     ULONG SystemIoBusNumber;
-	uint8_t PADING1[0x30];
+	uint8_t PADING1[0x2C];
 	uint32_t NumberOfAccessRanges;
-    uint8_t PADDING[0x5C - 0x34];
+    uint8_t PADDING[0x2C];
     ULONG SlotNumber;
 } PORT_CONFIGURATION_INFORMATION, *PPORT_CONFIGURATION_INFORMATION;
 

@@ -137,7 +137,80 @@ typedef enum _BUS_DATA_TYPE {
 */
 // Holds Adapter Information
 
+static inline void GetPciConfiguration(ULONG SystemIoBusNumber,ULONG SlotNumber ,PPCI_COMMON_CONFIG ConfigBuffer){
+    ConfigBuffer->Header.VendorID = pciConfigReadWord(SystemIoBusNumber, SlotNumber, 0, 0x00);
+    ConfigBuffer->Header.DeviceID = pciConfigReadWord(SystemIoBusNumber, SlotNumber, 0, 0x02);
+    ConfigBuffer->Header.Command = pciConfigReadWord(SystemIoBusNumber, SlotNumber, 0, 0x04);
+    ConfigBuffer->Header.Status = pciConfigReadWord(SystemIoBusNumber, SlotNumber, 0, 0x06);
 
+    ConfigBuffer->Header.RevisionID = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x08);
+    ConfigBuffer->Header.ProgIf = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x09);
+    ConfigBuffer->Header.SubClass = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x0A);
+    ConfigBuffer->Header.BaseClass = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x0B);
+    ConfigBuffer->Header.CacheLineSize = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x0C);
+    ConfigBuffer->Header.LatencyTimer = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x0D);
+    ConfigBuffer->Header.HeaderType = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x0E);
+    ConfigBuffer->Header.BIST = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x0F);
+
+    if(getHeaderType(SystemIoBusNumber, SlotNumber, 0) == 0x00){
+        ConfigBuffer->Header.u.type0.BaseAddresses[0] = pci_read(SystemIoBusNumber, SlotNumber, 0, 0x10);
+        ConfigBuffer->Header.u.type0.BaseAddresses[1] = pci_read(SystemIoBusNumber, SlotNumber, 0, 0x14);
+        ConfigBuffer->Header.u.type0.BaseAddresses[2] = pci_read(SystemIoBusNumber, SlotNumber, 0, 0x18);
+        ConfigBuffer->Header.u.type0.BaseAddresses[3] = pci_read(SystemIoBusNumber, SlotNumber, 0, 0x1C);
+        ConfigBuffer->Header.u.type0.BaseAddresses[4] = pci_read(SystemIoBusNumber, SlotNumber, 0, 0x20);
+        ConfigBuffer->Header.u.type0.BaseAddresses[5] = pci_read(SystemIoBusNumber, SlotNumber, 0, 0x24);
+
+        ConfigBuffer->Header.u.type0.CIS = pci_read(SystemIoBusNumber, SlotNumber, 0, 0x28);
+        ConfigBuffer->Header.u.type0.SubVendorID = pciConfigReadWord(SystemIoBusNumber, SlotNumber, 0, 0x2C);
+        ConfigBuffer->Header.u.type0.SubSystemID = pciConfigReadWord(SystemIoBusNumber, SlotNumber, 0, 0x2E);
+        ConfigBuffer->Header.u.type0.ROMBaseAddress = pci_read(SystemIoBusNumber, SlotNumber, 0, 0x30);
+            
+        ConfigBuffer->Header.u.type0.CapabilitiesPtr = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x34);            ConfigBuffer->Header.u.type0.InterruptLine = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x3C);
+        ConfigBuffer->Header.u.type0.InterruptPin = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x3D);
+        ConfigBuffer->Header.u.type0.MinimumGrant = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x3E);
+        ConfigBuffer->Header.u.type0.MaximumLatency = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x3F);
+    }
+    else if(getHeaderType(SystemIoBusNumber, SlotNumber, 0) == 0x01){
+        ConfigBuffer->Header.u.type1.BaseAddresses[0] = pci_read(SystemIoBusNumber, SlotNumber, 0, 0x10);
+        ConfigBuffer->Header.u.type1.BaseAddresses[1] = pci_read(SystemIoBusNumber, SlotNumber, 0, 0x14);
+
+        ConfigBuffer->Header.u.type1.PrimaryBus = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x18);
+        ConfigBuffer->Header.u.type1.SecondaryBus = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x19);
+        ConfigBuffer->Header.u.type1.SubordinateBus = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x1A);
+        ConfigBuffer->Header.u.type1.SecondaryLatency = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x1B);
+
+        ConfigBuffer->Header.u.type1.IOBase = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x1C);
+        ConfigBuffer->Header.u.type1.IOLimit = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x1D);
+
+        ConfigBuffer->Header.u.type1.SecondaryStatus = pciConfigReadWord(SystemIoBusNumber, SlotNumber, 0, 0x1E);
+        ConfigBuffer->Header.u.type1.MemoryBase = pciConfigReadWord(SystemIoBusNumber, SlotNumber, 0, 0x20);
+        ConfigBuffer->Header.u.type1.MemoryLimit = pciConfigReadWord(SystemIoBusNumber, SlotNumber, 0, 0x22);
+        ConfigBuffer->Header.u.type1.PrefetchBase = pciConfigReadWord(SystemIoBusNumber, SlotNumber, 0, 0x24);
+        ConfigBuffer->Header.u.type1.PrefetchLimit = pciConfigReadWord(SystemIoBusNumber, SlotNumber, 0, 0x26);
+          
+        ConfigBuffer->Header.u.type1.PrefetchBaseUpper32 = pci_read(SystemIoBusNumber, SlotNumber, 0, 0x28);
+        ConfigBuffer->Header.u.type1.PrefetchLimitUpper32 = pci_read(SystemIoBusNumber, SlotNumber, 0, 0x2C);
+
+        ConfigBuffer->Header.u.type1.IOBaseUpper16 = pciConfigReadWord(SystemIoBusNumber, SlotNumber, 0, 0x30);
+        ConfigBuffer->Header.u.type1.IOLimitUpper16 = pciConfigReadWord(SystemIoBusNumber, SlotNumber, 0, 0x32);
+
+        ConfigBuffer->Header.u.type1.CapabilitiesPtr = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x34);
+
+        ConfigBuffer->Header.u.type1.ROMBaseAddress = pci_read(SystemIoBusNumber, SlotNumber, 0, 0x38);
+
+        ConfigBuffer->Header.u.type1.InterruptLine = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x3C);
+        ConfigBuffer->Header.u.type1.InterruptPin = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x3D);
+
+        ConfigBuffer->Header.u.type1.BridgeControl = pciConfigReadWord(SystemIoBusNumber, SlotNumber, 0, 0x3E);
+
+    }
+    else if(getHeaderType(SystemIoBusNumber, SlotNumber, 0) == 0x02){
+        ConfigBuffer->Header.u.type2.SocketRegistersBaseAddress = pci_read(SystemIoBusNumber, SlotNumber, 0, 0x10);
+
+        //TODO: Finish this            
+
+    }
+}
 
 ULONG StorPortGetBusData(
   PVOID HwDeviceExtension,
@@ -157,48 +230,13 @@ ULONG StorPortGetBusData(
             LouPrint("Invalid buffer or length\n");
             return 0;
         }
-        UNUSED PPCI_COMMON_CONFIG ConfigBuffer = (PPCI_COMMON_CONFIG)Buffer;
+        PPCI_COMMON_CONFIG ConfigBuffer = (PPCI_COMMON_CONFIG)Buffer;
 
-        ConfigBuffer->Header.VendorID = pciConfigReadWord(SystemIoBusNumber, SlotNumber, 0, 0x00);
-        ConfigBuffer->Header.DeviceID = pciConfigReadWord(SystemIoBusNumber, SlotNumber, 0, 0x02);
-        ConfigBuffer->Header.Command = pciConfigReadWord(SystemIoBusNumber, SlotNumber, 0, 0x04);
-        ConfigBuffer->Header.Status = pciConfigReadWord(SystemIoBusNumber, SlotNumber, 0, 0x06);
+        GetPciConfiguration(SystemIoBusNumber, SlotNumber,ConfigBuffer);
 
-        ConfigBuffer->Header.RevisionID = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x08);
-        ConfigBuffer->Header.ProgIf = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x09);
-        ConfigBuffer->Header.SubClass = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x0A);
-        ConfigBuffer->Header.BaseClass = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x0B);
-        ConfigBuffer->Header.CacheLineSize = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x0C);
-        ConfigBuffer->Header.LatencyTimer = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x0D);
-        ConfigBuffer->Header.HeaderType = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x0E);
-        ConfigBuffer->Header.BIST = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x0F);
+        //TODO: Finish Implementing the MMIO Testing
 
-        if(getHeaderType(SystemIoBusNumber, SlotNumber, 0) == 0x00){
-            ConfigBuffer->Header.u.type0.BaseAddresses[0] = pci_read(SystemIoBusNumber, SlotNumber, 0, 0x10);
-            ConfigBuffer->Header.u.type0.BaseAddresses[1] = pci_read(SystemIoBusNumber, SlotNumber, 0, 0x14);
-            ConfigBuffer->Header.u.type0.BaseAddresses[2] = pci_read(SystemIoBusNumber, SlotNumber, 0, 0x18);
-            ConfigBuffer->Header.u.type0.BaseAddresses[3] = pci_read(SystemIoBusNumber, SlotNumber, 0, 0x1C);
-            ConfigBuffer->Header.u.type0.BaseAddresses[4] = pci_read(SystemIoBusNumber, SlotNumber, 0, 0x20);
-            ConfigBuffer->Header.u.type0.BaseAddresses[5] = pci_read(SystemIoBusNumber, SlotNumber, 0, 0x24);
-
-            ConfigBuffer->Header.u.type0.CIS = pci_read(SystemIoBusNumber, SlotNumber, 0, 0x28);
-            ConfigBuffer->Header.u.type0.SubVendorID = pciConfigReadWord(SystemIoBusNumber, SlotNumber, 0, 0x2C);
-            ConfigBuffer->Header.u.type0.SubSystemID = pciConfigReadWord(SystemIoBusNumber, SlotNumber, 0, 0x2E);
-            ConfigBuffer->Header.u.type0.ROMBaseAddress = pci_read(SystemIoBusNumber, SlotNumber, 0, 0x30);
-            
-            ConfigBuffer->Header.u.type0.CapabilitiesPtr = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x34);
-
-            ConfigBuffer->Header.u.type0.InterruptLine = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x3C);
-            ConfigBuffer->Header.u.type0.InterruptPin = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x3D);
-            ConfigBuffer->Header.u.type0.MinimumGrant = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x3E);
-            ConfigBuffer->Header.u.type0.MaximumLatency = pciConfigReadByte(SystemIoBusNumber, SlotNumber, 0, 0x3F);
-        }
-
-        
-        LouPrint("ABAR IS:%h\n", ConfigBuffer->Header.u.type0.BaseAddresses[5] & 0xFFFFFFF0);
-	    //LouPrint("Bus:%h:Slot:%h:Function:%h\n",SystemIoBusNumber,SlotNumber,0); 
         LouPrint("void StorPortGetBusData() COMPLETE\n");
-        //while(1);
         return sizeof(PCI_COMMON_CONFIG);
     }
 

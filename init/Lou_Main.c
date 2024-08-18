@@ -29,14 +29,14 @@ uintptr_t RBP_Current;
 
 
 
-char* KERNEL_VERSION = "0.0.442 RSC-2 Multiboot 2";
+string KERNEL_VERSION = "0.0.445 RSC-2 Multiboot 2";
 
 
 #ifdef __x86_64__
-char* KERNEL_ARCH = "64-BIT";
+string KERNEL_ARCH = "64-BIT";
 #endif
 #ifdef __i386__
-char* KERNEL_ARCH = "32-BIT";
+sring KERNEL_ARCH = "32-BIT";
 #endif
 
 LOUSTATUS InitFADT();
@@ -278,7 +278,7 @@ KERNEL_ENTRY Lou_kernel_start(
 
     Advanced_Kernel_Initialization();
 
-    LookForStorageDevices();
+    //LookForStorageDevices();
 
     //SETUP DEVICES AND DRIVERS
     //if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);		
