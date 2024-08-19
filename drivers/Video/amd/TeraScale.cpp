@@ -4,6 +4,7 @@
 
 void InitializeR600GPU(P_PCI_DEVICE_OBJECT PDEV);
 void InitializeEverGreenGPU(P_PCI_DEVICE_OBJECT PDEV);
+void InitializeCaymanGpu(P_PCI_DEVICE_OBJECT PDEV);
 
 bool InitializeTeraScaleGpu(P_PCI_DEVICE_OBJECT PDEV){
 
@@ -89,6 +90,27 @@ bool InitializeTeraScaleGpu(P_PCI_DEVICE_OBJECT PDEV){
         InitializeEverGreenGPU(PDEV);
         return true;
     }
+
+    if (
+        DeviceID == 0x6718 ||  // Radeon HD 6970
+        DeviceID == 0x6719 ||  // Radeon HD 6950
+        DeviceID == 0x671C ||  // Radeon HD 6950 (Alternate ID)
+        DeviceID == 0x671D ||  // Radeon HD 6990
+        DeviceID == 0x671F ||  // Radeon HD 6930
+        DeviceID == 0x6720 ||  // Radeon HD 6970M (Mobile)
+        DeviceID == 0x6722 ||  // FirePro M8900 (Mobile)
+        DeviceID == 0x6728 ||  // FirePro V7900
+        DeviceID == 0x6729 ||  // FirePro V5900
+        DeviceID == 0x6738 ||  // FirePro V7800
+        DeviceID == 0x6739 ||  // FirePro V9800
+        DeviceID == 0x673E ||  // FireStream 9370
+        DeviceID == 0x673F    // FireStream 9350
+    ) {
+        // Your code here to handle Cayman GPUs
+        InitializeCaymanGpu(PDEV);
+        return true;
+    }
+
 
     return false;
 }

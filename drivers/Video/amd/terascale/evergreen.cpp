@@ -52,6 +52,7 @@ extern struct multiboot_tag_vbe VBE_INFO;
 
 static uint64_t IOBase = 0x00;
 
+
 void SoftResetEvergreenGPU(uint64_t mmio_base) {
     // Pointer to the SRBM_SOFT_RESET register
     volatile uint32_t* soft_reset_register = (volatile uint32_t*)(mmio_base + SRBM_SOFT_RESET);
@@ -163,9 +164,9 @@ void InitializeEverGreenGPU(P_PCI_DEVICE_OBJECT PDEV){
     uint32_t VRamSize = GetVRAMSize(IOBase);  // Assume this function is similar
     LouMapEverGreen(VRamBase, VRamSize);
 
-    ChangeEvergreenGPUResolution(640, 480);
 
     VBE_INFO.vbe_mode_info.framebuffer = GetFramebufferBaseAddress(IOBase);
+    ChangeEvergreenGPUResolution(640, 480);
 
 }
 
