@@ -139,7 +139,6 @@ class PATA{
 
 
 
-LOUDDK_API_ENTRY void Sata_init(uint8_t bus, uint8_t slot,uint8_t func);
 LOUDDK_API_ENTRY bool IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func);
 
 #endif

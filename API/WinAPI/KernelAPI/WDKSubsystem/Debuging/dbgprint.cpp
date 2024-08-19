@@ -24,16 +24,31 @@ ULONG DbgPrint(_In_z_ _Printf_format_string_ PCSTR Format, ...){
                 Format += 2;
             }
             else if((strncmp(Format, "02x", strlen("02x")) == 0x00) || 
-                   (strncmp(Format, "02X", strlen("02X")) == 0x00) ||
-                   (strncmp(Format, "04x", strlen("04x")) == 0x00) ||
-                   (strncmp(Format, "04X", strlen("04X")) == 0x00) ||
-                   (strncmp(Format, "08x", strlen("08x")) == 0x00) ||
-                   (strncmp(Format, "08x", strlen("08x")) == 0x00)) {
+                    (strncmp(Format, "02X", strlen("02X")) == 0x00) ||
+                    (strncmp(Format, "04x", strlen("04x")) == 0x00) ||
+                    (strncmp(Format, "04X", strlen("04X")) == 0x00) ||
+                    (strncmp(Format, "08x", strlen("08x")) == 0x00) ||
+                    (strncmp(Format, "08x", strlen("08x")) == 0x00)) {
 
                 int64_t num = va_arg(args, int64_t); // get the Number in integer Form
                 LouPrint("%h", num); // Print Hex String;
                 Format += 3;
             }
+            else if((strncmp(Format, "d", strlen("d")) == 0) || (strncmp(Format, "D", strlen("D")) == 0) ||
+                    (strncmp(Format, "u", strlen("u")) == 0) || (strncmp(Format, "U", strlen("U")) == 0)){
+                        int64_t num = va_arg(args, int64_t); // get the Number in integer Form
+                        LouPrint("%d", num); // Print Decimal String;
+                        Format += 1;
+            }
+            else if((strncmp(Format, "ld", strlen("ld")) == 0) || (strncmp(Format, "LD", strlen("LD")) == 0) || 
+                    (strncmp(Format, "lu", strlen("lu")) == 0) || (strncmp(Format, "LU", strlen("LU")) == 0) ||
+                    (strncmp(Format, "hd", strlen("hd")) == 0) || (strncmp(Format, "HD", strlen("HD")) == 0) ||
+                    (strncmp(Format, "hu", strlen("hu")) == 0) || (strncmp(Format, "HU", strlen("HU")) == 0)){
+                        int64_t num = va_arg(args, int64_t); // get the Number in integer Form
+                        LouPrint("%d", num); // Print Decimal String;
+                        Format += 2;
+                    }
+
             //Format++; // Move to the next character in the format string
         }
         else if(*Format == '\r'){

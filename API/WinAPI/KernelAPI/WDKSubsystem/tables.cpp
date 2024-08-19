@@ -169,8 +169,16 @@ void InitializeWDFLDR_SYS(){
 
 }
 
-void StorPortGetPhysicalAddress();
-void StorPortStallExecution();
+STOR_PHYSICAL_ADDRESS StorPortGetPhysicalAddress(
+  _In_   PVOID HwDeviceExtension,
+  _In_   PSCSI_REQUEST_BLOCK Srb,
+  _In_   PVOID VirtualAddress,
+  _Out_  ULONG *Length
+);
+
+VOID StorPortStallExecution(
+    ULONG Microseconds
+);
 
 void StorPortNotification(
     SCSI_NOTIFICATION_TYPE NotificationType,
@@ -179,17 +187,30 @@ void StorPortNotification(
 );
 
 void StorPortSetDeviceQueueDepth();
-void StorPortGetUncachedExtension();
+
+PVOID StorPortGetUncachedExtension(
+  _In_ PVOID HwDeviceExtension,
+  _In_ PPORT_CONFIGURATION_INFORMATION ConfigInfo,
+  _In_ ULONG NumberOfBytes
+);
 
 NTSTATUS StorPortInitialize(
     PDRIVER_OBJECT DevObj,
     PUNICODE_STRING RegistryEntry,
-    PHW_INITIALIZATION_DATA HwInitializationData,
+    PSTORPORT_HW_INITIALIZATION_DATA HwInitializationData,
     PVOID HwContext
 );
 
 void StorPortGetScatterGatherList();
-void StorPortGetDeviceBase();
+
+PVOID StorPortGetDeviceBase(
+  _In_  PVOID   HwDeviceExtension,
+  _In_  INTERFACE_TYPE BusType,
+  _In_  ULONG   SystemIoBusNumber,
+  _In_  PHYSICAL_ADDRESS IoAddress,
+  _In_  ULONG   NumberOfBytes,
+  _In_  BOOLEAN InIoSpace
+);
 
 NTSTATUS StorPortGetBusData(
   PVOID HwDeviceExtension,

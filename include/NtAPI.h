@@ -17,4 +17,6 @@
 #define SMBIOS 837766737983
 #define APM 658077
 
+void GetPciConfiguration(ULONG SystemIoBusNumber,ULONG SlotNumber ,PPCI_COMMON_CONFIG ConfigBuffer);
+
 #endif

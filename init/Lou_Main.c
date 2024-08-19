@@ -151,9 +151,9 @@ void StorPortInitializeAllDevices();
 LOUSTATUS Set_Up_Devices(){
     //initialize_ps2_keyboard();
     //InitializePs2Mouse();
-    PCI_Setup();
-    //LastSataRun();
-    //UpdateDeviceInformationTable();
+    //PCI_Setup();
+    LastSataRun();
+    UpdateDeviceInformationTable();
     //FileSystemSetup();
 
     return LOUSTATUS_GOOD;
@@ -270,7 +270,6 @@ KERNEL_ENTRY Lou_kernel_start(
 	LouPrint("Lou Version %s %s\n", KERNEL_VERSION ,KERNEL_ARCH);
     LouPrint("Hello Im Lousine Getting Things Ready\n");
     
-    SetupEfiTables();
 
     //INITIALIZE IMPORTANT THINGS FOR US LATER
     Lou_kernel_early_initialization();
@@ -278,7 +277,7 @@ KERNEL_ENTRY Lou_kernel_start(
 
     Advanced_Kernel_Initialization();
 
-    //LookForStorageDevices();
+    LookForStorageDevices();
 
     //SETUP DEVICES AND DRIVERS
     //if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);		

@@ -120,6 +120,7 @@ KERNEL_IMPORT void sleep(uint64_t Time);
 
 LOUDDK_API_ENTRY LOUSTATUS RegisterHardwareInterruptHandler(void(*Handler)(), uint8_t InterruptNumber);
 
+
 #else
 
 

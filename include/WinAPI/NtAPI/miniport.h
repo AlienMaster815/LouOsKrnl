@@ -190,10 +190,13 @@ typedef struct _PCI_COMMON_HEADER {
 
 } PCI_COMMON_HEADER, *PPCI_COMMON_HEADER;
 
+#ifndef _PCI_COMMON_CONFIG
+#define _PCI_COMMON_CONFIG
 typedef struct _PCI_COMMON_CONFIG {
     PCI_COMMON_HEADER Header;
     UCHAR   DeviceSpecific[192];
 } PCI_COMMON_CONFIG, *PPCI_COMMON_CONFIG;
+#endif
 
 typedef struct _GROUP_AFFINITY {
 	KAFFINITY Mask;
@@ -900,9 +903,11 @@ typedef struct _ACCESS_RANGE {
 typedef struct __attribute__((packed)) _PORT_CONFIGURATION_INFORMATION {
     ULONG Length;
     ULONG SystemIoBusNumber;
-	uint8_t PADING1[0x2C];
+	ULONG AdapterInterfaceType;
+	uint8_t PADING1[0x28];
 	uint32_t NumberOfAccessRanges;
-    uint8_t PADDING[0x2C];
+	uint64_t AddressRanges;
+    uint8_t PADDING[0x24];
     ULONG SlotNumber;
 } PORT_CONFIGURATION_INFORMATION, *PPORT_CONFIGURATION_INFORMATION;
 
@@ -946,7 +951,7 @@ typedef BOOLEAN (*PHW_INTERRUPT)(PVOID);
 typedef BOOLEAN (*PHW_STARTIO)(PVOID DeviceExtension, PSCSI_REQUEST_BLOCK);
 
 
-typedef struct _HW_INITIALIZATION_DATA {
+typedef struct _STORPORT_HW_INITIALIZATION_DATA {
   ULONG               HwInitializationDataSize;
   INTERFACE_TYPE      AdapterInterfaceType;
   PHW_INITIALIZE      HwInitialize;
@@ -976,7 +981,7 @@ typedef struct _HW_INITIALIZATION_DATA {
   USHORT              DeviceIdLength;
   PVOID               DeviceId;
   PHW_ADAPTER_CONTROL HwAdapterControl;
-} HW_INITIALIZATION_DATA, *PHW_INITIALIZATION_DATA;
+} STORPORT_HW_INITIALIZATION_DATA, *PSTORPORT_HW_INITIALIZATION_DATA;
 
 typedef struct __attribute__((packed)) _STOR_PORT_STACK_OBJECT{
     PDRIVER_OBJECT DrvObj;
@@ -1007,5 +1012,6 @@ typedef enum _SCSI_NOTIFICATION_TYPE {
     ProcessingErrorDetected
 } SCSI_NOTIFICATION_TYPE, *PSCSI_NOTIFICATION_TYPE;
 
+typedef LARGE_INTEGER STOR_PHYSICAL_ADDRESS;
 
 #endif

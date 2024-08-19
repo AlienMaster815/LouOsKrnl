@@ -20,11 +20,14 @@
 
 #define ADC 11
 
+#ifndef _ATOMIC_STRUCTURE
+#define _ATOMIC_STRUCTURE
 typedef struct {
 	int counter;
 }atomic_t;
 
 typedef atomic_t* p_atomic_t;
+#endif
 
 #define BITMASK(bit) (1 << bit)
 #define BIT_SET 1

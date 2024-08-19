@@ -96,10 +96,10 @@ void SendMapToAllocation(struct master_multiboot_mmap_entry* mmap) {
 #define LongLongBitDimension 64
 #define BlockDemention 1024
 
-#define BitMapDivisor 8
+#define BitMapDivisor 1
 
 static uint64_t* BitMap;
-#define StartMap (512ULL * MEGABYTE)/BitMapDivisor
+#define StartMap (20ULL * MEGABYTE)
 
 
 
@@ -123,13 +123,22 @@ typedef struct __attribute__((packed)) _AllocationBlock{
     uint64_t size;
 }AllocationBlock;
 
-uint8_t DataSlab[(512ULL * MEGABYTE)/BitMapDivisor];
+uint8_t DataSlab[(12 * MEGABYTE)/BitMapDivisor];
 
 static AllocationBlock* AddressBlock = (AllocationBlock*)&DataSlab;
 
 static uint32_t AddressesLogged = 0;
 
+uint64_t GetAllocationBlockSize(uint64_t Address){
 
+    for(uint16_t i = 0; i < AddressesLogged; i++){
+        if((AddressBlock[i].Address <= Address) && ((AddressBlock[i].Address + AddressBlock[i].size) > Address)){
+            return AddressBlock[i].size - (Address - AddressBlock[i].Address);
+        }
+    }
+
+    return 0x00;
+}
 
 bool EnforceSystemMemoryMap(
     uint64_t Address, 
@@ -143,7 +152,7 @@ bool EnforceSystemMemoryMap(
             return true;
         }
     }
-    
+
     AddressBlock[AddressesLogged].Address = Address;
     AddressBlock[AddressesLogged].size = size;
     AddressesLogged++;
@@ -151,11 +160,15 @@ bool EnforceSystemMemoryMap(
     return true;
 }
 
+static bool IsEarlyMallocation = true;
+
 void LouFree(RAMADD Addr) {
-    for(uint32_t i = 0 ; i < AddressesLogged; i++){
-        if(AddressBlock[i].Address == (uint64_t)Addr){
-            AddressBlock[i].Address = 0x00;
-            AddressBlock[i].size = 0x00;
+    if(IsEarlyMallocation == true){
+        for(uint32_t i = 0 ; i < AddressesLogged; i++){
+            if(AddressBlock[i].Address == (uint64_t)Addr){
+                AddressBlock[i].Address = 0x00;
+                AddressBlock[i].size = 0x00;
+            }
         }
     }
 }
@@ -182,52 +195,53 @@ void* LouMallocEx(size_t BytesToAllocate, uint64_t Alignment) {
                 }
 
                 uint64_t AlignmentCheck = (address & ~(Alignment - 1));
-                
-                if (AddressesLogged == 0) {
-                    AddressBlock[0].Address = AlignmentCheck;
-                    AddressBlock[0].size = BytesToAllocate;
-                    AddressesLogged++; // Increment after logging the first address
-                    return (void*)AlignmentCheck;
-                }
-
-                while (1) {
-                    if (AlignmentCheck > limit) {
-                        break;
+                if(IsEarlyMallocation == true){
+                    if (AddressesLogged == 0) {
+                        AddressBlock[0].Address = AlignmentCheck;
+                        AddressBlock[0].size = BytesToAllocate;
+                        AddressesLogged++; // Increment after logging the first address
+                        return (void*)AlignmentCheck;
                     }
-                    AlignmentCheck += Alignment;
 
-                    bool addrssSpaceCheck = true;
-
-                    for (uint32_t i = 0; i < AddressesLogged; i++) {
-                        if ((AlignmentCheck >= AddressBlock[i].Address) && 
-                            (AlignmentCheck < (AddressBlock[i].Address + AddressBlock[i].size))) {
-                            addrssSpaceCheck = false;
+                    while (1) {
+                        if (AlignmentCheck > limit) {
                             break;
                         }
-                    }
+                        AlignmentCheck += Alignment;
 
-                    if (!addrssSpaceCheck) {
-                        continue;
-                    }
+                        bool addrssSpaceCheck = true;
 
-                    // Found an address
-                    for (uint32_t i = 0; i < AddressesLogged; i++) {
-                        if (AddressBlock[i].Address == 0x00) {
-                            AddressBlock[i].Address = AlignmentCheck;
-                            AddressBlock[i].size = BytesToAllocate;
-                            return (void*)AlignmentCheck;
+                        for (uint32_t i = 0; i < AddressesLogged; i++) {
+                            if ((AlignmentCheck >= AddressBlock[i].Address) && 
+                                (AlignmentCheck < (AddressBlock[i].Address + AddressBlock[i].size))) {
+                                addrssSpaceCheck = false;
+                                break;
+                            }
                         }
-                    }
 
-                    if (AddressesLogged >= (33554432)/BitMapDivisor) {
-                        // System overload
-                        return NULL;
-                    }
+                        if (!addrssSpaceCheck) {
+                            continue;
+                        }
 
-                    AddressBlock[AddressesLogged].Address = AlignmentCheck;
-                    AddressBlock[AddressesLogged].size = BytesToAllocate;
-                    AddressesLogged++; // Increment after logging the new address
-                    return (void*)AlignmentCheck;
+                        // Found an address
+                        for (uint32_t i = 0; i < AddressesLogged; i++) {
+                            if (AddressBlock[i].Address == 0x00) {
+                                AddressBlock[i].Address = AlignmentCheck;
+                                AddressBlock[i].size = BytesToAllocate;
+                                return (void*)AlignmentCheck;
+                            }
+                        }
+
+                        if (AddressesLogged >= (33554432)/BitMapDivisor) {
+                            // System overload
+                            return NULL;
+                        }
+
+                        AddressBlock[AddressesLogged].Address = AlignmentCheck;
+                        AddressBlock[AddressesLogged].size = BytesToAllocate;
+                        AddressesLogged++; // Increment after logging the new address
+                        return (void*)AlignmentCheck;
+                    }
                 }
             }
             else if (mmap_entry->type == 2) continue;

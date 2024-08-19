@@ -49,6 +49,7 @@ typedef struct _PCI_DEVICE_OBJECT {
 	pci_power_t CurrentState;
 	uint8_t PmCap;
 	atomic_t enable_cnt;
+	uintptr_t DeviceExtendedObject;
 }PCI_DEVICE_OBJECT,*P_PCI_DEVICE_OBJECT;
 
 
@@ -122,6 +123,7 @@ LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device);
 LOUDDK_API_ENTRY void checkBus(uint8_t bus);
 LOUDDK_API_ENTRY void checkFunction(uint8_t bus, uint8_t device, uint8_t function);
 LOUDDK_API_ENTRY void PCI_Scan_Bus();
+LOUDDK_API_ENTRY void Sata_init(P_PCI_DEVICE_OBJECT PDEV);
 
 class PCI{
 
@@ -139,6 +141,7 @@ public:
 	bool prefetchable[6];
 	uint8_t* address[6];
 	uint32_t size[6];
+	bool MMIO[6];
 	BaseAddressRegisterType type[6];
 
 	BaseAddressRegister(P_PCI_DEVICE_OBJECT PDEV);

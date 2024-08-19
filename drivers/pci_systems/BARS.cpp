@@ -25,21 +25,28 @@ BaseAddressRegister::BaseAddressRegister(P_PCI_DEVICE_OBJECT PDEV) {
 		type[BarNum] = (Bar[BarNum] & 0x01) ? InputOutPut : MemoryMapping;
 
 		if (type[BarNum] == MemoryMapping) {
-            // Store the original value of the BAR
-            uint32_t originalBarValue = Bar[BarNum];
+			MMIO[BarNum] = true;
+			// Store the original value of the BAR
+			uint32_t originalBarValue = Bar[BarNum];
+			// Write all 1s to the BAR
+			write_pci(PDEV->bus, PDEV->slot, PDEV->func, BAR0Offset + (BarNum * 4), 0xFFFFFFFF);
 
-            // Write all 1s to the BAR
-            write_pci(PDEV->bus, PDEV->slot, PDEV->func, BAR0Offset + (BarNum * 4), 0xFFFFFFFF);
+			// Read back the value to determine the size
+			uint32_t sizeValue = pci_read(PDEV->bus, PDEV->slot, PDEV->func, BAR0Offset + (BarNum * 4));
 
-            // Read back the value to determine the size
-            uint32_t sizeValue = pci_read(PDEV->bus, PDEV->slot, PDEV->func, BAR0Offset + (BarNum * 4));
+			// Restore the original BAR value
+			write_pci(PDEV->bus, PDEV->slot, PDEV->func, BAR0Offset + (BarNum * 4), originalBarValue);
 
-            // Restore the original BAR value
-            write_pci(PDEV->bus, PDEV->slot, PDEV->func, BAR0Offset + (BarNum * 4), originalBarValue);
+			// Calculate the size
+			if(sizeValue != originalBarValue){
+				uint32_t barSize = ~(sizeValue & 0xFFFFFFF0) + 1;
+				size[BarNum] = barSize;
+			}
+			else{
+				uint32_t barSize = 0x20000;
+				size[BarNum] = barSize;
+			}
 
-            // Calculate the size
-            uint32_t barSize = ~(sizeValue & 0xFFFFFFF0) + 1;
-            size[BarNum] = barSize;
 
 			LouPrint("Memory Map Is ");
 			switch ((Bar[BarNum] >> 1) & 0x03) {
@@ -65,8 +72,11 @@ BaseAddressRegister::BaseAddressRegister(P_PCI_DEVICE_OBJECT PDEV) {
 					LouPrint("64 Bit\n");
 					//size[BarNum] = 64;
 
-					address[BarNum] = (uint8_t*)(uintptr_t)(Bar[BarNum] & 0xFFFFFFF0);
+					address[BarNum] = (uint8_t*)(uintptr_t)((Bar[BarNum] & 0xFFFFFFF0) |
+												((uint64_t)pci_read(PDEV->bus, PDEV->slot, PDEV->func, BAR0Offset + (BarNum + 1) * 4) << 32));
 
+					// Skip the next BAR as it is part of this 64-bit address
+					BarNum++;
 					continue;
 				}
 				default:
@@ -74,8 +84,21 @@ BaseAddressRegister::BaseAddressRegister(P_PCI_DEVICE_OBJECT PDEV) {
 			}
 		}
 		else {
-			address[BarNum] = (uint8_t*)(uintptr_t)(Bar[BarNum] & 0x03);
+			// Correctly mask out the lower bits to get the base I/O address
+			address[BarNum] = (uint8_t*)(uintptr_t)(Bar[BarNum] & 0xFFFFFFFC);
 			prefetchable[BarNum] = false;
+			MMIO[BarNum] = false;
+
+			LouPrint("IO Map\n");
+
+			// Calculate the size of the I/O region
+			uint32_t originalBarValue = Bar[BarNum];
+			write_pci(PDEV->bus, PDEV->slot, PDEV->func, BAR0Offset + (BarNum * 4), 0xFFFFFFFF);
+			uint32_t sizeValue = pci_read(PDEV->bus, PDEV->slot, PDEV->func, BAR0Offset + (BarNum * 4));
+			write_pci(PDEV->bus, PDEV->slot, PDEV->func, BAR0Offset + (BarNum * 4), originalBarValue);
+			
+			uint32_t ioSize = ~(sizeValue & 0xFFFFFFFC) + 1; // Correct mask for I/O size calculation
+			size[BarNum] = ioSize;
 		}
 
 	}

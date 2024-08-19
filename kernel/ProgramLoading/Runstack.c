@@ -31,17 +31,18 @@ void LouKeRunOnNewStack(void (*func)(void*), void* FunctionParameters, size_t st
 
     // Inline assembly to switch stack, call the function, and return to the original context
     __asm__ volatile (
-        "mov %[params], %%rdi\n"   // Pass FunctionParameters as the first argument
+        "mov %[params], %%rcx\n"   // Pass FunctionParameters as the first argument in rcx (Windows x64 ABI)
         "mov %%rsp, %%rbx\n"       // Save current stack pointer
-        "mov %%rbp, %%rcx\n"       // Save current base pointer
+        "mov %%rbp, %%rdx\n"       // Save current base pointer
         "mov %[stack_top], %%rsp\n" // Set the stack pointer to the top of the new stack
         "call *%[func]\n"          // Call the function
         "mov %%rbx, %%rsp\n"       // Restore original stack pointer
-        "mov %%rcx, %%rbp\n"       // Restore original base pointer
+        "mov %%rdx, %%rbp\n"       // Restore original base pointer
         :
         : [func] "r" (func), [params] "r" (FunctionParameters), [stack_top] "r" (stack_top)
-        : "rdi", "rbx", "rcx" // Do not list rsp here
+        : "rcx", "rbx", "rdx", "memory" // Clobber memory to indicate stack change
     );
+
 
 
     // Free the allocated stack memory after the function returns

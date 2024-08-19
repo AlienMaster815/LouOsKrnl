@@ -1,7 +1,12 @@
 #include <LouDDK.h>
 #include <NtAPI.h>
 
+KERNEL_IMPORT LOUSTATUS RequestPhysicalAddress(
+    uint64_t VAddress,
+    uint64_t* PAddress
+);
 
+KERNEL_IMPORT uint64_t GetAllocationBlockSize(uint64_t Address);
 // Apply the static assertion
 //STATIC_ASSERT(sizeof(HW_INITIALIZATION_DATA) == 0xD0, HW_INITIALIZATION_DATA_size_is_incorrect);
 
@@ -18,14 +23,47 @@ PSTOR_PORT_STACK_OBJECT GetStorPortObject(PDRIVER_OBJECT DrvObject){
     return 0x00;
 }
 
-void StorPortGetPhysicalAddress(){
+STOR_PHYSICAL_ADDRESS StorPortGetPhysicalAddress(
+  _In_   PVOID HwDeviceExtension,
+  _In_   PSCSI_REQUEST_BLOCK Srb,
+  _In_   PVOID VirtualAddress,
+  _Out_  ULONG *Length
+){
     LouPrint("void StorPortGetPhysicalAddress()\n");
-    while(1);
+
+    STOR_PHYSICAL_ADDRESS Result;
+
+    uint64_t PhysicalAdress;
+    RequestPhysicalAddress((uint64_t)VirtualAddress, &PhysicalAdress);
+
+    Result.QuadPart = PhysicalAdress;
+
+    uint64_t BlockSize =  GetAllocationBlockSize((uint64_t)VirtualAddress);
+
+    *Length = (ULONG)BlockSize;
+
+    //LouPrint("Length:%d\n", *Length);
+    //LouPrint("VirtualAddress:%h\n",VirtualAddress);
+    //LouPrint("BlockSize:%h\n", *Length);
+
+    LouPrint("void StorPortGetPhysicalAddress() SUCCESS\n");
+    return (STOR_PHYSICAL_ADDRESS)Result;
 }
 
-void StorPortStallExecution(){
-    LouPrint("void StorPortStallExecution()\n");
-    while(1);
+VOID StorPortStallExecution(
+    ULONG Microseconds
+){
+    //LouPrint("void StorPortStallExecution()\n");
+    if(Microseconds <= 1999){//sanity check
+        sleep(2);
+        //LouPrint("void StorPortStallExecution() SUCCESS\n");
+        return;
+    }
+
+    Microseconds /= 1000;
+    sleep(Microseconds);
+    //LouPrint("void StorPortStallExecution() SUCCESS\n");
+
 }
 
 void StorPortNotification(
@@ -34,6 +72,7 @@ void StorPortNotification(
   ...
 ){
     LouPrint("void StorPortNotification()\n");
+
 
 
     LouPrint("void StorPortNotification() LOUSINE IS NOTIFIED\n");
@@ -45,15 +84,30 @@ void StorPortSetDeviceQueueDepth(){
     while(1);
 }
 
-void StorPortGetUncachedExtension(){
+PVOID StorPortGetUncachedExtension(
+  _In_ PVOID HwDeviceExtension,
+  _In_ PPORT_CONFIGURATION_INFORMATION ConfigInfo,
+  _In_ ULONG NumberOfBytes
+){
     LouPrint("void StorPortGetUncachedExtension()\n");
-    while(1);
+
+    LouPrint("Allocating:%d Bytes\n",NumberOfBytes);
+
+    PVOID AllocatedBlock = (PVOID)LouMalloc(NumberOfBytes);
+
+    for(uint64_t i = 0; i <= NumberOfBytes; i+=KILOBYTE_PAGE){
+        LouMapAddress(((uint64_t)AllocatedBlock + i), ((uint64_t)AllocatedBlock + i), KERNEL_PAGE_WRITE_PRESENT, KILOBYTE_PAGE);
+    }
+
+
+    LouPrint("void StorPortGetUncachedExtension() SUCCESS\n");
+    return AllocatedBlock;
 }
 
 NTSTATUS StorPortInitialize(
     PDRIVER_OBJECT DrvObj,
     PUNICODE_STRING RegistryEntry,
-    PHW_INITIALIZATION_DATA HwInitializationData,
+    PSTORPORT_HW_INITIALIZATION_DATA HwInitializationData,
     PVOID HwContext
 ){
     LouPrint("NTSTATUS StorPortInitialize()\n");
@@ -105,7 +159,12 @@ NTSTATUS StorPortInitialize(
 
     StorPortStack[i]->ConfigInfo = (PPORT_CONFIGURATION_INFORMATION)LouMalloc(sizeof(PORT_CONFIGURATION_INFORMATION));
 
-    LouPrint("void StorPortInitialize() STATUS SUCCESS\n");
+    StorPortStack[i]->ConfigInfo->NumberOfAccessRanges = HwInitializationData->NumberOfAccessRanges;
+
+    StorPortStack[i]->ConfigInfo->AddressRanges = (uint64_t)LouMalloc(sizeof(ACCESS_RANGE) * StorPortStack[i]->ConfigInfo->NumberOfAccessRanges);
+
+
+    LouPrint("NTSTATUS StorPortInitialize() STATUS SUCCESS\n");
     return STATUS_SUCCESS;
 }   
 
@@ -114,9 +173,33 @@ void StorPortGetScatterGatherList(){
     while(1);
 }
 
-void StorPortGetDeviceBase(){
-    LouPrint("void StorPortGetDeviceBase()\n");
-    while(1);
+PVOID StorPortGetDeviceBase(
+  _In_  PVOID   HwDeviceExtension,
+  _In_  INTERFACE_TYPE BusType,
+  _In_  ULONG   SystemIoBusNumber,
+  _In_  PHYSICAL_ADDRESS IoAddress,
+  _In_  ULONG   NumberOfBytes,
+  _In_  BOOLEAN InIoSpace
+){
+    LouPrint("PVOID StorPortGetDeviceBase()\n");
+
+    if(IoAddress.QuadPart == 0x01){
+        LouPrint("StorPort Address Not Valid\n");
+        LouPrint("PVOID StorPortGetDeviceBase() OK\n");
+        return (PVOID)0x00;
+    }
+
+    LouPrint("IoAddress:%h\n", IoAddress.QuadPart);
+    LouPrint("Size:%h\n", NumberOfBytes);
+
+    uint64_t NewAddress = ((uint64_t)IoAddress.QuadPart & ~(MEGABYTE_PAGE - 1));
+
+    for(uint64_t i = 0; i <= NumberOfBytes + (IoAddress.QuadPart - NewAddress); i+= MEGABYTE_PAGE){
+        LouMapAddress(NewAddress + i, NewAddress + i, KERNEL_PAGE_WRITE_PRESENT, MEGABYTE_PAGE);
+    }
+
+    LouPrint("PVOID StorPortGetDeviceBase() SUCCESS\n");
+    return (PVOID)IoAddress.QuadPart;
 }
 /**
 typedef enum _BUS_DATA_TYPE {
@@ -137,7 +220,7 @@ typedef enum _BUS_DATA_TYPE {
 */
 // Holds Adapter Information
 
-static inline void GetPciConfiguration(ULONG SystemIoBusNumber,ULONG SlotNumber ,PPCI_COMMON_CONFIG ConfigBuffer){
+void GetPciConfiguration(ULONG SystemIoBusNumber,ULONG SlotNumber ,PPCI_COMMON_CONFIG ConfigBuffer){
     ConfigBuffer->Header.VendorID = pciConfigReadWord(SystemIoBusNumber, SlotNumber, 0, 0x00);
     ConfigBuffer->Header.DeviceID = pciConfigReadWord(SystemIoBusNumber, SlotNumber, 0, 0x02);
     ConfigBuffer->Header.Command = pciConfigReadWord(SystemIoBusNumber, SlotNumber, 0, 0x04);
@@ -233,8 +316,6 @@ ULONG StorPortGetBusData(
         PPCI_COMMON_CONFIG ConfigBuffer = (PPCI_COMMON_CONFIG)Buffer;
 
         GetPciConfiguration(SystemIoBusNumber, SlotNumber,ConfigBuffer);
-
-        //TODO: Finish Implementing the MMIO Testing
 
         LouPrint("void StorPortGetBusData() COMPLETE\n");
         return sizeof(PCI_COMMON_CONFIG);

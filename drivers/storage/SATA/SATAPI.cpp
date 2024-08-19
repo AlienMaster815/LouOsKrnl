@@ -308,25 +308,7 @@ bool AhciATAPI_CFIS(
     uint16_t Features,
     uint8_t Device
 ){
-    HBA_CMD_TBL* cmdTable = (HBA_CMD_TBL*)CommandTable;
-    FIS_REG_H2D* CFIS = (FIS_REG_H2D*)&cmdTable->cfis;
 
-    CFIS->command = 0xA0;
-    CFIS->fis_type = FIS_TYPE_REG_H2D;
-    CFIS->c = true;
-    CFIS->lba0 = LBA0;
-    CFIS->lba1 = LBA1;
-    CFIS->lba2 = LBA2;
-    CFIS->lba3 = LBA3;
-    CFIS->lba4 = LBA4;
-    CFIS->lba5 = LBA5;
-    CFIS->device = Device;
-
-    CFIS->featurel = Features & 0xFF;
-    CFIS->featureh = Features >> 8 & 0xFF;
-
-    CFIS->countl = Count & 0xFF;
-    CFIS->counth = Count >> 8 & 0xFF;
 
     return true;
 }
@@ -339,28 +321,7 @@ void* AhciBuild_PRDT(
     uint64_t* BufferSize
 ){
 
-    uint64_t RequestedBuffer = count * 2048;
-
-	void* returnBuffer = LouMalloc(RequestedBuffer);
-
-	void* PhysicalAdress = 0x00;
-
-	*StateOfOperation = RequestPhysicalAddress(
-    (uint64_t)returnBuffer,
-    (uint64_t*)&PhysicalAdress
-	);
-
-	if(!NT_SUCCESS(*StateOfOperation) || (returnBuffer == 0x00) | (PhysicalAdress == 0x00)){
-		LouFree((RAMADD)returnBuffer);
-		return 0x00;
-	}
-
-    cmdTable->prdt_entry[0].dba = (uint32_t)(uintptr_t)PhysicalAdress;
-    cmdTable->prdt_entry[0].dbau = (uint32_t)((uintptr_t)PhysicalAdress >> 32);
-    cmdTable->prdt_entry[0].dbc = RequestedBuffer - 1; // Size is zero-based
-    
-
-    return returnBuffer;
+    return 0x00;
 }
 
 void* ReadSATAPI(
@@ -373,78 +334,5 @@ LOUSTATUS* StateOfOperation,
 uint64_t* BufferSize
 ){
 
-    int FreeSlot = find_cmdslot(Port);
-
-    if(-1 == FreeSlot){
-        *StateOfOperation = STATUS_INSUFFICIENT_RESOURCES;
-        return 0x00;
-    }
-    
-	if(count == 0){
-		*StateOfOperation = STATUS_INVALID_DEVICE_REQUEST;
-		return 0x00;
-	}
-
-    HBA_CMD_HEADER *CmdHeaders = (HBA_CMD_HEADER *)(uintptr_t)Port->clb;
-    // Get the address of the free header
-    HBA_CMD_HEADER *SelectedHeader = &CmdHeaders[FreeSlot];
-    // Get the Command Table
-    HBA_CMD_TBL *SelectedTable = (HBA_CMD_TBL *)(uintptr_t)((uintptr_t)SelectedHeader->ctba | ((uintptr_t)SelectedHeader->ctbau << 32));
-
-    if(!AhciATAPI_CFIS(
-    (uintptr_t)SelectedTable,
-    lba_low & 0xFF,
-    lba_low >> 8 & 0xFF,
-    lba_low >> 16 & 0xFF,
-    lba_low >> 24 & 0xFF,
-    lba_hi & 0xFF ,
-    lba_hi >> 8 & 0xFF,
-    count,
-    0x00,
-    0xA0 //replace with what it need to be later
-    )){
-        *StateOfOperation = STATUS_INSUFFICIENT_RESOURCES;
-        return 0x00;
-    }
-
-    void* returnBuffer = AhciBuild_PRDT(
-        SelectedTable,
-        count,
-        StateOfOperation,
-        BufferSize        
-    );
-
-    if(returnBuffer == 0x00){
-        return 0x00;
-    }
-
-    // Setup command header
-    SelectedHeader->cfl = sizeof(FIS_REG_H2D) / sizeof(uint32_t); // Command FIS length
-    SelectedHeader->w = 0; // Write bit (0 for read)
-    SelectedHeader->prdtl = 1; // Number of PRDT entries
-    SelectedHeader->a = 1;
-    SelectedHeader->p = 0;
-    SelectedHeader->pmp = 0;
-
-    SelectedHeader->r = 0;
-    SelectedHeader->b = 0;
-    SelectedHeader->c = 0;
-
-    SelectedHeader->prdbc = 0;
-
-    SelectedHeader->rsv1[0] = 0;
-    SelectedHeader->rsv1[1] = 0;
-    SelectedHeader->rsv1[2] = 0;
-    SelectedHeader->rsv1[3] = 0;
-
-    Port->ci |= 1 << FreeSlot;
-
-    while((Port->ci >> FreeSlot) & 0x01){
-        sleep(100);
-    }
-
-
-
-    LouPrint("Finished Reading\n");
-    return returnBuffer;
+    return 0x00;
 }

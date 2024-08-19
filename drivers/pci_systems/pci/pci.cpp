@@ -58,9 +58,9 @@ LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device) {
                 else {
                     LouPrint("Multi Function PCI Device Found Vedor Is: %h and Device Is: %h\n", vendorID, PciGetDeviceID(bus, device, function));
                         //Parse Funxtios and have fun
-                       // if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
+                        if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
                         //if (!DeviceIdentified)DeviceIdentified = isUsb( bus,  device,  function);
-                        if (!DeviceIdentified)DeviceIdentified = IsVGA( bus,  device,  function);
+                       // if (!DeviceIdentified)DeviceIdentified = IsVGA( bus,  device,  function);
                         //if (!DeviceIdentified)DeviceIdentified = IsSerial( bus,  device,  function);
                         //if (!DeviceIdentified)DeviceIdentified = IsEithernet( bus,  device,  function);
                         //if (!DeviceIdentified)DeviceIdentified = IsChipset( bus,  device,  function);
@@ -243,6 +243,7 @@ LOUDDK_API_ENTRY void checkForVgaDevice(uint8_t bus, uint8_t device) {
     }
 }
 
+bool IsPataCheck(uint8_t bus, uint8_t slot, uint8_t function);
 
 LOUDDK_API_ENTRY void checkForStorageDevice(uint8_t bus, uint8_t device) {
     uint8_t function = 0;
@@ -264,15 +265,17 @@ LOUDDK_API_ENTRY void checkForStorageDevice(uint8_t bus, uint8_t device) {
                 if (PciGetDeviceID(bus,device,function) == NOT_A_PCI_DEVICE) continue;
                 else {
                     LouPrint("Multi Function PCI Device Found Vedor Is: %h and Device Is: %h\n", vendorID, PciGetDeviceID(bus, device, function));
-                    if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
-                }
+                    //if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
+                    if (!DeviceIdentified)DeviceIdentified = IsPataCheck(bus, device, function);
+               }
             }
         }
         return;
     }
     else{
         LouPrint("Single Function PCI Device Found Vedor Is: %h and Device Is: %h\n", vendorID, PciGetDeviceID(bus, device, function));
-        if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
+        //if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
+        if (!DeviceIdentified)DeviceIdentified = IsPataCheck(bus, device, function);
     }
 }
 

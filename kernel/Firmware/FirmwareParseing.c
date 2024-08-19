@@ -342,18 +342,3 @@ RSDP_DESCRIPTOR_2* find_rsdp_from_efi_table(uint64_t efi_system_table_address) {
 
     return NULL;  // RSDP not found
 }
-
-void SetupEfiTables(){
-
-	//EFI_SYSTEM_TABLE *EfiTable = (EFI_SYSTEM_TABLE *)EFI_TABLE;
-	if(EFI_TABLE != 0x00){
-		LouPrint("EFI HEADER:%d\n", EFI_TABLE);
-		RSDP_DESCRIPTOR_2* TMPRSDP = find_rsdp_from_efi_table(EFI_TABLE);
-		LouPrint("TMPRSDP:%d\n", TMPRSDP);
-		if(TMPRSDP != 0x00){
-			LouPrint("RSDP Revision:%d\n",TMPRSDP->Revision);
-			LouKeSetRsdp((uintptr_t)TMPRSDP, TMPRSDP->Revision);
-		}
-	}
-
-}
