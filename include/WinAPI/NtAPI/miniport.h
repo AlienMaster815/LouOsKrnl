@@ -1014,4 +1014,34 @@ typedef enum _SCSI_NOTIFICATION_TYPE {
 
 typedef LARGE_INTEGER STOR_PHYSICAL_ADDRESS;
 
+typedef struct _AHCI_SRB_EXTENSION {
+    ULONG_PTR OriginalSrb;        // Pointer to the original SRB
+    PVOID     Context;            // Context or state information for the operation
+    ULONG     Flags;              // Flags indicating the state of the SRB or specific operations
+    ULONG     PortNumber;         // The port number this SRB is associated with
+    ULONG     SlotNumber;         // The command slot number
+    PVOID     CommandTable;       // Pointer to the command table for this SRB
+    PVOID     FisBaseAddress;     // Pointer to the FIS base address
+    ULONG     AtaStatus;          // Status of the ATA command
+    ULONG     Reserved[4];        // Reserved for future use or alignment
+} AHCI_SRB_EXTENSION, *PAHCI_SRB_EXTENSION;
+
+typedef struct _AHCI_ADAPTER_EXTENSION {
+    ULONG           AdapterId;          // Unique identifier for the adapter
+    PVOID           BaseAddress;        // Base memory address of the AHCI controller registers
+    ULONG           NumberOfPorts;      // Number of ports supported by the adapter
+    ULONG           Capabilities;       // Capabilities of the AHCI controller
+    PVOID           PortExtension[32]; // Array of port extensions, one per port
+    PVOID           CommandListBase;    // Base address for the command list
+    PVOID           ReceivedFisBase;    // Base address for the received FIS structure
+    PVOID           Buffer;             // General-purpose buffer for adapter use
+    ULONG           InterruptStatus;    // Current interrupt status
+    ULONG           Flags;              // Flags representing various states and features
+    PVOID           DeviceExtension;    // Pointer to the device extension (optional, depending on the driver)
+    ULONG           TimerHandle;        // Handle for any timers set by the driver
+    ULONG           Reserved[4];        // Reserved for future use or alignment
+} AHCI_ADAPTER_EXTENSION, *PAHCI_ADAPTER_EXTENSION;
+
+#define STOR_MAP_NON_READ_WRITE_BUFFERS             (2)     // maps buffer for IOs except READ and WRITE request
+
 #endif

@@ -1,4 +1,7 @@
 
+//Driver has been retired see 2.0 in /ATA/AtaInit.cpp
+//this driver will be striped in the future when it is no longer needed
+
 // ATA.cpp Version 1.05 Stable Release
 
 

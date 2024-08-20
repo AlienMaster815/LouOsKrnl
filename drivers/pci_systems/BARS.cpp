@@ -109,3 +109,4 @@ BaseAddressRegister::BaseAddressRegister(P_PCI_DEVICE_OBJECT PDEV) {
 BaseAddressRegister::~BaseAddressRegister() {
 
 }
+

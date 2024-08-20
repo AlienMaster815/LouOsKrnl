@@ -29,7 +29,7 @@ uintptr_t RBP_Current;
 
 
 
-string KERNEL_VERSION = "0.0.445 RSC-2 Multiboot 2";
+string KERNEL_VERSION = "0.0.446 RSC-2 Multiboot 2 With EFI Support";
 
 
 #ifdef __x86_64__

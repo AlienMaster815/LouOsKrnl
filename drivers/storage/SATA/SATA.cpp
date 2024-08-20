@@ -170,8 +170,11 @@ LOUDDK_API_ENTRY void AHCI_Interrupt_Handler();
 
 KERNEL_IMPORT void GetAhciMouduleStart(uintptr_t* Start, uintptr_t* End);
 
-
-
+NTSTATUS
+AhciDriverEntry(
+	PDRIVER_OBJECT Obj,
+	PUNICODE_STRING Str
+);
 
 LOUDDK_API_ENTRY void Sata_init(P_PCI_DEVICE_OBJECT SataDev) {
 
@@ -190,7 +193,13 @@ LOUDDK_API_ENTRY void Sata_init(P_PCI_DEVICE_OBJECT SataDev) {
 	CMD |= (PCI_INTERRUPT_ENABLE | MEMORY_SPACE_ENABLE | IO_SPACE_ENABLE);
 	LouKeWritePciCommandRegister(SataDev, CMD);
 
-	InitAHCIController(SataDev);
+	PDRIVER_OBJECT DrvObj = (PDRIVER_OBJECT)LouMalloc(sizeof(DRIVER_OBJECT));
+	PUNICODE_STRING Registry = (PUNICODE_STRING)LouMalloc(sizeof(DRIVER_OBJECT));
+
+	AhciDriverEntry(
+		DrvObj, 
+		Registry
+	);
 
 	//RegisterHardwareInterruptHandler(
 	//	AHCI_Interrupt_Handler, 
@@ -198,6 +207,116 @@ LOUDDK_API_ENTRY void Sata_init(P_PCI_DEVICE_OBJECT SataDev) {
 	//);
 	//while (1);
 }
+
+
+NTSTATUS StorPortInitialize(
+    PDRIVER_OBJECT DevObj,
+    PUNICODE_STRING RegistryEntry,
+    PSTORPORT_HW_INITIALIZATION_DATA HwInitializationData,
+    PVOID HwContext
+);
+
+bool
+AhciHwStartIo (
+    PVOID DeviceExtension,
+    PSCSI_REQUEST_BLOCK Srb
+){
+
+
+
+	return true;
+}
+
+bool
+AhciHwResetBus (
+    PVOID AdapterExtension,
+    ULONG PathId
+){
+
+
+
+	return true;
+}
+
+bool
+AhciHwInterrupt (
+    PVOID DeviceExtension
+){
+
+
+
+	return true;
+}
+
+bool
+AhciHwInitialize (
+    PVOID DeviceExtension
+){
+
+
+
+	return true;
+}
+
+ULONG
+AhciHwFindAdapter (
+    PVOID DeviceExtension,
+    PVOID HwContext,
+    PVOID BusInformation,
+    PCHAR ArgumentString,
+    PPORT_CONFIGURATION_INFORMATION ConfigInfo,
+    PBOOLEAN Reserved3
+    ){
+
+
+
+	return 0x00;
+}
+
+NTSTATUS
+AhciDriverEntry(
+	PDRIVER_OBJECT DriverObject,
+	PUNICODE_STRING RegistryPath
+){
+	ULONG Status = STATUS_SUCCESS;
+	LouPrint("AhciDriverEntry\n");
+    STORPORT_HW_INITIALIZATION_DATA AhciInitializtionData = {0};
+
+	AhciInitializtionData.HwInitializationDataSize = sizeof(STORPORT_HW_INITIALIZATION_DATA);
+	
+	// identity required miniport entry point routines
+    AhciInitializtionData.HwStartIo = AhciHwStartIo;
+    AhciInitializtionData.HwResetBus = AhciHwResetBus;
+    AhciInitializtionData.HwInterrupt = AhciHwInterrupt;
+    AhciInitializtionData.HwInitialize = AhciHwInitialize;
+    AhciInitializtionData.HwFindAdapter = AhciHwFindAdapter;
+    
+	// adapter specific information
+    AhciInitializtionData.TaggedQueuing = true;
+    AhciInitializtionData.AutoRequestSense = true;
+    AhciInitializtionData.MultipleRequestPerLu = true;
+    AhciInitializtionData.NeedPhysicalAddresses = true;
+
+	AhciInitializtionData.NumberOfAccessRanges = 6;
+    AhciInitializtionData.AdapterInterfaceType = PCIBus;
+    AhciInitializtionData.MapBuffers = STOR_MAP_NON_READ_WRITE_BUFFERS;
+
+    // set required extension sizes
+    AhciInitializtionData.SrbExtensionSize = sizeof(AHCI_SRB_EXTENSION);
+    AhciInitializtionData.DeviceExtensionSize = sizeof(AHCI_ADAPTER_EXTENSION);
+
+	    // register our hw init data
+    Status = StorPortInitialize(DriverObject,
+                                RegistryPath,
+                                &AhciInitializtionData,
+                                0x00);
+
+	LouPrint("AhciDriverEntry() SUCCESS\n");
+	return Status;
+}
+
+
+
 
 int find_cmdslot(HBA_PORT *port);
 
