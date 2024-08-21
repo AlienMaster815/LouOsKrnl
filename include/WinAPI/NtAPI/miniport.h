@@ -906,7 +906,7 @@ typedef struct __attribute__((packed)) _PORT_CONFIGURATION_INFORMATION {
 	ULONG AdapterInterfaceType;
 	uint8_t PADING1[0x28];
 	uint32_t NumberOfAccessRanges;
-	uint64_t AddressRanges;
+	uint64_t* AddressRanges;
     uint8_t PADDING[0x24];
     ULONG SlotNumber;
 } PORT_CONFIGURATION_INFORMATION, *PPORT_CONFIGURATION_INFORMATION;
@@ -1043,5 +1043,7 @@ typedef struct _AHCI_ADAPTER_EXTENSION {
 } AHCI_ADAPTER_EXTENSION, *PAHCI_ADAPTER_EXTENSION;
 
 #define STOR_MAP_NON_READ_WRITE_BUFFERS             (2)     // maps buffer for IOs except READ and WRITE request
+
+
 
 #endif

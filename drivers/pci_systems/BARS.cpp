@@ -38,14 +38,9 @@ BaseAddressRegister::BaseAddressRegister(P_PCI_DEVICE_OBJECT PDEV) {
 			write_pci(PDEV->bus, PDEV->slot, PDEV->func, BAR0Offset + (BarNum * 4), originalBarValue);
 
 			// Calculate the size
-			if(sizeValue != originalBarValue){
-				uint32_t barSize = ~(sizeValue & 0xFFFFFFF0) + 1;
-				size[BarNum] = barSize;
-			}
-			else{
-				uint32_t barSize = 0x20000;
-				size[BarNum] = barSize;
-			}
+			uint32_t barSize = ~(sizeValue & 0xFFFFFFF0) + 1;
+			size[BarNum] = barSize;
+	
 
 
 			LouPrint("Memory Map Is ");

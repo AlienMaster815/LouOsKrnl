@@ -201,6 +201,22 @@ LOUDDK_API_ENTRY void Sata_init(P_PCI_DEVICE_OBJECT SataDev) {
 		Registry
 	);
 
+	BaseAddressRegister bars(SataDev);
+
+	STOR_PORT_STACK_OBJECT* FOO = GetStorPortObject(DrvObj);
+	PORT_CONFIGURATION_INFORMATION* ConfigInfo = FOO->ConfigInfo;
+
+	for(uint8_t i = 0 ; i < ConfigInfo->NumberOfAccessRanges; i++){
+		ConfigInfo->AddressRanges[i] = (uint64_t)bars.address[i];
+	}
+
+	PHW_FIND_ADAPTER FindAdapter =  (PHW_FIND_ADAPTER)FOO->FindAdapter;
+
+	FindAdapter(
+		FOO->DeviceExtention,
+		0,0, 0, ConfigInfo, 0  
+	);
+
 	//RegisterHardwareInterruptHandler(
 	//	AHCI_Interrupt_Handler, 
 	//	IPin
@@ -267,9 +283,12 @@ AhciHwFindAdapter (
     PPORT_CONFIGURATION_INFORMATION ConfigInfo,
     PBOOLEAN Reserved3
     ){
+	LouPrint("AhciHwFindAdapter()\n");
 
 
 
+	LouPrint("AhciHwFindAdapter() SUCCESS\n");
+	while(1);
 	return 0x00;
 }
 

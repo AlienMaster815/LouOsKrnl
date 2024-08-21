@@ -161,7 +161,7 @@ NTSTATUS StorPortInitialize(
 
     StorPortStack[i]->ConfigInfo->NumberOfAccessRanges = HwInitializationData->NumberOfAccessRanges;
 
-    StorPortStack[i]->ConfigInfo->AddressRanges = (uint64_t)LouMalloc(sizeof(ACCESS_RANGE) * StorPortStack[i]->ConfigInfo->NumberOfAccessRanges);
+    StorPortStack[i]->ConfigInfo->AddressRanges = (uint64_t*)LouMalloc(sizeof(ACCESS_RANGE) * StorPortStack[i]->ConfigInfo->NumberOfAccessRanges);
 
 
     LouPrint("NTSTATUS StorPortInitialize() STATUS SUCCESS\n");

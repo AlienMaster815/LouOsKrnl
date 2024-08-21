@@ -296,7 +296,6 @@ typedef struct {
     void *StandardErrorHandle;
     void *StdErr;
     void *RuntimeServices;
-    void *BootServices;
     uint64_t NumberOfTableEntries;
     void *ConfigurationTable;  // This is an array of EFI_CONFIGURATION_TABLE
 } EFI_SYSTEM_TABLE;
@@ -342,3 +341,25 @@ RSDP_DESCRIPTOR_2* find_rsdp_from_efi_table(uint64_t efi_system_table_address) {
 
     return NULL;  // RSDP not found
 }
+
+typedef struct {
+    UINT32 MaxMode;
+    UINT32 Mode;
+    EFI_STATUS (EFIAPI *SetMode)(EFI_GRAPHICS_OUTPUT_PROTOCOL *This, UINT32 ModeNumber);
+    EFI_STATUS (EFIAPI *QueryMode)(EFI_GRAPHICS_OUTPUT_PROTOCOL *This, UINT32 ModeNumber, UINTN *SizeOfInfo, EFI_GRAPHICS_OUTPUT_MODE_INFORMATION **Info);
+    EFI_PHYSICAL_ADDRESS FrameBufferBase;
+    UINTN FrameBufferSize;
+} EFI_GRAPHICS_OUTPUT_PROTOCOL;
+
+typedef struct {
+    UINT32 Data1;
+    UINT16 Data2;
+    UINT16 Data3;
+    UINT8 Data4[8];
+} EFI_GUID;
+
+#define EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID \
+    { 0x9042a9de, 0x23dc, 0x4a38, { 0x96, 0xfb, 0x7a, 0xde, 0xd0, 0x80, 0x51, 0x6a } }
+
+typedef UINTN EFI_STATUS;
+

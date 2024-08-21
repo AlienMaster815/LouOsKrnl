@@ -1,12 +1,9 @@
 #include "VBOX/VBoxVGA.h"
-#include "amd/amd.h"
 
 
 void InitializeVgaDevice(
 	P_PCI_DEVICE_OBJECT PDEV
 );
-
-
 
 bool IsVGA(uint8_t bus,uint8_t slot,uint8_t function) {
 
@@ -47,11 +44,6 @@ void InitializeVgaDevice(P_PCI_DEVICE_OBJECT PDEV) {
 		PreVBoxVGAInit(PDEV);
 		InitializeVirtualBoxVgaAdapter(PDEV);
 		return;
-	}
-	else if (VendorID == 0x1002){
-
-
-		if(InitializeTeraScaleGpu(PDEV))return;
 	}
 
 }

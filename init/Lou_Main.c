@@ -174,7 +174,7 @@ void Advanced_Kernel_Initialization(){
     InitializeDynamicHardwareInterruptHandleing();
     RegisterHardwareInterruptHandler(PS2KeyboardHandler, 1);
     RegisterHardwareInterruptHandler(PS2MouseHandler, 12);
-    if (LOUSTATUS_GOOD != InitThreadManager())LouPrint("SHIT!!!:I Hope You Hate Efficency: No Thread Management\n");
+    //if (LOUSTATUS_GOOD != InitThreadManager())LouPrint("SHIT!!!:I Hope You Hate Efficency: No Thread Management\n");
     SetInterruptFlags();
 }
 
@@ -252,8 +252,6 @@ void LouKeSwitchContext(void (*Function)(), uint64_t StackSize);
 
 void LookForStorageDevices();
 
-void SetupEfiTables();
-
 KERNEL_ENTRY Lou_kernel_start(
     uint32_t MBOOT
 ){
@@ -262,7 +260,6 @@ KERNEL_ENTRY Lou_kernel_start(
     //vga set for debug
 
     setup_vga_systems();
-
 
     StartDesktop();
     StartDebugger();
@@ -277,7 +274,7 @@ KERNEL_ENTRY Lou_kernel_start(
 
     Advanced_Kernel_Initialization();
 
-    LookForStorageDevices();
+    //LookForStorageDevices();
 
     //SETUP DEVICES AND DRIVERS
     //if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);		
