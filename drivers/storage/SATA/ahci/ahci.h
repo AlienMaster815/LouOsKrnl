@@ -4,10 +4,258 @@
 #include <LouDDK.h>
 #include <NtAPI.h>
 
-
 //DEAR Tyler:
 //Hey Stupid C++ is LSB TO MSB
 #pragma pack(push, 1)
+
+typedef struct __attribute__((packed)) _IDENTIFY_DEVICE_DATA {
+  struct {
+    USHORT Reserved1  :1;
+    USHORT Retired3  :1;
+    USHORT ResponseIncomplete  :1;
+    USHORT Retired2  :3;
+    USHORT FixedDevice  :1;
+    USHORT RemovableMedia  :1;
+    USHORT Retired1  :7;
+    USHORT DeviceType  :1;
+  } GeneralConfiguration;
+  USHORT NumCylinders;
+  USHORT ReservedWord2;
+  USHORT NumHeads;
+  USHORT Retired1[2];
+  USHORT NumSectorsPerTrack;
+  USHORT VendorUnique1[3];
+  UCHAR  SerialNumber[20];
+  USHORT Retired2[2];
+  USHORT Obsolete1;
+  UCHAR  FirmwareRevision[8];
+  UCHAR  ModelNumber[40];
+  UCHAR  MaximumBlockTransfer;
+  UCHAR  VendorUnique2;
+  USHORT ReservedWord48;
+  struct {
+    UCHAR  ReservedByte49;
+    UCHAR  DmaSupported  :1;
+    UCHAR  LbaSupported  :1;
+    UCHAR  IordyDisable  :1;
+    UCHAR  IordySupported  :1;
+    UCHAR  Reserved1  :1;
+    UCHAR  StandybyTimerSupport  :1;
+    UCHAR  Reserved2  :2;
+    USHORT ReservedWord50;
+  } Capabilities;
+  USHORT ObsoleteWords51[2];
+  USHORT TranslationFieldsValid  :3;
+  USHORT Reserved3  :13;
+  USHORT NumberOfCurrentCylinders;
+  USHORT NumberOfCurrentHeads;
+  USHORT CurrentSectorsPerTrack;
+  ULONG  CurrentSectorCapacity;
+  UCHAR  CurrentMultiSectorSetting;
+  UCHAR  MultiSectorSettingValid  :1;
+  UCHAR  ReservedByte59  :7;
+  ULONG  UserAddressableSectors;
+  USHORT ObsoleteWord62;
+  USHORT MultiWordDMASupport  :8;
+  USHORT MultiWordDMAActive  :8;
+  USHORT AdvancedPIOModes  :8;
+  USHORT ReservedByte64  :8;
+  USHORT MinimumMWXferCycleTime;
+  USHORT RecommendedMWXferCycleTime;
+  USHORT MinimumPIOCycleTime;
+  USHORT MinimumPIOCycleTimeIORDY;
+  USHORT ReservedWords69[6];
+  USHORT QueueDepth  :5;
+  USHORT ReservedWord75  :11;
+  USHORT ReservedWords76[4];
+  USHORT MajorRevision;
+  USHORT MinorRevision;
+  struct {
+    USHORT SmartCommands  :1;
+    USHORT SecurityMode  :1;
+    USHORT RemovableMediaFeature  :1;
+    USHORT PowerManagement  :1;
+    USHORT Reserved1  :1;
+    USHORT WriteCache  :1;
+    USHORT LookAhead  :1;
+    USHORT ReleaseInterrupt  :1;
+    USHORT ServiceInterrupt  :1;
+    USHORT DeviceReset  :1;
+    USHORT HostProtectedArea  :1;
+    USHORT Obsolete1  :1;
+    USHORT WriteBuffer  :1;
+    USHORT ReadBuffer  :1;
+    USHORT Nop  :1;
+    USHORT Obsolete2  :1;
+    USHORT DownloadMicrocode  :1;
+    USHORT DmaQueued  :1;
+    USHORT Cfa  :1;
+    USHORT AdvancedPm  :1;
+    USHORT Msn  :1;
+    USHORT PowerUpInStandby  :1;
+    USHORT ManualPowerUp  :1;
+    USHORT Reserved2  :1;
+    USHORT SetMax  :1;
+    USHORT Acoustics  :1;
+    USHORT BigLba  :1;
+    USHORT DeviceConfigOverlay  :1;
+    USHORT FlushCache  :1;
+    USHORT FlushCacheExt  :1;
+    USHORT Resrved3  :2;
+    USHORT SmartErrorLog  :1;
+    USHORT SmartSelfTest  :1;
+    USHORT MediaSerialNumber  :1;
+    USHORT MediaCardPassThrough  :1;
+    USHORT StreamingFeature  :1;
+    USHORT GpLogging  :1;
+    USHORT WriteFua  :1;
+    USHORT WriteQueuedFua  :1;
+    USHORT WWN64Bit  :1;
+    USHORT URGReadStream  :1;
+    USHORT URGWriteStream  :1;
+    USHORT ReservedForTechReport  :2;
+    USHORT IdleWithUnloadFeature  :1;
+    USHORT Reserved4  :2;
+  } CommandSetSupport;
+  struct {
+    USHORT SmartCommands  :1;
+    USHORT SecurityMode  :1;
+    USHORT RemovableMediaFeature  :1;
+    USHORT PowerManagement  :1;
+    USHORT Reserved1  :1;
+    USHORT WriteCache  :1;
+    USHORT LookAhead  :1;
+    USHORT ReleaseInterrupt  :1;
+    USHORT ServiceInterrupt  :1;
+    USHORT DeviceReset  :1;
+    USHORT HostProtectedArea  :1;
+    USHORT Obsolete1  :1;
+    USHORT WriteBuffer  :1;
+    USHORT ReadBuffer  :1;
+    USHORT Nop  :1;
+    USHORT Obsolete2  :1;
+    USHORT DownloadMicrocode  :1;
+    USHORT DmaQueued  :1;
+    USHORT Cfa  :1;
+    USHORT AdvancedPm  :1;
+    USHORT Msn  :1;
+    USHORT PowerUpInStandby  :1;
+    USHORT ManualPowerUp  :1;
+    USHORT Reserved2  :1;
+    USHORT SetMax  :1;
+    USHORT Acoustics  :1;
+    USHORT BigLba  :1;
+    USHORT DeviceConfigOverlay  :1;
+    USHORT FlushCache  :1;
+    USHORT FlushCacheExt  :1;
+    USHORT Resrved3  :2;
+    USHORT SmartErrorLog  :1;
+    USHORT SmartSelfTest  :1;
+    USHORT MediaSerialNumber  :1;
+    USHORT MediaCardPassThrough  :1;
+    USHORT StreamingFeature  :1;
+    USHORT GpLogging  :1;
+    USHORT WriteFua  :1;
+    USHORT WriteQueuedFua  :1;
+    USHORT WWN64Bit  :1;
+    USHORT URGReadStream  :1;
+    USHORT URGWriteStream  :1;
+    USHORT ReservedForTechReport  :2;
+    USHORT IdleWithUnloadFeature  :1;
+    USHORT Reserved4  :2;
+  } CommandSetActive;
+  USHORT UltraDMASupport  :8;
+  USHORT UltraDMAActive  :8;
+  USHORT ReservedWord89[4];
+  USHORT HardwareResetResult;
+  USHORT CurrentAcousticValue  :8;
+  USHORT RecommendedAcousticValue  :8;
+  USHORT ReservedWord95[5];
+  ULONG  Max48BitLBA[2];
+  USHORT StreamingTransferTime;
+  USHORT ReservedWord105;
+  struct {
+    USHORT LogicalSectorsPerPhysicalSector  :4;
+    USHORT Reserved0  :8;
+    USHORT LogicalSectorLongerThan256Words  :1;
+    USHORT MultipleLogicalSectorsPerPhysicalSector  :1;
+    USHORT Reserved1  :2;
+  } PhysicalLogicalSectorSize;
+  USHORT InterSeekDelay;
+  USHORT WorldWideName[4];
+  USHORT ReservedForWorldWideName128[4];
+  USHORT ReservedForTlcTechnicalReport;
+  USHORT WordsPerLogicalSector[2];
+  struct {
+    USHORT ReservedForDrqTechnicalReport  :1;
+    USHORT WriteReadVerifySupported  :1;
+    USHORT Reserved01  :11;
+    USHORT Reserved1  :2;
+  } CommandSetSupportExt;
+  struct {
+    USHORT ReservedForDrqTechnicalReport  :1;
+    USHORT WriteReadVerifyEnabled  :1;
+    USHORT Reserved01  :11;
+    USHORT Reserved1  :2;
+  } CommandSetActiveExt;
+  USHORT ReservedForExpandedSupportandActive[6];
+  USHORT MsnSupport  :2;
+  USHORT ReservedWord1274  :14;
+  struct {
+    USHORT SecuritySupported  :1;
+    USHORT SecurityEnabled  :1;
+    USHORT SecurityLocked  :1;
+    USHORT SecurityFrozen  :1;
+    USHORT SecurityCountExpired  :1;
+    USHORT EnhancedSecurityEraseSupported  :1;
+    USHORT Reserved0  :2;
+    USHORT SecurityLevel  :1;
+    USHORT Reserved1  :7;
+  } SecurityStatus;
+  USHORT ReservedWord129[31];
+  struct {
+    USHORT MaximumCurrentInMA2  :12;
+    USHORT CfaPowerMode1Disabled  :1;
+    USHORT CfaPowerMode1Required  :1;
+    USHORT Reserved0  :1;
+    USHORT Word160Supported  :1;
+  } CfaPowerModel;
+  USHORT ReservedForCfaWord161[8];
+  struct {
+    USHORT SupportsTrim  :1;
+    USHORT Reserved0  :15;
+  } DataSetManagementFeature;
+  USHORT ReservedForCfaWord170[6];
+  USHORT CurrentMediaSerialNumber[30];
+  USHORT ReservedWord206;
+  USHORT ReservedWord207[2];
+  struct {
+    USHORT AlignmentOfLogicalWithinPhysical  :14;
+    USHORT Word209Supported  :1;
+    USHORT Reserved0  :1;
+  } BlockAlignment;
+  USHORT WriteReadVerifySectorCountMode3Only[2];
+  USHORT WriteReadVerifySectorCountMode2Only[2];
+  struct {
+    USHORT NVCachePowerModeEnabled  :1;
+    USHORT Reserved0  :3;
+    USHORT NVCacheFeatureSetEnabled  :1;
+    USHORT Reserved1  :3;
+    USHORT NVCachePowerModeVersion  :4;
+    USHORT NVCacheFeatureSetVersion  :4;
+  } NVCacheCapabilities;
+  USHORT NVCacheSizeLSW;
+  USHORT NVCacheSizeMSW;
+  USHORT NominalMediaRotationRate;
+  USHORT ReservedWord218;
+  struct {
+    UCHAR NVCacheEstimatedTimeToSpinUpInSeconds;
+    UCHAR Reserved;
+  } NVCacheOptions;
+  USHORT ReservedWord220[35];
+  USHORT Signature  :8;
+  USHORT CheckSum  :8;
+} IDENTIFY_DEVICE_DATA, *PIDENTIFY_DEVICE_DATA;
 
 typedef enum
 {
@@ -336,6 +584,283 @@ typedef volatile struct tagHBA_MEM
 #define ATA_CMD_WRITE_DMA_EX 0x35
 #define ATAPI_CMD_READ 0xA8
 
- 
+typedef union _AHCIGHC{
+	struct{
+		uint32_t HardRest : 1;
+		uint32_t InterruptEnable : 1;
+		uint32_t MRSM : 1; 			//I forgot what this was lol
+		uint32_t Reserved0 : 28; 	//I dont giv a two shit
+		uint32_t AhciEnable : 1;
+	}Bits;
+	uint32_t Status;
+}AHCI_GHC, *PAHCI_GHC;
+
+typedef struct __attribute__((packed)) _AHCI_PORT{
+	uint32_t CommandListBase;
+	uint32_t CommandListBaseHigh;
+	uint32_t FisBase;
+	uint32_t FisBaseHigh;
+	uint32_t InterruptStat;
+	uint32_t InterruptEnable;
+	uint32_t CommandnStatus;
+	uint32_t NotMyFuckingConcern;
+	uint32_t TaskFile;
+	uint32_t Signature;
+	uint32_t SataStatus;
+	uint32_t SataControl;
+	uint32_t SataError;
+	uint32_t SataActive;
+	uint32_t CoomandIssue;
+	uint32_t SataNotification;
+	uint32_t FisBasedSwitch;
+	uint32_t NotMyFuckingConcern2[11];
+	uint32_t NvidiaFuckYou[4]; //signed Linus Torvoldes
+}AHCI_PORT, * PAHCI_PORT;
+
+typedef struct __attribute__((packed)) _AHCI_MEMORY_REGISTERS{ //Sanity Pack
+	uint32_t Capabilities;
+	uint32_t GlobalHost;
+	uint32_t InterruptStat;
+	uint32_t PortImplementation;
+	uint32_t PortVersion;
+	uint32_t CommandCompletion;
+	uint32_t CommandCompletionPorts;
+	uint32_t EnclosureLocation;
+	uint32_t Enclosure;
+	uint32_t ExtendedCapabilities;
+	uint32_t BiosHandoff;
+	uint32_t NotMyFuckingConcern[0x1d];
+	uint32_t NvidiaFuckYou[0x18]; //signed Linus Torvoldes
+	AHCI_PORT PortList[32]; //at this point lets just give the stack a fucking stroke
+}AHCI_MEMORY_REGISTERS, * PAHCI_MEMORY_REGISTERS;
+
+
+typedef struct _DPC_BUFFER
+{
+    CSHORT Type;
+    UCHAR Number;
+    UCHAR Importance;
+    struct
+    {
+        PVOID F;
+        PVOID B;
+    };
+    PVOID DeferredRoutine;
+    PVOID DeferredContext;
+    PVOID SystemArgument1;
+    PVOID SystemArgument2;
+    PVOID DpcData;
+} DPC_BUFFER;
+
+typedef struct _STOR_DPC
+{
+    DPC_BUFFER Dpc;
+    ULONG* Lock;
+} STOR_DPC, *PSTOR_DPC;
+
+typedef struct __attribute__((packed)) _AHCI_QUEU {
+	void* Buffer[255];
+	uint32_t Head;
+	uint32_t Tail;
+}AHCI_QUEU, * PAHCI_QUEU;
+
+typedef struct __attribute__((packed)) _AHCI_FIS_DMA_SETUP{
+	uint32_t FisTypeSetup;
+	uint16_t NotMyFuckingConcern;
+	uint32_t DmaBufferLow;
+	uint32_t DmaBufferHigh;
+	uint32_t NotMyFuckingConcern2;
+	uint32_t DMAbufferOffset;
+	uint32_t TransferCount;
+	uint32_t NotMyFuckingConcern3;
+}AHCI_FIS_DMA_SETUP, * PAHCI_FIS_DMA_SETUP;
+
+typedef struct _AHCI_PIO_SETUP_FIS
+{
+    UCHAR FisType;
+    UCHAR Reserved1 :5;
+    UCHAR D :1;
+    UCHAR I :1;
+    UCHAR Reserved2 :1;
+    UCHAR Status;
+    UCHAR Error;
+
+    UCHAR SectorNumber;
+    UCHAR CylLow;
+    UCHAR CylHigh;
+    UCHAR Dev_Head;
+
+    UCHAR SectorNumb_Exp;
+    UCHAR CylLow_Exp;
+    UCHAR CylHigh_Exp;
+    UCHAR Reserved3;
+
+    UCHAR SectorCount;
+    UCHAR SectorCount_Exp;
+    UCHAR Reserved4;
+    UCHAR E_Status;
+
+    USHORT TransferCount;
+    UCHAR Reserved5[2];
+} AHCI_PIO_SETUP_FIS;
+
+typedef struct _AHCI_D2H_REGISTER_FIS
+{
+    UCHAR FisType;
+    UCHAR Reserved1 :6;
+    UCHAR I:1;
+    UCHAR Reserved2 :1;
+    UCHAR Status;
+    UCHAR Error;
+
+    UCHAR SectorNumber;
+    UCHAR CylLow;
+    UCHAR CylHigh;
+    UCHAR Dev_Head;
+
+    UCHAR SectorNum_Exp;
+    UCHAR CylLow_Exp;
+    UCHAR CylHigh_Exp;
+    UCHAR Reserved;
+
+    UCHAR SectorCount;
+    UCHAR SectorCount_Exp;
+    UCHAR Reserved3[2];
+
+    UCHAR Reserved4[4];
+} AHCI_D2H_REGISTER_FIS;
+
+typedef struct _AHCI_SET_DEVICE_BITS_FIS
+{
+    UCHAR FisType;
+
+    UCHAR PMPort: 4;
+    UCHAR Reserved1 :2;
+    UCHAR I :1;
+    UCHAR N :1;
+
+    UCHAR Status_Lo :3;
+    UCHAR Reserved2 :1;
+    UCHAR Status_Hi :3;
+    UCHAR Reserved3 :1;
+
+    UCHAR Error;
+
+    UCHAR Reserved5[4];
+} AHCI_SET_DEVICE_BITS_FIS;
+
+typedef struct __attribute__((packed)) _AHCI_RECIEVED_FIS{
+	AHCI_FIS_DMA_SETUP DmaFisSet;
+	uint32_t MaxiPad0;
+	AHCI_PIO_SETUP_FIS PioSetup;
+	uint32_t MaxiPad1[3];
+	AHCI_D2H_REGISTER_FIS RFis; 
+	uint32_t MaxiPad2;
+	AHCI_SET_DEVICE_BITS_FIS SetDeviceFis;
+	uint32_t UnKnFis[16];
+	uint32_t NotMyFuckingConcern[24];
+}AHCI_RECIEVED_FIS, * PAHCI_RECIEVED_FIS;
+
+typedef union _AHCI_COMMAND_HEADER_DESCRIPTION
+{
+    struct
+    {
+        ULONG CFL : 5;       
+        ULONG A : 1;     
+        ULONG W : 1;  
+        ULONG P : 1;         
+
+        ULONG R : 1;        
+        ULONG B : 1;
+        ULONG C : 1;
+        ULONG RSV : 1;
+        ULONG PMP : 4;
+
+        ULONG PRDTL : 16;
+    };
+
+    ULONG Status;
+} AHCI_COMMAND_HEADER_DESCRIPTION;
+
+typedef struct _AHCI_COMMAND_HEADER
+{
+    AHCI_COMMAND_HEADER_DESCRIPTION DI;   // DW 0
+    ULONG PRDBC;                          // DW 1
+    ULONG CTBA;                           // DW 2
+    ULONG CTBA_U;                         // DW 3
+    ULONG Reserved[4];                    // DW 4-7
+} AHCI_COMMAND_HEADER, *PAHCI_COMMAND_HEADER;
+
+typedef enum _STOR_DEVICE_POWER_STATE {
+  StorPowerDeviceUnspecified = 0,
+  StorPowerDeviceD0,
+  StorPowerDeviceD1,
+  StorPowerDeviceD2,
+  StorPowerDeviceD3,
+  StorPowerDeviceMaximum
+} STOR_DEVICE_POWER_STATE, *PSTOR_DEVICE_POWER_STATE;
+
+typedef struct __attribute__((packed)) _AHCI_PORT_EXTENSION{
+	uint32_t PortNumber;
+	uint32_t QueueSlot;
+	uint32_t CommandIssuedSlots;
+	uint32_t MaxQueDepth;
+
+	struct{
+		uint8_t RemovableDevices;
+		uint8_t Lba48Mode;
+		uint8_t IsActive;
+		LARGE_INTEGER MaxLba;
+		uint32_t BytesPerLogicalSector;
+		uint32_t BytesPerPhysicalSector;
+		uint8_t  VendorId[41];
+		uint8_t  RevisionID[9];
+		uint8_t  SerialNumber[21];
+	}DevParam;
+
+	STOR_DPC CmdCompletion;
+	PAHCI_PORT Port;
+	AHCI_QUEU SrbQueu;
+	AHCI_QUEU CompletionQueu;
+	PSCSI_REQUEST_BLOCK Slot[32];
+	PAHCI_RECIEVED_FIS RFis;
+	PAHCI_COMMAND_HEADER CommandList;
+	STOR_DEVICE_POWER_STATE DevPowStat;
+	PIDENTIFY_DEVICE_DATA IdData;
+	STOR_PHYSICAL_ADDRESS IDDPA;
+	struct _AHCI_ADAPTER_EXTENSION* AdapterExtension;
+}AHCI_PORT_EXTENSION, * PAHCI_PORT_EXTENSION;
+
+
+typedef struct __attribute__((packed)) _AHCI_ADAPTER_EXTENSION{
+	uint32_t  SystemIoBusNumber;
+	uint32_t  SlotNumber;
+	uint32_t  AhciBaseAddress;
+	uint32_t* InterruptStatus;
+	uint32_t  PortImplemented;
+	uint32_t  PortCount;
+	
+	uint16_t  VendorID;
+	uint16_t  DeviceID;
+	uint16_t  RevisionID;
+
+	uint32_t  Version;
+	uint32_t  Capabilities;
+	uint32_t  SecondaryCapabilities;
+	uint32_t  LastInterruptPort;
+	uint32_t  CurrentComandSlot;
+
+	void* 	  NonCahchedXtention;
+
+	struct{
+		uint32_t MessagePerPort : 1;
+		uint32_t Removed : 1; 
+		uint32_t NotMyFuckingConcern : 30;
+	}StateFlags;
+
+	PAHCI_MEMORY_REGISTERS ABAR;
+	AHCI_PORT_EXTENSION PortExtention[32];
+}AHCI_ADAPTER_EXTENSION, * PAHCI_ADAPTER_EXTENSION;
+
 #pragma pack(pop)
 #endif

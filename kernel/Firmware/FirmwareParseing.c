@@ -72,7 +72,10 @@ LOUSTATUS LouKeSetEfiTable(uint64_t Address) {
     struct multiboot_tag_efi64* TableHeader = (struct multiboot_tag_efi64*)Address;
     
     // Cast the 32-bit pointer to a 64-bit pointer
-    EFI_TABLE = (uint64_t)(uintptr_t)TableHeader->pointer;
+	
+	EnforceSystemMemoryMap((uint64_t)(uintptr_t)TableHeader->pointer, TableHeader->size);
+    LouMapAddress(EFI_TABLE, EFI_TABLE, KERNEL_PAGE_WRITE_PRESENT, KILOBYTE_PAGE);
+	EFI_TABLE = (uint64_t)(uintptr_t)TableHeader->pointer;
 
     return STATUS_SUCCESS;  // Assuming LOUSTATUS_SUCCESS is your success code
 }
@@ -214,7 +217,6 @@ LOUSTATUS LouKeGetSystemFirmwareTableId(
 					return Status;
 				}
 			}
-			while(1);
 		}
 
 		for (uint16_t i = sizeof(ACPI_STD_HEADER); i < GenericTable->Size; i += sizeof(uint32_t)) {
@@ -341,25 +343,3 @@ RSDP_DESCRIPTOR_2* find_rsdp_from_efi_table(uint64_t efi_system_table_address) {
 
     return NULL;  // RSDP not found
 }
-
-typedef struct {
-    UINT32 MaxMode;
-    UINT32 Mode;
-    EFI_STATUS (EFIAPI *SetMode)(EFI_GRAPHICS_OUTPUT_PROTOCOL *This, UINT32 ModeNumber);
-    EFI_STATUS (EFIAPI *QueryMode)(EFI_GRAPHICS_OUTPUT_PROTOCOL *This, UINT32 ModeNumber, UINTN *SizeOfInfo, EFI_GRAPHICS_OUTPUT_MODE_INFORMATION **Info);
-    EFI_PHYSICAL_ADDRESS FrameBufferBase;
-    UINTN FrameBufferSize;
-} EFI_GRAPHICS_OUTPUT_PROTOCOL;
-
-typedef struct {
-    UINT32 Data1;
-    UINT16 Data2;
-    UINT16 Data3;
-    UINT8 Data4[8];
-} EFI_GUID;
-
-#define EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID \
-    { 0x9042a9de, 0x23dc, 0x4a38, { 0x96, 0xfb, 0x7a, 0xde, 0xd0, 0x80, 0x51, 0x6a } }
-
-typedef UINTN EFI_STATUS;
-

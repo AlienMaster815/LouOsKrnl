@@ -148,6 +148,10 @@ LOUSTATUS Lou_kernel_early_initialization(){
 void UpdateDeviceInformationTable();
 void StorPortInitializeAllDevices();
 
+LOUSTATUS LouKeCreateThread(void* Function,void* FunctionParameters, uint32_t StackSize);
+int InitKThread();
+int TestLoop2();
+
 LOUSTATUS Set_Up_Devices(){
     //initialize_ps2_keyboard();
     //InitializePs2Mouse();
@@ -174,7 +178,7 @@ void Advanced_Kernel_Initialization(){
     InitializeDynamicHardwareInterruptHandleing();
     RegisterHardwareInterruptHandler(PS2KeyboardHandler, 1);
     RegisterHardwareInterruptHandler(PS2MouseHandler, 12);
-    //if (LOUSTATUS_GOOD != InitThreadManager())LouPrint("SHIT!!!:I Hope You Hate Efficency: No Thread Management\n");
+    if (LOUSTATUS_GOOD != InitThreadManager())LouPrint("SHIT!!!:I Hope You Hate Efficency: No Thread Management\n");
     SetInterruptFlags();
 }
 
@@ -185,11 +189,7 @@ LOUSTATUS User_Mode_Initialization(){
 
  bool LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize);
 
-LOUSTATUS LouKeCreateThread(void* Function,void* FunctionParameters, uint32_t StackSize);
 void LouKeDestroyThread();
-
-void TestLoop1();
-void TestLoop2();
 
 void TestFontFunction();
 extern void MachineCodeDebug(uint64_t FOO);
@@ -252,6 +252,15 @@ void LouKeSwitchContext(void (*Function)(), uint64_t StackSize);
 
 void LookForStorageDevices();
 
+void LouKeRunThreadContext(
+    uint64_t Ctex,
+    uint64_t CCTex
+);
+
+uint64_t GetThreadContext(
+    int Thread
+);
+void ManualContextSwitch(uint64_t Context1, uint64_t Context_2);
 KERNEL_ENTRY Lou_kernel_start(
     uint32_t MBOOT
 ){
@@ -273,7 +282,6 @@ KERNEL_ENTRY Lou_kernel_start(
     InitializeGenericTables();
 
     Advanced_Kernel_Initialization();
-
     //LookForStorageDevices();
 
     //SETUP DEVICES AND DRIVERS
@@ -282,38 +290,17 @@ KERNEL_ENTRY Lou_kernel_start(
     // Initialize User Mode
     // if(User_Mode_Initialization() != LOUSTATUS_GOOD)LouPanic("User Mode Initialiation Failed",BAD);
     
+
+
     LouPrint("Lousine Kernel Video Mode:%dx%d\n", GetScreenBufferWidth(), GetScreenBufferHeight());
     LouPrint("Hello World\n");
 
-    //LouKeSwitchContext(TestLoop1, 2 * MEGABYTE);
-    //LouKeCreateThread(TestLoop1, 0x00 , 2 * MEGABYTE);
-    //LouKeCreateThread(TestLoop2, 0x00 , 2 * MEGABYTE);
 
-    
-
-    //LouPrint("Address of test loop:%h\n",TestLoop1);
-    //uint16_t* FOOBAR = LouMalloc(2*KILOBYTE);
-
-    while (1) {
+    while(1){
         asm("hlt");
     }
 
 	LouPanic("error kernel has gone too far terminating system\n",BAD);
 	// IF the Kernel returns from this
 	// the whole thing crashes
-}
-
-void TestLoop3();
-
-
-void TestLoop1() {
-        LouPrint("Thread 1 Execution\n");
-    while(1);
-}
-
-
-
-void TestLoop2() {
-	LouPrint("Thread 2 Execution\n");
-    while(1);
 }

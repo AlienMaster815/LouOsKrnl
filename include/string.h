@@ -30,6 +30,8 @@ void double_to_string(string Buffer, long double value);
 void float_to_string(string Buffer, float value);
 void long_double_to_string(string Buffer, long double value);
 char* ConvertWCharToChar(const wchar_t* wstr);
+void LouSprintf(char *buffer, const char *format, ...);
+int LouSnprintf(char *buffer, size_t n, const char *format, ...);
 #else
 #include <LouDDK.h>
 
@@ -55,6 +57,8 @@ KERNEL_IMPORT void double_to_string(string Buffer, long double value);
 KERNEL_IMPORT void float_to_string(string Buffer, float value);
 KERNEL_IMPORT void long_double_to_string(string Buffer, long double value);
 KERNEL_IMPORT char* ConvertWCharToChar(const wchar_t* wstr);
+KERNEL_IMPORT void LouSprintf(char *buffer, const char *format, ...);
+KERNEL_IMPORT int LouSnprintf(char *buffer, size_t n, const char *format, ...);
 #endif
 
 #define CHAR_WIDTH 16

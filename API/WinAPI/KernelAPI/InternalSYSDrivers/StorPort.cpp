@@ -146,6 +146,7 @@ NTSTATUS StorPortInitialize(
     
     StorPortStack[i]->FindAdapter = (uint64_t)HwInitializationData->HwFindAdapter;
     StorPortStack[i]->InitAdapter = (uint64_t)HwInitializationData->HwInitialize;
+    StorPortStack[i]->InterruptHandler = (uint64_t)HwInitializationData->HwInterrupt;
 
     if(HwInitializationData->DeviceExtensionSize > 0x00){
         StorPortStack[i]->DeviceExtention = LouMalloc(HwInitializationData->DeviceExtensionSize);

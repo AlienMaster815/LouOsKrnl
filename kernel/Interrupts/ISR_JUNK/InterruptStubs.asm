@@ -8,6 +8,7 @@ global InterruptCode
 raxp dq 0
 global InterruptNum
 global InstructionPointer
+global ThreadStart
 
 InterruptNum db 0
 InterruptCode dq 0
@@ -29,8 +30,6 @@ extern local_apic_send_eoi
 
 %macro pusha 0	
 	
-	;push rsp
-
 	push r15
 	push r14
 	push r13
@@ -49,15 +48,9 @@ extern local_apic_send_eoi
 	push rbx
 	push rax
 
-	;mov rax, [rsp + 8 * 16]
-	;mov [InstructionPointer], rax
-	;xor rax, rax
-
 %endmacro
 
 %macro popa 0
-	;pop rsp
-	;pop rbp
 
 	pop rax
 	pop rbx
@@ -305,14 +298,16 @@ global getRsp
 
 SaveNext dd 0
 
-
 ContextLiftoff:
 	pusha
+	mov [rdx], rsp
 	mov rsp, rcx;
     popa
 	ret
 
+ThreadStart:
 
+	hlt
 
 ISR0:
 	pusha

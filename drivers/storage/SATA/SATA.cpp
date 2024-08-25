@@ -170,6 +170,12 @@ LOUDDK_API_ENTRY void AHCI_Interrupt_Handler();
 
 KERNEL_IMPORT void GetAhciMouduleStart(uintptr_t* Start, uintptr_t* End);
 
+void LouMapAddresses(uint64_t Address, uint64_t Size){
+	for(uint64_t i = 0; i < Size; i+=KILOBYTE_PAGE){
+		LouMapAddress(Address + i,Address + i, KERNEL_PAGE_WRITE_PRESENT, KILOBYTE_PAGE);
+	}
+}
+
 NTSTATUS
 AhciDriverEntry(
 	PDRIVER_OBJECT Obj,
@@ -187,11 +193,10 @@ LOUDDK_API_ENTRY void Sata_init(P_PCI_DEVICE_OBJECT SataDev) {
 	SataDev->DeviceID = PciGetDeviceID(bus, slot, func);
 	SataDev->VendorID = PciGetVendorID(bus, slot);
 
-	//uint8_t IPin = LouKeGetPciInterruptPin(SataDev);
+	uint8_t IPin = LouKeGetPciInterruptPin(SataDev);
 
 	uint16_t CMD = LouKeReadPciCommandRegister(SataDev);
 	CMD |= (PCI_INTERRUPT_ENABLE | MEMORY_SPACE_ENABLE | IO_SPACE_ENABLE);
-	LouKeWritePciCommandRegister(SataDev, CMD);
 
 	PDRIVER_OBJECT DrvObj = (PDRIVER_OBJECT)LouMalloc(sizeof(DRIVER_OBJECT));
 	PUNICODE_STRING Registry = (PUNICODE_STRING)LouMalloc(sizeof(DRIVER_OBJECT));
@@ -201,10 +206,23 @@ LOUDDK_API_ENTRY void Sata_init(P_PCI_DEVICE_OBJECT SataDev) {
 		Registry
 	);
 
+
+
 	BaseAddressRegister bars(SataDev);
 
 	STOR_PORT_STACK_OBJECT* FOO = GetStorPortObject(DrvObj);
 	PORT_CONFIGURATION_INFORMATION* ConfigInfo = FOO->ConfigInfo;
+
+	ConfigInfo->SlotNumber = slot;
+	ConfigInfo->SystemIoBusNumber = bus;
+
+	if(FOO->InterruptHandler != 0x00){
+		RegisterHardwareInterruptHandler(
+			(void (*)())FOO->InterruptHandler, 
+			IPin
+		);
+		LouKeWritePciCommandRegister(SataDev, CMD);
+	}
 
 	for(uint8_t i = 0 ; i < ConfigInfo->NumberOfAccessRanges; i++){
 		ConfigInfo->AddressRanges[i] = (uint64_t)bars.address[i];
@@ -217,10 +235,7 @@ LOUDDK_API_ENTRY void Sata_init(P_PCI_DEVICE_OBJECT SataDev) {
 		0,0, 0, ConfigInfo, 0  
 	);
 
-	//RegisterHardwareInterruptHandler(
-	//	AHCI_Interrupt_Handler, 
-	//	IPin
-	//);
+
 	//while (1);
 }
 
@@ -230,6 +245,15 @@ NTSTATUS StorPortInitialize(
     PUNICODE_STRING RegistryEntry,
     PSTORPORT_HW_INITIALIZATION_DATA HwInitializationData,
     PVOID HwContext
+);
+
+PVOID StorPortGetDeviceBase(
+  _In_  PVOID   HwDeviceExtension,
+  _In_  INTERFACE_TYPE BusType,
+  _In_  ULONG   SystemIoBusNumber,
+  _In_  PHYSICAL_ADDRESS IoAddress,
+  _In_  ULONG   NumberOfBytes,
+  _In_  BOOLEAN InIoSpace
 );
 
 bool
@@ -269,8 +293,73 @@ AhciHwInitialize (
     PVOID DeviceExtension
 ){
 
+	return true;
+}
 
+BOOLEAN
+AhciAdapterReset(
+	PAHCI_ADAPTER_EXTENSION Extention
+){
+	LouPrint("AhciAdapterReset()\n");
 
+	ULONG Jiffies = 0x00; 
+	AHCI_GHC GHC;
+	PAHCI_MEMORY_REGISTERS Abar = 0x00;
+
+	Abar = Extention->ABAR;
+
+	if(Abar == 0x00){
+		//Sanity Check
+		LouPrint("No Such Device\n");
+		LouPrint("AhciAdapterReset() FAILED!!!\n");
+		return STATUS_NO_SUCH_DEVICE;
+	}
+
+	//flip hard reset;
+	GHC.Bits.HardRest = 1;
+
+	//send the data
+	Abar->GlobalHost = GHC.Status;
+
+	for(Jiffies = 0x00; Jiffies < 50; Jiffies++){
+		if((Abar->GlobalHost & 0x01) == 0){//controller reset
+			break;
+		}
+		sleep(200);
+	}
+
+	if(Jiffies == 50){ //1 second
+		LouPrint("Device Timeout\n");
+		LouPrint("AhciAdapterReset() FAILED!!!\n");
+		return false;
+	}
+
+	LouPrint("AhciAdapterReset() SUCCESS\n");
+	return true;
+}
+
+BOOLEAN
+AhciAllocateResources(
+	PAHCI_ADAPTER_EXTENSION DeviceExtention,
+	PPORT_CONFIGURATION_INFORMATION ConfigInfo
+){
+	LouPrint("AhciAllocateResources()\n");
+	uint8_t PortCount;
+	UNUSED ULONG NCS = (DeviceExtention->Capabilities >> 8) & 0xF;
+	ULONG PortImplemented = DeviceExtention->PortImplemented;
+	NCS = DeviceExtention->Capabilities & 0xF; //get port count
+
+	for(PortCount = 32 - 1; PortCount < 32; PortCount--){
+		if((PortImplemented & (1 << PortCount)) == 0){
+			continue;
+		}
+		//else
+
+		
+
+	}
+
+	LouPrint("AhciAllocateResources()\n");
 	return true;
 }
 
@@ -284,6 +373,133 @@ AhciHwFindAdapter (
     PBOOLEAN Reserved3
     ){
 	LouPrint("AhciHwFindAdapter()\n");
+
+	UNUSED AHCI_GHC GHC;
+	uint64_t T = 0x00; 
+	UCHAR PciBuf[sizeof(PCI_COMMON_CONFIG)];
+	
+
+	UNUSED PAHCI_MEMORY_REGISTERS abar = 0x00;
+	PPCI_COMMON_CONFIG ConfigShit = 0x00;
+	PAHCI_ADAPTER_EXTENSION adapterExtention = 0x00;
+	adapterExtention = (PAHCI_ADAPTER_EXTENSION)DeviceExtension;
+
+	if(adapterExtention == 0x00){
+		//Sanity Check
+		LouPrint ("AHCI.SYS: Invalid Parameter: AdapterExtention Is NULL\n");
+		return STATUS_INVALID_PARAMETER;
+	}
+
+	adapterExtention->SlotNumber = ConfigInfo->SlotNumber;
+	adapterExtention->SystemIoBusNumber = ConfigInfo->SystemIoBusNumber;
+
+	GetPciConfiguration(
+			adapterExtention->SystemIoBusNumber, 
+			adapterExtention->SlotNumber,
+			0,
+			(PPCI_COMMON_CONFIG)PciBuf
+		);
+
+	ConfigShit = (PPCI_COMMON_CONFIG)PciBuf;
+	
+	if(ConfigShit == 0x00){
+		//sanity check
+		LouPrint ("AHCI.SYS: Invalid Parameter: PciConfigInfo Is NULL\n");
+		return STATUS_INVALID_PARAMETER;
+	}
+
+	adapterExtention->VendorID = ConfigShit->Header.VendorID;
+	adapterExtention->DeviceID = ConfigShit->Header.DeviceID;
+	adapterExtention->RevisionID = ConfigShit->Header.RevisionID;
+
+	adapterExtention->AhciBaseAddress = ConfigShit->Header.u.type0.BaseAddresses[5] & (0xFFFFFFF0);
+
+	DbgPrint("VendorID: %04x  DeviceID: %04x  RevisionID: %02x\n",
+                   adapterExtention->VendorID,
+                   adapterExtention->DeviceID,
+                   adapterExtention->RevisionID
+	);
+
+	//internal systems are givven the physical addresses by default because they are trusted
+	abar = (PAHCI_MEMORY_REGISTERS)((uint64_t)ConfigShit->Header.u.type0.BaseAddresses[5] & (0xFFFFFFF0));
+
+	if(abar == 0x00){
+		LouPrint("AHCI.SYS: ABAR Is NULL\n");
+		return STATUS_NO_SUCH_DEVICE;
+	}
+
+	adapterExtention->ABAR = abar;
+	
+	LouPrint("Abar Is%h\n", abar);
+
+	LouMapAddress((uint64_t)abar, (uint64_t)abar, KERNEL_PAGE_WRITE_PRESENT, KILOBYTE_PAGE);
+
+	adapterExtention->Capabilities = abar->Capabilities;
+	adapterExtention->SecondaryCapabilities = abar->ExtendedCapabilities;
+	adapterExtention->Version = abar->PortVersion;
+	adapterExtention->LastInterruptPort = (ULONG)-1;
+
+	GHC.Status = abar->GlobalHost;
+
+	if(GHC.Bits.AhciEnable != 0){
+		//controller running reset it
+		LouPrint("Ahci Device Is Running, Calling RESET()\n");
+		if(!AhciAdapterReset(adapterExtention)){
+			LouPrint("Ahci Device Failed To Reset!!!\n");
+			return STATUS_UNSUCCESSFUL;
+		}
+
+	}
+
+	GHC.Status = 0;
+	GHC.Bits.AhciEnable = 1;
+
+	abar->GlobalHost = GHC.Status;
+
+	T = (uint64_t)&abar->InterruptStat;
+	if(T == 0x00){
+		LouPrint("AHCI.SYS: InterruptStat Is NULL\n");
+		return STATUS_NO_SUCH_DEVICE;
+	}
+
+	adapterExtention->InterruptStatus = (uint32_t*)T;
+	adapterExtention->PortImplemented = abar->PortImplementation;
+
+    if (adapterExtention->PortImplemented == 0)
+    {
+        LouPrint("adapterExtention->PortImplemented Is 0\n");
+        return STATUS_NO_SUCH_DEVICE;
+    }
+
+	ConfigInfo->Master = true;
+	ConfigInfo->AlignmentMask = 0x03;
+	ConfigInfo->ScatterMeGather = true;
+	ConfigInfo->DmaWidth = DmaWidth32;
+	ConfigInfo->WmiDataProvider = false;
+	ConfigInfo->Dma32Address = true;
+	
+	if((abar->Capabilities >> CheckAhci64) & 0x01){
+		ConfigInfo->Dma64Address = true;
+		LouPrint("Device Supports 64 Bit Addressing\n");
+	}
+
+	ConfigInfo->MaximumTargets = 1;
+    ConfigInfo->ResetTargetSupport = true;
+    ConfigInfo->NumberOfPhysicalBreks = 0x21;
+    ConfigInfo->NumberOfLogicalUnits = 1;
+    ConfigInfo->NumberOfBusses = 32;
+    ConfigInfo->MaximumTransferLength = 255;
+    ConfigInfo->SynchronizationModel = StorSynchronizeFullDuplex;
+
+    // Turn IE -- Interrupt Enabled
+    GHC.Status = abar->GlobalHost;
+    GHC.Bits.InterruptEnable = 1;
+	abar->GlobalHost = GHC.Status;
+
+	if(!AhciAllocateResources(adapterExtention, ConfigInfo)){
+		LouPrint("Error Allocating Resources\n");
+		return STATUS_INSUFFICIENT_RESOURCES;
+	}
 
 
 

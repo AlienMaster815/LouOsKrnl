@@ -79,8 +79,8 @@ ifeq ($(TARGET_ARCH),x86)
 endif
 
 ifeq ($(TARGET_ARCH),x86_64)
-CFLAGS = -c -fstack-protector -ffreestanding -Werror -I include -Wno-multichar -mmmx -msse
-CPPFLAGS = -c -fstack-protector -ffreestanding -O2 -Wall -mmmx -fno-exceptions -fno-rtti -Werror -Wno-write-strings -fno-use-cxa-atexit -I include -Wno-multichar -msse
+CFLAGS = -c -ffreestanding -Werror -I include -Wno-multichar -fno-omit-frame-pointer -O0
+CPPFLAGS = -c -ffreestanding -Wall -fno-exceptions -fno-rtti -Werror -Wno-write-strings -fno-use-cxa-atexit -I include -Wno-multichar -fno-omit-frame-pointer -O0
 endif
 
 ifeq ($(TARGET_ARCH),x86)
@@ -234,7 +234,6 @@ ifeq ($(TARGET_ARCH),x86_64)
 
 	#Make 64 Bit System Directories
 	$(MAKEDIR64)
-
 	#Copy System Files To The Appropriate Directories
 	$(CPY64)
 	$(Drivers64)

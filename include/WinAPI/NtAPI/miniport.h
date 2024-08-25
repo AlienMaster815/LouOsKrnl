@@ -900,6 +900,11 @@ typedef struct _ACCESS_RANGE {
     BOOLEAN RangeInMemory;
 } ACCESS_RANGE, *PACCESS_RANGE;
 
+#define DmaWidth32 0x01
+#define CheckAhci64 31
+
+#define StorSynchronizeFullDuplex 0x01
+
 typedef struct __attribute__((packed)) _PORT_CONFIGURATION_INFORMATION {
     ULONG Length;
     ULONG SystemIoBusNumber;
@@ -909,6 +914,20 @@ typedef struct __attribute__((packed)) _PORT_CONFIGURATION_INFORMATION {
 	uint64_t* AddressRanges;
     uint8_t PADDING[0x24];
     ULONG SlotNumber;
+	BOOLEAN Master; //below is extended for compatibility
+	uint8_t AlignmentMask;
+	BOOLEAN ScatterMeGather;
+	uint8_t DmaWidth;
+	BOOLEAN WmiDataProvider;
+	BOOLEAN Dma32Address;
+	BOOLEAN Dma64Address;
+	uint8_t MaximumTargets;
+	BOOLEAN ResetTargetSupport;
+	uint8_t NumberOfPhysicalBreks;
+	uint8_t NumberOfLogicalUnits;
+	uint8_t NumberOfBusses;
+	uint16_t MaximumTransferLength;
+	uint8_t SynchronizationModel;
 } PORT_CONFIGURATION_INFORMATION, *PPORT_CONFIGURATION_INFORMATION;
 
 
@@ -988,6 +1007,7 @@ typedef struct __attribute__((packed)) _STOR_PORT_STACK_OBJECT{
     PUNICODE_STRING RegistryEntry;
 	uint64_t FindAdapter;
 	uint64_t InitAdapter;
+	uint64_t InterruptHandler;
     PVOID DeviceExtention;
     PVOID SpecificLuExtention;
     PVOID SrbExtension;
@@ -1026,21 +1046,7 @@ typedef struct _AHCI_SRB_EXTENSION {
     ULONG     Reserved[4];        // Reserved for future use or alignment
 } AHCI_SRB_EXTENSION, *PAHCI_SRB_EXTENSION;
 
-typedef struct _AHCI_ADAPTER_EXTENSION {
-    ULONG           AdapterId;          // Unique identifier for the adapter
-    PVOID           BaseAddress;        // Base memory address of the AHCI controller registers
-    ULONG           NumberOfPorts;      // Number of ports supported by the adapter
-    ULONG           Capabilities;       // Capabilities of the AHCI controller
-    PVOID           PortExtension[32]; // Array of port extensions, one per port
-    PVOID           CommandListBase;    // Base address for the command list
-    PVOID           ReceivedFisBase;    // Base address for the received FIS structure
-    PVOID           Buffer;             // General-purpose buffer for adapter use
-    ULONG           InterruptStatus;    // Current interrupt status
-    ULONG           Flags;              // Flags representing various states and features
-    PVOID           DeviceExtension;    // Pointer to the device extension (optional, depending on the driver)
-    ULONG           TimerHandle;        // Handle for any timers set by the driver
-    ULONG           Reserved[4];        // Reserved for future use or alignment
-} AHCI_ADAPTER_EXTENSION, *PAHCI_ADAPTER_EXTENSION;
+
 
 #define STOR_MAP_NON_READ_WRITE_BUFFERS             (2)     // maps buffer for IOs except READ and WRITE request
 
