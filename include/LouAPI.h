@@ -24,6 +24,8 @@
 
 #include <windows.h>
 #include <geometry.h>
+#include <SharedTypes.h>
+
 
 #define ACPIBUFFER 512
 #define ERRMAPPINGIO -1

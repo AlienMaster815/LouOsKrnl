@@ -343,3 +343,93 @@ RSDP_DESCRIPTOR_2* find_rsdp_from_efi_table(uint64_t efi_system_table_address) {
 
     return NULL;  // RSDP not found
 }
+
+static uint64_t EfiMemMap = 0x00;
+
+void SetEfiMap(uint64_t Map){
+	EfiMemMap = Map;
+}
+
+typedef struct __attribute__((packed)) _EFI_MEMORY_DESCRIPTOR{
+    uint32_t Type;
+    uint32_t Pad;
+    uint64_t PhysicalStart;
+    uint64_t VirtualStart;
+    uint64_t NumberOfPages;
+    uint64_t Attribute;
+} EFI_MEMORY_DESCRIPTOR;
+
+
+
+void LouKeMapEfiMemory(){
+
+	if(EfiMemMap){
+		//LouPrint("We Got Somthing\n");
+		struct multiboot_tag_efi_mmap* Map = (struct multiboot_tag_efi_mmap*)EfiMemMap;
+
+		//LouPrint("DescVer:%d\n", Map->descr_vers);
+		//LouPrint("DescSize:%d\n", Map->descr_size);
+
+		static EFI_MEMORY_DESCRIPTOR* Desc;
+
+		for(uint64_t i = 16; i < (Map->size); i += Map->descr_size){
+			
+			Desc = (EFI_MEMORY_DESCRIPTOR*)(EfiMemMap + i);
+			switch(Desc->Type){
+
+				case(0):
+					EnforceSystemMemoryMap(Desc->PhysicalStart, 4096 * Desc->NumberOfPages);
+					EnforceSystemMemoryMap(Desc->VirtualStart, 4096 * Desc->NumberOfPages);
+					continue;
+				case(3):
+					EnforceSystemMemoryMap(Desc->PhysicalStart, 4096 * Desc->NumberOfPages);
+					EnforceSystemMemoryMap(Desc->VirtualStart, 4096 * Desc->NumberOfPages);
+					continue;
+				case(4):
+					EnforceSystemMemoryMap(Desc->PhysicalStart, 4096 * Desc->NumberOfPages);
+					EnforceSystemMemoryMap(Desc->VirtualStart, 4096 * Desc->NumberOfPages);
+					continue;
+				case(5):
+					EnforceSystemMemoryMap(Desc->PhysicalStart, 4096 * Desc->NumberOfPages);
+					EnforceSystemMemoryMap(Desc->VirtualStart, 4096 * Desc->NumberOfPages);
+					continue;
+				case(6):
+					EnforceSystemMemoryMap(Desc->PhysicalStart, 4096 * Desc->NumberOfPages);
+					EnforceSystemMemoryMap(Desc->VirtualStart, 4096 * Desc->NumberOfPages);
+					continue;
+				case(8):
+					EnforceSystemMemoryMap(Desc->PhysicalStart, 4096 * Desc->NumberOfPages);
+					EnforceSystemMemoryMap(Desc->VirtualStart, 4096 * Desc->NumberOfPages);
+					continue;
+				case(9):
+					EnforceSystemMemoryMap(Desc->PhysicalStart, 4096 * Desc->NumberOfPages);
+					EnforceSystemMemoryMap(Desc->VirtualStart, 4096 * Desc->NumberOfPages);
+					continue;
+				case(10):
+					EnforceSystemMemoryMap(Desc->PhysicalStart, 4096 * Desc->NumberOfPages);
+					EnforceSystemMemoryMap(Desc->VirtualStart, 4096 * Desc->NumberOfPages);
+					continue;
+				case(11):
+					EnforceSystemMemoryMap(Desc->PhysicalStart, 4096 * Desc->NumberOfPages);
+					EnforceSystemMemoryMap(Desc->VirtualStart, 4096 * Desc->NumberOfPages);
+					continue;
+				case(12):
+					EnforceSystemMemoryMap(Desc->PhysicalStart, 4096 * Desc->NumberOfPages);
+					EnforceSystemMemoryMap(Desc->VirtualStart, 4096 * Desc->NumberOfPages);
+					continue;
+				case(13):
+					EnforceSystemMemoryMap(Desc->PhysicalStart, 4096 * Desc->NumberOfPages);
+					EnforceSystemMemoryMap(Desc->VirtualStart, 4096 * Desc->NumberOfPages);
+					continue;
+				case(14):
+					EnforceSystemMemoryMap(Desc->PhysicalStart, 4096 * Desc->NumberOfPages);
+					EnforceSystemMemoryMap(Desc->VirtualStart, 4096 * Desc->NumberOfPages);
+					continue;
+				default: continue;
+			}
+		}
+
+	}
+
+	//LouPrint("Mapping Memory\n");
+}

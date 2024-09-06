@@ -7,6 +7,7 @@ LOUSTATUS LouKeSetEfiTable(uint64_t Address);
 LOUSTATUS LouKeSetSmbios(uintptr_t SMBIOS);
 LOUSTATUS LouKeSetRsdp(uintptr_t RSDP, uint8_t Type);
 LOUSTATUS LouKeSetApm(struct multiboot_tag_apm* APM);
+void SetEfiMap(uint64_t Map);
 
 struct multiboot_tag_vbe VBE_INFO;
 
@@ -67,6 +68,10 @@ void ParseMBootTags(struct multiboot_tag* MBOOT) {
         case (MULTIBOOT_TAG_TYPE_FRAMEBUFFER):{
             struct multiboot_tag_framebuffer* frame = (struct multiboot_tag_framebuffer*)MBOOT;
             InitializeFrameBuffer(frame);
+        }
+        case(MULTIBOOT_TAG_TYPE_EFI_MMAP):{
+            SetEfiMap((uint64_t)MBOOT);
+            break;
         }
         default:
             break;

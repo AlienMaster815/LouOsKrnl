@@ -4,9 +4,12 @@
 
 #ifdef __cplusplus
 #include <LouDDK.h>
+LOUDDK_API_ENTRY LOUSTATUS LouKeCreateThread(void (*Function)(), PVOID FunctionParameters, uint32_t StackSize);
 extern "C" {
 #else
 #include <LouAPI.h>
+typedef void* PVOID; 
+LOUSTATUS LouKeCreateThread(void (*Function)(), PVOID FunctionParameters, uint32_t StackSize);
 #endif
 
 #define MUTEX_FREE 0

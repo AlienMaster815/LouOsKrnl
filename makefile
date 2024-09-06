@@ -6,6 +6,8 @@
 
 # Target Architecture Supported x86_64 ARM 
 
+#dll targets
+#x86_64-w64-mingw32-gcc -shared -o mydll.dll mydll.c -nostdlib -nodefaultlibs 
 
 
 TARGET_ARCH = x86_64
@@ -79,8 +81,9 @@ ifeq ($(TARGET_ARCH),x86)
 endif
 
 ifeq ($(TARGET_ARCH),x86_64)
-CFLAGS = -c -ffreestanding -Werror -I include -Wno-multichar -fno-omit-frame-pointer -O0
-CPPFLAGS = -c -ffreestanding -Wall -fno-exceptions -fno-rtti -Werror -Wno-write-strings -fno-use-cxa-atexit -I include -Wno-multichar -fno-omit-frame-pointer -O0
+CFLAGS = -c -ffreestanding -Werror -I include -Wno-multichar -fno-omit-frame-pointer -O0 -mmmx -msse -mno-mmx -mno-sse -mno-sse2 -mno-avx -ffreestanding -fno-common -fno-exceptions -fno-asynchronous-unwind-tables -nostdlib -nodefaultlibs -nostartfiles -no-pie
+CPPFLAGS = -c -ffreestanding -Wall -fno-exceptions -fno-rtti -Werror -Wno-write-strings -fno-use-cxa-atexit -I include -Wno-multichar -fno-omit-frame-pointer -O0 -mmmx -msse -mno-mmx -mno-sse -mno-sse2 -mno-avx -ffreestanding -fno-common -fno-exceptions -fno-asynchronous-unwind-tables -nostdlib -nodefaultlibs -nostartfiles -no-pie
+
 endif
 
 ifeq ($(TARGET_ARCH),x86)

@@ -147,6 +147,10 @@ public:
 	BaseAddressRegister(P_PCI_DEVICE_OBJECT PDEV);
 	~BaseAddressRegister();
 
+private:
+	bool DisableChildProofing(P_PCI_DEVICE_OBJECT PDEV);
+	bool EnableChildProofing(P_PCI_DEVICE_OBJECT PDEV);
+	uint16_t command;
 };
 
 BaseAddressRegister GetAllIoSpaces(P_PCI_DEVICE_OBJECT PDEV);

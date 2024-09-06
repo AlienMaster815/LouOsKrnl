@@ -290,3 +290,4 @@ KERNEL_IMPORT void ioapic_mask_irq(uint8_t irq) {
     ioapic_advanced_write(ioapics[IoApicNum].ioapic_vaddress, index, low);
     ioapic_advanced_write(ioapics[IoApicNum].ioapic_vaddress, high_index, high);
 }
+

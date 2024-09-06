@@ -443,7 +443,7 @@ struct multiboot_tag_efi_mmap
     multiboot_uint32_t size;
     multiboot_uint32_t descr_size;
     multiboot_uint32_t descr_vers;
-    multiboot_uint8_t efi_mmap[0];
+    void* efi_mmap[0];
 };
 
 struct multiboot_tag_efi32_ih

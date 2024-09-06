@@ -37,10 +37,10 @@ LOUDDK_API_ENTRY void checkBus(uint8_t bus) {
     }
 }
 
+static PCI_DEVICE_OBJECT Dev;
+
 LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device) {
     uint8_t function = 0;
-
-    bool DeviceIdentified = false;
 
     uint16_t vendorID = PciGetVendorID(bus, device);
     if (vendorID == NOT_A_PCI_DEVICE) return; // Device doesn't exist
@@ -57,40 +57,38 @@ LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device) {
                 if (PciGetDeviceID(bus,device,function) == NOT_A_PCI_DEVICE) continue;
                 else {
                     LouPrint("Multi Function PCI Device Found Vedor Is: %h and Device Is: %h\n", vendorID, PciGetDeviceID(bus, device, function));
-                        //Parse Funxtios and have fun
-                        if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
-                        //if (!DeviceIdentified)DeviceIdentified = isUsb( bus,  device,  function);
-                       // if (!DeviceIdentified)DeviceIdentified = IsVGA( bus,  device,  function);
-                        //if (!DeviceIdentified)DeviceIdentified = IsSerial( bus,  device,  function);
-                        //if (!DeviceIdentified)DeviceIdentified = IsEithernet( bus,  device,  function);
-                        //if (!DeviceIdentified)DeviceIdentified = IsChipset( bus,  device,  function);
-                        //if (!DeviceIdentified)DeviceIdentified = IsAudioDevice( bus,  device, function);
-                        //if (!DeviceIdentified)DeviceIdentified = IsAGPDevice(bus,device, function);
-                        //if (!DeviceIdentified)DeviceIdentified = isVirtualizationDevice( bus, device, function);
-                        //IsSataCheck(bus, device, function);
-                        //if (!DeviceIdentified)RegisterUnkownDevice(bus, device, function);
-                        //if (!DeviceIdentified)IsPciBus(bus, device, function);
+                    Dev.bus = bus;
+                    Dev.slot = device;
+                    Dev.func = function;
+                    BaseAddressRegister BARS(&Dev);
+                    for(uint8_t i = 0 ; i < 6; i++){
+                        if(BARS.MMIO[i]){
+                            if(BARS.address[i] == 0x00)continue;
+                            //else if ((uint64_t)BARS.address[i] == BARS.size[i])continue;
+                            EnforceSystemMemoryMap((uint64_t)BARS.address[i],BARS.size[i]);
+                            //MapIoMemory((uint64_t)BARS.address[i],BARS.size[i]);
+                        }
+                    }
                 }
             }
         }
         return;
     }
     else{
-         LouPrint("Single Function PCI Device Found Vedor Is: %h and Device Is: %h\n", vendorID, PciGetDeviceID(bus, device, function));
-            //Parse Funxtios and have fun
-           // if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
-            //if (!DeviceIdentified)DeviceIdentified = isUsb( bus,  device,  function);
-           // if (!DeviceIdentified)DeviceIdentified = IsVGA( bus,  device,  function);
-            //if (!DeviceIdentified)DeviceIdentified = IsSerial( bus,  device,  function);
-            //if (!DeviceIdentified)DeviceIdentified = IsEithernet( bus,  device,  function);
-            //if (!DeviceIdentified)DeviceIdentified = IsChipset( bus,  device,  function);
-            //if (!DeviceIdentified)DeviceIdentified = IsAudioDevice( bus,  device, function);
-            //if (!DeviceIdentified)DeviceIdentified = IsAGPDevice(bus,device, function);
-            //if (!DeviceIdentified)DeviceIdentified = isVirtualizationDevice( bus, device, function);
-            //IsSataCheck(bus, device, function);
-            //if (!DeviceIdentified)RegisterUnkownDevice(bus, device, function);
-            //if (!DeviceIdentified)IsPciBus(bus, device, function);
-    }
+        LouPrint("Single Function PCI Device Found Vedor Is: %h and Device Is: %h\n", vendorID, PciGetDeviceID(bus, device, function));
+        Dev.bus = bus;
+        Dev.slot = device;
+        Dev.func = function;
+        BaseAddressRegister BARS(&Dev);
+        for(uint8_t i = 0 ; i < 6; i++){
+            if(BARS.MMIO[i]){
+                if(BARS.address[i] == 0x00)continue;
+                //else if ((uint64_t)BARS.address[i] == BARS.size[i])continue;
+                EnforceSystemMemoryMap((uint64_t)BARS.address[i],BARS.size[i]);
+                //MapIoMemory((uint64_t)BARS.address[i],BARS.size[i]);
+            }
+        }
+    }   
 }
 
 
@@ -307,4 +305,12 @@ LOUDDK_API_ENTRY void LookForStorageDevices(){
         }
     }
 
+}
+
+KERNEL_IMPORT 
+void LouKeRunOnNewStack(void (*func)(void*), void* FunctionParameters, size_t stack_size) ;
+
+LOUDDK_API_ENTRY 
+void LouKeMapPciMemory(){
+    PCI_Scan_Bus();
 }

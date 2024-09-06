@@ -38,9 +38,9 @@ void InterruptRouter(uint8_t Interrupt, uint64_t Args) {
 
 	if (NULL != InterruptHandler[Interrupt]) {
 		InterruptHandler[Interrupt](Args);
-		//LouKeRunOnNewStack(InterruptHandler[Interrupt], 0x00, 16 * KILOBYTE);
-		if (!GetAPICStatus())PIC_sendEOI(Interrupt);
-		else local_apic_send_eoi();
+		//LouKeRunOnNewStack((void(*)(PVOID))InterruptHandler[Interrupt], 0x00, 16 * KILOBYTE);
+		//if (!GetAPICStatus())PIC_sendEOI(Interrupt);
+		local_apic_send_eoi();
 		return;
 	}
 

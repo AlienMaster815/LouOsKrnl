@@ -23,7 +23,7 @@ void handle_module(
     //while(1);
 }
 
-void GetAhciMouduleStart(uintptr_t* Start, uintptr_t* End){
+void GetUser32MouduleStart(uintptr_t* Start, uintptr_t* End){
     *Start= Track[0].ModuleStart;
     *End = Track[0].ModuleEnd;
     Track[0].BeingUsed = true;

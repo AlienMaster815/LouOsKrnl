@@ -15,9 +15,9 @@ void RemapVirtualboxVRam(uint64_t size){
     for(
         uint64_t i = 0; 
         i < (size); 
-        i+=MEGABYTE_PAGE
+        i+=KILOBYTE_PAGE
     ){
-        LouMapAddress(VBE_INFO.vbe_mode_info.framebuffer + i, VBE_INFO.vbe_mode_info.framebuffer + i, KERNEL_PAGE_WRITE_PRESENT, MEGABYTE_PAGE);
+        LouMapAddress(VBE_INFO.vbe_mode_info.framebuffer + i, VBE_INFO.vbe_mode_info.framebuffer + i, USER_PAGE | WRITEABLE_PAGE | PRESENT_PAGE, KILOBYTE_PAGE);
     }   
 
 }
@@ -65,8 +65,8 @@ void InitializeVirtualBoxVgaAdapter(P_PCI_DEVICE_OBJECT PDEV){
     BaseAddressRegister BARS(PDEV);
 
     VBE_INFO.vbe_mode_info.framebuffer = (uint64_t)BARS.address[0];
-
+    
     RemapVirtualboxVRam(VirtualboxVGAC->VRamTotalSize);
 
-    VirtualBoxChangeResolution(640, 480);
+    VirtualBoxChangeResolution(1024, 768);
 }

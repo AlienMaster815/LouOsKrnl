@@ -193,3 +193,4 @@ uint16_t GetScreenBufferWidth(){
 uint16_t GetScreenBufferHeight(){
   return VgaGetBufferHeight();
 }
+

@@ -11,13 +11,18 @@
 #include <bootloader/grub/multiboot.h>
 
 
+#define FORCE_ALIGNMENT(alignment) __attribute__((aligned(alignment)))
+
+
 #define KILOBYTE_PAGE 4096
 #define MEGABYTE_PAGE 2 * 1024 * 1024
 #define KILOBYTE 1 * 1024
 
 #define PRESENT_PAGE           0b1
 #define WRITEABLE_PAGE        0b10
-#define KERNEL_PAGE          0b100
+
+#define USER_PAGE           (1 << 2)
+
 #define WRITE_THROUGH_PAGE  0b1000
 #define CACHE_DISABLED_PAGE 0b10000
 
@@ -98,6 +103,10 @@ bool EnforceSystemMemoryMap(
     uint64_t size
 );
 
+void MapIoMemory(
+    uint64_t Address,
+    uint64_t MapSize
+);
 //Directory Entry FLAGS
 
 //2mb Entry
@@ -120,6 +129,10 @@ void* align_memory(void* ptr, size_t alignment);
 #else
 #include <LouDDK.h>
 
+KERNEL_IMPORT void MapIoMemory(
+    uint64_t Address,
+    uint64_t MapSize
+);
 
 #define GIGABYTE 0x40000000
 #define MEGABYTE 0x100000

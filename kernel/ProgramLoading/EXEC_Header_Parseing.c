@@ -198,15 +198,19 @@ static inline void SetupConfigTable(
 
     Conf->SecurityCookie = (Conf->SecurityCookie - ImageBase) + ProgramBase;
 
-    ConfigCookie = (uintptr_t)Conf->SecurityCookie;
+    if(ProgramBase == (uint64_t)Conf){
+        //No Table It Happens!!!
+        return;
+    }
 
     *(volatile uint64_t*)Conf->SecurityCookie = (uint64_t)Random(ImageBase);
 }
 
-PHANDLE LoadModule(uintptr_t Start) {
+PHANDLE LoadKernelModule(uintptr_t Start) {
     PCOFF_HEADER CoffHeader;
     PPE64_OPTIONAL_HEADER PE64Header;
     PSECTION_HEADER SectionHeader;
+
 
     if (CheckDosHeaderValidity((PDOS_HEADER)(Start))) {
         LouPrint("Found A Valid Module\n");
@@ -232,6 +236,7 @@ PHANDLE LoadModule(uintptr_t Start) {
                 KILOBYTE_PAGE
             );
         }
+
 
         memset((void*)allocatedModuleVirtualAddress, 0, TotalNeededVM);
 
@@ -288,5 +293,114 @@ PHANDLE LoadModule(uintptr_t Start) {
 }
 
 PHANDLE LoadAhciModule(uintptr_t Start, uintptr_t End) {
-    return LoadModule(Start);
+    return LoadKernelModule(Start);
+}
+
+void ParseExportTables(
+    uint64_t ModuleStart,
+    PEXPORT_DIRECTORY_ENTRY ExportTable
+){
+
+    LouPrint("NameRva:%s\n",  ModuleStart + (string)((uint64_t)ExportTable->nameRva));
+
+    LouPrint("Number Of Pointers:%d\n", ExportTable->numberOfNamePointers);    
+    uint32_t* NameEntryTable = (uint32_t*)(ModuleStart + (uint64_t)ExportTable->namePointerRva);
+
+    for(uint8_t i = 0 ; i < ExportTable->numberOfNamePointers; i++){
+        string FOO = (string)((uint64_t)NameEntryTable[i] + ModuleStart);
+        LouPrint("NameEntry:%s\n", FOO);
+    }
+
+    LouPrint("Done Parseing Exports\n");
+    while(1);
+}
+
+DllModuleEntry LouUserDllModule(uintptr_t Start){
+    PCOFF_HEADER CoffHeader;
+    PPE64_OPTIONAL_HEADER PE64Header;
+    PSECTION_HEADER SectionHeader;
+
+
+    if (CheckDosHeaderValidity((PDOS_HEADER)(Start))) {
+        LouPrint("Found A Valid Module\n");
+        GetAllPEHeaders(
+            (PDOS_HEADER)Start,
+            &CoffHeader,
+            &PE64Header,
+            &SectionHeader,
+            0x00
+        );
+
+        uint64_t allocatedModuleVirtualAddress =
+        (uint64_t)LouMallocEx(
+            TotalNeededVM,
+            KILOBYTE_PAGE
+        );
+
+        for (uint32_t i = 0; i < TotalNeededVM; i += KILOBYTE_PAGE) {
+            LouMapAddress(
+                allocatedModuleVirtualAddress + i,
+                allocatedModuleVirtualAddress + i,
+                USER_PAGE | WRITEABLE_PAGE | PAGE_PRESENT,
+                KILOBYTE_PAGE
+            );
+        }
+
+
+        // Align section addresses
+        uint64_t sectionAlignment = PE64Header->sectionAlignment;
+
+        for (uint16_t i = 0; i < CoffHeader->numberOfSections; i++) {
+            uint64_t alignedVirtualAddress = (allocatedModuleVirtualAddress + SectionHeader[i].virtualAddress + sectionAlignment - 1) & ~(sectionAlignment - 1);
+
+           // LouPrint("Section %s: aligned address %h\n", SectionHeader[i].name, alignedVirtualAddress);
+            memcpy(
+                (void*)alignedVirtualAddress,
+                (void*)(Start + SectionHeader[i].pointerToRawData),
+                SectionHeader[i].sizeOfRawData
+            );
+
+            //LouPrint("Copied section %s to address %h\n", SectionHeader[i].name, alignedVirtualAddress);
+        }
+
+
+        PIMPORT_DIRECTORY_ENTRY ImportTable = (PIMPORT_DIRECTORY_ENTRY)(allocatedModuleVirtualAddress + PE64Header->PE_Data_Directory_Entries[1].VirtualAddress);
+        PEXPORT_DIRECTORY_ENTRY ExportTable = (PEXPORT_DIRECTORY_ENTRY)(allocatedModuleVirtualAddress + PE64Header->PE_Data_Directory_Entries[0].VirtualAddress);
+
+        ParseImportTables(
+            allocatedModuleVirtualAddress,
+            ImportTable
+        );
+
+        ParseExportTables(
+            allocatedModuleVirtualAddress,
+            ExportTable
+        );
+
+        // Locate the relocation table
+        uint64_t relocationTable = (uint64_t)((uint64_t)allocatedModuleVirtualAddress + (uint64_t)PE64Header->PE_Data_Directory_Entries[5].VirtualAddress);
+        size_t relocationTableSize = PE64Header->PE_Data_Directory_Entries[5].Size;
+
+        SetupConfigTable(
+            allocatedModuleVirtualAddress,
+            PE64Header->imageBase,
+            allocatedModuleVirtualAddress + PE64Header->PE_Data_Directory_Entries[10].VirtualAddress,
+            PE64Header->PE_Data_Directory_Entries[10].Size
+        );
+
+        RelocateBaseAddresses(
+            relocationTable,
+            allocatedModuleVirtualAddress,
+            PE64Header->imageBase,
+            relocationTableSize
+        );
+
+        LouPrint("Program Base:%h\n", allocatedModuleVirtualAddress);
+        // Print function address debug info
+        LouPrint("Entry Point Address:%h\n", (uint64_t)PE64Header->addressOfEntryPoint + allocatedModuleVirtualAddress);
+
+        return (DllModuleEntry)((uint64_t)PE64Header->addressOfEntryPoint + allocatedModuleVirtualAddress);
+    } else {
+        return 0x00;
+    }
 }

@@ -92,6 +92,10 @@ void SendMapToAllocation(struct master_multiboot_mmap_entry* mmap) {
     LousineMemoryMapTable = mmap;
 }
 
+struct master_multiboot_mmap_entry* LouKeGetMemoryMapTable(){
+    return LousineMemoryMapTable;
+}
+
 #define LongLongBitDemention 64
 #define LongLongBitDimension 64
 #define BlockDemention 1024
@@ -123,11 +127,14 @@ typedef struct __attribute__((packed)) _AllocationBlock{
     uint64_t size;
 }AllocationBlock;
 
-uint8_t DataSlab[(12 * MEGABYTE)/BitMapDivisor];
+uint8_t DataSlab[6 * MEGABYTE];
+uint8_t VirtualSlab[6 * MEGABYTE];
 
 static AllocationBlock* AddressBlock = (AllocationBlock*)&DataSlab;
+static AllocationBlock* VAddressBlock = (AllocationBlock*)&VirtualSlab;
 
 static uint32_t AddressesLogged = 0;
+static uint32_t VAddressesLogged = 0;
 
 uint64_t GetAllocationBlockSize(uint64_t Address){
 
@@ -173,10 +180,25 @@ void LouFree(RAMADD Addr) {
     }
 }
 
+void* LouVMallocEx(size_t BytesToAllocate, uint64_t Alignment){
+    void* Result = 0x00;
+    for(uint32_t i = 0 ; i < AddressesLogged; i++){
+        if((AddressBlock[i].Address + AddressBlock[i].size) > (uint64_t)Result){
+            Result = (void*)(AddressBlock[i].Address + AddressBlock[i].size);
+        }
+    }
+
+    LouPrint("Result:%h\n", Result);
+
+    while(1);
+    return Result;
+}
+
+void* LouVMalloc(size_t BytesToAllocate){
+    return LouVMallocEx(BytesToAllocate, BytesToAllocate);
+}
 
 void* LouMallocEx(size_t BytesToAllocate, uint64_t Alignment) {
-    uint64_t Flags = KERNEL_PAGE_WRITE_PRESENT;
-
     uint16_t Number_Of_Entries = (LousineMemoryMapTable->tag.size - sizeof(struct master_multiboot_mmap_entry)) / LousineMemoryMapTable->entry_size;
     if (LousineMemoryMapTable->entry_version == 0) {
         struct multiboot_mmap_entry* mmap_entry;
@@ -204,7 +226,7 @@ void* LouMallocEx(size_t BytesToAllocate, uint64_t Alignment) {
                     }
 
                     while (1) {
-                        if (AlignmentCheck > limit) {
+                        if (((AlignmentCheck + Alignment) > limit) || ((AlignmentCheck + BytesToAllocate + Alignment) > limit)) {
                             break;
                         }
                         AlignmentCheck += Alignment;
@@ -257,4 +279,3 @@ void* LouMalloc(size_t BytesToAllocate) {
     return LouMallocEx(BytesToAllocate, BytesToAllocate);
 
 }
-

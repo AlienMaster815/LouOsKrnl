@@ -1,13 +1,6 @@
 #include <LouAPI.h>
 
-void ButtonDrawText(
-    uint16_t x, uint16_t y,
-    uint16_t Width, uint16_t Height,
-    COLOR_MAP TextColor,
-    string ButtonText
-){
-
-}
+void PrintButtonCenterText(PBUTTONHANDLE Handle, string Text);
 
 void DrawButton(
     PBUTTONHANDLE ButtonHandle
@@ -38,14 +31,7 @@ void DrawButton(
         );
     }
 
-    ButtonDrawText(
-            ButtonHandle->CurrentX, 
-            ButtonHandle->CurrentY, 
-            ButtonHandle->CurrentWidth, 
-            ButtonHandle->CurrentHight,
-            ButtonHandle->Letters,
-            ButtonHandle->Charecteristics.ButtonText
-        );
+    PrintButtonCenterText(ButtonHandle, ButtonHandle->Charecteristics.ButtonText);
 
 }
 

@@ -21,6 +21,7 @@ extern void UnSetInterruptFlags();
 uintptr_t RSP_Current;
 uintptr_t RBP_Current;
 
+
 /* Tyler Grenier 9/21/23 9:56 PM
 -- Started the file with the main
 -- functions to get us going along 
@@ -29,7 +30,7 @@ uintptr_t RBP_Current;
 
 
 
-string KERNEL_VERSION = "0.0.446 RSC-2 Multiboot 2 With EFI Support";
+string KERNEL_VERSION = "0.0.450 RSC-2 Multiboot 2 With EFI Support";
 
 
 #ifdef __x86_64__
@@ -105,7 +106,7 @@ PWINDHANDLE HWind;
 
 LOUSTATUS Lou_kernel_early_initialization(){
 
-    //basic kernel initialization for IR Exseptions
+    //basic kernel initialization for IR Exceptions to keep the guru away
     InitializeStartupInterruptHandleing();
     initializeInterruptRouter();
     RegisterInterruptHandler(DivideByZero, INTERRUPT_SERVICE_ROUTINE_0);
@@ -137,8 +138,6 @@ LOUSTATUS Lou_kernel_early_initialization(){
     RegisterInterruptHandler(HardwareInterruptManager, 33);
     RegisterInterruptHandler(HardwareInterruptManager, 44);
 
-
-
     SetUpTimers();
     DeterminCPU();
 
@@ -148,7 +147,6 @@ LOUSTATUS Lou_kernel_early_initialization(){
 void UpdateDeviceInformationTable();
 void StorPortInitializeAllDevices();
 
-LOUSTATUS LouKeCreateThread(void* Function,void* FunctionParameters, uint32_t StackSize);
 int InitKThread();
 int TestLoop2();
 
@@ -179,15 +177,10 @@ void Advanced_Kernel_Initialization(){
     RegisterHardwareInterruptHandler(PS2KeyboardHandler, 1);
     RegisterHardwareInterruptHandler(PS2MouseHandler, 12);
     if (LOUSTATUS_GOOD != InitThreadManager())LouPrint("SHIT!!!:I Hope You Hate Efficency: No Thread Management\n");
-    SetInterruptFlags();
+    LouKeSetIrql(PASSIVE_LEVEL, 0x00);
 }
 
-LOUSTATUS User_Mode_Initialization(){
-    //switch_to_user_Mode();
-    return LOUSTATUS_GOOD;
-}
-
- bool LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize);
+bool LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize);
 
 void LouKeDestroyThread();
 
@@ -260,41 +253,57 @@ void LouKeRunThreadContext(
 uint64_t GetThreadContext(
     int Thread
 );
+
+void GetUser32MouduleStart(uintptr_t* Start, uintptr_t* End);
+DllModuleEntry LouUserDllModule(uintptr_t Start);
+
+void User_Mode_Initialization(){
+    
+    uintptr_t User32Start, User32End;
+
+    GetUser32MouduleStart(&User32Start, &User32End);
+
+    DllModuleEntry Usr32Entry = LouUserDllModule(User32Start);
+
+}
+
+
+void read_rtc();
 void ManualContextSwitch(uint64_t Context1, uint64_t Context_2);
+void LouKeMapPciMemory();
+void MapSystemMemoryRegions();
+void LouKeMapEfiMemory();
 KERNEL_ENTRY Lou_kernel_start(
     uint32_t MBOOT
 ){
-	struct multiboot_tag* mboot = (struct multiboot_tag*)(uintptr_t)(MBOOT + 8);
+    struct multiboot_tag* mboot = (struct multiboot_tag*)(uintptr_t)(MBOOT + 8);
     ParseMBootTags(mboot);
     //vga set for debug
+    MapSystemMemoryRegions();
+    LouKeMapPciMemory();
+    LouKeMapEfiMemory();
 
     setup_vga_systems();
-
-    StartDesktop();
     StartDebugger();
+
 
 	LouPrint("Lou Version %s %s\n", KERNEL_VERSION ,KERNEL_ARCH);
     LouPrint("Hello Im Lousine Getting Things Ready\n");
-    
 
     //INITIALIZE IMPORTANT THINGS FOR US LATER
     Lou_kernel_early_initialization();
     InitializeGenericTables();
 
-    Advanced_Kernel_Initialization();
-    //LookForStorageDevices();
+    LookForStorageDevices();
+
 
     //SETUP DEVICES AND DRIVERS
-    //if(Set_Up_Devices() != LOUSTATUS_GOOD)LouPanic("Device Setup Failed",BAD);		
-    
-    // Initialize User Mode
-    // if(User_Mode_Initialization() != LOUSTATUS_GOOD)LouPanic("User Mode Initialiation Failed",BAD);
-    
+    //User_Mode_Initialization();    
 
+    //Advanced_Kernel_Initialization();
 
     LouPrint("Lousine Kernel Video Mode:%dx%d\n", GetScreenBufferWidth(), GetScreenBufferHeight());
     LouPrint("Hello World\n");
-
 
     while(1){
         asm("hlt");

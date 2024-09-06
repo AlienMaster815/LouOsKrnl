@@ -20,6 +20,20 @@ typedef struct __attribute__((packed)) _IMPORT_DIRECTORY_ENTRY{
     uint32_t ImportAddressTableRva;
 }IMPORT_DIRECTORY_ENTRY, * PIMPORT_DIRECTORY_ENTRY;
 
+typedef struct __attribute__((packed)) _EXPORT_DIRECTORY_ENTRY{
+    uint32_t exportFlags;
+    uint32_t timeDateStamp;
+    uint16_t majorVersion;
+    uint16_t minorVersion;
+    uint32_t nameRva;
+    uint32_t ordinalBase;
+    uint32_t addressTableEntries;
+    uint32_t numberOfNamePointers;
+    uint32_t exportAddressTableRva;
+    uint32_t namePointerRva;
+    uint32_t ordinalTableRva;
+}EXPORT_DIRECTORY_ENTRY, * PEXPORT_DIRECTORY_ENTRY;
+
 typedef struct __attribute__((packed)) _SECTION_HEADER{
     char name[0x8];
     uint32_t virtualSize;
@@ -192,6 +206,12 @@ typedef struct __attribute__((packed)) _CONFIG_TABLE_TAG{
     uint64_t guardXFGDispatchFunctionPointer;
     uint64_t guardXFGTableDispatchFunctionPointer;
 }CONFIG_TABLE, * PCONFIG_TABLE;
+
+typedef void* HMODULE;
+typedef void* LPVOID;
+typedef uint32_t DWORD;
+
+typedef bool(*DllModuleEntry)(HMODULE, DWORD, LPVOID);
 
 #ifdef __cplusplus
 }

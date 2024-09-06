@@ -123,6 +123,7 @@ NTSTATUS StorPortInitialize(
     uint8_t i = 0;
     for(;i < 255; i++){
         if(StorPortStack[i] == 0x00){
+            StorPortStack[i] = (PSTOR_PORT_STACK_OBJECT)LouMalloc(sizeof(STOR_PORT_STACK_OBJECT));
             break;
         }
     }
@@ -140,6 +141,7 @@ NTSTATUS StorPortInitialize(
     }
 
     LouPrint("Found An Available Storport Slot [slot Number]:%d\n", i);
+
 
     StorPortStack[i]->DrvObj = DrvObj;
 

@@ -1,10 +1,4 @@
-
-
-#include <stdint.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <LouAPI.h>
+#include <SharedTypes.h>
 
 #ifndef _INTERRUPTS_H
 #define _INTERRUPTS_H
@@ -74,7 +68,28 @@
 
 
 
+#define PASSIVE_LEVEL 0
+#define APC_LEVEL 1
+#define DISPATCH_LEVEL 2
+#define DIRQL 3
+#define CLOCK_LEVEL 13
+#define HIGH_LEVEL 15
+
+
+#ifndef __cplusplus
+#include <stdint.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <LouAPI.h>
+
+void LouKeSetIrql(
+    LouKIRQL  NewIrql,
+    LouKIRQL* OldIrql
+);
+
 #ifdef __x86_64__
+
 
 typedef struct __attribute__((packed)){
     uint16_t base_low;      // Lower 16 bits of the handler function's address
@@ -176,6 +191,15 @@ struct interrupt_frame
     uint32_t ss;
 };
 
-#endif
+#endif //i386
+#endif // c
 
+#ifdef __cplusplus
+
+KERNEL_IMPORT void LouKeSetIrql(
+    LouKIRQL  NewIrql,
+    LouKIRQL* OldIrql
+);
+
+#endif
 #endif

@@ -19,7 +19,9 @@
 #include <stdio.h>
 #include <KernelAPI/BitCheck.h>
 
+#include <Kernel/interrupts.h>
 #include <Kernel/threads.h>
+#include <SharedTypes.h>
 
 typedef void* FILE;
 

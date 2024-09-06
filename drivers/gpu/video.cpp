@@ -1,5 +1,7 @@
 #include "VBOX/VBoxVGA.h"
 
+void InitializeAmdGpu(P_PCI_DEVICE_OBJECT PDEV);
+
 void InitializeVgaDevice(
 	P_PCI_DEVICE_OBJECT PDEV
 );
@@ -47,6 +49,7 @@ void InitializeVgaDevice(P_PCI_DEVICE_OBJECT PDEV) {
 	}
 	else if(VendorID == 0x1002){
 		//jump to AMDGPU
+		InitializeAmdGpu(PDEV);
 	}
 
 }
