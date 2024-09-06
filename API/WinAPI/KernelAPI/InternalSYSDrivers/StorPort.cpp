@@ -123,17 +123,16 @@ NTSTATUS StorPortInitialize(
     uint8_t i = 0;
     for(;i < 255; i++){
         if(StorPortStack[i] == 0x00){
-            StorPortStack[i] = (PSTOR_PORT_STACK_OBJECT)LouMalloc(sizeof(STOR_PORT_STACK_OBJECT));
             break;
         }
     }
 
-    if(i == 255){
+    if(i == 254){
         LouPrint("NTSTATUS StorPortInitialize() STATUS_INSUFFICIENT_RESOURCES\n");
         return STATUS_INSUFFICIENT_RESOURCES;
     }
 
-    StorPortStack[i] = (PSTOR_PORT_STACK_OBJECT)LouMalloc(sizeof(STOR_PORT_STACK_OBJECT));
+    StorPortStack[i] = (PSTOR_PORT_STACK_OBJECT)LouMallocEx(sizeof(STOR_PORT_STACK_OBJECT), 1); //BUG BUG alignment required or buffer overflow look into that fixes a buffer overflow
 
     if(StorPortStack[i] == 0x00){
         LouPrint("NTSTATUS StorPortInitialize() STATUS_INSUFFICIENT_RESOURCES\n");

@@ -29,6 +29,29 @@ void setAhciInitializationBit(
 	AhciInit = Initialization_Bit;
 }
 
+ULONG 
+AhciHwFindAdapter(
+	PVOID DeviceExtension,
+	PVOID HwContext,
+	PVOID BusInformation,
+	PCHAR ArgumentString,
+	PPORT_CONFIGURATION_INFORMATION ConfigInfo,
+	PBOOLEAN Reserved
+);
+
+ULONG StorPortGetBusData(
+  PVOID HwDeviceExtension,
+  ULONG BusDataType,
+  ULONG SystemIoBusNumber,
+  ULONG SlotNumber,
+  PVOID Buffer,
+  ULONG Length
+);
+
+VOID StorPortStallExecution(
+    ULONG Microseconds
+);
+
 LOUDDK_API_ENTRY bool IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func) {
 	//LouPrint("Checking PCI For Sata Controller\n");
 
@@ -222,9 +245,31 @@ LOUDDK_API_ENTRY void Sata_init(P_PCI_DEVICE_OBJECT SataDev) {
 	uint16_t CMD = LouKeReadPciCommandRegister(SataDev);
 	CMD |= (MEMORY_SPACE_ENABLE | IO_SPACE_ENABLE | PCI_INTERRUPT_ENABLE);
 	LouKeWritePciCommandRegister(SataDev, CMD);
+	
 	AhciDriverEntry(
 		DrvObject,
 		RegistryEntry
+	);
+
+	PSTOR_PORT_STACK_OBJECT StorportObj = GetStorPortObject(DrvObject);
+
+	PPORT_CONFIGURATION_INFORMATION ConfigInfo = StorportObj->ConfigInfo;
+
+	PPCI_COMMON_CONFIG PciConfig = (PPCI_COMMON_CONFIG)LouMalloc(sizeof(PCI_COMMON_CONFIG)); 
+	GetPciConfiguration(SataDev->bus, SataDev->slot, SataDev->func ,PciConfig);
+	for(uint8_t i = 0 ; i < ConfigInfo->NumberOfAccessRanges; i++){
+		ConfigInfo->AddressRanges[i] = PciConfig->Header.u.type0.BaseAddresses[i] & 0xFFFFFFF0;
+	}
+	LouFree((RAMADD)PciConfig);
+
+	ConfigInfo->SystemIoBusNumber = SataDev->bus;
+	ConfigInfo->SlotNumber = SataDev->slot;
+
+	AhciHwFindAdapter(
+		StorportObj->DeviceExtention,
+		0x00,0x00, 0x00,
+		ConfigInfo,
+		0x00
 	);
 
 }
@@ -347,6 +392,129 @@ AhciHwInitialize(
 	return true;
 }
 
+BOOLEAN
+AhciAdapterReset(
+	PAHCI_ADAPTER_EXTENSION DeviceExtension
+){ 
+	ULONG Ticks;
+	AHCI_GHC* ghc;
+	PAHCI_MEMORY_REGISTERS Abar = 0x00;
+
+	Abar = (PAHCI_MEMORY_REGISTERS)(uintptr_t)DeviceExtension->AhciBaseAddress;
+
+	//sanity check
+	if(Abar == 0x00){
+		return false;
+	}
+
+	ghc = (AHCI_GHC*)&Abar->GlobalHost;
+	
+	ghc->Bits.HardRest = 1;
+
+	for(Ticks = 0 ; Ticks <= 50; Ticks++){
+		if(ghc->Bits.HardRest == 0){
+			break;
+		}
+		StorPortStallExecution(20000);
+	}
+	if(Ticks == 50){
+		return false;
+	}
+
+	return true;
+}
+
+BOOLEAN
+AhciAllocateResourceForAdapter (
+ 	PAHCI_ADAPTER_EXTENSION AdapterExtension,
+	PPORT_CONFIGURATION_INFORMATION ConfigInfo
+){
+	LouPrint("AhciAllocateResourceForAdapter()\n");
+
+	UNUSED PCHAR NonCahchedXtention, tmp;
+	ULONG Index, NCS, AlignedNCS;
+	ULONG PortCount, PortImplemented, NonCahchedXtentionSize;
+	UNUSED PAHCI_PORT_EXTENSION PortExtention;
+
+	NCS = AdapterExtension->Capabilities;
+
+	AlignedNCS = ROUND_UP(NCS, 8);
+
+	PortCount = 0;
+	PortImplemented = AdapterExtension->PortImplemented;
+	//sanity check
+	if(PortImplemented == 0x00){
+		LouPrint("PortImplemented Is 0\n");
+		return false;
+	}
+
+	for(Index = 32-1; Index > 0; Index--){
+		if((PortImplemented & (1 << Index)) != 0x00){
+			break;
+		}
+	}
+
+	PortCount = Index + 1;
+	LouPrint("Port Count Is:%d\n", PortCount);
+
+	AdapterExtension->PortCount = PortCount;
+
+	NonCahchedXtentionSize = sizeof(AHCI_COMMAND_HEADER) * AlignedNCS + 
+							 sizeof(AHCI_RECIEVED_FIS) * 
+							 sizeof(IDENTIFY_DEVICE_DATA);
+
+	NonCahchedXtentionSize = ROUND_UP(NonCahchedXtentionSize, 1024);
+
+	AdapterExtension->NonCahchedXtention = LouMalloc(NonCahchedXtentionSize * PortCount);
+
+	if(AdapterExtension->NonCahchedXtention == 0x00){
+		LouPrint("Could Not Allocatte Memory For NCE\n");
+		return false;
+	}
+
+
+	LouPrint("Allocated %d Bytes For NCE\n", NonCahchedXtentionSize * PortCount);
+
+	NonCahchedXtention = (PCHAR)AdapterExtension->NonCahchedXtention;
+
+	for(uint64_t i = 0; i < NonCahchedXtentionSize * PortCount; i += MEGABYTE_PAGE){
+		LouMapAddress((uint64_t)NonCahchedXtention + i, (uint64_t)NonCahchedXtention + i, KERNEL_PAGE_WRITE_PRESENT, MEGABYTE_PAGE);
+	}
+
+	memset(NonCahchedXtention, 0, NonCahchedXtentionSize * PortCount);
+
+	for(Index = 0 ; Index < PortCount; Index++){
+		PortExtention = &AdapterExtension->PortExtention[Index];
+		PortExtention->DevParam.IsActive = false;
+
+		if((AdapterExtension->PortImplemented & (1 << Index)) != 0x00){
+			PortExtention->PortNumber = Index;
+			PortExtention->DevParam .IsActive = true;
+			PortExtention->AdapterExtension = AdapterExtension;
+			PortExtention->CommandList = (PAHCI_COMMAND_HEADER)NonCahchedXtention;
+
+			tmp = (PCHAR)(NonCahchedXtention + sizeof(AHCI_COMMAND_HEADER) * AlignedNCS);
+
+			PortExtention->RFis = (PAHCI_RECIEVED_FIS)tmp;
+			PortExtention->IdData = (PIDENTIFY_DEVICE_DATA)(tmp + sizeof(AHCI_RECIEVED_FIS));
+			PortExtention->MaxQueDepth = NCS;
+			NonCahchedXtention += NonCahchedXtentionSize;
+		}
+	}
+
+	LouPrint("AhciAllocateResourceForAdapter() SUCCESS\n");
+	return true;	
+}
+
+BOOLEAN
+AhciPortInitialize (
+    PVOID DeviceExtension
+){
+
+
+	return true;
+}
+
 ULONG 
 AhciHwFindAdapter(
 	PVOID DeviceExtension,
@@ -356,8 +524,116 @@ AhciHwFindAdapter(
 	PPORT_CONFIGURATION_INFORMATION ConfigInfo,
 	PBOOLEAN Reserved
 ){
+	LouPrint("AhciHwFindAdapter()\n");
 
-	return 0;
+	AHCI_GHC* ghc;
+	UNUSED ULONG Index, PCiConfLen;
+	UNUSED PACCESS_RANGE AccessRange;
+	PPCI_COMMON_CONFIG PciConfig = (PPCI_COMMON_CONFIG)LouMalloc(sizeof(PCI_COMMON_CONFIG));
+
+	PAHCI_MEMORY_REGISTERS Abar;
+	PAHCI_ADAPTER_EXTENSION AdapterExtension = (PAHCI_ADAPTER_EXTENSION)DeviceExtension;
+
+	AdapterExtension->SlotNumber = ConfigInfo->SlotNumber;
+	AdapterExtension->SystemIoBusNumber = ConfigInfo->SystemIoBusNumber;
+    // get PCI configuration header
+    PCiConfLen = StorPortGetBusData(
+                        AdapterExtension,
+                        PCIConfiguration,
+                        AdapterExtension->SystemIoBusNumber,
+                        AdapterExtension->SlotNumber,
+                        PciConfig,
+                        sizeof(PCI_COMMON_CONFIG));
+
+	if(PCiConfLen != sizeof(PCI_COMMON_CONFIG)){
+		//sanity check
+		LouPrint("AhciHwFindAdapter() Pci Congig Length Is Invalid\n");
+		LouFree((RAMADD)PciConfig);
+		return STATUS_INVALID_PARAMETER;
+	}
+
+	AdapterExtension->VendorID = PciConfig->Header.VendorID;
+	AdapterExtension->DeviceID = PciConfig->Header.DeviceID;
+
+	//since the device Driver is built into the kernel i can trust the address
+	Abar = (PAHCI_MEMORY_REGISTERS)(uintptr_t)(PciConfig->Header.u.type0.BaseAddresses[5] & 0xFFFFFFF0);
+	AdapterExtension->AhciBaseAddress = (uint32_t)(uintptr_t)Abar;
+	//buit were still gonna sanity check this
+	if(AdapterExtension->AhciBaseAddress == 0x00){
+		LouPrint("Abar Is Null\n");
+		LouFree((RAMADD)PciConfig);
+		return STATUS_INVALID_PARAMETER;
+	}
+
+	LouPrint("ABAR Is:%h\n");
+
+	AdapterExtension->Capabilities = Abar->Capabilities;
+	AdapterExtension->SecondaryCapabilities = Abar->ExtendedCapabilities;// fuck me i foorgot thethe greater than
+	AdapterExtension->Version = Abar->PortVersion;
+	AdapterExtension->LastInterruptPort = (ULONG)-0x01;
+
+	ghc = (AHCI_GHC*)&Abar->GlobalHost;
+
+	if(ghc->Bits.AhciEnable){
+		LouPrint("Ahci Already Enabled, Reset()\n");
+		if(!AhciAdapterReset(AdapterExtension)){
+			LouPrint("Ahci Adapter Reset Did Not Take Somthing May Be Wrong With The Device\n");
+			LouFree((RAMADD)PciConfig);
+			return STATUS_UNSUCCESSFUL;
+		}
+	}
+
+	ghc->Bits.AhciEnable = 1;
+
+	uint64_t Foo = (uint64_t)&Abar->InterruptStat; //unalignment warning
+	AdapterExtension->InterruptStatus = (volatile uint32_t*)(uintptr_t)Foo;
+
+	AdapterExtension->PortImplemented = Abar->PortImplementation;
+	
+	if(AdapterExtension->PortImplemented == 0x00){
+		LouPrint("No Ports Implementd\n");
+		LouFree((RAMADD)PciConfig);
+		return STATUS_UNSUCCESSFUL;
+	}
+
+	ConfigInfo->Master = true;
+	ConfigInfo->AlignmentMask = 0x03;
+	ConfigInfo->ScatterMeGather = true;
+	ConfigInfo->DmaWidth = DmaWidth32;
+	ConfigInfo->WmiDataProvider = false;
+	ConfigInfo->Dma32Address = true;
+
+	if((Abar->Capabilities >> 31) & 0x01){
+		ConfigInfo->Dma64Address = true;
+	}
+
+	ConfigInfo->MaximumTargets = 1;
+	ConfigInfo->ResetTargetSupport = true;
+	ConfigInfo->NumberOfPhysicalBreks = 0x21;
+	ConfigInfo->NumberOfLogicalUnits = 1;
+	ConfigInfo->NumberOfBusses = 32;
+	ConfigInfo->MaximumTransferLength = StorSynchronizeFullDuplex;
+
+	ghc->Bits.InterruptEnable = 1;
+
+	if(!AhciAllocateResourceForAdapter(
+		AdapterExtension,
+		ConfigInfo
+	)){
+		LouPrint("Could Not Allocate Resources\n");
+		LouFree((RAMADD)PciConfig);
+		return STATUS_INSUFFICIENT_RESOURCES;
+	}
+
+	for(Index = 0; Index < AdapterExtension->PortCount; Index++){
+		if((AdapterExtension->PortImplemented & (0x01 << Index)) != 0x00){
+			AhciPortInitialize(&AdapterExtension->PortExtention[Index]);
+		}
+	}
+
+	LouFree((RAMADD)PciConfig);
+	LouPrint("AhciHwFindAdapter() SUCCESS\n");
+	return STATUS_SUCCESS;
 }
 
 NTSTATUS

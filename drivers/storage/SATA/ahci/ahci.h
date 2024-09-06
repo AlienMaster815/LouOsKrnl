@@ -836,7 +836,7 @@ typedef struct __attribute__((packed)) _AHCI_ADAPTER_EXTENSION{
 	uint32_t  SystemIoBusNumber;
 	uint32_t  SlotNumber;
 	uint32_t  AhciBaseAddress;
-	uint32_t* InterruptStatus;
+	volatile uint32_t* InterruptStatus;
 	uint32_t  PortImplemented;
 	uint32_t  PortCount;
 	

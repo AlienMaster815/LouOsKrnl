@@ -235,7 +235,7 @@ void* LouMallocEx(size_t BytesToAllocate, uint64_t Alignment) {
 
                         for (uint32_t i = 0; i < AddressesLogged; i++) {
                             if ((AlignmentCheck >= AddressBlock[i].Address) && 
-                                (AlignmentCheck < (AddressBlock[i].Address + AddressBlock[i].size))) {
+                                (AlignmentCheck <= (AddressBlock[i].Address + AddressBlock[i].size))) {
                                 addrssSpaceCheck = false;
                                 break;
                             }

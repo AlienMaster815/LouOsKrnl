@@ -298,7 +298,7 @@ KERNEL_ENTRY Lou_kernel_start(
 
 
     //SETUP DEVICES AND DRIVERS
-    //User_Mode_Initialization();    
+    //User_Mode_Initialization();
 
     //Advanced_Kernel_Initialization();
 
