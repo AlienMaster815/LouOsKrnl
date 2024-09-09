@@ -50,10 +50,10 @@ void intToString(uint64_t num, char* str);
 //void uintToLittleEndianHexString(uint64_t number, char* hexString);
 void uintToHexString(uint64_t number, char* hexString);
 
-static mutex_t PrintMutex; 
+//static mutex_t PrintMutex; 
 
 int LouPrint(char* format, ...) {
-    MutexLock(&PrintMutex);
+    //MutexLock(&PrintMutex);
     va_list args;
     va_start(args, format);
     
@@ -185,7 +185,7 @@ int LouPrint(char* format, ...) {
     }
     va_end(args);
     }
-    MutexUnlock(&PrintMutex);
+    //MutexUnlock(&PrintMutex);
     return 0;
 
 }

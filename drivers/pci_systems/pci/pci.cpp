@@ -1,4 +1,5 @@
 #include <LouDDK.h>
+#include <Hal.h>
 
 #define NOT_A_PCI_DEVICE 0xFFFF 
 
@@ -60,15 +61,9 @@ LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device) {
                     Dev.bus = bus;
                     Dev.slot = device;
                     Dev.func = function;
-                    BaseAddressRegister BARS(&Dev);
-                    for(uint8_t i = 0 ; i < 6; i++){
-                        if(BARS.MMIO[i]){
-                            if(BARS.address[i] == 0x00)continue;
-                            //else if ((uint64_t)BARS.address[i] == BARS.size[i])continue;
-                            EnforceSystemMemoryMap((uint64_t)BARS.address[i],BARS.size[i]);
-                            //MapIoMemory((uint64_t)BARS.address[i],BARS.size[i]);
-                        }
-                    }
+                    LouKeHalRegisterPCiDevice(
+                        &Dev
+                    );
                 }
             }
         }
@@ -79,15 +74,9 @@ LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device) {
         Dev.bus = bus;
         Dev.slot = device;
         Dev.func = function;
-        BaseAddressRegister BARS(&Dev);
-        for(uint8_t i = 0 ; i < 6; i++){
-            if(BARS.MMIO[i]){
-                if(BARS.address[i] == 0x00)continue;
-                //else if ((uint64_t)BARS.address[i] == BARS.size[i])continue;
-                EnforceSystemMemoryMap((uint64_t)BARS.address[i],BARS.size[i]);
-                //MapIoMemory((uint64_t)BARS.address[i],BARS.size[i]);
-            }
-        }
+        LouKeHalRegisterPCiDevice(
+            &Dev
+        );
     }   
 }
 
@@ -284,9 +273,10 @@ LOUDDK_API_ENTRY void checkBusStorage(uint8_t bus) {
 }
 
 LOUDDK_API_ENTRY void LookForStorageDevices(){
+    LouKIRQL OldLevel; 
+    LouKeSetIrql(HIGH_LEVEL ,&OldLevel);
 
     LouPrint("Scanning PCI Bus For Storage Devices\n");
-    
 
     uint8_t function;
     uint8_t bus;
@@ -304,7 +294,7 @@ LOUDDK_API_ENTRY void LookForStorageDevices(){
             checkBusStorage(bus);
         }
     }
-
+    LouKeSetIrql(OldLevel, 0x00);
 }
 
 KERNEL_IMPORT 

@@ -17,7 +17,7 @@ uint16_t VgaGetBufferHeight(){
     return VBE_INFO.vbe_mode_info.height;
 }
 
-void VgaPutPixelRgb(int x, int y, uint8_t r, uint8_t g, uint8_t b) {
+void VgaPutPixelRgbEx(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a){
        
     // Calculate the offset in the framebuffer
     uint32_t bytes_per_pixel = VBE_INFO.vbe_mode_info.bpp / 8;
@@ -36,7 +36,7 @@ void VgaPutPixelRgb(int x, int y, uint8_t r, uint8_t g, uint8_t b) {
         framebuffer[pixel_offset] = b;        // Blue
         framebuffer[pixel_offset + 1] = g;    // Green
         framebuffer[pixel_offset + 2] = r;    // Red
-        framebuffer[pixel_offset + 3] = 0;    // Reserved or Alpha
+        framebuffer[pixel_offset + 3] = a;    // Reserved or Alpha
     } else if (bytes_per_pixel == 3) {
         framebuffer[pixel_offset] = b;        // Blue
         framebuffer[pixel_offset + 1] = g;    // Green
@@ -44,6 +44,10 @@ void VgaPutPixelRgb(int x, int y, uint8_t r, uint8_t g, uint8_t b) {
     }
 }
 
+
+void VgaPutPixelRgb(int x, int y, uint8_t r, uint8_t g, uint8_t b) {
+    VgaPutPixelRgbEx(x,y,r,g,b,0);
+}
 
 size_t col = 0;
 size_t row = 0;
@@ -104,6 +108,14 @@ void VgaRgbModeFillBackground(uint8_t r,uint8_t g, uint8_t b){
     for(uint32_t y = 0 ; y < VBE_INFO.vbe_mode_info.height; y++){
         for(uint32_t x = 0; x < VBE_INFO.vbe_mode_info.width; x++){
             VgaPutPixelRgb(x,y, r, g, b);
+        }
+    }
+}
+
+void VgaRgbModeFillBackgroundEx(uint8_t r,uint8_t g, uint8_t b, uint8_t a){
+    for(uint32_t y = 0 ; y < VBE_INFO.vbe_mode_info.height; y++){
+        for(uint32_t x = 0; x < VBE_INFO.vbe_mode_info.width; x++){
+            VgaPutPixelRgbEx(x,y, r, g, b, a);
         }
     }
 }

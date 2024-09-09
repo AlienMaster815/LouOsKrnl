@@ -191,6 +191,11 @@ struct interrupt_frame
     uint32_t ss;
 };
 
+void LouKeSetIrql(
+    LouKIRQL  NewIrql,
+    LouKIRQL* OldIrql
+);
+
 #endif //i386
 #endif // c
 

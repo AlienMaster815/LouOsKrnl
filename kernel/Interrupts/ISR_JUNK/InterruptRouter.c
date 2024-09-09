@@ -8,7 +8,7 @@ bool GetAPICStatus();
 
 void initializeInterruptRouter(){
 	for(uint8_t i = 0 ; i < 255 ; i ++){
-		InterruptHandler[i] = NULL;
+		InterruptHandler[i] = 0x00;
 	}
 }
 
@@ -23,7 +23,7 @@ void RegisterInterruptHandler(void(*Handler),uint8_t InterruptNumber) {
 }
 
 void UnRegisterInterruptHandler(uint8_t InterruptNumber) {
-	InterruptHandler[InterruptNumber] = NULL;
+	InterruptHandler[InterruptNumber] = 0x00;
 }
 
 static uint8_t InterruptGlobalCheck;
@@ -36,9 +36,9 @@ void InterruptRouter(uint8_t Interrupt, uint64_t Args) {
 
 	InterruptGlobalCheck = Interrupt;
 
-	if (NULL != InterruptHandler[Interrupt]) {
+	if (0x00 != InterruptHandler[Interrupt]) {
 		InterruptHandler[Interrupt](Args);
-		//LouKeRunOnNewStack((void(*)(PVOID))InterruptHandler[Interrupt], 0x00, 16 * KILOBYTE);
+		//LouKeRunOnNewStack((void(*)(PVOID))InterruptHandler[Interrupt], (PVOID)Args, 16 * KILOBYTE);
 		//if (!GetAPICStatus())PIC_sendEOI(Interrupt);
 		local_apic_send_eoi();
 		return;

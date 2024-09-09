@@ -67,7 +67,7 @@ void HWILM::HandleHWilms(){
     //void(*Handler[32])();
 //};
 
-HWILM* hwilms;
+static HWILM* hwilms;
 
 LOUDDK_API_ENTRY LOUSTATUS InitializeDynamicHardwareInterruptHandleing(){
 

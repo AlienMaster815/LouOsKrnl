@@ -165,7 +165,7 @@ bool InitializeIoApic(uint64_t IoApicNumber, uint64_t MappedArea){
         ioapic_write(index, low);
     }
 
-    ioapic_unmask_irq(1);
+    //ioapic_unmask_irq(1);
 
     return true;
 }

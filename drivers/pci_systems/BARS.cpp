@@ -61,6 +61,7 @@ BaseAddressRegister::BaseAddressRegister(P_PCI_DEVICE_OBJECT PDEV) {
 					uint32_t size_value = pci_read(PDEV->bus, PDEV->slot, PDEV->func, BAR0Offset + BarNum * 4) & 0xFFFFFFF0;
 					// Calculate the size
 					size[BarNum] = (~size_value) + 1;
+					
 					//LouPrint("Size Value:%h\n", size[BarNum]);
 
 					// Restore the original BAR value

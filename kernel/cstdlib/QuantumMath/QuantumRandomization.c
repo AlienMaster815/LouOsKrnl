@@ -48,8 +48,10 @@ uint64_t QuantumRandomization(
     uint64_t Seed;
 ){
     uint64_t Seed = Random(Seed);
-
-    uint64_t Result = 0;
-    //uint64_t T = KeGet
-    return Result;
+    Seed = Random(Seed);
+    Seed = Random(Seed);
+    Seed = Random(Seed);
+    Seed = Random(Seed);
+    
+    return Seed;
 }

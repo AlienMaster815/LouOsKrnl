@@ -1,5 +1,6 @@
 #include <LouDDK.h>
 #include <NtAPI.h>
+#include <Hal.h>
 #include "sata.h"
 
 #define HBA_PxCMD_ST    0x0001
@@ -125,8 +126,8 @@ LOUDDK_API_ENTRY bool IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func) {
 		case INTEL_CANNON_LAKE_MOBILE_PCH_SATA_AHCI_CONTROLLER:
 		case INTEL_400_SERIES_CHIPSET_FAMILY_SATA_AHCI_CONTROLLER:
 			LouPrint("Found An Intel Sata Controller\n");
-			//Sata_init(&PDEV);
-			LouKeRunOnNewStack((void (*)(PVOID))Sata_init, (PVOID)&PDEV, 2 * MEGABYTE);
+			Sata_init(&PDEV);
+			//LouKeRunOnNewStack((void (*)(PVOID))Sata_init, (PVOID)&PDEV, 16 * KILOBYTE);
 			return true;
 			break;
 
@@ -172,8 +173,8 @@ LOUDDK_API_ENTRY bool IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func) {
 		case FCHSATAControllerRAIDmode_2:
 		case FCHSATAControllerRAIDmode_1:
 			LouPrint("Found An AMD Sata Controller\n");
-			//Sata_init(&PDEV);
-			LouKeRunOnNewStack((void (*)(PVOID))Sata_init, (PVOID)&PDEV, 2 * MEGABYTE);
+			Sata_init(&PDEV);
+			//LouKeRunOnNewStack((void (*)(PVOID))Sata_init, (PVOID)&PDEV, 16 * KILOBYTE);
 			return true;
 			break;
 		default:
@@ -187,8 +188,8 @@ LOUDDK_API_ENTRY bool IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func) {
 	if(ClassCode == 0x01){
 		if(SubClass == 0x05){
 			LouPrint("Found Generic Sata Controller\n");
-			//Sata_init(&PDEV);
-			LouKeRunOnNewStack((void (*)(PVOID))Sata_init, (PVOID)&PDEV, 2 * MEGABYTE);
+			Sata_init(&PDEV);
+			//LouKeRunOnNewStack((void (*)(PVOID))Sata_init, (PVOID)&PDEV, 16 * KILOBYTE);
 			return true;
 		}
 	}
@@ -220,26 +221,27 @@ void LouKeMapMmIO(
     uint64_t Flags
 );
 
-LOUDDK_API_ENTRY void Sata_init(P_PCI_DEVICE_OBJECT SataDev) {
+void LouKeHalRegisterPCiDevice(
+    P_PCI_DEVICE_OBJECT PDEV
+);
 
-	uint8_t bus = SataDev->bus;
-	uint8_t slot = SataDev->slot;
-	uint8_t func = SataDev->func;
+LOUDDK_API_ENTRY void Sata_init(P_PCI_DEVICE_OBJECT SataDev) {
 
 	LouPrint("Initializing Sata Controller\n");
 
-	SataDev->DeviceID = PciGetDeviceID(bus, slot, func);
-	SataDev->VendorID = PciGetVendorID(bus, slot);
+	SataDev->DeviceID = PciGetDeviceID(SataDev->bus, SataDev->slot, SataDev->func);
+	SataDev->VendorID = PciGetVendorID(SataDev->bus, SataDev->slot);
 
 
 	LouPrint("DeviceID:%h\n", SataDev->DeviceID);
 	LouPrint("VendorID:%h\n", SataDev->VendorID);
 
-	BaseAddressRegister BARS(SataDev);
+	LouKeHalRegisterPCiDevice(
+		SataDev
+	);
 
-	LouMapAddress((uint64_t)BARS.address[5],(uint64_t)BARS.address[5], KERNEL_PAGE_WRITE_PRESENT, KILOBYTE_PAGE);
-	PDRIVER_OBJECT DrvObject = (PDRIVER_OBJECT)LouMalloc(sizeof(DRIVER_OBJECT));
-	PUNICODE_STRING RegistryEntry = (PUNICODE_STRING)LouMalloc(sizeof(UNICODE_STRING));
+	UNUSED PDRIVER_OBJECT DrvObject = (PDRIVER_OBJECT)LouMalloc(sizeof(DRIVER_OBJECT));
+	UNUSED PUNICODE_STRING RegistryEntry = (PUNICODE_STRING)LouMalloc(sizeof(UNICODE_STRING));
 	//uint8_t IPin = LouKeGetPciInterruptPin(SataDev);
 	
 	uint16_t CMD = LouKeReadPciCommandRegister(SataDev);
@@ -250,7 +252,7 @@ LOUDDK_API_ENTRY void Sata_init(P_PCI_DEVICE_OBJECT SataDev) {
 		DrvObject,
 		RegistryEntry
 	);
-
+	
 	PSTOR_PORT_STACK_OBJECT StorportObj = GetStorPortObject(DrvObject);
 
 	PPORT_CONFIGURATION_INFORMATION ConfigInfo = StorportObj->ConfigInfo;
@@ -271,7 +273,7 @@ LOUDDK_API_ENTRY void Sata_init(P_PCI_DEVICE_OBJECT SataDev) {
 		ConfigInfo,
 		0x00
 	);
-
+	
 }
 
 
@@ -533,7 +535,7 @@ AhciHwFindAdapter(
 
 	PAHCI_MEMORY_REGISTERS Abar;
 	PAHCI_ADAPTER_EXTENSION AdapterExtension = (PAHCI_ADAPTER_EXTENSION)DeviceExtension;
-
+	
 	AdapterExtension->SlotNumber = ConfigInfo->SlotNumber;
 	AdapterExtension->SystemIoBusNumber = ConfigInfo->SystemIoBusNumber;
     // get PCI configuration header
@@ -556,7 +558,11 @@ AhciHwFindAdapter(
 	AdapterExtension->DeviceID = PciConfig->Header.DeviceID;
 
 	//since the device Driver is built into the kernel i can trust the address
-	Abar = (PAHCI_MEMORY_REGISTERS)(uintptr_t)(PciConfig->Header.u.type0.BaseAddresses[5] & 0xFFFFFFF0);
+	Abar = (PAHCI_MEMORY_REGISTERS)(uintptr_t)(LouKeHalGetPciVirtualBaseAddress(
+    	PciConfig,
+		5
+	));
+
 	AdapterExtension->AhciBaseAddress = (uint32_t)(uintptr_t)Abar;
 	//buit were still gonna sanity check this
 	if(AdapterExtension->AhciBaseAddress == 0x00){
@@ -565,7 +571,7 @@ AhciHwFindAdapter(
 		return STATUS_INVALID_PARAMETER;
 	}
 
-	LouPrint("ABAR Is:%h\n");
+	LouPrint("ABAR Is:%h\n", AdapterExtension->AhciBaseAddress);
 
 	AdapterExtension->Capabilities = Abar->Capabilities;
 	AdapterExtension->SecondaryCapabilities = Abar->ExtendedCapabilities;// fuck me i foorgot thethe greater than

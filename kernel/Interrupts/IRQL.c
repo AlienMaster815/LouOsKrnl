@@ -10,17 +10,16 @@
 
 void ioapic_mask_irq(uint8_t irq);
 void ioapic_unmask_irq(uint8_t irq);
+bool GetAPICStatus();
 
-static LouKIRQL SystemInterruptLevel;
+static LouKIRQL SystemInterruptLevel = HIGH_LEVEL;
 
 void SetSystemInterrupts(bool Enable){
     if(Enable){
-        ioapic_unmask_irq(0);
-        ioapic_unmask_irq(1);
+        //ioapic_unmask_irq(1);
     }
     else{
-        ioapic_mask_irq(0);
-        ioapic_mask_irq(1);
+        //ioapic_mask_irq(1);
     }
 }
 
@@ -40,39 +39,42 @@ void LouKeSetIrql(
     LouKIRQL  NewIrql,
     LouKIRQL* OldIrql
 ){
-    if(OldIrql != 0x00){//0x00 is null in this system and is excplicitly checked for sanity
-        *OldIrql = SystemInterruptLevel; // save the old irql1
+    if(GetAPICStatus()){
+        if(OldIrql != 0x00){//0x00 is null in this system and is excplicitly checked for sanity
+            *OldIrql = SystemInterruptLevel; // save the old irql1
+        }
+        //TODO: Once User Mode Gets hacked up a bit will implement user things and drivers when drivers are hacked up
+
+        switch (NewIrql){
+            case PASSIVE_LEVEL:{
+                SystemInterruptLevel = PASSIVE_LEVEL;
+                SetAllInterrupts(true);
+                return;
+            }
+            case APC_LEVEL:{
+                
+                return;
+            }
+            case DISPATCH_LEVEL:{
+
+                return;
+            }
+            case DIRQL:{
+
+                return;
+            } 
+            case CLOCK_LEVEL:{
+
+                return;
+            }
+            case HIGH_LEVEL:{
+                SystemInterruptLevel = HIGH_LEVEL;
+                SetSystemInterrupts(false);
+            }
+            default: // error case
+                return;
+        }
     }
-    //TODO: Once User Mode Gets hacked up a bit will implement user things and drivers when drivers are hacked up
-
-    switch (NewIrql){
-        case PASSIVE_LEVEL:{
-            SetAllInterrupts(true);
-            return;
-        }
-        case APC_LEVEL:{
-            
-            return;
-        }
-        case DISPATCH_LEVEL:{
-
-            return;
-        }
-        case DIRQL:{
-
-            return;
-        } 
-        case CLOCK_LEVEL:{
-
-            return;
-        }
-        case HIGH_LEVEL:{
-            SetSystemInterrupts(false);
-        }
-        default: // error case
-            return;
-    }
-
 }
 
 void KeRaiseIrql( // for wdk compatibility

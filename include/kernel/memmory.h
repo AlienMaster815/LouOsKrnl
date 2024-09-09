@@ -158,6 +158,7 @@ KERNEL_IMPORT bool EnforceSystemMemoryMap(
     uint64_t Address, 
     uint64_t size
 );
+KERNEL_IMPORT 
 #endif
 
 #ifdef __cplusplus
@@ -182,6 +183,22 @@ void* TrimVariacHeap(
 
 uint64_t GetKernelLoadedAddress();
 void SetKernelLoadedAddress(uint64_t Address);
+
+void LouKeMallocVMmIO(
+    uint64_t PAddress,
+    uint64_t size,
+    uint64_t FLAGS
+);
+
+uint64_t LouKeVMemmorySearchPhysicalSpace(
+    uint64_t VAddress
+);
+
+uint64_t LouKeVMemmorySearchVirtualSpace(
+    uint64_t PAddress
+);
+
+uint64_t SearchForMappedAddressSize(uint64_t Address);
 
 #ifdef __cplusplus
 }

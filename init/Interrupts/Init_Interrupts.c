@@ -29,16 +29,9 @@ LOUSTATUS InitializeStartupInterruptHandleing(){
     
     if(SetBasicInterrupts(true) != LOUSTATUS_GOOD)LouPanic("Error Setting Basic Interrupts",BAD);
 
-    PIC_remap(0x20, 0x28);
-
     UpdateIDT(true);
 
     LouPrint("Basic Interrupts Setup\n");
-
-    Mask_All_Programable_Interrupts();
-
-    IRQ_Pic_clear_mask(0);
-    IRQ_Pic_clear_mask(1);
 
     //SetInterruptFlags();
 

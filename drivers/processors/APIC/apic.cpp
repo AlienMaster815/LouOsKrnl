@@ -152,10 +152,10 @@ KERNEL_IMPORT void write_msr(uint32_t msr, uint64_t Value);
 
 KERNEL_IMPORT void disable_pic();
 
-CPU::CPUID* Cpu;
-APIC::LAPIC* Lapic;
+static CPU::CPUID* Cpu;
+static APIC::LAPIC* Lapic;
 
-string DRV_VERSION_APIC = "\nLousine Internal Kernel APIC.SYS Module Version 1.04\n";
+string DRV_VERSION_APIC = "\nLousine Internal Kernel APIC.SYS Module Version 1.05\n";
 string DRV_UNLOAD_STRING_SUCCESS_APIC = "Driver Execution Completed Successfully Exiting Proccess\n\n"; 
 string DRV_UNLOAD_STRING_FAILURE_APIC = "Driver Execution Failed To Execute Properly Exiting Proccess\n\n"; 
 
@@ -252,12 +252,10 @@ void cpu_set_apic_base(uintptr_t apic) {
 LOUDDK_API_ENTRY LOUSTATUS InitApicSystems(bool LateStage) {
     LOUSTATUS Status = LOUSTATUS_GOOD;
 
+    LouPrint(DRV_VERSION_APIC);
+
     uint8_t* Buffer = (uint8_t*)LouMalloc(ACPIBUFFER);
     ULONG ReturnLength = 0x0000;
-
-
-    //UnSetInterruptFlags();
-    LouPrint(DRV_VERSION_APIC);
 
     Status = AuxKlibGetSystemFirmwareTable(
         'ACPI', 
@@ -290,10 +288,11 @@ LOUDDK_API_ENTRY LOUSTATUS InitApicSystems(bool LateStage) {
         HeaderEndAddress
     );
 
-    if(Lapic->InitializeApic())LouPrint("APIC ENABLED SUCCESSFULLY\n");
-
     Cpu = (CPU::CPUID*)LouMalloc(sizeof(CPU::CPUID));
     Lapic = (APIC::LAPIC*)LouMalloc(sizeof(APIC::LAPIC));
+
+    if(Lapic->InitializeApic())LouPrint("APIC ENABLED SUCCESSFULLY\n");
+
     //configure FPU for BSP
     EnableAdvancedBspFeatures(CPU::FPU);
     Cpu->~CPUID();
@@ -301,7 +300,7 @@ LOUDDK_API_ENTRY LOUSTATUS InitApicSystems(bool LateStage) {
     ApicSet = true;
 
     LouFree((RAMADD)Cpu);
-    LouFree((RAMADD)Cpu);
+    LouFree((RAMADD)Buffer);
 
     for(uint8_t i = 0 ; i < ioapic_count; i++){
         if(!InitializeIoApic(i,ApicBase)){
@@ -348,11 +347,14 @@ bool APIC::LAPIC::InitializeBspLapic(){
     disable_pic();
     LouPrint("Pic Has Been Disabled\n");
 
-    ApicBase = (uint64_t)LouMalloc(KILOBYTE_PAGE);
+    LouKeMallocVMmIO(
+        GetLocalApicBase(),
+        SearchForMappedAddressSize(GetLocalApicBase()),
+        KERNEL_PAGE_WRITE_UNCAHEABLE_PRESENT
+    );
 
-    //volatile uint32_t* apic_base = (volatile uint32_t*)GetLocalApicBase();
-    LouMapAddress(GetLocalApicBase(), ApicBase, KERNEL_PAGE_WRITE_UNCAHEABLE_PRESENT, KILOBYTE_PAGE);
-
+    ApicBase = LouKeVMemmorySearchVirtualSpace(GetLocalApicBase());
+    
     if(Cpu->IsFeatureSupported(CPU::X2APIC)){
         //initiailize x2 standard
         LouPrint("Using X2 Standard\n");

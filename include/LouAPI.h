@@ -26,6 +26,7 @@
 #include <geometry.h>
 #include <SharedTypes.h>
 
+//#include <Hal.h>
 
 #define ACPIBUFFER 512
 #define ERRMAPPINGIO -1

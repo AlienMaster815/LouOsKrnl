@@ -20,9 +20,12 @@ void PageFault() {
     
     uint64_t VAddress = get_cr2();
 
-    LouPrint("Page Fault Detected At Address %h Handleing Now\n",VAddress);
+    LouPrint("\nPage Fault Detected At Address %h Handleing Now\n",VAddress);
 
 
     LouPrint("FUCK\n");
+    
+    //LouPanic("Yuor System Has Crashed Because A Page Fault Occoured And Could Not Be Handled\n", BAD);
+
     while(1);
 }

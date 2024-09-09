@@ -36,7 +36,7 @@
 #define BAR2_OFFSET 0x18
 #define BAR3_OFFSET 0x1B
 #define BAR4_OFFSET 0x20
-#define ABAR_OFFSET 0x24
+#define BAR5_OFFSET 0x24
 #define SS_DEV_ID_OFFSET 0x2C
 #define SS_VEN_ID_OFFSET 0x2E
 #define EROM_OFFSET 0x30

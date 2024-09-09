@@ -15,7 +15,13 @@ LOUSTATUS SilentPanic() {
 	return Status;
 }
 
-void VgaRgbModeFillBackground(uint8_t r,uint8_t g, uint8_t b);
+void VgaRgbModeFillBackgroundEx(uint8_t r,uint8_t g, uint8_t b, uint8_t a);
+
+
+void LouPanicPrint(string Format){
+
+}
+
 
 void LouPanic(char* error_message,STATUS recoverable) {
 	
@@ -23,8 +29,8 @@ void LouPanic(char* error_message,STATUS recoverable) {
 		if(LOUSTATUS_GOOD == SilentPanic()) return;
 	}
 
-	//VgaRgbModeFillBackground(0,120,215);
-	LouPrint(error_message);
+	VgaRgbModeFillBackgroundEx(0,120,215,0);
+	//PanicPrint(error_message);
     asm volatile("cli");
     asm volatile("hlt");
 	while (1);

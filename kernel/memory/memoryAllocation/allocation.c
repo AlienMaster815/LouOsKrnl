@@ -15,6 +15,7 @@ void* LouMalloc(size_t BytesToAllocate);
 
 uint64_t GetRamSize();
 
+
 RAMADD Lou_Alloc_Mem(SIZE size) {
     return (RAMADD)LouMalloc(size);
 }
@@ -103,7 +104,7 @@ struct master_multiboot_mmap_entry* LouKeGetMemoryMapTable(){
 #define BitMapDivisor 1
 
 static uint64_t* BitMap;
-#define StartMap (20ULL * MEGABYTE)
+#define StartMap (10ULL * MEGABYTE)
 
 
 
@@ -127,14 +128,11 @@ typedef struct __attribute__((packed)) _AllocationBlock{
     uint64_t size;
 }AllocationBlock;
 
-uint8_t DataSlab[6 * MEGABYTE];
-uint8_t VirtualSlab[6 * MEGABYTE];
+static uint8_t DataSlab[12 * MEGABYTE];
 
 static AllocationBlock* AddressBlock = (AllocationBlock*)&DataSlab;
-static AllocationBlock* VAddressBlock = (AllocationBlock*)&VirtualSlab;
 
 static uint32_t AddressesLogged = 0;
-static uint32_t VAddressesLogged = 0;
 
 uint64_t GetAllocationBlockSize(uint64_t Address){
 
@@ -181,17 +179,53 @@ void LouFree(RAMADD Addr) {
 }
 
 void* LouVMallocEx(size_t BytesToAllocate, uint64_t Alignment){
-    void* Result = 0x00;
-    for(uint32_t i = 0 ; i < AddressesLogged; i++){
-        if((AddressBlock[i].Address + AddressBlock[i].size) > (uint64_t)Result){
-            Result = (void*)(AddressBlock[i].Address + AddressBlock[i].size);
+    uint64_t AlignmentCheck = GetRamSize();
+    AlignmentCheck &= ~(Alignment - 1);
+    
+    while (1) {
+        AlignmentCheck += Alignment;
+
+        bool addrssSpaceCheck = true;
+
+        for (uint32_t i = 0; i < AddressesLogged; i++) {
+            uint64_t start = AddressBlock[i].Address;
+            uint64_t end = start + AddressBlock[i].size;
+
+                                // Check if the new allocation overlaps with an existing block
+            if ((AlignmentCheck >= start && AlignmentCheck < end) ||  // Start within an existing block
+            ((AlignmentCheck + BytesToAllocate) > start && (AlignmentCheck + BytesToAllocate) <= end) || // End within an existing block
+            (AlignmentCheck <= start && (AlignmentCheck + BytesToAllocate) >= end)) { // Encompasses an existing block
+                addrssSpaceCheck = false;
+                break;
+            }
         }
+
+
+        if (!addrssSpaceCheck) {
+            continue;
+        }
+
+        // Found an address
+        for (uint32_t i = 0; i < AddressesLogged; i++) {
+            if (AddressBlock[i].Address == 0x00) {
+                AddressBlock[i].Address = AlignmentCheck;
+                AddressBlock[i].size = BytesToAllocate;
+                //LouPrint("Address:%h\n", AlignmentCheck);
+                return (void*)AlignmentCheck;
+            }
+        }
+
+        if (AddressesLogged >= (786432)) {
+            // System overload
+            return NULL;
+        }
+
+        AddressBlock[AddressesLogged].Address = AlignmentCheck;
+        AddressBlock[AddressesLogged].size = BytesToAllocate;
+        AddressesLogged++; // Increment after logging the new address
+        //LouPrint("Address:%h\n", AlignmentCheck);
+        return (void*)AlignmentCheck;
     }
-
-    LouPrint("Result:%h\n", Result);
-
-    while(1);
-    return Result;
 }
 
 void* LouVMalloc(size_t BytesToAllocate){
@@ -234,12 +268,18 @@ void* LouMallocEx(size_t BytesToAllocate, uint64_t Alignment) {
                         bool addrssSpaceCheck = true;
 
                         for (uint32_t i = 0; i < AddressesLogged; i++) {
-                            if ((AlignmentCheck >= AddressBlock[i].Address) && 
-                                (AlignmentCheck <= (AddressBlock[i].Address + AddressBlock[i].size))) {
+                            uint64_t start = AddressBlock[i].Address;
+                            uint64_t end = start + AddressBlock[i].size;
+
+                            // Check if the new allocation overlaps with an existing block
+                            if ((AlignmentCheck >= start && AlignmentCheck < end) ||  // Start within an existing block
+                                ((AlignmentCheck + BytesToAllocate) > start && (AlignmentCheck + BytesToAllocate) <= end) || // End within an existing block
+                                (AlignmentCheck <= start && (AlignmentCheck + BytesToAllocate) >= end)) { // Encompasses an existing block
                                 addrssSpaceCheck = false;
                                 break;
                             }
                         }
+
 
                         if (!addrssSpaceCheck) {
                             continue;
@@ -250,11 +290,12 @@ void* LouMallocEx(size_t BytesToAllocate, uint64_t Alignment) {
                             if (AddressBlock[i].Address == 0x00) {
                                 AddressBlock[i].Address = AlignmentCheck;
                                 AddressBlock[i].size = BytesToAllocate;
+                                //LouPrint("Address:%h\n", AlignmentCheck);
                                 return (void*)AlignmentCheck;
                             }
                         }
 
-                        if (AddressesLogged >= (33554432)/BitMapDivisor) {
+                        if (AddressesLogged >= (786432)) {
                             // System overload
                             return NULL;
                         }
@@ -262,6 +303,7 @@ void* LouMallocEx(size_t BytesToAllocate, uint64_t Alignment) {
                         AddressBlock[AddressesLogged].Address = AlignmentCheck;
                         AddressBlock[AddressesLogged].size = BytesToAllocate;
                         AddressesLogged++; // Increment after logging the new address
+                        //LouPrint("Address:%h\n", AlignmentCheck);
                         return (void*)AlignmentCheck;
                     }
                 }
@@ -278,4 +320,19 @@ void* LouMalloc(size_t BytesToAllocate) {
 
     return LouMallocEx(BytesToAllocate, BytesToAllocate);
 
+}
+
+void ListUsedAddresses(){
+    for(uint32_t i = 0 ; i < AddressesLogged; i++){
+        LouPrint("Address:%h : Size:%h\n",AddressBlock[i].Address,AddressBlock[i].size);
+        sleep(100);
+    }   
+}
+
+uint64_t SearchForMappedAddressSize(uint64_t Address){
+    for(uint32_t i = 0; i < AddressesLogged; i++){
+        if(Address == AddressBlock[i].Address){
+            return AddressBlock[i].size;
+        }
+    }
 }
