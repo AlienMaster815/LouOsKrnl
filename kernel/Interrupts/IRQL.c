@@ -16,10 +16,10 @@ static LouKIRQL SystemInterruptLevel = HIGH_LEVEL;
 
 void SetSystemInterrupts(bool Enable){
     if(Enable){
-        //ioapic_unmask_irq(1);
+        ioapic_unmask_irq(1);
     }
     else{
-        //ioapic_mask_irq(1);
+        ioapic_mask_irq(1);
     }
 }
 

@@ -8,7 +8,7 @@
 #ifndef _PCI_H
 #define _PCI_H
 
-
+#define PROGIF 9
 
 #define PCI_INTERRUPT_DISABLE (1 << 10)
 #define PCI_INTERRUPT_ENABLE ~(1 << 10)

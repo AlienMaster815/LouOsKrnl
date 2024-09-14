@@ -80,10 +80,10 @@ extern "C" void ReadStorageDrive(char Drive, uint32_t Location , uint32_t Buffer
 
 
 
-PATA* pataobj = (PATA*)Lou_Alloc_Mem(sizeof(PATA));
+static PATA* pataobj = 0x00;
 
 LOUDDK_API_ENTRY void pata_device_scanc(){
-
+    pataobj = (PATA*)LouMalloc(sizeof(PATA));
     pataobj->pata_device_scan();
 
 }
@@ -121,13 +121,13 @@ LOUDDK_API_ENTRY void FileSystemSetup(){
     //iso.ISOFileSystemScan(3, PATADEV);
         
 
-    //for(uint8_t i = 0; i < GetNumberOfStorageDevices(); i++){ 
-        Fss = iso.ISOFileSystemScan(1);
+    for(uint8_t i = 0; i < GetNumberOfStorageDevices(); i++){ 
+        Fss = iso.ISOFileSystemScan(i);
         //if(Fss.FSType == ISO)continue; 
         //Fss = Fat.InitializeFatSystem(0);
             
-        //LouPrint("Drive:%d: Has No Filesystem\n",i);
-    //}
+        LouPrint("Drive:%d: Has No Filesystem\n",i);
+    }
 }
 
 

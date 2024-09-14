@@ -41,7 +41,7 @@ void sleep(uint64_t Time) {
 		SleepPIT(Time);
 	}
 	else if (TSC) {
-		SleepTSC(Time);
+		busy_wait_TSC(Time);
 	}
 	else if (GetAPICStatus()) {
 

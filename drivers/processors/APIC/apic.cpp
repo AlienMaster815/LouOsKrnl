@@ -155,7 +155,7 @@ KERNEL_IMPORT void disable_pic();
 static CPU::CPUID* Cpu;
 static APIC::LAPIC* Lapic;
 
-string DRV_VERSION_APIC = "\nLousine Internal Kernel APIC.SYS Module Version 1.05\n";
+string DRV_VERSION_APIC = "\nLousine Internal Kernel APIC.SYS Module Version 1.08\n";
 string DRV_UNLOAD_STRING_SUCCESS_APIC = "Driver Execution Completed Successfully Exiting Proccess\n\n"; 
 string DRV_UNLOAD_STRING_FAILURE_APIC = "Driver Execution Failed To Execute Properly Exiting Proccess\n\n"; 
 

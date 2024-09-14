@@ -135,3 +135,11 @@ void LouKeWritePciCommandRegister(P_PCI_DEVICE_OBJECT PDEV,uint16_t Value){
 uint16_t LouKeReadPciCommandRegister(P_PCI_DEVICE_OBJECT PDEV){
     return LouKeReadPciUint16(PDEV, 0x04);
 }
+
+uint32_t LouKeReadBarValue(P_PCI_DEVICE_OBJECT PDEV, uint8_t BarNumber){
+   return LouKeReadPciUint32(PDEV, BAR0_OFFSET + (4 * BarNumber)); 
+}
+
+void LouKeWriteBarValue(P_PCI_DEVICE_OBJECT PDEV, uint8_t BarNumber, uint32_t Value){
+    LouKeWritePciUint32(PDEV, BAR0_OFFSET + (4 * BarNumber), Value); 
+}

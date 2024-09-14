@@ -18,49 +18,6 @@ uint16_t GetNumberOfStorageDevices(){
     return NumberOfStorageControllers;  
 }
 
-void UpdateDeviceInformationTable(){
-
-    DeviceTable = (PDeviceInformationTable)LouMalloc(sizeof(DeviceInformationTable) * 512);
-
-
-    LouPrint("Initializing Device Info\n");
-    ScanConnectedAhciDevices(
-    DeviceTable,
-    &NumberOfConnectedDevices
-    );
-    LouFree((RAMADD)DeviceTable + (NumberOfConnectedDevices * sizeof(DeviceInformationTable)));
-
-    /*
-    for(uint16_t i = 0; i < NumberOfConnectedDevices; i++){
-        LouPrint("Device Type:%h\n",   DeviceTable[i].DeviceType);
-        LouPrint("Device Sub Type:%h\n", DeviceTable[i].DeviceSubType);
-        LouPrint("Device Arch:%h\n", DeviceTable[i].DeviceArchitecture);
-        LouPrint("Device Number:%h\n", DeviceTable[i].DeviceNumber);
-        LouPrint("Device Object:%h\n", DeviceTable[i].DeviceObject);
-    }
-    LouPrint(PRINT_NEW_LINE);
-    */
-
-    LouPrint("Initializing Device Info:Complete\n\n");
-}
-
-PDeviceInformationTable
-ScanConnectedIDEDevices(
-PDeviceInformationTable Table,
-uint16_t* NumberOfCurrentEtries
-){
-
-    uint8_t j = 0;
-
-    for(uint8_t i = 0; i < 4; i++){
-        if(IsIdeDriveAvailable(i))j++;
-    }
-
-
-}
-
-
-
 
 void 
 LouKeInitializeDeviceInformationTable(
@@ -98,6 +55,68 @@ uintptr_t DriverObject
     *NumberOfCurrentEntries = e + 1;
 
 }
+
+void UpdateDeviceInformationTable(){
+
+    DeviceTable = (PDeviceInformationTable)LouMalloc(sizeof(DeviceInformationTable) * 512);
+
+
+    LouPrint("Initializing Device Info\n");
+    ScanConnectedAhciDevices(
+    DeviceTable,
+    &NumberOfConnectedDevices
+    );
+    ScanConnectedIDEDevices(
+    DeviceTable,
+    &NumberOfConnectedDevices
+    );
+
+    LouFree((RAMADD)DeviceTable + (NumberOfConnectedDevices * sizeof(DeviceInformationTable)));
+
+    /*
+    for(uint16_t i = 0; i < NumberOfConnectedDevices; i++){
+        LouPrint("Device Type:%h\n",   DeviceTable[i].DeviceType);
+        LouPrint("Device Sub Type:%h\n", DeviceTable[i].DeviceSubType);
+        LouPrint("Device Arch:%h\n", DeviceTable[i].DeviceArchitecture);
+        LouPrint("Device Number:%h\n", DeviceTable[i].DeviceNumber);
+        LouPrint("Device Object:%h\n", DeviceTable[i].DeviceObject);
+    }
+    LouPrint(PRINT_NEW_LINE);
+    */
+
+    LouPrint("Initializing Device Info:Complete\n\n");
+}
+
+PDeviceInformationTable
+ScanConnectedIDEDevices(
+PDeviceInformationTable Table,
+uint16_t* NumberOfCurrentEntries
+){
+
+
+    for(uint8_t i = 0; i < 4; i++){
+        if(IsIdeDriveAvailable(i)){
+            LouKeInitializeDeviceInformationTable(
+                Table,
+                NumberOfCurrentEntries,
+                //Table Variables
+                DEV_TYPE_STORAGE,
+                DEV_SUB_TYPE_ATA,  
+                DEV_ARCH_IDE,
+                NumberOfStorageControllers,
+                i,
+                0x00
+            );
+        }
+        NumberOfStorageControllers++;
+    }
+    
+}
+
+
+
+
+
 
 
 

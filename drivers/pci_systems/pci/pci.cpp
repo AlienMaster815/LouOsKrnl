@@ -250,8 +250,9 @@ LOUDDK_API_ENTRY void checkForStorageDevice(uint8_t bus, uint8_t device) {
                 if (PciGetDeviceID(bus,device,function) == NOT_A_PCI_DEVICE) continue;
                 else {
                     LouPrint("Multi Function PCI Device Found Vedor Is: %h and Device Is: %h\n", vendorID, PciGetDeviceID(bus, device, function));
-                    if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
+                    //if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
                     if (!DeviceIdentified)DeviceIdentified = IsPataCheck(bus, device, function);
+                    if (!DeviceIdentified)DeviceIdentified = isUsb(bus, device, function);
                }
             }
         }
@@ -259,8 +260,9 @@ LOUDDK_API_ENTRY void checkForStorageDevice(uint8_t bus, uint8_t device) {
     }
     else{
         LouPrint("Single Function PCI Device Found Vedor Is: %h and Device Is: %h\n", vendorID, PciGetDeviceID(bus, device, function));
-        if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
+        //if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
         if (!DeviceIdentified)DeviceIdentified = IsPataCheck(bus, device, function);
+        if (!DeviceIdentified)DeviceIdentified = isUsb(bus, device, function);
     }
 }
 
@@ -273,8 +275,8 @@ LOUDDK_API_ENTRY void checkBusStorage(uint8_t bus) {
 }
 
 LOUDDK_API_ENTRY void LookForStorageDevices(){
-    LouKIRQL OldLevel; 
-    LouKeSetIrql(HIGH_LEVEL ,&OldLevel);
+    //LouKIRQL OldLevel; 
+    //LouKeSetIrql(HIGH_LEVEL ,&OldLevel);
 
     LouPrint("Scanning PCI Bus For Storage Devices\n");
 
@@ -294,7 +296,7 @@ LOUDDK_API_ENTRY void LookForStorageDevices(){
             checkBusStorage(bus);
         }
     }
-    LouKeSetIrql(OldLevel, 0x00);
+    //LouKeSetIrql(OldLevel, 0x00);
 }
 
 KERNEL_IMPORT 
@@ -303,4 +305,9 @@ void LouKeRunOnNewStack(void (*func)(void*), void* FunctionParameters, size_t st
 LOUDDK_API_ENTRY 
 void LouKeMapPciMemory(){
     PCI_Scan_Bus();
+}
+
+LOUDDK_API_ENTRY
+void ScanTheRestOfHarware(){
+    LouPrint("Scanning For All Other Hardware\n");
 }

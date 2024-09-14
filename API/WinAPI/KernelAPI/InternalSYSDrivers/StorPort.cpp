@@ -93,12 +93,12 @@ PVOID StorPortGetUncachedExtension(
 
     LouPrint("Allocating:%d Bytes\n",NumberOfBytes);
 
-    PVOID AllocatedBlock = (PVOID)LouMalloc(NumberOfBytes);
+    PVOID AllocatedBlock = LouKeAllocateUncachedVMemoryEx(NumberOfBytes, KILOBYTE_PAGE);
 
-    for(uint64_t i = 0; i <= NumberOfBytes; i+=KILOBYTE_PAGE){
-        LouMapAddress(((uint64_t)AllocatedBlock + i), ((uint64_t)AllocatedBlock + i), KERNEL_PAGE_WRITE_PRESENT, KILOBYTE_PAGE);
+    if(AllocatedBlock == 0x00){
+        LouPrint("void StorPortGetUncachedExtension() FAILED : Insufficent Resources\n");
+        return 0x00;
     }
-
 
     LouPrint("void StorPortGetUncachedExtension() SUCCESS\n");
     return AllocatedBlock;

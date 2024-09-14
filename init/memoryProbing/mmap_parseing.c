@@ -3,7 +3,7 @@
 
 void SendMapToAllocation(struct master_multiboot_mmap_entry* mmap);
 
-uint64_t mlimit;
+static uint64_t mlimit;
 
 uint64_t GetRamSize() {
     return mlimit;
@@ -12,10 +12,7 @@ uint64_t GetRamSize() {
 
 void RegisterRamMap(struct multiboot_mmap_entry* mmap_entry) {
 
-    //for(uint64_t i =  mmap_entry->addr; i <= mmap_entry->len; i+= (MEGABYTE_PAGE)){
-        //LouMapAddress(i, i, KERNEL_PAGE_WRITE_PRESENT, MEGABYTE_PAGE);
-    //}
-
+    LouKeMapcontinuousMemmoryBlock(mmap_entry->addr, mmap_entry->addr,mmap_entry->len, KERNEL_PAGE_WRITE_PRESENT);
     if((mmap_entry->addr + mmap_entry->len) > mlimit)mlimit = mmap_entry->addr + mmap_entry->len;
 }
 

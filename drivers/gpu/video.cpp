@@ -47,9 +47,12 @@ void InitializeVgaDevice(P_PCI_DEVICE_OBJECT PDEV) {
 		InitializeVirtualBoxVgaAdapter(PDEV);
 		return;
 	}
-	else if(VendorID == 0x1002){
+	//else if(VendorID == 0x1002){
 		//jump to AMDGPU
-		InitializeAmdGpu(PDEV);
+	//	InitializeAmdGpu(PDEV);
+	//}
+	else if(VendorID == 0x8086){
+
 	}
 
 }

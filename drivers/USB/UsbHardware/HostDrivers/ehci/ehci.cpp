@@ -17,7 +17,8 @@
 
 void 
 InitializeEHCIController(
-P_PCI_DEVICE_OBJECT PDEV
+P_PCI_DEVICE_OBJECT PDEV,
+PPCI_COMMON_CONFIG PciConfig
 ){
 
 

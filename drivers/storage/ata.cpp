@@ -193,13 +193,13 @@ void PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int Buffe
         j++;
     }
     
-    uint32_t Index = 0, length = (54 + 8);
+    //uint32_t Index = 0, length = (54 + 8);
 
-    LouKePrintLittleEndianBufferHex(
-        (uintptr_t)atabuffer,
-        Index, 
-        length
-        );
+    //LouKePrintLittleEndianBufferHex(
+    //    (uintptr_t)atabuffer,
+    //    Index, 
+    //    length
+    //    );
 
     LouPrint("Done Reading\n");
 

@@ -55,3 +55,7 @@ ULONG READ_REGISTER_ULONG(volatile PULONG Register){
 VOID WRITE_REGISTER_ULONG(volatile PULONG Register, ULONG Value){
     *Register = Value;
 }
+
+VOID WRITE_REGISTER_ULONGLONG(volatile PULONGLONG Register, ULONGLONG Value){
+    *Register = Value;
+}

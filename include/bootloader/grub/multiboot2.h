@@ -306,7 +306,7 @@ struct multiboot_vbe_mode_info_block {
     multiboot_uint8_t  reserved_position;
     multiboot_uint8_t  direct_color_attributes;
 
-    multiboot_uint32_t framebuffer;       // physical address of the framebuffer
+    multiboot_uint64_t framebuffer;       // physical address of the framebuffer
     multiboot_uint32_t off_screen_mem_off;
     multiboot_uint16_t off_screen_mem_size;
     multiboot_uint8_t  reserved1[206];

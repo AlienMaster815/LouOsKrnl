@@ -88,18 +88,13 @@ typedef struct {
 #define XHCI_DRIVER_EXIT_FAILURE_STRING "XHCI Could Not Initialize Device... Exiting Process\n"
 void
 InitializeXHCIController(
-P_PCI_DEVICE_OBJECT PDEV
+P_PCI_DEVICE_OBJECT PDEV,
+PPCI_COMMON_CONFIG PciConfig
 ){
     LouPrint(XHCI_DRIVER_ENTRY_STRING);
     LouPrint("Initializing XHCI Controller\n");
-    BaseAddressRegister BARS(PDEV);
-    PXHCI_CAPABILITIES XHCIAddress = (PXHCI_CAPABILITIES)BARS.address[0];
-    void* XHCIVAddress = LouMalloc(KILOBYTE_PAGE);
-    LouMapAddress((uint64_t)XHCIAddress, (uint64_t)XHCIVAddress,KERNEL_PAGE_WRITE_PRESENT, KILOBYTE_PAGE);
-    XHCIAddress = (PXHCI_CAPABILITIES)XHCIVAddress;
 
-
-
+    while(1);
     LouPrint(XHCI_DRIVER_EXIT_SUCCESS_STRING);
 
 }

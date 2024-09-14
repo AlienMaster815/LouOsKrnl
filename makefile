@@ -81,8 +81,8 @@ ifeq ($(TARGET_ARCH),x86)
 endif
 
 ifeq ($(TARGET_ARCH),x86_64)
-CFLAGS = -c -ffreestanding -Werror -I include -Wno-multichar -fno-omit-frame-pointer -O0 -mmmx -msse -mno-mmx -mno-sse -mno-sse2 -mno-avx -ffreestanding -fno-common -fno-exceptions -fno-asynchronous-unwind-tables -nostdlib -nodefaultlibs -nostartfiles -no-pie
-CPPFLAGS = -c -ffreestanding -Wall -fno-exceptions -fno-rtti -Werror -Wno-write-strings -fno-use-cxa-atexit -I include -Wno-multichar -fno-omit-frame-pointer -O0 -mmmx -msse -mno-mmx -mno-sse -mno-sse2 -mno-avx -ffreestanding -fno-common -fno-exceptions -fno-asynchronous-unwind-tables -nostdlib -nodefaultlibs -nostartfiles -no-pie
+CFLAGS = -c -ffreestanding -Werror -I include -Wno-multichar -fno-omit-frame-pointer -O0 -mmmx -msse
+CPPFLAGS = -c -ffreestanding -Wall -fno-exceptions -fno-rtti -Werror -Wno-write-strings -fno-use-cxa-atexit -I include -Wno-multichar -fno-omit-frame-pointer -O0 -mmmx -msse
 
 endif
 

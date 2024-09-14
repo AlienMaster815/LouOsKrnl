@@ -19,6 +19,8 @@ extern "C" {
 #define DEV_SUB_TYPE_SATAPI  0x02
 #define DEV_SUB_TYPE_SEMB    0x03
 #define DEV_SUB_TYPE_PM      0x04
+#define DEV_SUB_TYPE_ATA   	 0x05
+//#define DEV_SUB_TYPE_ATAPI   0x06
 
 //DEV ARCHITECTURES
 #define DEV_ARCH_IDE 0x01

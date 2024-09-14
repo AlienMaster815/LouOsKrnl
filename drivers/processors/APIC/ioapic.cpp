@@ -139,9 +139,10 @@ bool InitializeIoApic(uint64_t IoApicNumber, uint64_t MappedArea){
 
     LouPrint("Starting IO/APIC:%d At Address:%h\n",ioapics[IoApicNumber].ioapic_id, ioapics[IoApicNumber].ioapic_address);
     LouPrint("Calculating Address In Virtual Memory\n");
-    IoApicBase = (uint64_t)LouMalloc(KILOBYTE_PAGE);
 
-    LouMapAddress(ioapics[IoApicNumber].ioapic_address, IoApicBase, KERNEL_PAGE_WRITE_PRESENT, KILOBYTE_PAGE);
+    LouKeMallocVMmIO(ioapics[IoApicNumber].ioapic_address, KILOBYTE_PAGE, KERNEL_PAGE_WRITE_PRESENT);
+
+    IoApicBase = LouKeVMemmorySearchVirtualSpace(ioapics[IoApicNumber].ioapic_address);
 
     ioapics[IoApicNumber].ioapic_vaddress = IoApicBase;
 

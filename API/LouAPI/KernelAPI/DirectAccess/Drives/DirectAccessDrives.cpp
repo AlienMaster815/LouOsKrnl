@@ -375,6 +375,10 @@ LOUSTATUS* State
                     return 0x00;
                 }
             }
+			else if(DEV_ARCH_IDE == Devices[i].DeviceArchitecture){
+				
+				return 0x00;
+			}
             else{
                 LouPrint("Storage Device Not Supported\n");
                 

@@ -199,6 +199,21 @@ uint64_t LouKeVMemmorySearchVirtualSpace(
 );
 
 uint64_t SearchForMappedAddressSize(uint64_t Address);
+void* LouKeAllocateUncachedVMemory(uint64_t NumberOfBytes);
+void* LouKeAllocateUncachedVMemoryEx(
+    uint64_t NumberOfBytes,
+    uint64_t Alignment
+);
+
+void* LouVMallocEx(size_t BytesToAllocate, uint64_t Alignment);
+void* LouVMalloc(size_t BytesToAllocate);
+
+void LouKeMapcontinuousMemmoryBlock(
+    uint64_t PAddress, 
+    uint64_t VAddress,
+    uint64_t size, 
+    uint64_t FLAGS
+);
 
 #ifdef __cplusplus
 }

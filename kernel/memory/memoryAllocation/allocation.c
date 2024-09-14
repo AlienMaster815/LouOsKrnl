@@ -104,7 +104,7 @@ struct master_multiboot_mmap_entry* LouKeGetMemoryMapTable(){
 #define BitMapDivisor 1
 
 static uint64_t* BitMap;
-#define StartMap (10ULL * MEGABYTE)
+#define StartMap (64ULL * MEGABYTE)
 
 
 
@@ -256,6 +256,7 @@ void* LouMallocEx(size_t BytesToAllocate, uint64_t Alignment) {
                         AddressBlock[0].Address = AlignmentCheck;
                         AddressBlock[0].size = BytesToAllocate;
                         AddressesLogged++; // Increment after logging the first address
+                        memset((void*)AlignmentCheck, 0 , BytesToAllocate);
                         return (void*)AlignmentCheck;
                     }
 
@@ -291,6 +292,7 @@ void* LouMallocEx(size_t BytesToAllocate, uint64_t Alignment) {
                                 AddressBlock[i].Address = AlignmentCheck;
                                 AddressBlock[i].size = BytesToAllocate;
                                 //LouPrint("Address:%h\n", AlignmentCheck);
+                                memset((void*)AlignmentCheck, 0 , BytesToAllocate);
                                 return (void*)AlignmentCheck;
                             }
                         }
@@ -304,6 +306,7 @@ void* LouMallocEx(size_t BytesToAllocate, uint64_t Alignment) {
                         AddressBlock[AddressesLogged].size = BytesToAllocate;
                         AddressesLogged++; // Increment after logging the new address
                         //LouPrint("Address:%h\n", AlignmentCheck);
+                        memset((void*)AlignmentCheck, 0 , BytesToAllocate);                    
                         return (void*)AlignmentCheck;
                     }
                 }
@@ -324,8 +327,8 @@ void* LouMalloc(size_t BytesToAllocate) {
 
 void ListUsedAddresses(){
     for(uint32_t i = 0 ; i < AddressesLogged; i++){
-        LouPrint("Address:%h : Size:%h\n",AddressBlock[i].Address,AddressBlock[i].size);
-        sleep(100);
+        LouPrint("Address:%d : Size:%d\n",AddressBlock[i].Address,AddressBlock[i].size);
+        sleep(250);
     }   
 }
 
