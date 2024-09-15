@@ -79,7 +79,6 @@ KERNEL_IMPORT int LouPrint(char *format, ...);
 #include <stdio.h>
 #include <drivers/Lou_drivers/io.h> 
 #include <drivers/Lou_drivers/pci.h>
-#include <drivers/display/IntegratedGPU.h>
 #include <stdlib.h>
 #include <drivers/Lou_drivers/Processor.h>
 #include <KernelAPI/Video.h>
