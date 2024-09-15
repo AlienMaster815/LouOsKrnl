@@ -1,5 +1,6 @@
 #include "VBOX/VBoxVGA.h"
 #include <drivers/display/IntelGpu.h>
+#include <drivers/display/AmdGpu.h>
 
 void InitializeAmdGpu(P_PCI_DEVICE_OBJECT PDEV);
 
