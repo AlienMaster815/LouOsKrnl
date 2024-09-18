@@ -1,9 +1,11 @@
-#include "ObjectID.h"
-#include "atom-bits.h"
 #include "atom.h"
-#include "atom-names.h"
-#include "atombios.h"
-#include "avivod.h"
+#include "r100d.h"
+#include "radeon.h"
+#include "radeon_asic.h"
+#include "radeon_reg.h"
+#include "rs100d.h"
+#include "rv200d.h"
+#include "rv250d.h"
 
 #include <LouDDK.h>
 #include <NtAPI.h>

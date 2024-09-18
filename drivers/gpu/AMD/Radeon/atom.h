@@ -115,7 +115,6 @@
 #define ATOM_IO_IIO		0x80
 
 struct card_info {
-	struct drm_device *dev;
 	void (* reg_write)(struct card_info *, uint32_t, uint32_t);   /*  filled by driver */
         uint32_t (* reg_read)(struct card_info *, uint32_t);          /*  filled by driver */
 	void (* ioreg_write)(struct card_info *, uint32_t, uint32_t);   /*  filled by driver */
