@@ -22,6 +22,7 @@
 #include <Kernel/interrupts.h>
 #include <Kernel/threads.h>
 #include <SharedTypes.h>
+#include <Kernel/DRSD.h>
 
 typedef void* FILE;
 

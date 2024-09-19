@@ -30,6 +30,9 @@
 #ifndef RADEON_MODE_H
 #define RADEON_MODE_H
 
+#include <LouDDK.h>
+#include <NtAPI.h>
+
 //#include <drm/display/drm_dp_helper.h>
 //#include <drm/drm_crtc.h>
 //#include <drm/drm_encoder.h>
@@ -316,7 +319,7 @@ enum radeon_flip_status {
 };
 
 struct radeon_crtc {
-	//struct drm_crtc base;
+	DrsdCrtc base;
 	int crtc_id;
 	bool enabled;
 	bool can_tile;
@@ -336,8 +339,8 @@ struct radeon_crtc {
 	enum radeon_rmx_type rmx_type;
 	uint8_t h_border;
 	uint8_t v_border;
-	//fixed20_12 vsc;
-	//fixed20_12 hsc;
+	//Fixed20_12 vsc;
+	//Fixed20_12 hsc;
 	//struct drm_display_mode native_mode;
 	int pll_id;
 	/* page flipping */
@@ -898,7 +901,7 @@ void radeon_atombios_init_crtc(struct drm_device *dev,
 void radeon_legacy_init_crtc(struct drm_device *dev,
 			     struct radeon_crtc *radeon_crtc);
 
-void radeon_get_clock_info(struct drm_device *dev);
+LOUSTATUS RadeonGetClockInfo(struct drm_device *dev);
 
 extern bool radeon_get_atom_connector_info_from_object_table(struct drm_device *dev);
 extern bool radeon_get_atom_connector_info_from_supported_devices_table(struct drm_device *dev);

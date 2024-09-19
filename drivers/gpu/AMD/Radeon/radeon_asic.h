@@ -34,7 +34,7 @@
 uint32_t radeon_legacy_get_engine_clock(struct radeon_device *rdev);
 void radeon_legacy_set_engine_clock(struct radeon_device *rdev, uint32_t eng_clock);
 uint32_t radeon_legacy_get_memory_clock(struct radeon_device *rdev);
-void radeon_legacy_set_clock_gating(struct radeon_device *rdev, int enable);
+void RadeonLegacySetClockGating(struct radeon_device *rdev, int enable);
 
 uint32_t radeon_atom_get_engine_clock(struct radeon_device *rdev);
 void radeon_atom_set_engine_clock(struct radeon_device *rdev, uint32_t eng_clock);
@@ -87,13 +87,13 @@ struct radeon_fence *r100_copy_blit(struct radeon_device *rdev,
 				    uint64_t dst_offset,
 				    unsigned num_gpu_pages,
 				    struct dma_resv *resv);
-int r100_set_surface_reg(struct radeon_device *rdev, int reg,
+LOUSTATUS R100SetSurfaceReg(struct radeon_device *rdev, int reg,
 			 uint32_t tiling_flags, uint32_t pitch,
 			 uint32_t offset, uint32_t obj_size);
-void r100_clear_surface_reg(struct radeon_device *rdev, int reg);
-void r100_bandwidth_update(struct radeon_device *rdev);
-void r100_ring_ib_execute(struct radeon_device *rdev, struct radeon_ib *ib);
-int r100_ring_test(struct radeon_device *rdev, struct radeon_ring *cp);
+void R100ClearSurfaceReg(struct radeon_device *rdev, int reg);
+void R100BandwidthUpdate(struct radeon_device *rdev);
+void R100RingIbExecute(struct radeon_device *rdev, struct radeon_ib *ib);
+LOUSTATUS R100RingTest(struct radeon_device *rdev, struct radeon_ring *cp);
 void r100_hpd_init(struct radeon_device *rdev);
 void r100_hpd_fini(struct radeon_device *rdev);
 bool r100_hpd_sense(struct radeon_device *rdev, enum radeon_hpd_id hpd);
@@ -104,16 +104,16 @@ void r100_debugfs_cp_init(struct radeon_device *rdev);
 void r100_cp_disable(struct radeon_device *rdev);
 int r100_cp_init(struct radeon_device *rdev, unsigned ring_size);
 void r100_cp_fini(struct radeon_device *rdev);
-int r100_pci_gart_init(struct radeon_device *rdev);
+LOUSTATUS R100PciGartInit(struct radeon_device *rdev);
 void r100_pci_gart_fini(struct radeon_device *rdev);
 int r100_pci_gart_enable(struct radeon_device *rdev);
 void r100_pci_gart_disable(struct radeon_device *rdev);
 void  r100_debugfs_mc_info_init(struct radeon_device *rdev);
 int r100_gui_wait_for_idle(struct radeon_device *rdev);
-int r100_ib_test(struct radeon_device *rdev, struct radeon_ring *ring);
+LOUSTATUS R100IbTest(struct radeon_device *rdev, struct radeon_ring *ring);
 void r100_irq_disable(struct radeon_device *rdev);
-void r100_mc_stop(struct radeon_device *rdev, struct r100_mc_save *save);
-void r100_mc_resume(struct radeon_device *rdev, struct r100_mc_save *save);
+void R100McStop(struct radeon_device *rdev, struct r100_mc_save *save);
+void R100McResume(struct radeon_device *rdev, struct r100_mc_save *save);
 void r100_vram_init_sizes(struct radeon_device *rdev);
 int r100_cp_reset(struct radeon_device *rdev);
 void r100_vga_render_disable(struct radeon_device *rdev);
@@ -141,7 +141,7 @@ extern void r100_page_flip(struct radeon_device *rdev, int crtc,
 			   uint64_t crtc_base, bool async);
 extern bool r100_page_flip_pending(struct radeon_device *rdev, int crtc);
 extern void r100_wait_for_vblank(struct radeon_device *rdev, int crtc);
-extern int r100_mc_wait_for_idle(struct radeon_device *rdev);
+LOUSTATUS R100McWaitForIdle(struct radeon_device *rdev);
 
 uint32_t r100_gfx_get_rptr(struct radeon_device *rdev,
 		      struct radeon_ring *ring);

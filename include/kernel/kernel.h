@@ -29,6 +29,8 @@
 #include "threads.h"
 #include "exec.h"
 
+#include "DRSD.h"
+
 #define KERNEL_ENTRY extern void
 
 #ifdef __x86_64__

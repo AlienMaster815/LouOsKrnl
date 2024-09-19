@@ -149,7 +149,7 @@ extern int radeon_bo_pin_restricted(struct radeon_bo *bo, uint32_t domain,
 extern void radeon_bo_unpin(struct radeon_bo *bo);
 extern int radeon_bo_evict_vram(struct radeon_device *rdev);
 extern void radeon_bo_force_delete(struct radeon_device *rdev);
-extern int radeon_bo_init(struct radeon_device *rdev);
+LOUSTATUS RadeonBoInit(struct radeon_device *rdev);
 extern void radeon_bo_fini(struct radeon_device *rdev);
 extern int radeon_bo_list_validate(struct radeon_device *rdev,
 				   struct ww_acquire_ctx *ticket,
