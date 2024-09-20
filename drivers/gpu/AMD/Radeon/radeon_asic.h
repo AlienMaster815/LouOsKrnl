@@ -62,9 +62,9 @@ int r100_init(struct radeon_device *rdev);
 void r100_fini(struct radeon_device *rdev);
 int r100_suspend(struct radeon_device *rdev);
 int r100_resume(struct radeon_device *rdev);
-void r100_vga_set_state(struct radeon_device *rdev, bool state);
-bool r100_gpu_is_lockup(struct radeon_device *rdev, struct radeon_ring *cp);
-int r100_asic_reset(struct radeon_device *rdev, bool hard);
+void R100VgaSetState(struct radeon_device *rdev, bool state);
+bool R100GpuIsLockup(struct radeon_device *rdev, struct radeon_ring *cp);
+LOUSTATUS R100AsicReset(struct radeon_device *rdev, bool hard);
 uint32_t r100_get_vblank_counter(struct radeon_device *rdev, int crtc);
 void r100_pci_gart_tlb_flush(struct radeon_device *rdev);
 uint64_t r100_pci_gart_get_page_entry(uint64_t addr, uint32_t flags);
@@ -80,8 +80,8 @@ bool r100_semaphore_ring_emit(struct radeon_device *rdev,
 			      struct radeon_semaphore *semaphore,
 			      bool emit_wait);
 int r100_cs_parse(struct radeon_cs_parser *p);
-void r100_pll_wreg(struct radeon_device *rdev, uint32_t reg, uint32_t v);
-uint32_t r100_pll_rreg(struct radeon_device *rdev, uint32_t reg);
+void R100PllWReg(struct radeon_device *rdev, uint32_t reg, uint32_t v);
+uint32_t R100PllRReg(struct radeon_device *rdev, uint32_t reg);
 struct radeon_fence *r100_copy_blit(struct radeon_device *rdev,
 				    uint64_t src_offset,
 				    uint64_t dst_offset,
@@ -114,7 +114,7 @@ LOUSTATUS R100IbTest(struct radeon_device *rdev, struct radeon_ring *ring);
 void r100_irq_disable(struct radeon_device *rdev);
 void R100McStop(struct radeon_device *rdev, struct r100_mc_save *save);
 void R100McResume(struct radeon_device *rdev, struct r100_mc_save *save);
-void r100_vram_init_sizes(struct radeon_device *rdev);
+void R100VRamInitSizes(struct radeon_device *rdev);
 int r100_cp_reset(struct radeon_device *rdev);
 void r100_vga_render_disable(struct radeon_device *rdev);
 void r100_restore_sanity(struct radeon_device *rdev);
@@ -129,7 +129,7 @@ int r100_cs_packet_parse(struct radeon_cs_parser *p,
 			 struct radeon_cs_packet *pkt,
 			 unsigned idx);
 void r100_enable_bm(struct radeon_device *rdev);
-void r100_set_common_regs(struct radeon_device *rdev);
+void R100SetCommonRegs(struct radeon_device *rdev);
 void r100_bm_disable(struct radeon_device *rdev);
 extern bool r100_gui_idle(struct radeon_device *rdev);
 extern void r100_pm_misc(struct radeon_device *rdev);
@@ -158,7 +158,7 @@ struct radeon_fence *r200_copy_dma(struct radeon_device *rdev,
 				   uint64_t dst_offset,
 				   unsigned num_gpu_pages,
 				   struct dma_resv *resv);
-void r200_set_safe_registers(struct radeon_device *rdev);
+void R200SetSafeRegisters(struct radeon_device *rdev);
 
 /*
  * r300,r350,rv350,rv380

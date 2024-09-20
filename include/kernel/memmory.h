@@ -215,6 +215,9 @@ void LouKeMapcontinuousMemmoryBlock(
     uint64_t FLAGS
 );
 
+uint64_t LouKeVMemmoryGetSize(uint64_t VAddress);
+
+
 #ifdef __cplusplus
 }
 #endif

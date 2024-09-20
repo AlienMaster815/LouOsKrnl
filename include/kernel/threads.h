@@ -35,9 +35,17 @@ static inline void MutexUnlock(mutex_t* m){
     m->locked = false;
 }
 
+typedef struct {
+    mutex_t Lock;
+}spinlock_t;
+
+void LouKeAcquireSpinLock(spinlock_t* LockValue, LouKIRQL* Irql);
+void LouKeReleaseSpinLock(spinlock_t* LockValue, LouKIRQL* Irql);
+
 #ifdef __cplusplus
 }
 #endif
+
 
 typedef enum{
     KERNEL_THREAD = 1,

@@ -9,8 +9,167 @@
 
 #include <LouDDK.h>
 #include <NtAPI.h>
+#include <Hal.h>
 
 #include "r100_track.h"
+
+//2547
+bool R100GpuIsLockup(struct radeon_device *rdev, struct radeon_ring *cp){
+
+
+
+    return true;
+}
+
+void R100EnableBm(
+    struct radeon_device* rdev
+){
+	uint32_t tmp;
+	/* Enable bus mastering */
+	tmp = RREG32(RADEON_BUS_CNTL) & ~RADEON_BUS_MASTER_DIS;
+	WREG32(RADEON_BUS_CNTL, tmp);
+}
+
+void R100BmDisable(struct radeon_device* rdev){
+    uint32_t tmp;
+	/* disable bus mastering */
+	tmp = RREG32(R_000030_BUS_CNTL);
+	WREG32(R_000030_BUS_CNTL, (tmp & 0xFFFFFFFF) | 0x00000044);
+	sleep(2);
+	WREG32(R_000030_BUS_CNTL, (tmp & 0xFFFFFFFF) | 0x00000042);
+	sleep(2);
+	WREG32(R_000030_BUS_CNTL, (tmp & 0xFFFFFFFF) | 0x00000040);
+	tmp = RREG32(RADEON_BUS_CNTL);
+	sleep(2);
+	LouKeHalPciClearMaster(rdev->pdev);
+	sleep(2);
+}
+
+LOUSTATUS R100AsicReset(struct radeon_device *rdev, bool hard){
+
+    struct r100_mc_save save;
+	uint32_t status, tmp;
+	LOUSTATUS LouStatus = 0;
+
+	status = RREG32(R_000E40_RBBM_STATUS);
+	if (!G_000E40_GUI_ACTIVE(status)) {
+		return 0;
+	}
+	R100McStop(rdev, &save);
+	status = RREG32(R_000E40_RBBM_STATUS);
+	LouPrint("(%s:%d) RBBM_STATUS=%h\n", __func__, __LINE__, status);
+	/* stop CP */
+	WREG32(RADEON_CP_CSQ_CNTL, 0);
+	tmp = RREG32(RADEON_CP_RB_CNTL);
+	WREG32(RADEON_CP_RB_CNTL, tmp | RADEON_RB_RPTR_WR_ENA);
+	WREG32(RADEON_CP_RB_RPTR_WR, 0);
+	WREG32(RADEON_CP_RB_WPTR, 0);
+	WREG32(RADEON_CP_RB_CNTL, tmp);
+	/* save PCI state */
+    LouKIRQL OldIrq;
+	LouKeAcquireSpinLock(&rdev->PciLock, &OldIrq);
+    PPCI_CONTEXT Context = LouKeHalPciSaveContext(rdev->pdev);
+	/* disable bus mastering */
+	R100BmDisable(rdev);
+	WREG32(R_0000F0_RBBM_SOFT_RESET, S_0000F0_SOFT_RESET_SE(1) |
+					S_0000F0_SOFT_RESET_RE(1) |
+					S_0000F0_SOFT_RESET_PP(1) |
+					S_0000F0_SOFT_RESET_RB(1));
+	RREG32(R_0000F0_RBBM_SOFT_RESET);
+	sleep(500);
+	WREG32(R_0000F0_RBBM_SOFT_RESET, 0);
+	sleep(2);
+	status = RREG32(R_000E40_RBBM_STATUS);
+	LouPrint("(%s:%d) RBBM_STATUS=%h\n", __func__, __LINE__, status);
+	/* reset CP */
+	WREG32(R_0000F0_RBBM_SOFT_RESET, S_0000F0_SOFT_RESET_CP(1));
+	RREG32(R_0000F0_RBBM_SOFT_RESET);
+	sleep(500);
+	WREG32(R_0000F0_RBBM_SOFT_RESET, 0);
+	sleep(2);
+	status = RREG32(R_000E40_RBBM_STATUS);
+	LouPrint("(%s:%d) RBBM_STATUS=%h\n", __func__, __LINE__, status);
+	/* restore PCI & busmastering */
+    LouKeHalPciRestoreContext(Context);
+	LouKeReleaseSpinLock(&rdev->PciLock, &OldIrq);
+	R100EnableBm(rdev);
+	/* Check if GPU is idle */
+	if (G_000E40_SE_BUSY(status) || G_000E40_RE_BUSY(status) ||
+		G_000E40_TAM_BUSY(status) || G_000E40_PB_BUSY(status)) {
+		LouPrint("failed to reset GPU\n");
+		LouStatus = STATUS_UNSUCCESSFUL;
+	} else{
+		LouPrint("GPU reset succeed\n");
+    }
+	R100McResume(rdev, &save);
+
+    return LouStatus;
+}
+
+void R100VgaSetState(struct radeon_device *rdev, bool state){
+	uint32_t temp;
+	temp = RREG32(RADEON_CONFIG_CNTL);
+	if (!state) {
+		temp &= ~RADEON_CFG_VGA_RAM_EN;
+		temp |= RADEON_CFG_VGA_IO_DIS;
+	} else {
+		temp &= ~RADEON_CFG_VGA_IO_DIS;
+	}
+	WREG32(RADEON_CONFIG_CNTL, temp);	
+}
+
+void R100PllErrataAfterIndex(struct radeon_device *rdev){
+    if (rdev->pll_errata & CHIP_ERRATA_PLL_DUMMYREADS) {
+		(void)RREG32(RADEON_CLOCK_CNTL_DATA);
+		(void)RREG32(RADEON_CRTC_GEN_CNTL);
+	}
+
+}
+
+void R100PllErrataAfterData(struct radeon_device* rdev){
+    /* This workarounds is necessary on RV100, RS100 and RS200 chips
+	 * or the chip could hang on a subsequent access
+	 */
+	if (rdev->pll_errata & CHIP_ERRATA_PLL_DELAY) {
+		sleep(5);
+	}
+	/* This function is required to workaround a hardware bug in some (all?)
+	 * revisions of the R300.  This workaround should be called after every
+	 * CLOCK_CNTL_INDEX register access.  If not, register reads afterward
+	 * may not be correct.
+	 */
+	if (rdev->pll_errata & CHIP_ERRATA_R300_CG) {
+		uint32_t save, tmp;
+
+		save = RREG32(RADEON_CLOCK_CNTL_INDEX);
+		tmp = save & ~(0x3f | RADEON_PLL_WR_EN);
+		WREG32(RADEON_CLOCK_CNTL_INDEX, tmp);
+		tmp = RREG32(RADEON_CLOCK_CNTL_DATA);
+		WREG32(RADEON_CLOCK_CNTL_INDEX, save);
+	}
+}
+
+uint32_t R100PllRReg(struct radeon_device *rdev, uint32_t reg){
+    LouKIRQL CurrentIrql;
+    uint32_t Data;
+    LouKeAcquireSpinLock(&rdev->pll_idx_lock, &CurrentIrql);
+    WREG8(RADEON_CLOCK_CNTL_INDEX, reg & 0x3f);
+	R100PllErrataAfterIndex(rdev);
+    Data = RREG32(RADEON_CLOCK_CNTL_DATA);
+	R100PllErrataAfterData(rdev);
+	LouKeReleaseSpinLock(&rdev->pll_idx_lock, &CurrentIrql);
+    return Data;
+}
+
+void R100PllWReg(struct radeon_device *rdev, uint32_t reg, uint32_t v){
+    LouKIRQL CurrentIrql;
+    LouKeAcquireSpinLock(&rdev->pll_idx_lock, &CurrentIrql);
+	WREG8(RADEON_CLOCK_CNTL_INDEX, ((reg & 0x3f) | RADEON_PLL_WR_EN));
+	R100PllErrataAfterIndex(rdev);
+	WREG32(RADEON_CLOCK_CNTL_DATA, v);
+	R100PllErrataAfterData(rdev);
+	LouKeReleaseSpinLock(&rdev->pll_idx_lock, &CurrentIrql);
+}
 
 LOUSTATUS R100SetSurfaceReg(struct radeon_device *rdev, int reg,
 			 uint32_t tiling_flags, uint32_t pitch,
@@ -735,12 +894,6 @@ LOUSTATUS R100PciGartEnable(
     return Status;
 }
 
-void R100EnableBm(
-    struct radeon_device* rdev
-){
-
-}
-
 static void R100ClockStartup(
     struct radeon_device* rdev
 ){
@@ -793,7 +946,88 @@ void R100McProgram(
 void R100SetCommonRegs(
     struct radeon_device* rdev
 ){
+    bool force_dac2 = false;
+	uint32_t tmp;
 
+    PPCI_COMMON_CONFIG PciConfig = (PPCI_COMMON_CONFIG)LouMalloc(sizeof(PCI_COMMON_CONFIG));
+    GetPciConfiguration(rdev->pdev->bus,rdev->pdev->slot, rdev->pdev->func, PciConfig);
+
+	/* set these so they don't interfere with anything */
+	WREG32(RADEON_OV0_SCALE_CNTL, 0);
+	WREG32(RADEON_SUBPIC_CNTL, 0);
+	WREG32(RADEON_VIPH_CONTROL, 0);
+	WREG32(RADEON_I2C_CNTL_1, 0);
+	WREG32(RADEON_DVI_I2C_CNTL_1, 0);
+	WREG32(RADEON_CAP0_TRIG_CNTL, 0);
+	WREG32(RADEON_CAP1_TRIG_CNTL, 0);
+
+	/* always set up dac2 on rn50 and some rv100 as lots
+	 * of servers seem to wire it up to a VGA port but
+	 * don't report it in the bios connector
+	 * table.
+	 */
+	switch (PciConfig->Header.DeviceID) {
+		/* RN50 */
+	case 0x515e:
+	case 0x5969:
+		force_dac2 = true;
+		break;
+		/* RV100*/
+	case 0x5159:
+	case 0x515a:
+		/* DELL triple head servers */
+		if ((PciConfig->Header.u.type0.SubVendorID == 0x1028 /* DELL */) &&
+		    ((PciConfig->Header.u.type0.SubSystemID == 0x016c) ||
+		     (PciConfig->Header.u.type0.SubSystemID == 0x016d) ||
+		     (PciConfig->Header.u.type0.SubSystemID == 0x016e) ||
+		     (PciConfig->Header.u.type0.SubSystemID == 0x016f) ||
+		     (PciConfig->Header.u.type0.SubSystemID == 0x0170) ||
+		     (PciConfig->Header.u.type0.SubSystemID == 0x017d) ||
+		     (PciConfig->Header.u.type0.SubSystemID == 0x017e) ||
+		     (PciConfig->Header.u.type0.SubSystemID == 0x0183) ||
+		     (PciConfig->Header.u.type0.SubSystemID == 0x018a) ||
+		     (PciConfig->Header.u.type0.SubSystemID == 0x019a)))
+			force_dac2 = true;
+		break;
+	}
+
+	if (force_dac2) {
+		uint32_t disp_hw_debug = RREG32(RADEON_DISP_HW_DEBUG);
+		uint32_t tv_dac_cntl = RREG32(RADEON_TV_DAC_CNTL);
+		uint32_t dac2_cntl = RREG32(RADEON_DAC_CNTL2);
+
+		/* For CRT on DAC2, don't turn it on if BIOS didn't
+		   enable it, even it's detected.
+		*/
+
+		/* force it to crtc0 */
+		dac2_cntl &= ~RADEON_DAC2_DAC_CLK_SEL;
+		dac2_cntl |= RADEON_DAC2_DAC2_CLK_SEL;
+		disp_hw_debug |= RADEON_CRT2_DISP1_SEL;
+
+		/* set up the TV DAC */
+		tv_dac_cntl &= ~(RADEON_TV_DAC_PEDESTAL |
+				 RADEON_TV_DAC_STD_MASK |
+				 RADEON_TV_DAC_RDACPD |
+				 RADEON_TV_DAC_GDACPD |
+				 RADEON_TV_DAC_BDACPD |
+				 RADEON_TV_DAC_BGADJ_MASK |
+				 RADEON_TV_DAC_DACADJ_MASK);
+		tv_dac_cntl |= (RADEON_TV_DAC_NBLANK |
+				RADEON_TV_DAC_NHOLD |
+				RADEON_TV_DAC_STD_PS2 |
+				(0x58 << 16));
+
+		WREG32(RADEON_TV_DAC_CNTL, tv_dac_cntl);
+		WREG32(RADEON_DISP_HW_DEBUG, disp_hw_debug);
+		WREG32(RADEON_DAC_CNTL2, dac2_cntl);
+	}
+
+	/* switch PM block to ACPI mode */
+	tmp = RREG32_PLL(RADEON_PLL_PWRMGT_CNTL);
+	tmp &= ~RADEON_PM_MODE_SEL;
+	WREG32_PLL(RADEON_PLL_PWRMGT_CNTL, tmp);
+    LouFree((RAMADD)PciConfig);
 }
 
 void R100VgaRenderDisable(
@@ -841,28 +1075,123 @@ LOUSTATUS R100Errata(
     return Status;
 }
 
-LOUSTATUS R100McInit(
+void R100VRamGetType(struct radeon_device* rdev){
+
+}
+
+uint64_t R100GetAccessibleVRam(struct radeon_device* rdev){
+
+    uint64_t tmp;
+    rdev->mc.vram_is_ddr = false;
+	if (rdev->flags & RADEON_IS_IGP){
+		rdev->mc.vram_is_ddr = true;
+    }
+	else if (RREG32(RADEON_MEM_SDRAM_MODE_REG) & RADEON_MEM_CFG_TYPE_DDR){
+		rdev->mc.vram_is_ddr = true;
+    }
+    if ((rdev->family == CHIP_RV100) ||
+	    (rdev->family == CHIP_RS100) ||
+	    (rdev->family == CHIP_RS200)) {
+		tmp = RREG32(RADEON_MEM_CNTL);
+		if (tmp & RV100_HALF_MODE) {
+			rdev->mc.vram_width = 32;
+		} else {
+			rdev->mc.vram_width = 64;
+		}
+		if (rdev->flags & RADEON_SINGLE_CRTC) {
+			rdev->mc.vram_width /= 4;
+			rdev->mc.vram_is_ddr = true;
+		}
+	} else if (rdev->family <= CHIP_RV280) {
+		tmp = RREG32(RADEON_MEM_CNTL);
+		if (tmp & RADEON_MEM_NUM_CHANNELS_MASK) {
+			rdev->mc.vram_width = 128;
+		} else {
+			rdev->mc.vram_width = 64;
+		}
+	} else {
+		/* newer IGPs */
+		rdev->mc.vram_width = 128;
+	}
+    return 0;
+}
+
+void R100VRamInitSizes(struct radeon_device *rdev){
+    UNUSED uint64_t config_aper_size;
+
+    PPCI_COMMON_CONFIG PciConfig = (PPCI_COMMON_CONFIG)LouMalloc(sizeof(PCI_COMMON_CONFIG));
+    GetPciConfiguration(rdev->pdev->bus,rdev->pdev->slot,rdev->pdev->func,PciConfig);
+	/* work out accessible VRAM */
+	rdev->mc.aper_base = (uint64_t)LouKeHalGetPciVirtualBaseAddress(PciConfig, 0);
+	rdev->mc.aper_size = LouKeVMemmoryGetSize(rdev->mc.aper_base);
+	rdev->mc.visible_vram_size = R100GetAccessibleVRam(rdev);
+	/* FIXME we don't use the second aperture yet when we could use it */
+	if (rdev->mc.visible_vram_size > rdev->mc.aper_size){
+		rdev->mc.visible_vram_size = rdev->mc.aper_size;
+    }
+	config_aper_size = RREG32(RADEON_CONFIG_APER_SIZE);
+	if (rdev->flags & RADEON_IS_IGP) {
+		uint32_t tom;
+		/* read NB_TOM to get the amount of ram stolen for the GPU */
+		tom = RREG32(RADEON_NB_TOM);
+		rdev->mc.real_vram_size = (((tom >> 16) - (tom & 0xffff) + 1) << 16);
+		WREG32(RADEON_CONFIG_MEMSIZE, rdev->mc.real_vram_size);
+		rdev->mc.mc_vram_size = rdev->mc.real_vram_size;
+	} else {
+		rdev->mc.real_vram_size = RREG32(RADEON_CONFIG_MEMSIZE);
+		/* Some production boards of m6 will report 0
+		 * if it's 8 MB
+		 */
+		if (rdev->mc.real_vram_size == 0) {
+			rdev->mc.real_vram_size = 8192 * 1024;
+			WREG32(RADEON_CONFIG_MEMSIZE, rdev->mc.real_vram_size);
+		}
+		/* Fix for RN50, M6, M7 with 8/16/32(??) MBs of VRAM -
+		 * Novell bug 204882 + along with lots of ubuntu ones
+		 */
+		if (rdev->mc.aper_size > config_aper_size){
+			config_aper_size = rdev->mc.aper_size;
+        }
+		if (config_aper_size > rdev->mc.real_vram_size){
+			rdev->mc.mc_vram_size = config_aper_size;
+        }
+		else{
+			rdev->mc.mc_vram_size = rdev->mc.real_vram_size;
+        }
+	}
+    LouFree((RAMADD)PciConfig);
+}
+
+void R100McInit(
     struct radeon_device* rdev
 ){  
-    LOUSTATUS Status = STATUS_SUCCESS;
+    UNUSED uint64_t base;
 
-
-
-    return Status;
+    R100VRamGetType(rdev);
+	R100VRamInitSizes(rdev);
+	base = rdev->mc.aper_base;
+	if (rdev->flags & RADEON_IS_IGP){
+		base = (RREG32(RADEON_NB_TOM) & 0xffff) << 16;
+    }
+	RadeonVRamLocation(rdev, (struct radeon_mc*)LouKeCastToUnalignedPointer(&rdev->mc), base);
+	rdev->mc.gtt_base_align = 0;
+	if (!(rdev->flags & RADEON_IS_AGP)){
+		RadeonGttLocation(rdev, (struct radeon_mc*)LouKeCastToUnalignedPointer(&rdev->mc));
+    }
+	RadeonUpdateBandwidthInfo(rdev);
 }
 
 static void R100SetSafeRegisters(
     struct radeon_device* rdev
 ){
-
 	if (ASIC_IS_RN50(rdev)) {
-		//rdev->config.r100.reg_safe_bm = rn50_reg_safe_bm;
-		//rdev->config.r100.reg_safe_bm_size = ARRAY_SIZE(rn50_reg_safe_bm);
+		rdev->config.r100.reg_safe_bm = rn50_reg_safe_bm;
+		rdev->config.r100.reg_safe_bm_size = ARRAY_SIZE(rn50_reg_safe_bm);
 	} else if (rdev->family < CHIP_R200) {
-		//rdev->config.r100.reg_safe_bm = r100_reg_safe_bm;
-		//rdev->config.r100.reg_safe_bm_size = ARRAY_SIZE(r100_reg_safe_bm);
+		rdev->config.r100.reg_safe_bm = r100_reg_safe_bm;
+		rdev->config.r100.reg_safe_bm_size = ARRAY_SIZE(r100_reg_safe_bm);
 	} else {
-		//r200_set_safe_registers(rdev);
+		R200SetSafeRegisters(rdev);
 	}
 }
 
@@ -984,8 +1313,7 @@ LOUSTATUS InitializeAmdR100Gpu(
         }
     }
     //initialize VRAM
-    Status = R100McInit(rdev);
-    if(!NT_SUCCESS(Status))return STATUS_UNSUCCESSFUL;
+    R100McInit(rdev);
     //fence driver
     Status = RadeonFenceDriverInit(rdev);
     if(!NT_SUCCESS(Status))return STATUS_UNSUCCESSFUL;
@@ -1038,4 +1366,3 @@ void R100IoWReg(struct radeon_device* rdev, uint32_t Reg, uint32_t Value){
         WRITE_REGISTER_ULONG((PULONG)((uintptr_t)rdev->rio_mem + RADEON_MM_DATA), Value);
     }
 }
-

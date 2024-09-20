@@ -72,6 +72,64 @@ struct drm_suballoc{
 	void* Manager;
 };
 
+static const unsigned rn50_reg_safe_bm[102] = {
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0x17FF1FFF, 0xFFFFFFFC, 0xFFFFFFFF, 0xFF30FFBF,
+	0xFFFFFFF8, 0xC3E6FFFF, 0xFFFFF6DF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF,
+};
+
+static const unsigned r100_reg_safe_bm[102] = {
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0x17FF1FFF, 0xFFFFFFFC, 0xFFFFFFFF, 0xFF30FFBF,
+	0xFFFFFFF8, 0xC3E6FFFF, 0xFFFFF6DF, 0xFFFFFFFF,
+	0xFFFFFFCF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFF9F, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0x38E7FE1F, 0xFFC3FF8E, 0x7FF8FFFF, 0xFFFF803C,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFEFFFF, 0xFFFFFFFF,
+	0x00000000, 0xFFFFFFFD, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFCFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFEF,
+};
+
 #ifdef CONFIG_MMU_NOTIFIER
 
 #endif
@@ -632,8 +690,8 @@ void radeon_gart_unbind(struct radeon_device *rdev, unsigned offset,
  */
 struct radeon_mc {
 	size_t				aper_size;
-	size_t				aper_base;
-	size_t				agp_base;
+	uint64_t				aper_base;
+	uint64_t				agp_base;
 	/* for some chips with <= 32MB we need to lie
 	 * about vram size near mc fb location */
 	uint64_t			mc_vram_size;
@@ -2320,29 +2378,31 @@ struct radeon_device {
 	size_t			rmmio_base;
 	size_t			rmmio_size;
 	/* protects concurrent MM_INDEX/DATA based register access */
-	//spinlock_t mmio_idx_lock;
+	spinlock_t mmio_idx_lock;
 	/* protects concurrent SMC based register access */
-	//spinlock_t smc_idx_lock;
+	spinlock_t smc_idx_lock;
 	/* protects concurrent PLL register access */
-	//spinlock_t pll_idx_lock;
+	spinlock_t pll_idx_lock;
 	/* protects concurrent MC register access */
-	//spinlock_t mc_idx_lock;
+	spinlock_t mc_idx_lock;
 	/* protects concurrent PCIE register access */
-	//spinlock_t pcie_idx_lock;
+	spinlock_t pcie_idx_lock;
 	/* protects concurrent PCIE_PORT register access */
-	//spinlock_t pciep_idx_lock;
+	spinlock_t pciep_idx_lock;
 	/* protects concurrent PIF register access */
-	//spinlock_t pif_idx_lock;
+	spinlock_t pif_idx_lock;
 	/* protects concurrent CG register access */
-	//spinlock_t cg_idx_lock;
+	spinlock_t cg_idx_lock;
 	/* protects concurrent UVD register access */
-	//spinlock_t uvd_idx_lock;
+	spinlock_t uvd_idx_lock;
 	/* protects concurrent RCU register access */
-	//spinlock_t rcu_idx_lock;
+	spinlock_t rcu_idx_lock;
 	/* protects concurrent DIDT register access */
-	//spinlock_t didt_idx_lock;
+	spinlock_t didt_idx_lock;
 	/* protects concurrent ENDPOINT (audio) register access */
-	//spinlock_t end_idx_lock;
+	spinlock_t end_idx_lock;
+	//Pci Spinlock
+	spinlock_t PciLock;
 	void			        *rmmio;
 	radeon_rreg_t			mc_rreg;
 	radeon_wreg_t			mc_wreg;
@@ -2364,7 +2424,7 @@ struct radeon_device {
 	struct radeon_fence_driver	fence_drv[RADEON_NUM_RINGS];
 	//wait_queue_head_t		fence_queue;
 	uint64_t				fence_context;
-	////struct mutex			ring_lock;
+	mutex_t			ring_lock;
 	struct radeon_ring		ring[RADEON_NUM_RINGS];
 	bool				ib_pool_ready;
 	struct radeon_sa_manager	ring_tmp_bo;
@@ -2581,8 +2641,7 @@ void r600_uvd_ctx_wreg(struct radeon_device *rdev, uint32_t reg, uint32_t v);
 uint32_t cik_didt_rreg(struct radeon_device *rdev, uint32_t reg);
 void cik_didt_wreg(struct radeon_device *rdev, uint32_t reg, uint32_t v);
 
-void r100_pll_errata_after_index(struct radeon_device *rdev);
-
+void R100PllErrataAfterIndex(struct radeon_device *rdev);
 
 /*
  * ASICs helpers.
@@ -2784,7 +2843,7 @@ extern void radeon_agp_disable(struct radeon_device *rdev);
 extern int radeon_modeset_init(struct radeon_device *rdev);
 extern void radeon_modeset_fini(struct radeon_device *rdev);
 extern bool radeon_card_posted(struct radeon_device *rdev);
-extern void radeon_update_bandwidth_info(struct radeon_device *rdev);
+void RadeonUpdateBandwidthInfo(struct radeon_device *rdev);
 void RadeonUpdateDisplayPriority(struct radeon_device *rdev);
 bool RadeonBootTestPostCard(struct radeon_device *rdev);
 extern void radeon_scratch_init(struct radeon_device *rdev);
@@ -2805,8 +2864,8 @@ extern int radeon_ttm_tt_set_userptr(struct radeon_device *rdev,
 extern bool radeon_ttm_tt_has_userptr(struct radeon_device *rdev, struct ttm_tt *ttm);
 extern bool radeon_ttm_tt_is_readonly(struct radeon_device *rdev, struct ttm_tt *ttm);
 bool radeon_ttm_tt_is_bound(struct ttm_device *bdev, struct ttm_tt *ttm);
-extern void radeon_vram_location(struct radeon_device *rdev, struct radeon_mc *mc, uint64_t base);
-extern void radeon_gtt_location(struct radeon_device *rdev, struct radeon_mc *mc);
+void RadeonVRamLocation(struct radeon_device *rdev, struct radeon_mc *mc, uint64_t base);
+void RadeonGttLocation(struct radeon_device *rdev, struct radeon_mc *mc);
 extern int radeon_resume_kms(struct drm_device *dev, bool resume, bool fbcon);
 extern int radeon_suspend_kms(struct drm_device *dev, bool suspend,
 			      bool fbcon, bool freeze);

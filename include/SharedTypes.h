@@ -37,6 +37,7 @@ typedef struct _Fixed20_12{
 #define DFixedConstHalf(x)  (((x) << 12) + (1 << 11))
 #define DFixedTrunc(value) ((value).FULL >> 12)
 #define DIV_ROUND_UP(n, d) (((n) + (d) - 1) / (d))
+#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 
 static inline Fixed20_12 DFixedInit(int32_t value) {
     Fixed20_12 result;

@@ -196,6 +196,12 @@ typedef struct _PCI_COMMON_CONFIG {
     PCI_COMMON_HEADER Header;
     UCHAR   DeviceSpecific[192];
 } PCI_COMMON_CONFIG, *PPCI_COMMON_CONFIG;
+
+typedef struct __attribute__((packed)) _PCI_CONTEXT{
+    PCI_COMMON_CONFIG PciConfig;
+    void* PDEV;
+}PCI_CONTEXT, * PPCI_CONTEXT;
+
 #endif
 
 typedef struct _GROUP_AFFINITY {

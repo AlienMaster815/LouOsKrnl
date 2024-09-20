@@ -37,6 +37,15 @@ uint64_t LouKeVMemmorySearchVirtualSpace(
     return 0x00;
 }
 
+uint64_t LouKeVMemmoryGetSize(uint64_t VAddress){
+    for(uint32_t i = 0 ; i < VAllocations; i++){
+        if(IOBlock[i].VAddress == VAddress){
+            return IOBlock[i].size;
+        }
+    }
+    return 0x00;
+}
+
 void LouKeMapcontinuousMemmoryBlock(
     uint64_t PAddress, 
     uint64_t VAddress,

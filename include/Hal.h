@@ -14,4 +14,16 @@ void LouKeHalRegisterPCiDevice(
     P_PCI_DEVICE_OBJECT PDEV
 );
 
+PPCI_CONTEXT LouKeHalPciSaveContext(
+    P_PCI_DEVICE_OBJECT PDEV
+);
+
+void LouKeHalPciRestoreContext(
+    PPCI_CONTEXT PciContext
+);
+
+void LouKeHalPciClearMaster(
+    P_PCI_DEVICE_OBJECT PDEV
+);
+
 #endif //HAL_H

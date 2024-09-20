@@ -165,3 +165,15 @@ bool hdp_flush
 void RadeonUpdateDisplayPriority(struct radeon_device *rdev){
     
 }
+
+void RadeonGttLocation(struct radeon_device *rdev, struct radeon_mc *mc){
+
+}
+
+void RadeonVRamLocation(struct radeon_device *rdev, struct radeon_mc *mc, uint64_t base){
+
+}
+
+void RadeonUpdateBandwidthInfo(struct radeon_device *rdev){
+    
+}

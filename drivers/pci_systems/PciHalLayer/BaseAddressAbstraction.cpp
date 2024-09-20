@@ -1,5 +1,6 @@
 #include <LouDDK.h>
 #include <NtAPI.h>
+#include <Hal.h>
 
 #define BUS PDEV->bus
 #define SLOT PDEV->slot
@@ -114,16 +115,19 @@ void PciSetPowerModeD0(
     }
 }
 
+static spinlock_t Lock;
+
 void LouKeHalRegisterPCiDevice(
     P_PCI_DEVICE_OBJECT PDEV
 ){
     PPCI_COMMON_CONFIG Config = (PPCI_COMMON_CONFIG)LouMalloc(sizeof(PCI_COMMON_CONFIG));
     uint32_t BarSize = 0x00;
     uint8_t Flags;
+    LouKIRQL OldIrql;
+    LouKeAcquireSpinLock(&Lock, &OldIrql);
     GetPciConfiguration(PDEV->bus, PDEV->slot, PDEV->func, Config);
-
+    PPCI_CONTEXT Context = LouKeHalPciSaveContext(PDEV);
     PciSetPowerModeD0(PDEV);
-
     //LouPrint("Bar Address Is:%h\n", BarAddress);
     if(Config->Header.HeaderType == 0){
         for(uint8_t i = 0 ; i < 6; i++){
@@ -198,6 +202,8 @@ void LouKeHalRegisterPCiDevice(
         }
     }
     LouFree((RAMADD)Config);
+    LouKeHalPciRestoreContext(Context);
+    LouKeReleaseSpinLock(&Lock, &OldIrql);
 }
 
 void* LouKeHalGetPciVirtualBaseAddress(

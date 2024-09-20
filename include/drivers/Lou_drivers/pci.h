@@ -26,7 +26,6 @@
 
 #include "pcireg.h"
 #include <kernel/atomic.h>
-
 //Define World Wide Constant
 
 typedef struct _PCIDev {
@@ -40,7 +39,7 @@ typedef struct _PCIBuffer {
 typedef int pci_power_t;
 
 
-typedef struct _PCI_DEVICE_OBJECT {
+typedef struct __attribute__((packed)) _PCI_DEVICE_OBJECT {
 	uint16_t VendorID;
 	uint16_t DeviceID;
 	uint8_t bus;
@@ -51,6 +50,7 @@ typedef struct _PCI_DEVICE_OBJECT {
 	atomic_t enable_cnt;
 	uintptr_t DeviceExtendedObject;
 }PCI_DEVICE_OBJECT,*P_PCI_DEVICE_OBJECT;
+
 
 
 #define PCI_CONFIG_ADDRESS_PORT 0xCF8
