@@ -10,6 +10,8 @@ static uintptr_t EFI_TABLE = 0x00;
 static uintptr_t RSDP_MASTER = 0x00;
 static uint8_t TYPE_MASTER = 0x00;
 
+static spinlock_t FirmwareLock;
+
 typedef struct __attribute__((packed)) _ACPI_STD_HEADER {
 	char Signature[4];
 	uint32_t Size;
@@ -104,12 +106,15 @@ LOUSTATUS LouKeSetApm(struct multiboot_tag_apm* APM) {
 	return LOUSTATUS_GOOD;
 }
 
+
 LOUSTATUS LouKeGetSystemFirmwareTableProviderSignature(
 	unsigned long FirmwareTableProviderSignature, 
 	uintptr_t* TablePointer,
 	uintptr_t* TableExtended,
 	uint8_t* Type) {
 
+	LouKIRQL OldIrql;
+	LouKeAcquireSpinLock(&FirmwareLock, &OldIrql);
 
 	LOUSTATUS Status = (LOUSTATUS)STATUS_INVALID_PARAMETER;
 
@@ -119,6 +124,7 @@ LOUSTATUS LouKeGetSystemFirmwareTableProviderSignature(
 		PRSDP_Descriptor Rsdp = (PRSDP_Descriptor)RSDP_MASTER;
 
 		if (strncmp("RSD PTR", (const char*)Rsdp->signature, 7) != 0) {
+			LouKeReleaseSpinLock(&FirmwareLock, &OldIrql);
 			return (LOUSTATUS)STATUS_FIRMWARE_IMAGE_INVALID;
 		}
 		if (TYPE_MASTER == 1) {
@@ -158,6 +164,7 @@ LOUSTATUS LouKeGetSystemFirmwareTableProviderSignature(
 			Status = LOUSTATUS_GOOD;
 		}
 	}
+	LouKeReleaseSpinLock(&FirmwareLock, &OldIrql);
 
 	return Status;
 }
@@ -173,6 +180,8 @@ LOUSTATUS LouKeGetSystemFirmwareTableId(
 
 	char MasterString[sizeof(int)];
 
+	LouKIRQL OldIrql;
+	LouKeAcquireSpinLock(&FirmwareLock, &OldIrql);
 
 	if (FirmwareTableProviderSignature == 'ACPI') {
 
@@ -187,10 +196,12 @@ LOUSTATUS LouKeGetSystemFirmwareTableId(
 		if (FirmwareTableId == 'XSDT') {
 			*TablePointer = *TableExtendedPointer;
 			Status = LOUSTATUS_GOOD;
+			LouKeReleaseSpinLock(&FirmwareLock, &OldIrql);
 			return Status;
 		}
 		if (FirmwareTableId == 'RSDT') {
 			Status = LOUSTATUS_GOOD;
+			LouKeReleaseSpinLock(&FirmwareLock, &OldIrql);
 			return Status;
 		}
 		
@@ -214,6 +225,7 @@ LOUSTATUS LouKeGetSystemFirmwareTableId(
 					
 					*TablePointer = (uintptr_t)table;
 					Status = LOUSTATUS_GOOD;
+					LouKeReleaseSpinLock(&FirmwareLock, &OldIrql);
 					return Status;
 				}
 			}
@@ -226,6 +238,7 @@ LOUSTATUS LouKeGetSystemFirmwareTableId(
 			if (strncmp((const string)Fubar->Signature, (const string)MasterString, 4) == 0) {
 				*TablePointer = (uintptr_t)Fubar;
 				Status = LOUSTATUS_GOOD;
+				LouKeReleaseSpinLock(&FirmwareLock, &OldIrql);
 				return Status;
 			}
 
@@ -238,8 +251,7 @@ LOUSTATUS LouKeGetSystemFirmwareTableId(
 	else if (FirmwareTableProviderSignature == 'APM') {
 		// Handle APM signatures
 	}
-
-
+	LouKeReleaseSpinLock(&FirmwareLock, &OldIrql);
 	return STATUS_INVALID_PARAMETER;
 }
 
@@ -251,26 +263,25 @@ LOUSTATUS LouKeGetSystemFirmwareTableBuffer(
 	void* FirmwareTableBufferDest, 
 	unsigned long* BufferLength
 ) {
+	LouKIRQL OldIrql;
+	LouKeAcquireSpinLock(&FirmwareLock, &OldIrql);
 
 	uint32_t ResultBufferLength = *BufferLength;
 	
 	if (SystemType == 'ACPI') {
 		PACPI_STD_HEADER Fubar = (PACPI_STD_HEADER)FirmwareTableBufferSrc;
-		
 
-
-		if (Fubar->Size > ResultBufferLength) return (LOUSTATUS)STATUS_BUFFER_TOO_SMALL;
-		
+		if (Fubar->Size > ResultBufferLength){
+			LouKeReleaseSpinLock(&FirmwareLock, &OldIrql);
+			return (LOUSTATUS)STATUS_BUFFER_TOO_SMALL;
+		}
 		else if ((ResultBufferLength >= Fubar->Size) || (ResultBufferLength == 0))ResultBufferLength = Fubar->Size;
 	}
 
-	//BUGBUG MEMCPY is acting weird investigate tommoro
-	//BUGBUG RESOLVED memory was leaking into the framebuffer system fixed
-	//memcpy has been being weird
 	memcpy(FirmwareTableBufferDest, FirmwareTableBufferSrc, ResultBufferLength);
 
 	*BufferLength = ResultBufferLength;
-
+	LouKeReleaseSpinLock(&FirmwareLock, &OldIrql);
 	return LOUSTATUS_GOOD;
 }
 

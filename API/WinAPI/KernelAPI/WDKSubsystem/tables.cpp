@@ -255,7 +255,7 @@ void InitializeStorePort_SYS(){
 }
 
 LOUDDK_API_ENTRY void InitializeGenericTables(){
-
+    
     InitializeKernelTable();
     InitializeUnKownTable();
     InitializeWDFLDR_SYS();

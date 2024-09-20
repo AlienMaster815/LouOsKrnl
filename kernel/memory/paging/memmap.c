@@ -58,8 +58,8 @@ void InitializeMegabytePage(
 }
 
 bool LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize) {
-    LouKIRQL OldLevel;
-    LouKeSetIrql(HIGH_LEVEL, &OldLevel);
+    //LouKIRQL OldLevel;
+
     // Align addresses according to page size
     if (PageSize == MEGABYTE_PAGE) {
         PAddress &= ~(MEGABYTE_PAGE - 1);
@@ -214,10 +214,8 @@ bool LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_
         }
     } else {
         LouPrint("Could Not Map Memory\n");
-        LouKeSetIrql(OldLevel, 0x00);
         return false;
     }
-    LouKeSetIrql(OldLevel, 0x00);
     return true;
 }
 

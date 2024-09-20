@@ -37,16 +37,19 @@ static inline void ReuseVRamManagerObject(
     Obj->DeviceObject = DeviceObject;   
 }
 
+static spinlock_t VRamRegistrationLock;
 //Registers a VRam Object To Tables
 LOUSTATUS LouKeRegisterVRam(
     void* Device, 
     uint64_t VRamBase, 
     uint64_t VRamSize
 ){
-
+    LouKIRQL OldIrql;
+    //LouKeAcquireSpinLock(&VRamRegistrationLock, &OldIrql);
     if(NumberOfActiveVRamManagers == 0){
         DrsdVramManager = (PDrsdVRamObject)LouMalloc(sizeof(DrsdVRamObject));
         if(!DrsdVramManager){
+            LouKeReleaseSpinLock(&VRamRegistrationLock, &OldIrql);
             return STATUS_INSUFFICIENT_RESOURCES;
         }
         InitializeVRamManagerObject(
@@ -57,6 +60,7 @@ LOUSTATUS LouKeRegisterVRam(
             Device
         );
         NumberOfActiveVRamManagers++;
+        LouKeReleaseSpinLock(&VRamRegistrationLock, &OldIrql);
         return STATUS_SUCCESS;
     }
     //else Do More Complicated Bullshit
@@ -79,6 +83,7 @@ LOUSTATUS LouKeRegisterVRam(
             VRamSize, 
             Device
             );
+            LouKeReleaseSpinLock(&VRamRegistrationLock, &OldIrql);
             return STATUS_SUCCESS;   
         }
         tmp = (PDrsdVRamObject)tmp->Header.NextHeader;
@@ -94,5 +99,6 @@ LOUSTATUS LouKeRegisterVRam(
         Device
     );   
     NumberOfActiveVRamManagers++;
+    LouKeReleaseSpinLock(&VRamRegistrationLock, &OldIrql);
     return STATUS_SUCCESS;
 }

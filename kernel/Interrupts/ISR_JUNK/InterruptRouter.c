@@ -32,15 +32,19 @@ uint8_t GetGlobalInterrupt(){
 	return InterruptGlobalCheck;
 }
 
+LouKIRQL InterruptSwitch(LouKIRQL New);
+
 void InterruptRouter(uint8_t Interrupt, uint64_t Args) {
 
 	InterruptGlobalCheck = Interrupt;
-
+	LouKIRQL PreInterruptIrql = InterruptSwitch(HIGH_LEVEL);
+	
 	if (0x00 != InterruptHandler[Interrupt]) {
-		//InterruptHandler[Interrupt](Args);
-		LouKeRunOnNewStack((void(*)(PVOID))InterruptHandler[Interrupt], (PVOID)Args, 8 * KILOBYTE);
+		InterruptHandler[Interrupt](Args);
+		//LouKeRunOnNewStack((void(*)(PVOID))InterruptHandler[Interrupt], (PVOID)Args, 8 * KILOBYTE);
 		//if (!GetAPICStatus())PIC_sendEOI(Interrupt);
 		local_apic_send_eoi();
+		InterruptSwitch(PreInterruptIrql);
 		return;
 	}
 

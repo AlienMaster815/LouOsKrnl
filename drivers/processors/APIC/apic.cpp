@@ -155,7 +155,7 @@ KERNEL_IMPORT void disable_pic();
 static CPU::CPUID* Cpu;
 static APIC::LAPIC* Lapic;
 
-string DRV_VERSION_APIC = "\nLousine Internal Kernel APIC.SYS Module Version 1.08\n";
+string DRV_VERSION_APIC = "\nLousine Internal Kernel APIC.SYS Module Version 1.10\n";
 string DRV_UNLOAD_STRING_SUCCESS_APIC = "Driver Execution Completed Successfully Exiting Proccess\n\n"; 
 string DRV_UNLOAD_STRING_FAILURE_APIC = "Driver Execution Failed To Execute Properly Exiting Proccess\n\n"; 
 
@@ -251,8 +251,8 @@ void cpu_set_apic_base(uintptr_t apic) {
 
 LOUDDK_API_ENTRY LOUSTATUS InitApicSystems(bool LateStage) {
     LOUSTATUS Status = LOUSTATUS_GOOD;
-
     LouPrint(DRV_VERSION_APIC);
+    disable_pic();
 
     uint8_t* Buffer = (uint8_t*)LouMalloc(ACPIBUFFER);
     ULONG ReturnLength = 0x0000;
@@ -347,14 +347,10 @@ bool APIC::LAPIC::InitializeBspLapic(){
     disable_pic();
     LouPrint("Pic Has Been Disabled\n");
 
-    LouKeMallocVMmIO(
-        GetLocalApicBase(),
-        SearchForMappedAddressSize(GetLocalApicBase()),
-        KERNEL_PAGE_WRITE_UNCAHEABLE_PRESENT
-    );
+    ApicBase = (uint64_t)LouMalloc(KILOBYTE_PAGE);
 
-    ApicBase = LouKeVMemmorySearchVirtualSpace(GetLocalApicBase());
-    
+    LouMapAddress(GetLocalApicBase(), ApicBase, KERNEL_PAGE_WRITE_UNCAHEABLE_PRESENT,KILOBYTE_PAGE);
+
     if(Cpu->IsFeatureSupported(CPU::X2APIC)){
         //initiailize x2 standard
         LouPrint("Using X2 Standard\n");

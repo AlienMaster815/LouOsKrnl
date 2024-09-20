@@ -14,23 +14,18 @@ bool GetAPICStatus();
 
 static LouKIRQL SystemInterruptLevel = HIGH_LEVEL;
 
-void SetSystemInterrupts(bool Enable){
-    if(Enable){
-        ioapic_unmask_irq(1);
-    }
-    else{
-        ioapic_mask_irq(1);
-    }
+LouKIRQL InterruptSwitch(LouKIRQL New){
+    LouKIRQL Old = SystemInterruptLevel;
+    SystemInterruptLevel = New;
+    return Old;
 }
 
 void SetAllInterrupts(bool Enable){
     if(Enable){
         SetInterruptFlags();
-        SetSystemInterrupts(true);
     }
     else {
         UnSetInterruptFlags();
-        SetSystemInterrupts(false);
     }
 }
 
@@ -69,7 +64,7 @@ void LouKeSetIrql(
             }
             case HIGH_LEVEL:{
                 SystemInterruptLevel = HIGH_LEVEL;
-                SetSystemInterrupts(false);
+                SetAllInterrupts(false);
             }
             default: // error case
                 return;

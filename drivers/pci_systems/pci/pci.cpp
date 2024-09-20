@@ -274,10 +274,11 @@ LOUDDK_API_ENTRY void checkBusStorage(uint8_t bus) {
     }
 }
 
-LOUDDK_API_ENTRY void LookForStorageDevices(){
-    //LouKIRQL OldLevel; 
-    //LouKeSetIrql(HIGH_LEVEL ,&OldLevel);
+static spinlock_t StorageScanLock;
 
+LOUDDK_API_ENTRY void LookForStorageDevices(){
+    LouKIRQL OldIrql;
+    LouKeAcquireSpinLock(&StorageScanLock, &OldIrql);
     LouPrint("Scanning PCI Bus For Storage Devices\n");
 
     uint8_t function;
@@ -296,7 +297,10 @@ LOUDDK_API_ENTRY void LookForStorageDevices(){
             checkBusStorage(bus);
         }
     }
-    //LouKeSetIrql(OldLevel, 0x00);
+    
+    LouPrint("Done Scanning For Storage Devices\n");
+    LouKeReleaseSpinLock(&StorageScanLock, &OldIrql);
+
 }
 
 KERNEL_IMPORT 

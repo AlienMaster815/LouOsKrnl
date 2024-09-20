@@ -18,6 +18,7 @@ uint16_t GetNumberOfStorageDevices(){
     return NumberOfStorageControllers;  
 }
 
+static spinlock_t InitDeviceInfoTableLock;
 
 void 
 LouKeInitializeDeviceInformationTable(
@@ -31,8 +32,8 @@ uint8_t DeviceNumber,
 uintptr_t DeviceObject,
 uintptr_t DriverObject
 ){
-
-
+    LouKIRQL OldIrql;
+    //LouKeAcquireSpinLock(&InitDeviceInfoTableLock, &OldIrql);
     uint16_t e = *NumberOfCurrentEntries;
 
 
@@ -53,11 +54,16 @@ uintptr_t DriverObject
     LouPrint(PRINT_NEW_LINE);
     */
     *NumberOfCurrentEntries = e + 1;
+    LouKeReleaseSpinLock(&InitDeviceInfoTableLock, &OldIrql);
 
 }
 
+static spinlock_t UpadteDeviceInfoTableLock;
+
 void UpdateDeviceInformationTable(){
 
+    LouKIRQL OldIrql;
+    //LouKeAcquireSpinLock(&UpadteDeviceInfoTableLock, &OldIrql);
     DeviceTable = (PDeviceInformationTable)LouMalloc(sizeof(DeviceInformationTable) * 512);
 
 
@@ -83,7 +89,7 @@ void UpdateDeviceInformationTable(){
     }
     LouPrint(PRINT_NEW_LINE);
     */
-
+    LouKeReleaseSpinLock(&UpadteDeviceInfoTableLock,&OldIrql);
     LouPrint("Initializing Device Info:Complete\n\n");
 }
 
@@ -92,7 +98,6 @@ ScanConnectedIDEDevices(
 PDeviceInformationTable Table,
 uint16_t* NumberOfCurrentEntries
 ){
-
 
     for(uint8_t i = 0; i < 4; i++){
         if(IsIdeDriveAvailable(i)){

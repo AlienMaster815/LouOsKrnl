@@ -180,6 +180,7 @@ void Advanced_Kernel_Initialization(){
     RegisterHardwareInterruptHandler(PS2MouseHandler, 12);
     if (LOUSTATUS_GOOD != InitThreadManager())LouPrint("SHIT!!!:I Hope You Hate Efficency: No Thread Management\n");
     LouKeSetIrql(PASSIVE_LEVEL, 0x00);
+    SetInterruptFlags();
 }
 
 bool LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize);
@@ -285,7 +286,7 @@ KERNEL_ENTRY Lou_kernel_start(
     //vga set for debug
     LouKeMapEfiMemory();
     LouKeMapPciMemory();
-    setup_vga_systems();
+    LouKeRunOnNewStack(setup_vga_systems, 0x00, 16  * MEGABYTE);
     StartDebugger();
 
 	LouPrint("Lou Version %s %s\n", KERNEL_VERSION ,KERNEL_ARCH);
@@ -293,12 +294,12 @@ KERNEL_ENTRY Lou_kernel_start(
 
     //INITIALIZE IMPORTANT THINGS FOR US LATER
     Lou_kernel_early_initialization();
-    //InitializeGenericTables();
+    InitializeGenericTables();
     
-    //Advanced_Kernel_Initialization();
+    Advanced_Kernel_Initialization();
 
     //SETUP DEVICES AND DRIVERS
-    //LookForStorageDevices();
+    LouKeRunOnNewStack(LookForStorageDevices, 0x00, 16 * MEGABYTE);
     //UpdateDeviceInformationTable();
     //FileSystemSetup();
     //ScanTheRestOfHarware();

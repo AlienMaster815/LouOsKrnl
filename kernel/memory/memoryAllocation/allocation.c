@@ -15,6 +15,7 @@ void* LouMalloc(size_t BytesToAllocate);
 
 uint64_t GetRamSize();
 
+static spinlock_t MemmoryMapLock;
 
 RAMADD Lou_Alloc_Mem(SIZE size) {
     return (RAMADD)LouMalloc(size);
@@ -135,13 +136,15 @@ static AllocationBlock* AddressBlock = (AllocationBlock*)&DataSlab;
 static uint32_t AddressesLogged = 0;
 
 uint64_t GetAllocationBlockSize(uint64_t Address){
-
+    LouKIRQL OldIrql;
+    LouKeAcquireSpinLock(&MemmoryMapLock, &OldIrql);
     for(uint16_t i = 0; i < AddressesLogged; i++){
         if((AddressBlock[i].Address <= Address) && ((AddressBlock[i].Address + AddressBlock[i].size) > Address)){
+            LouKeReleaseSpinLock(&MemmoryMapLock, &OldIrql);    
             return AddressBlock[i].size - (Address - AddressBlock[i].Address);
         }
     }
-
+    LouKeReleaseSpinLock(&MemmoryMapLock, &OldIrql);    
     return 0x00;
 }
 
@@ -149,11 +152,13 @@ bool EnforceSystemMemoryMap(
     uint64_t Address, 
     uint64_t size
 ){
-
+    LouKIRQL OldIrql;
+    LouKeAcquireSpinLock(&MemmoryMapLock, &OldIrql);
     for(uint32_t i = 0 ; i < AddressesLogged; i++){
         if(AddressBlock[i].Address == 0x00){
             AddressBlock[i].Address = Address;
             AddressBlock[i].size = size;
+            LouKeReleaseSpinLock(&MemmoryMapLock, &OldIrql);    
             return true;
         }
     }
@@ -161,13 +166,15 @@ bool EnforceSystemMemoryMap(
     AddressBlock[AddressesLogged].Address = Address;
     AddressBlock[AddressesLogged].size = size;
     AddressesLogged++;
-
+    LouKeReleaseSpinLock(&MemmoryMapLock, &OldIrql);    
     return true;
 }
 
 static bool IsEarlyMallocation = true;
 
 void LouFree(RAMADD Addr) {
+    LouKIRQL OldIrql;
+    LouKeAcquireSpinLock(&MemmoryMapLock, &OldIrql);
     if(IsEarlyMallocation == true){
         for(uint32_t i = 0 ; i < AddressesLogged; i++){
             if(AddressBlock[i].Address == (uint64_t)Addr){
@@ -176,12 +183,14 @@ void LouFree(RAMADD Addr) {
             }
         }
     }
+    LouKeReleaseSpinLock(&MemmoryMapLock, &OldIrql);    
 }
 
 void* LouVMallocEx(size_t BytesToAllocate, uint64_t Alignment){
     uint64_t AlignmentCheck = GetRamSize();
     AlignmentCheck &= ~(Alignment - 1);
-    
+    LouKIRQL OldIrql;
+    LouKeAcquireSpinLock(&MemmoryMapLock, &OldIrql);
     while (1) {
         AlignmentCheck += Alignment;
 
@@ -210,6 +219,7 @@ void* LouVMallocEx(size_t BytesToAllocate, uint64_t Alignment){
             if (AddressBlock[i].Address == 0x00) {
                 AddressBlock[i].Address = AlignmentCheck;
                 AddressBlock[i].size = BytesToAllocate;
+                LouKeReleaseSpinLock(&MemmoryMapLock, &OldIrql);    
                 //LouPrint("Address:%h\n", AlignmentCheck);
                 return (void*)AlignmentCheck;
             }
@@ -217,6 +227,7 @@ void* LouVMallocEx(size_t BytesToAllocate, uint64_t Alignment){
 
         if (AddressesLogged >= (786432)) {
             // System overload
+            LouKeReleaseSpinLock(&MemmoryMapLock, &OldIrql);    
             return NULL;
         }
 
@@ -224,8 +235,11 @@ void* LouVMallocEx(size_t BytesToAllocate, uint64_t Alignment){
         AddressBlock[AddressesLogged].size = BytesToAllocate;
         AddressesLogged++; // Increment after logging the new address
         //LouPrint("Address:%h\n", AlignmentCheck);
+        LouKeReleaseSpinLock(&MemmoryMapLock, &OldIrql);    
         return (void*)AlignmentCheck;
     }
+    LouKeReleaseSpinLock(&MemmoryMapLock, &OldIrql);    
+    return NULL;
 }
 
 void* LouVMalloc(size_t BytesToAllocate){
@@ -251,12 +265,15 @@ void* LouMallocEx(size_t BytesToAllocate, uint64_t Alignment) {
                 }
 
                 uint64_t AlignmentCheck = (address & ~(Alignment - 1));
+                LouKIRQL OldIrql;
+                LouKeAcquireSpinLock(&MemmoryMapLock, &OldIrql);
                 if(IsEarlyMallocation == true){
                     if (AddressesLogged == 0) {
                         AddressBlock[0].Address = AlignmentCheck;
                         AddressBlock[0].size = BytesToAllocate;
                         AddressesLogged++; // Increment after logging the first address
                         memset((void*)AlignmentCheck, 0 , BytesToAllocate);
+                        LouKeReleaseSpinLock(&MemmoryMapLock, &OldIrql);    
                         return (void*)AlignmentCheck;
                     }
 
@@ -293,12 +310,14 @@ void* LouMallocEx(size_t BytesToAllocate, uint64_t Alignment) {
                                 AddressBlock[i].size = BytesToAllocate;
                                 //LouPrint("Address:%h\n", AlignmentCheck);
                                 memset((void*)AlignmentCheck, 0 , BytesToAllocate);
+                                LouKeReleaseSpinLock(&MemmoryMapLock, &OldIrql);    
                                 return (void*)AlignmentCheck;
                             }
                         }
 
                         if (AddressesLogged >= (786432)) {
                             // System overload
+                            LouKeReleaseSpinLock(&MemmoryMapLock, &OldIrql);                                
                             return NULL;
                         }
 
@@ -306,7 +325,8 @@ void* LouMallocEx(size_t BytesToAllocate, uint64_t Alignment) {
                         AddressBlock[AddressesLogged].size = BytesToAllocate;
                         AddressesLogged++; // Increment after logging the new address
                         //LouPrint("Address:%h\n", AlignmentCheck);
-                        memset((void*)AlignmentCheck, 0 , BytesToAllocate);                    
+                        memset((void*)AlignmentCheck, 0 , BytesToAllocate);                   
+                        LouKeReleaseSpinLock(&MemmoryMapLock, &OldIrql);    
                         return (void*)AlignmentCheck;
                     }
                 }
@@ -333,9 +353,15 @@ void ListUsedAddresses(){
 }
 
 uint64_t SearchForMappedAddressSize(uint64_t Address){
+    LouKIRQL OldIrql;
+    LouKeAcquireSpinLock(&MemmoryMapLock, &OldIrql);
     for(uint32_t i = 0; i < AddressesLogged; i++){
         if(Address == AddressBlock[i].Address){
-            return AddressBlock[i].size;
+            uint64_t size = AddressBlock[i].size; 
+            LouKeReleaseSpinLock(&MemmoryMapLock, &OldIrql);    
+            return size;
         }
     }
+    LouKeReleaseSpinLock(&MemmoryMapLock, &OldIrql);    
+    return 0x00;
 }

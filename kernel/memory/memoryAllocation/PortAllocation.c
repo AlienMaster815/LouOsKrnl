@@ -1,5 +1,6 @@
  #include <LouAPI.h>
 
+static spinlock_t PortBlockLock;
 
 typedef struct __attribute__((packed)) _PortBlock{
     uint16_t Base;
@@ -34,11 +35,14 @@ uint16_t LouKeCreatIoPort(
     uint16_t PortSize
 ){
     uint16_t NewPort = 0;
+    LouKIRQL OldIrql;
+    LouKeAcquireSpinLock(&PortBlockLock, &OldIrql);
 
     if(AllocatedPorts == 0){
         PortBlocks[0].Base = NewPort;
         PortBlocks[0].size = PortSize; 
         AllocatedPorts++;
+        LouKeReleaseSpinLock(&PortBlockLock, &OldIrql);
         return NewPort;
     }
 
@@ -72,12 +76,14 @@ uint16_t LouKeCreatIoPort(
                 PortBlocks[i].Base = NewPort;
                 PortBlocks[i].size = PortSize;
                 //LouPrint("Address:%h\n", AlignmentCheck);
+                LouKeReleaseSpinLock(&PortBlockLock, &OldIrql);
                 return NewPort;
             }
         }
 
         if (AllocatedPorts >= (0xFFFF)) {
             // System overload
+            LouKeReleaseSpinLock(&PortBlockLock, &OldIrql);
             return 0x00;
         }
 
@@ -85,9 +91,11 @@ uint16_t LouKeCreatIoPort(
         PortBlocks[AllocatedPorts].size = PortSize;
         AllocatedPorts++; // Increment after logging the new address
         //LouPrint("Address:%h\n", AlignmentCheck);
+        LouKeReleaseSpinLock(&PortBlockLock, &OldIrql);
         return NewPort;
     }
-
+    LouKeReleaseSpinLock(&PortBlockLock, &OldIrql);
+    return 0x00;
 }
 
 void ListAllocatedPorts(){

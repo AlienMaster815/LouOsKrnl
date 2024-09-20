@@ -140,9 +140,14 @@ bool InitializeIoApic(uint64_t IoApicNumber, uint64_t MappedArea){
     LouPrint("Starting IO/APIC:%d At Address:%h\n",ioapics[IoApicNumber].ioapic_id, ioapics[IoApicNumber].ioapic_address);
     LouPrint("Calculating Address In Virtual Memory\n");
 
-    LouKeMallocVMmIO(ioapics[IoApicNumber].ioapic_address, KILOBYTE_PAGE, KERNEL_PAGE_WRITE_PRESENT);
+    IoApicBase = (uint64_t)LouMalloc(KILOBYTE_PAGE);
 
-    IoApicBase = LouKeVMemmorySearchVirtualSpace(ioapics[IoApicNumber].ioapic_address);
+    LouMapAddress(
+        ioapics[IoApicNumber].ioapic_address, 
+        IoApicBase,
+        KERNEL_PAGE_WRITE_UNCAHEABLE_PRESENT, 
+        KILOBYTE_PAGE
+        );
 
     ioapics[IoApicNumber].ioapic_vaddress = IoApicBase;
 
@@ -165,8 +170,6 @@ bool InitializeIoApic(uint64_t IoApicNumber, uint64_t MappedArea){
         uint32_t low = (irq + 0x20) | 0x10000;  // Vector number + masked (initially masked)
         ioapic_write(index, low);
     }
-
-    //ioapic_unmask_irq(1);
 
     return true;
 }

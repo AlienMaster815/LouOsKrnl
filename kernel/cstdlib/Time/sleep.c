@@ -32,7 +32,12 @@ bool SleepTSC(uint64_t Milliseconds) {
 	busy_wait_TSC(Milliseconds);
 }
 
+static spinlock_t SleepLock;
+
 void sleep(uint64_t Time) {
+	LouKIRQL OldInterrupt;
+
+	LouKeAcquireSpinLock(&SleepLock,&OldInterrupt);
 
 	if (HPET) {
 		SleepHPET(Time);
@@ -49,6 +54,8 @@ void sleep(uint64_t Time) {
 	else {
 		RunTimerClockMS(Time);
 	}
+	LouKeReleaseSpinLock(&SleepLock, &OldInterrupt);
+
 }
 void sleepEx(uint8_t Interval, uint64_t Time) {
 
