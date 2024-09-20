@@ -69,12 +69,6 @@ void R100McStop(struct radeon_device *rdev, struct r100_mc_save *save){
 	}
 }
 
-LOUSTATUS R100McWaitForIdle(struct radeon_device *rdev){
-
-
-
-    return STATUS_SUCCESS;
-}
 
 void R100McResume(struct radeon_device *rdev, struct r100_mc_save *save){
     /* Update base address for crtc */

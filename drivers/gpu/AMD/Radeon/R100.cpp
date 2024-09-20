@@ -13,12 +13,300 @@
 
 #include "r100_track.h"
 
-//2547
-bool R100GpuIsLockup(struct radeon_device *rdev, struct radeon_ring *cp){
+///TODO:RadeonBoSize
+
+static void R100CsTrackTexturePrint(struct r100_cs_track_texture *t)
+{
+	LouPrint("pitch                      %d\n", t->pitch);
+	LouPrint("use_pitch                  %d\n", t->use_pitch);
+	LouPrint("width                      %d\n", t->width);
+	LouPrint("width_11                   %d\n", t->width_11);
+	LouPrint("height                     %d\n", t->height);
+	LouPrint("height_11                  %d\n", t->height_11);
+	LouPrint("num levels                 %d\n", t->num_levels);
+	LouPrint("depth                      %d\n", t->txdepth);
+	LouPrint("bpp                        %d\n", t->cpp);
+	LouPrint("coordinate type            %d\n", t->tex_coord_type);
+	LouPrint("width round to power of 2  %d\n", t->roundup_w);
+	LouPrint("height round to power of 2 %d\n", t->roundup_h);
+	LouPrint("compress format            %d\n", t->compress_format);
+}
+
+int R100TrackCompressSize(int compress_format, int w, int h){
+
+	int block_width, block_height, block_bytes;
+	int wblocks, hblocks;
+	int min_wblocks;
+	int sz;
+
+	block_width = 4;
+	block_height = 4;
+
+	switch (compress_format) {
+	case R100_TRACK_COMP_DXT1:
+		block_bytes = 8;
+		min_wblocks = 4;
+		break;
+	default:
+	case R100_TRACK_COMP_DXT35:
+		block_bytes = 16;
+		min_wblocks = 2;
+		break;
+	}
+
+	hblocks = (h + block_height - 1) / block_height;
+	wblocks = (w + block_width - 1) / block_width;
+	if (wblocks < min_wblocks)
+		wblocks = min_wblocks;
+	sz = wblocks * hblocks * block_bytes;
+	return sz;
+}
 
 
+LOUSTATUS R100CsTrackCube(struct radeon_device *rdev,
+			      struct r100_cs_track *track, unsigned idx)
+{
+	unsigned face, w, h;
+	struct radeon_bo *cube_robj;
+	unsigned long size;
+	unsigned compress_format = track->textures[idx].compress_format;
 
-    return true;
+	for (face = 0; face < 5; face++) {
+		cube_robj = track->textures[idx].cube_info[face].robj;
+		w = track->textures[idx].cube_info[face].width;
+		h = track->textures[idx].cube_info[face].height;
+
+		if (compress_format) {
+			size = R100TrackCompressSize(compress_format, w, h);
+		} else
+			size = w * h;
+		size *= track->textures[idx].cpp;
+
+		size += track->textures[idx].cube_info[face].offset;
+
+		if (size > RadeonBoSize(cube_robj)) {
+			LouPrint("Cube texture offset greater than object size %h %h\n",
+				  size, RadeonBoSize(cube_robj));
+			R100CsTrackTexturePrint(&track->textures[idx]);
+			return STATUS_UNSUCCESSFUL;
+		}
+	}
+	return STATUS_SUCCESS;
+}
+
+LOUSTATUS R100CsTrackCheck(struct radeon_device *rdev, struct r100_cs_track *track){
+
+	UNUSED struct radeon_bo *robj;
+	UNUSED unsigned long size;
+	UNUSED unsigned u, i, w, h, d;
+	UNUSED LOUSTATUS ret;
+
+	for (u = 0; u < track->num_texture; u++) {
+		if (!track->textures[u].enabled)
+			continue;
+		if (track->textures[u].lookup_disable)
+			continue;
+		robj = track->textures[u].robj;
+		if (robj == 0x00) {
+			LouPrint("No texture bound to unit %u\n", u);
+			return STATUS_UNSUCCESSFUL;
+		}
+		size = 0;
+		for (i = 0; i <= track->textures[u].num_levels; i++) {
+			if (track->textures[u].use_pitch) {
+				if (rdev->family < CHIP_R300)
+					w = (track->textures[u].pitch / track->textures[u].cpp) / (1 << i);
+				else
+					w = track->textures[u].pitch / (1 << i);
+			} else {
+				w = track->textures[u].width;
+				if (rdev->family >= CHIP_RV515)
+					w |= track->textures[u].width_11;
+				w = w / (1 << i);
+				if (track->textures[u].roundup_w)
+					w = RoundUpPowerOf2(w);
+			}
+			h = track->textures[u].height;
+			if (rdev->family >= CHIP_RV515)
+				h |= track->textures[u].height_11;
+			h = h / (1 << i);
+			if (track->textures[u].roundup_h)
+				h = RoundUpPowerOf2(h);
+			if (track->textures[u].tex_coord_type == 1) {
+				d = (1 << track->textures[u].txdepth) / (1 << i);
+				if (!d)
+					d = 1;
+			} else {
+				d = 1;
+			}
+			if (track->textures[u].compress_format) {
+
+				size += R100TrackCompressSize(track->textures[u].compress_format, w, h) * d;
+				/* compressed textures are block based */
+			} else
+				size += w * h * d;
+		}
+		size *= track->textures[u].cpp;
+
+		switch (track->textures[u].tex_coord_type) {
+		case 0:
+		case 1:
+			break;
+		case 2:
+			if (track->separate_cube) {
+				ret = R100CsTrackCube(rdev, track, u);
+				if (ret)
+					return ret;
+			} else
+				size *= 6;
+			break;
+		default:
+			LouPrint("Invalid texture coordinate type %u for unit "
+				  "%u\n", track->textures[u].tex_coord_type, u);
+			return -STATUS_UNSUCCESSFUL;
+		}
+		if (size > RadeonBoSize(robj)) {
+			LouPrint("Texture of unit %u needs %lu bytes but is "
+				  "%lu\n", u, size, RadeonBoSize(robj));
+			R100CsTrackTexturePrint(&track->textures[u]);
+			return STATUS_UNSUCCESSFUL;
+		}
+	}
+
+	return STATUS_SUCCESS;
+}
+
+
+void R100CsTrackClear(struct radeon_device *rdev, struct r100_cs_track *track){
+	unsigned i, face; //I dont like using unsigned but fuck it
+	track->cb_dirty = true;
+	track->zb_dirty = true;
+	track->tex_dirty = true;
+	track->aa_dirty = true;
+
+	if (rdev->family < CHIP_R300) {
+		track->num_cb = 1;
+		if (rdev->family <= CHIP_RS200)
+			track->num_texture = 3;
+		else
+			track->num_texture = 6;
+		track->maxy = 2048;
+		track->separate_cube = true;
+	} else {
+		track->num_cb = 4;
+		track->num_texture = 16;
+		track->maxy = 4096;
+		track->separate_cube = false;
+		track->aaresolve = false;
+		track->aa.robj = 0x00;
+	}
+
+	for (i = 0; i < track->num_cb; i++) {
+		track->cb[i].robj = 0x00;
+		track->cb[i].pitch = 8192;
+		track->cb[i].cpp = 16;
+		track->cb[i].offset = 0;
+	}
+	track->z_enabled = true;
+	track->zb.robj = 0x00;
+	track->zb.pitch = 8192;
+	track->zb.cpp = 4;
+	track->zb.offset = 0;
+	track->vtx_size = 0x7F;
+	track->immd_dwords = 0xFFFFFFFFUL;
+	track->num_arrays = 11;
+	track->max_indx = 0x00FFFFFFUL;
+	for (i = 0; i < track->num_arrays; i++) {
+		track->arrays[i].robj = 0x00;
+		track->arrays[i].esize = 0x7F;
+	}
+	for (i = 0; i < track->num_texture; i++) {
+		track->textures[i].compress_format = R100_TRACK_COMP_NONE;
+		track->textures[i].pitch = 16536;
+		track->textures[i].width = 16536;
+		track->textures[i].height = 16536;
+		track->textures[i].width_11 = 1 << 11;
+		track->textures[i].height_11 = 1 << 11;
+		track->textures[i].num_levels = 12;
+		if (rdev->family <= CHIP_RS200) {
+			track->textures[i].tex_coord_type = 0;
+			track->textures[i].txdepth = 0;
+		} else {
+			track->textures[i].txdepth = 16;
+			track->textures[i].tex_coord_type = 1;
+		}
+		track->textures[i].cpp = 64;
+		track->textures[i].robj = 0x00;
+		/* CS IB emission code makes sure texture unit are disabled */
+		track->textures[i].enabled = false;
+		track->textures[i].lookup_disable = false;
+		track->textures[i].roundup_w = true;
+		track->textures[i].roundup_h = true;
+		if (track->separate_cube)
+			for (face = 0; face < 5; face++) {
+				track->textures[i].cube_info[face].robj = 0x00;
+				track->textures[i].cube_info[face].width = 16536;
+				track->textures[i].cube_info[face].height = 16536;
+				track->textures[i].cube_info[face].offset = 0;
+			}
+	}
+}
+
+LOUSTATUS R100RbbmFiFoWaitForEntry(struct radeon_device *rdev, unsigned n){
+	int i;
+	uint32_t tmp;
+
+	for (i = 0; i < rdev->usec_timeout; i+=2) {
+		tmp = RREG32(RADEON_RBBM_STATUS) & RADEON_RBBM_FIFOCNT_MASK;
+		if (tmp >= n) {
+			return STATUS_SUCCESS;
+		}
+		sleep(2);
+	}
+	return STATUS_TIMEOUT;
+}
+
+LOUSTATUS R100GuiWaitForIdle(struct radeon_device *rdev){
+
+	int i;
+	uint32_t tmp;
+	if(R100RbbmFiFoWaitForEntry(rdev, 64)){
+		LouPrint("Radeon: Warning : wait for empty RBBM fifo failed! Bad things might happen.\n");
+	}
+	for (i = 0; i < rdev->usec_timeout; i+=2) {
+		tmp = RREG32(RADEON_RBBM_STATUS);
+		if (!(tmp & RADEON_RBBM_ACTIVE)) {
+			return STATUS_SUCCESS;
+		}
+		sleep(2);
+	}
+	return STATUS_TIMEOUT;
+}
+
+LOUSTATUS R100McWaitForIdle(struct radeon_device *rdev){
+	int i;
+	uint32_t tmp;
+	
+	for(i = 0 ;i < rdev->usec_timeout; i+=2){
+		tmp = RREG32(RADEON_MC_STATUS);
+		if(tmp & RADEON_MC_IDLE){
+			return STATUS_SUCCESS;
+		}
+		sleep(2);
+	}
+
+    return STATUS_TIMEOUT;
+}
+
+bool R100GpuIsLockup(struct radeon_device *rdev, struct radeon_ring *ring){
+	uint32_t rbbm_Status;
+
+	rbbm_Status = RREG32(R_000E40_RBBM_STATUS);
+	if (!G_000E40_GUI_ACTIVE(rbbm_Status)) {
+		RadeonRingLockupUpdate(rdev,ring);
+		return false;
+	}
+    return RadeonRingTestLockup(rdev, ring);
 }
 
 void R100EnableBm(
@@ -1065,14 +1353,18 @@ void R100SanityCheck(
 
 }
 
-LOUSTATUS R100Errata(
+void R100Errata(
     struct radeon_device* rdev
 ){
-    LOUSTATUS Status = STATUS_SUCCESS;
-
-
-
-    return Status;
+	rdev->pll_errata = 0;
+	if (rdev->family == CHIP_RV200 || rdev->family == CHIP_RS200) {
+		rdev->pll_errata |= CHIP_ERRATA_PLL_DUMMYREADS;
+	}
+	if (rdev->family == CHIP_RV100 ||
+	    rdev->family == CHIP_RS100 ||
+	    rdev->family == CHIP_RS200) {
+		rdev->pll_errata |= CHIP_ERRATA_PLL_DELAY;
+	}  
 }
 
 void R100VRamGetType(struct radeon_device* rdev){
@@ -1301,8 +1593,7 @@ LOUSTATUS InitializeAmdR100Gpu(
         return STATUS_NO_SUCH_DEVICE;
     }    
     //set asic errata
-    Status = R100Errata(rdev);
-    if(!NT_SUCCESS(Status))return STATUS_UNSUCCESSFUL;
+    R100Errata(rdev);
     //initialize clocks
     Status = RadeonGetClockInfo(rdev->ddev);
     if(!NT_SUCCESS(Status))return STATUS_UNSUCCESSFUL;

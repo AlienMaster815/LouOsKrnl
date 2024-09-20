@@ -82,8 +82,9 @@ struct r100_cs_track {
 	bool				aaresolve;
 };
 
-int r100_cs_track_check(struct radeon_device *rdev, struct r100_cs_track *track);
-void r100_cs_track_clear(struct radeon_device *rdev, struct r100_cs_track *track);
+LOUSTATUS R100CsTrackCheck(struct radeon_device *rdev, struct r100_cs_track *track);
+
+void R100CsTrackClear(struct radeon_device *rdev, struct r100_cs_track *track);
 
 int r100_cs_packet_parse_vline(struct radeon_cs_parser *p);
 

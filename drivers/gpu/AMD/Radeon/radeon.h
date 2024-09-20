@@ -539,7 +539,7 @@ struct radeon_bo_va {
 
 struct radeon_bo {
 	/* Protected by gem.mutex */
-	//struct list_head		list;
+	ListHeader				list;
 	/* Protected by tbo.reserved */
 	uint32_t				initial_domain;
 	//struct ttm_place		placements[4];
@@ -1040,9 +1040,9 @@ void RadeonRingUnlockCommit(struct radeon_device *rdev, struct radeon_ring *cp,
 void radeon_ring_undo(struct radeon_ring *ring);
 void radeon_ring_unlock_undo(struct radeon_device *rdev, struct radeon_ring *cp);
 int radeon_ring_test(struct radeon_device *rdev, struct radeon_ring *cp);
-void radeon_ring_lockup_update(struct radeon_device *rdev,
+void RadeonRingLockupUpdate(struct radeon_device *rdev,
 			       struct radeon_ring *ring);
-bool radeon_ring_test_lockup(struct radeon_device *rdev, struct radeon_ring *ring);
+bool RadeonRingTestLockup(struct radeon_device *rdev, struct radeon_ring *ring);
 unsigned radeon_ring_backup(struct radeon_device *rdev, struct radeon_ring *ring,
 			    uint32_t **data);
 int radeon_ring_restore(struct radeon_device *rdev, struct radeon_ring *ring,
@@ -2365,7 +2365,7 @@ struct radeon_device {
 	enum radeon_family		family;
 	unsigned long			flags;
 	int				usec_timeout;
-	enum radeon_pll_errata		pll_errata;
+	int				pll_errata;
 	int				num_gb_pipes;
 	int				num_z_pipes;
 	int				disp_priority;

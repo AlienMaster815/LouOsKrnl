@@ -107,10 +107,11 @@
 //	return (bo->tbo.resource->start << PAGE_SHIFT) + start;
 //}
 
-//static inline unsigned long radeon_bo_size(struct radeon_bo *bo)
-//{
-//	return bo->tbo.base.size;
-//}
+static inline unsigned long RadeonBoSize(struct radeon_bo *bo)
+{
+	//return bo->tbo.base.size;
+	return 0;
+}
 
 //static inline unsigned radeon_bo_ngpu_pages(struct radeon_bo *bo)
 //{

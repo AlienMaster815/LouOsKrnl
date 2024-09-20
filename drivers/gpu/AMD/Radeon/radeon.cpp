@@ -2,6 +2,19 @@
 #include <NtAPI.h>
 #include "radeon.h"
 
+void RadeonRingLockupUpdate(struct radeon_device *rdev,
+struct radeon_ring *ring
+){
+
+
+
+}
+
+bool RadeonRingTestLockup(struct radeon_device *rdev, struct radeon_ring *ring){
+
+    return true;
+}
+
 uint32_t r100_mm_rreg_slow(struct radeon_device *rdev, uint32_t reg){
 
     return 0;

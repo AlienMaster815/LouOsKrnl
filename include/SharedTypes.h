@@ -39,6 +39,20 @@ typedef struct _Fixed20_12{
 #define DIV_ROUND_UP(n, d) (((n) + (d) - 1) / (d))
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 
+static inline int
+RoundUpPowerOf2(int x)
+{
+    if (x < 0)
+        return 0;
+    --x;
+    x |= x >> 1;
+    x |= x >> 2;
+    x |= x >> 4;
+    x |= x >> 8;
+    x |= x >> 16;
+    return x+1;
+}
+
 static inline Fixed20_12 DFixedInit(int32_t value) {
     Fixed20_12 result;
 
@@ -58,5 +72,10 @@ static inline Fixed20_12 DFixedInitHalf(int32_t integer_part){
     result.FULL += 1 << 11; // 0.5 in fixed20_12 format
     return result;
 }
+
+typedef struct __attribute__((packed)) _ListHeader{
+    struct _ListHeader* LastHeader;
+    struct _ListHeader* NextHeader;
+}ListHeader, * PListHeader;
 
 #endif
