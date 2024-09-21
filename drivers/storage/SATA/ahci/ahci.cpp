@@ -1,6 +1,7 @@
 #include "ahci.h"
+#include <Hal.h>
 
-string DRV_VERSION = 			   "\nLousine Internal Kernel AHCI.SYS Module Version 1.01\n";
+string DRV_VERSION = 			   "\nLousine Internal Kernel AHCI.SYS Module Version 2.01\n";
 string DRV_UNLOAD_STRING_SUCCESS = "Driver Execution Completed Successfully Exiting Proccess\n\n"; 
 string DRV_UNLOAD_STRING_FAILURE = "Driver Execution Failed To Execute Properly Exiting Proccess\n\n"; 
 
@@ -34,68 +35,60 @@ LOUSTATUS ResetAhciToKnowState(
 HBA_MEM* Hba
 );
 
-// Start command engine
 void start_cmd(HBA_PORT *port){
-	// Wait until CR (bit15) is cleared
-	while (port->cmd & HBA_PxCMD_CR)sleep(100);
- 
-	// Set FRE (bit4) and ST (bit0)
-	port->cmd |= HBA_PxCMD_FRE;
-	port->cmd |= HBA_PxCMD_ST; 
-}
- 
-// Stop command engine
-void stop_cmd(HBA_PORT *port){
-	// Clear ST (bit0)
-	port->cmd &= ~HBA_PxCMD_ST;
- 
-	// Clear FRE (bit4)
-	port->cmd &= ~HBA_PxCMD_FRE;
- 
-	// Wait until FR (bit14), CR (bit15) are cleared
-	while(1)
-	{
-		sleep(100);
-		if (port->cmd & HBA_PxCMD_FR)
-			continue;
-		if (port->cmd & HBA_PxCMD_CR)
-			continue;
-		break;
-	}
- 
+    int timeout = 10000;  // Set timeout
+    while ((port->cmd & HBA_PxCMD_CR) && timeout--) {
+        sleep(100);  // Wait for CR to clear
+    }
+    if (timeout == 0) {
+        LouPrint("Error: Command engine didn't clear CR\n");
+        return;
+    }
+    port->cmd |= HBA_PxCMD_FRE | HBA_PxCMD_ST;  // Set FRE and ST bits
 }
 
-void port_rebase(HBA_PORT *port, int portno){
-	stop_cmd(port);	// Stop command engine
  
-	// Command list offset: 1K*portno
-	// Command list entry size = 32
-	// Command list entry maxim count = 32
-	// Command list maxim size = 32*32 = 1K per port
-	port->clb = AHCI_BASE + (portno<<10);
-	port->clbu = 0;
-	memset((void*)(uintptr_t)(port->clb), 0, 1024);
- 
-	// FIS offset: 32K+256*portno
-	// FIS entry size = 256 bytes per port
-	port->fb = AHCI_BASE + (32<<10) + (portno<<8);
-	port->fbu = 0;
-	memset((void*)(uintptr_t)(port->fb), 0, 256);
- 
-	// Command table offset: 40K + 8K*portno
-	// Command table size = 256*32 = 8K per port
-	HBA_CMD_HEADER *cmdheader = (HBA_CMD_HEADER*)(uintptr_t)(port->clb);
-	for (int i=0; i<32; i++)
-	{
-		cmdheader[i].prdtl = 8;	// 8 prdt entries per command table
-					// 256 bytes per command table, 64+16+48+16*8
-		// Command table offset: 40K + 8K*portno + cmdheader_index*256
-		cmdheader[i].ctba = AHCI_BASE + (40<<10) + (portno<<13) + (i<<8);
-		cmdheader[i].ctbau = 0;
-		memset((void*)(uintptr_t)cmdheader[i].ctba, 0, 256);
-	}
- 
-	start_cmd(port);	// Start command engine
+void stop_cmd(HBA_PORT *port){
+    port->cmd &= ~HBA_PxCMD_ST;  // Clear ST (bit 0)
+    port->cmd &= ~HBA_PxCMD_FRE;  // Clear FRE (bit 4)
+
+    int timeout = 10000;  // Set timeout
+    while (((port->cmd & HBA_PxCMD_FR) || (port->cmd & HBA_PxCMD_CR)) && timeout--) {
+        sleep(100);  // Wait for FR and CR to clear
+    }
+    if (timeout == 0) {
+        LouPrint("Error: Command engine didn't stop properly\n");
+    }
+}
+
+
+void port_rebase(HBA_PORT *port, int portno) {
+    stop_cmd(port);  // Stop command engine
+
+    // Allocate separate memory regions for command list, FIS, and command tables
+    uint32_t* clb_base = (uint32_t*)(uintptr_t)LouMallocEx(1024, KILOBYTE_PAGE);  // 1K per port for command list
+    uint32_t* fb_base = (uint32_t*)(uintptr_t)LouMallocEx(256, KILOBYTE_PAGE);   // 256 bytes for FIS
+    uint32_t* ctba_base = (uint32_t*)(uintptr_t)LouMallocEx(32 * 256, KILOBYTE_PAGE);  // 32 command tables of 256 bytes
+
+    // Assign the Command List Base and FIS Base addresses
+    port->clb = (uintptr_t)clb_base;
+    port->clbu = 0;  // Zero out upper 32 bits for 32-bit addresses
+    memset(clb_base, 0, 1024);
+
+    port->fb = (uintptr_t)fb_base;
+    port->fbu = 0;
+    memset(fb_base, 0, 256);
+
+    // Setup Command Table for each command header
+    HBA_CMD_HEADER *cmdheader = (HBA_CMD_HEADER*)(uintptr_t)(port->clb);
+    for (int i = 0; i < 32; i++) {
+        cmdheader[i].prdtl = 8;  // Set PRDT length to 8
+        cmdheader[i].ctba = (uintptr_t)(ctba_base + (i * 256));  // Command table offset
+        cmdheader[i].ctbau = 0;  // Upper 32 bits
+        memset((void*)(uintptr_t)cmdheader[i].ctba, 0, 256);
+    }
+
+    start_cmd(port);  // Start the command engine
 }
 
 int CheckSataType(HBA_PORT *port)
@@ -621,15 +614,9 @@ LOUSTATUS InitAHCIController(P_PCI_DEVICE_OBJECT PDEV) {
 
 	LouPrint("Initializing AHCI Device\n");
 
-	BaseAddressRegister BARS(PDEV);
-	HBA_MEM* Hba = (HBA_MEM*)BARS.address[5];
-
-	uint64_t AhciVBase = (uint64_t)LouMalloc(KILOBYTE_PAGE);
-
-	//map page here
-	LouMapAddress((uint64_t)Hba,AhciVBase ,KERNEL_PAGE_WRITE_PRESENT, KILOBYTE_PAGE);
-	
-	Hba = (HBA_MEM*)AhciVBase;
+	PPCI_COMMON_CONFIG PciConfig = (PPCI_COMMON_CONFIG)LouMalloc(sizeof(PCI_COMMON_CONFIG));
+	GetPciConfiguration(PDEV->bus,PDEV->slot,PDEV->func,PciConfig);
+	HBA_MEM* Hba = (HBA_MEM*)LouKeHalGetPciVirtualBaseAddress(PciConfig, 5);
 
 	//for each implemented device check their hba properties and features
 	//and initialize them
@@ -640,8 +627,8 @@ LOUSTATUS InitAHCIController(P_PCI_DEVICE_OBJECT PDEV) {
 
 	ProbePorts(Hba);
 
+	LouFree((RAMADD)PciConfig);
 	LouPrint(DRV_UNLOAD_STRING_SUCCESS);
-
 	return LOUSTATUS_GOOD;
 }
 
@@ -663,31 +650,34 @@ LOUDDK_API_ENTRY void AHCI_Interrupt_Handler(){
 		}
 	}
 }
-
 static inline
 LOUSTATUS ResetAhciToKnowState(
-HBA_MEM* Hba
-){
-	if(!(Hba->ghc >> 31) & 0x01)Hba->ghc |= (1 << 31);
+    HBA_MEM* Hba
+) {
+    // Ensure AHCI is enabled
+    if (!((Hba->ghc >> 31) & 0x01)) Hba->ghc |= (1 << 31);
 
-	//first Fase:INIT && //Fase 2:WaitForAhciEnable
-	Hba->ghc |= 1;
-	while(
-		Hba->ghc & 0x01 &&
-		(((Hba->ghc >> 31) & 0x01) == 0)
-	){
-		sleep(100);
-	}
+    // First Phase: INIT & Wait for AHCI Enable
+    Hba->ghc |= 1;
 
-	//check if we are idleing
+    // Wait for GHC.AHCI_EN bit to be set, and wait for reset to complete
+    int timeout = 10000;  // Timeout to prevent infinite loops
+    while ((Hba->ghc & 0x01) && !((Hba->ghc >> 31) & 0x01) && timeout--) {
+        sleep(100);
+    }
 
-	if(
-		(((Hba->ghc >> 31) & 0x01) == 0) //AHCI Not Enabled
-	&&	((Hba->ccc_ctl & 0x01) == 1) 	 //CCC_CTL Not Disabled
-	){
-		return STATUS_UNSUCCESSFUL;
-	}
+    // Check if timeout occurred
+    if (timeout == 0) {
+        return STATUS_TIMEOUT;
+    }
 
-	LouPrint("Ahci Device Reset To Known State\n");
-	return STATUS_SUCCESS;
+    // Check if the controller is idle and AHCI is enabled
+    if (((Hba->ghc >> 31) & 0x01) == 0  // AHCI not enabled
+        && ((Hba->ccc_ctl & 0x01) == 1)) // CCC_CTL not disabled
+    {
+        return STATUS_UNSUCCESSFUL;
+    }
+
+    LouPrint("AHCI Device Reset to Known State\n");
+    return STATUS_SUCCESS;
 }

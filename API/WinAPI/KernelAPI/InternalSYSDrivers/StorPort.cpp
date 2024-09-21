@@ -7,8 +7,7 @@ KERNEL_IMPORT LOUSTATUS RequestPhysicalAddress(
 );
 
 KERNEL_IMPORT uint64_t GetAllocationBlockSize(uint64_t Address);
-// Apply the static assertion
-//STATIC_ASSERT(sizeof(HW_INITIALIZATION_DATA) == 0xD0, HW_INITIALIZATION_DATA_size_is_incorrect);
+
 
 UNUSED static PSTOR_PORT_STACK_OBJECT StorPortStack[255] = {0};
 

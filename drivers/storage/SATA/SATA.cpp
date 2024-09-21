@@ -30,16 +30,6 @@ void setAhciInitializationBit(
 	AhciInit = Initialization_Bit;
 }
 
-ULONG 
-AhciHwFindAdapter(
-	PVOID DeviceExtension,
-	PVOID HwContext,
-	PVOID BusInformation,
-	PCHAR ArgumentString,
-	PPORT_CONFIGURATION_INFORMATION ConfigInfo,
-	PBOOLEAN Reserved
-);
-
 ULONG StorPortGetBusData(
   PVOID HwDeviceExtension,
   ULONG BusDataType,
@@ -59,6 +49,11 @@ PVOID StorPortGetUncachedExtension(
   _In_ ULONG NumberOfBytes
 );
 
+LOUSTATUS AhciDriverEntry(
+	PDRIVER_OBJECT DrvObj,
+	PUNICODE_STRING RegistryEntry
+);
+
 LOUDDK_API_ENTRY bool IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func) {
 	//LouPrint("Checking PCI For Sata Controller\n");
 
@@ -73,8 +68,8 @@ LOUDDK_API_ENTRY bool IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func) {
 	if(ClassCode == 0x01){
 		if(SubClass == 0x06){
 			LouPrint("Found AHCI Controller\n");
-			Sata_init(&PDEV);
-			//LouKeRunOnNewStack((void (*)(PVOID))Sata_init, (PVOID)&PDEV, 1 * MEGABYTE);
+			//Sata_init(&PDEV);
+			LouKeRunOnNewStack((void (*)(PVOID))Sata_init, (PVOID)&PDEV, 64 * KILOBYTE);
 			return true;
 		}
 	}
@@ -92,12 +87,6 @@ void LouMapAddresses(uint64_t Address, uint64_t Size){
 		LouMapAddress(Address + i,Address + i, KERNEL_PAGE_WRITE_PRESENT, KILOBYTE_PAGE);
 	}
 }
-
-NTSTATUS
-AhciDriverEntry(
-	PDRIVER_OBJECT Obj,
-	PUNICODE_STRING Str
-);
 
 
 void LouKeMapMmIO(
@@ -119,8 +108,8 @@ LOUDDK_API_ENTRY void Sata_init(P_PCI_DEVICE_OBJECT SataDev) {
 	Command &= ~(0b10000000000);
 	LouKeWritePciCommandRegister(SataDev, Command);
 
-
-
+	InitAHCIController(SataDev);
+	
 }
 
 
@@ -181,11 +170,6 @@ bool GetSataSectorSize(HBA_PORT *port, uint32_t *sectorSize) {
 	return true;
 }
 
-KERNEL_IMPORT
-LOUSTATUS RequestPhysicalAddress(
-    uint64_t VAddress,
-    uint64_t* PAddress
-);
 
 
 

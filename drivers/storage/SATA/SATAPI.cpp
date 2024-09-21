@@ -325,14 +325,90 @@ void* AhciBuild_PRDT(
 }
 
 void* ReadSATAPI(
-HBA_PORT *Port, 
-uintptr_t DriverObject,
-uint32_t lba_low,
-uint32_t lba_hi, 
-uint32_t count, 
-LOUSTATUS* StateOfOperation,
-uint64_t* BufferSize
-){
+    HBA_PORT *Port,            // AHCI HBA port
+    uintptr_t DriverObject,
+    uint32_t lba_low,
+    uint32_t lba_hi, 
+    uint32_t count, 
+    LOUSTATUS* StateOfOperation,
+    uint64_t* BufferSize
+) {
+    uint32_t buf = (uint32_t)(uint64_t)LouMalloc(2048 * count);
 
-    return 0x00;
+    int CommandSlot = find_cmdslot(Port);
+
+    UNUSED HBA_CMD_HEADER* CmdHeader = (HBA_CMD_HEADER*)((uintptr_t)Port->clb);
+
+    CmdHeader += CommandSlot;
+    CmdHeader->cfl = sizeof(FIS_REG_H2D)/sizeof(uint32_t);
+    CmdHeader->w = 0;
+    CmdHeader->prdtl = (uint16_t)((count-1)>>4) + 1;
+	
+    HBA_CMD_TBL* cmdtbl = (HBA_CMD_TBL*)(uintptr_t)(CmdHeader->ctba);
+	memset(cmdtbl, 0, sizeof(HBA_CMD_TBL) +
+ 		(CmdHeader->prdtl-1)*sizeof(HBA_PRDT_ENTRY));
+
+	// 8K bytes (16 sectors) per PRDT
+	int i=0;
+    for (;i<CmdHeader->prdtl-1; i++){
+		cmdtbl->prdt_entry[i].dba = (uint32_t) buf;
+		cmdtbl->prdt_entry[i].dbc = 8*1024-1;	// 8K bytes (this value should always be set to 1 less than the actual value)
+		cmdtbl->prdt_entry[i].i = 1;
+		buf += 4*1024;	// 4K words
+		count -= 16;	// 16 sectors
+	}
+    // Last entry
+	cmdtbl->prdt_entry[i].dba = (uint32_t) buf;
+	cmdtbl->prdt_entry[i].dbc = (count * ((*BufferSize) -1));	// 512 bytes per sector
+	cmdtbl->prdt_entry[i].i = 1;
+
+	// Setup command
+	FIS_REG_H2D *cmdfis = (FIS_REG_H2D*)(&cmdtbl->cfis);
+
+	cmdfis->fis_type = FIS_TYPE_REG_H2D;
+	cmdfis->c = 1;	// Command
+    cmdfis->command = ATA_CMD_PACKET;  // Packet command for SATAPI
+    cmdfis->c = 1;  // Set command flag
+    uint8_t atapi_cmd[12] = {0xA8, 0, 0, 0, (uint8_t)((lba_low >> 24) & 0xFF), (uint8_t)((lba_low >> 16) & 0xFF),
+                         (uint8_t)((lba_low >> 8) & 0xFF), (uint8_t)(lba_low & 0xFF), 0, 0, 
+                         (uint8_t)((count >> 8) & 0xFF), (uint8_t)(count & 0xFF)};    // Copy ATAPI command packet into the command table
+    memcpy(cmdtbl->acmd, atapi_cmd, sizeof(atapi_cmd));
+
+	cmdfis->lba0 = (uint8_t)lba_low;
+	cmdfis->lba1 = (uint8_t)(lba_low>>8);
+	cmdfis->lba2 = (uint8_t)(lba_low>>16);
+	cmdfis->device = 1<<6;	// LBA mode
+
+	cmdfis->lba3 = (uint8_t)(lba_low>>24);
+	cmdfis->lba4 = (uint8_t)lba_hi;
+	cmdfis->lba5 = (uint8_t)(lba_hi>>8);
+
+	cmdfis->countl = count & 0xFF;
+	cmdfis->counth = (count >> 8) & 0xFF;
+
+    if (Port->tfd & (ATA_DEV_BUSY | ATA_DEV_DRQ)) {
+        LouPrint("Device is busy, cannot issue read command\n");
+        return 0x00;
+    }
+    Port->ci |= (1 << CommandSlot);  // Issue the command
+
+    uint64_t spin;
+	// The below loop waits until the port is no longer busy before issuing a new command
+	while ((Port->tfd & (ATA_DEV_BUSY | ATA_DEV_DRQ)) && (spin < 1000000))
+	{
+        sleep(100);
+		spin++;
+	}
+	if (spin == 1000000)
+	{
+		LouPrint("Port is hung\n");
+		return 0x00;
+	}
+	if (Port->is & HBA_PxIS_TFES)
+	{
+		LouPrint("Read disk error\n");
+		return 0x00;
+	}
+
+    return (void*)(uintptr_t)buf;
 }

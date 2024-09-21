@@ -217,6 +217,11 @@ void LouKeMapcontinuousMemmoryBlock(
 
 uint64_t LouKeVMemmoryGetSize(uint64_t VAddress);
 
+LOUSTATUS RequestPhysicalAddress(
+    uint64_t VAddress,
+    uint64_t* PAddress
+);
+
 
 #ifdef __cplusplus
 }

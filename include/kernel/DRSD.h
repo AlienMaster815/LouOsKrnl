@@ -46,6 +46,20 @@ typedef struct __attribute__((packed)) _DrsdVRamObject{
     void* DeviceObject;
 }DrsdVRamObject, * PDrsdVRamObject;
 
+typedef struct _DrsdEncoder{
+
+}DrsdEncoder, * PDrsdEncoder;
+
+typedef struct _DrsdConnector{
+
+}DrsdConnector, * PDrsdConnector;
+
+typedef struct _DrsdDevice{
+    void* dev;
+}DrsdDevice, * PDrsdDevice;
+
+void DirectAccessDrsdHotplugEvent(PDrsdDevice Device);
+
 #ifdef __cplusplus
 }
 #endif

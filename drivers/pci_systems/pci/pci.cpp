@@ -250,9 +250,9 @@ LOUDDK_API_ENTRY void checkForStorageDevice(uint8_t bus, uint8_t device) {
                 if (PciGetDeviceID(bus,device,function) == NOT_A_PCI_DEVICE) continue;
                 else {
                     LouPrint("Multi Function PCI Device Found Vedor Is: %h and Device Is: %h\n", vendorID, PciGetDeviceID(bus, device, function));
-                    //if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
-                    if (!DeviceIdentified)DeviceIdentified = IsPataCheck(bus, device, function);
-                    if (!DeviceIdentified)DeviceIdentified = isUsb(bus, device, function);
+                    if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
+                    //if (!DeviceIdentified)DeviceIdentified = IsPataCheck(bus, device, function);
+                    //if (!DeviceIdentified)DeviceIdentified = isUsb(bus, device, function);
                }
             }
         }
@@ -260,9 +260,9 @@ LOUDDK_API_ENTRY void checkForStorageDevice(uint8_t bus, uint8_t device) {
     }
     else{
         LouPrint("Single Function PCI Device Found Vedor Is: %h and Device Is: %h\n", vendorID, PciGetDeviceID(bus, device, function));
-        //if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
-        if (!DeviceIdentified)DeviceIdentified = IsPataCheck(bus, device, function);
-        if (!DeviceIdentified)DeviceIdentified = isUsb(bus, device, function);
+        if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
+        //if (!DeviceIdentified)DeviceIdentified = IsPataCheck(bus, device, function);
+        //if (!DeviceIdentified)DeviceIdentified = isUsb(bus, device, function);
     }
 }
 
@@ -297,7 +297,6 @@ LOUDDK_API_ENTRY void LookForStorageDevices(){
             checkBusStorage(bus);
         }
     }
-    
     LouPrint("Done Scanning For Storage Devices\n");
     LouKeReleaseSpinLock(&StorageScanLock, &OldIrql);
 

@@ -30,7 +30,7 @@ uintptr_t RBP_Current;
 
 
 
-string KERNEL_VERSION = "0.0.455 RSC-1 Multiboot 2 With EFI Support";
+string KERNEL_VERSION = "0.0.455 RSC-2 Multiboot 2 With EFI Support";
 
 
 #ifdef __x86_64__
@@ -286,7 +286,7 @@ KERNEL_ENTRY Lou_kernel_start(
     //vga set for debug
     LouKeMapEfiMemory();
     LouKeMapPciMemory();
-    LouKeRunOnNewStack(setup_vga_systems, 0x00, 16  * MEGABYTE);
+    LouKeRunOnNewStack(setup_vga_systems, 0x00, 32  * KILOBYTE);
     StartDebugger();
 
 	LouPrint("Lou Version %s %s\n", KERNEL_VERSION ,KERNEL_ARCH);
@@ -299,17 +299,22 @@ KERNEL_ENTRY Lou_kernel_start(
     Advanced_Kernel_Initialization();
 
     //SETUP DEVICES AND DRIVERS
-    LouKeRunOnNewStack(LookForStorageDevices, 0x00, 16 * MEGABYTE);
+    LouKeRunOnNewStack(LookForStorageDevices, 0x00, 32  * KILOBYTE);
+
     //UpdateDeviceInformationTable();
-    //FileSystemSetup();
+    //LouKeRunOnNewStack(FileSystemSetup, 0x00, 64 * KILOBYTE);
     //ScanTheRestOfHarware();
 
     //User_Mode_Initialization();
 
     //ListUsedAddresses();
     //ListAllocatedPorts();
+
+
     LouPrint("Lousine Kernel Video Mode:%dx%d\n", GetScreenBufferWidth(), GetScreenBufferHeight());
     LouPrint("Hello World\n");
+
+
 
     while(1){
         asm("hlt");

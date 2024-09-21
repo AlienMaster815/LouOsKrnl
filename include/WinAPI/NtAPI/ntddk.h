@@ -1015,7 +1015,6 @@ void KeSetTargetProcessorDpc(
 	_In_      CCHAR  Number
 );
 
-typedef PHYSICAL_ADDRESS* PPHYSICAL_ADDRESS;
 
 NTSTATUS MmAddPhysicalMemory(
 	_In_ PPHYSICAL_ADDRESS StartAddress,
