@@ -1,1 +1,27 @@
 
+Lousine Kernel - License
+===============================
+
+This kernel is free software: you can redistribute it and/or modify
+it under the terms of the **GNU General Public License** as published by
+the Free Software Foundation, version 2.
+
+This kernel is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this kernel. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
+
+---
+
+# Additional Notes
+
+1. **Kernel Licensing**:  Any modifications to the Lousine kernel must be distributed under GPLv2. External modules that are not compiled into the kernel's binary can maintain their own license. However, if a module is statically linked or directly compiled into the kernel, it must be licensed under GPLv2 or a GPL-compatible license. Modules interacting solely through the kernel runtime linker or through user-space interfaces (e.g., Windows System Files) are not required to follow this licensing.
+  
+2. **User-Space Licensing**: User-space applications or libraries running on Lousine Kernel are not subject to the GPL and can be licensed under any terms.
+
+3. **Proprietary Software**: Proprietary software may run on Lousine without requiring a license change, as long as it does not include or link to GPL-covered kernel code.
+
+---
