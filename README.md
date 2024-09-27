@@ -2,6 +2,7 @@
 
 Known Bugs List:
 
+LICENSE IS IN THE LICENSE FILE
 
 NOTE: Only Releases Folder Will Contain Working kernel/OS images
 If your architecture is not available or behind other architecturs
