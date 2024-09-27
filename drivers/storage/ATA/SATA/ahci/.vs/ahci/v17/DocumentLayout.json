@@ -3,9 +3,6 @@
   "WorkspaceRootPath": "E:\\LOUOSKRNL.EXE\\drivers\\storage\\ATA\\SATA\\ahci\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\LOUOSKRNL.EXE\\KernelLibraries\\KernelDefs.def||{8B382828-6202-11D1-8870-0000F87579D2}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{1D6B20BA-1415-4EA6-8833-DF093992F61E}|ahci.vcxproj|E:\\LOUOSKRNL.EXE\\drivers\\storage\\ATA\\SATA\\ahci.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
@@ -19,17 +16,17 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "ahci.cpp",
               "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\storage\\ATA\\SATA\\ahci.cpp",
               "RelativeDocumentMoniker": "..\\ahci.cpp",
               "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\storage\\ATA\\SATA\\ahci.cpp",
               "RelativeToolTip": "..\\ahci.cpp",
-              "ViewState": "AQIAAI0BAAAoAAAAAAARwJkBAAAOAAAA",
+              "ViewState": "AQIAAG8BAAAAAAAAAAAIwKEBAAAwAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-09-26T06:12:27.625Z",
               "IsPinned": true,
@@ -37,20 +34,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "KernelDefs.def",
-              "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\KernelLibraries\\KernelDefs.def",
-              "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\KernelLibraries\\KernelDefs.def",
-              "ToolTip": "E:\\LOUOSKRNL.EXE\\KernelLibraries\\KernelDefs.def",
-              "RelativeToolTip": "..\\..\\..\\..\\..\\KernelLibraries\\KernelDefs.def",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAAIAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001913|",
-              "WhenOpened": "2024-09-26T14:47:12.89Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "ahci.h",
               "DocumentMoniker": "E:\\LOUOSKRNL.EXE\\drivers\\storage\\ATA\\SATA\\ahci.h",
               "RelativeDocumentMoniker": "..\\ahci.h",
@@ -58,7 +42,8 @@
               "RelativeToolTip": "..\\ahci.h",
               "ViewState": "AQIAAI4EAADAAAAAAEAgwJAEAAALAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-09-26T12:48:02.41Z"
+              "WhenOpened": "2024-09-26T12:48:02.41Z",
+              "EditorCaption": ""
             }
           ]
         }

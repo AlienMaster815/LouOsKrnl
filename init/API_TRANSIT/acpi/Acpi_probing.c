@@ -8,32 +8,12 @@
 #include <stat.h>
 /*
 -- Tyler Grenier 9/26/23 12:00 AM 
--- this one piece of hardware has been
--- a pain in my ass for three days now
--- i have a few words for the incel that
--- designed this shit and they aint good
--- the memory addresses are scattered
--- the posibilities are endles of addresses
--- this whole thing is fubar because i dont
--- know if its my compiler or if im doing 
--- somthing wrong because GUESS WHAT!!!!!
--- there isnt a fucking Piece of usefull 
--- documentation that helps me debug this 
--- in the way i need it too this one piece 
--- of hardware made me create a FUCKING BSOD
--- so that i have a gooc crash system thats 
--- readable... anyways im gonna clean some 
--- stuff up because im hopefull tomorrow i can
--- see some progress... 
+
 */
 
 /*
 -- Tyler Grenier 9/26/23 4:18 AM
--- The Problem Was A Compiler Error, Da Fuck.
--- the problem was alignment so im going to
--- leave this alone dont fix whats not broken
--- im going to parse this now i dont want to 
--- look at this anymore...
+
 */
 
 int isChecksumValid(RSDP* rsdp);

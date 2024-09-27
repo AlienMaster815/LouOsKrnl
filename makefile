@@ -9,6 +9,8 @@
 #dll targets
 #x86_64-w64-mingw32-gcc -shared -o mydll.dll mydll.c -nostdlib -nodefaultlibs 
 
+#lib compile line
+#x86_64-w64-mingw32-dlltool --input-def KernelDefs.def --output-lib louoskrnl.lib
 
 TARGET_ARCH = x86_64
 HOST_ARCH = x86_64

@@ -38,10 +38,16 @@ void InitPreLoadedModules(){
     }
 }
 
+bool PciScanBusCheck(P_PCI_DEVICE_OBJECT PDEV, uint8_t DriverNumber);
 
 bool LouKeSeachPreLoadedSystemModules(P_PCI_DEVICE_OBJECT PDEV){
+    LouPrint("Scanning External Modules\n");
 
-
+    for(uint8_t i = 0 ; i < PRE_LOADED_SYSTEM_FILES; i++){
+        if(PciScanBusCheck(PDEV, i)){
+            return true;
+        }
+    }
 
     return false;
 }

@@ -395,27 +395,27 @@ LOUSTATUS AhciPciDeviceRuntimeResume(P_PCI_DEVICE_OBJECT PDEV,PPCI_COMMON_CONFIG
 
 bool AhciPciScan(P_PCI_DEVICE_OBJECT PDEV,  PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryEntry){
 
-    //PCI_COMMON_CONFIG PciConfig;
-    //GetPciConfiguration(PDEV->bus ,PDEV->slot, PDEV->func, &PciConfig);
+    PCI_COMMON_CONFIG PciConfig;
+    GetPciConfiguration(PDEV->bus ,PDEV->slot, PDEV->func, &PciConfig);
 
-    //uint64_t DeviceDetected = LouKeHalLinuxPciCheckForCompatibleConfiguration(&PciConfig, AhciPciTable);
+    uint64_t DeviceDetected = LouKeHalLinuxPciCheckForCompatibleConfiguration(&PciConfig, AhciPciTable);
 
-    //if(DeviceDetected < SUPPORTED_AHCI_DEVICES){
-        //PAHCI_DRIVER_EXTENDED_OBJECT DevExtObj = (PAHCI_DRIVER_EXTENDED_OBJECT)LouMalloc(sizeof(AHCI_DRIVER_EXTENDED_OBJECT));
-        //DevExtObj->DeviceNumber = DeviceDetected;
-        //PDEV->DeviceExtendedObject = (uintptr_t)DevExtObj;
+    if(DeviceDetected < SUPPORTED_AHCI_DEVICES){
+        PAHCI_DRIVER_EXTENDED_OBJECT DevExtObj = (PAHCI_DRIVER_EXTENDED_OBJECT)LouMalloc(sizeof(AHCI_DRIVER_EXTENDED_OBJECT));
+        DevExtObj->DeviceNumber = DeviceDetected;
+        PDEV->DeviceExtendedObject = (uintptr_t)DevExtObj;
         DriverObject->InitializePciDevice = AhciInitOne;
         return true;
-    //}
-    //return false;
+    }
+    return false;
 }
 
 LOUDDK_API_ENTRY
 LOUSTATUS
 DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryEntry) {
-
-    LouPrint("Driver Has Executed\n");
-
+    LouPrint("Ahci Driver Entry()\n");
+    DriverObject->PciScanBus = AhciPciScan;
+    LouPrint("Ahci Driver Entry() STATUS_SUCCESS\n");
     return STATUS_SUCCESS;
 }
 

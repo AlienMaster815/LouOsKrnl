@@ -5,16 +5,6 @@
 ///
 
 	Tyler Grenier 3/12/24 : 6:17 PM
-	Explanation: The file you see before you is a precursor to the kernel
-	being able to read binary files loaded into memory through grub and the 
-	kernel... Allow me to explaoin how this works, When a binary file is 
-	loaded into ram it needs to be placed in the first address posible However.....
-	The Binary Itself Needs to be alligned in a specific Way In Order For It 
-	To Actually Work And Be Readable So In Order To do this we need to analyse
-	the byte per byte system of the file in order to map it to an address and 
-	align it and read the binary if needed for instance how do we know if somthing
-	is loaded if we can read it in c this file will be used to get the system to align
-	each byte and compare it as necisary...
 
 */
 

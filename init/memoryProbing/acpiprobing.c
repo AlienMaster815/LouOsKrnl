@@ -1,8 +1,6 @@
 /*
 -- Tyler Grenier 11/3/23 10:40 PM
--- This is a file in a directory i created yesterday to hold memory probing initialization
--- All We are doing in this file is Making the code that was in the kernel init main
--- moving it to make it more readable
+
 */
 
 #include <kernel/memoryprobing.h>

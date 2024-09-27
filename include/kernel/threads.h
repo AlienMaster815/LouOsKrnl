@@ -4,7 +4,11 @@
 
 #ifdef __cplusplus
 #include <LouDDK.h>
+#ifndef _KERNEL_MODULE_
 LOUDDK_API_ENTRY LOUSTATUS LouKeCreateThread(void (*Function)(), PVOID FunctionParameters, uint32_t StackSize);
+#else
+KERNEL_EXPORT LOUSTATUS LouKeCreateThread(void (*Function)(), PVOID FunctionParameters, uint32_t StackSize);
+#endif
 extern "C" {
 #else
 #include <LouAPI.h>
@@ -39,9 +43,13 @@ typedef struct {
     mutex_t Lock;
 }spinlock_t;
 
+#ifndef _KERNEL_MODULE_
 void LouKeAcquireSpinLock(spinlock_t* LockValue, LouKIRQL* Irql);
 void LouKeReleaseSpinLock(spinlock_t* LockValue, LouKIRQL* Irql);
-
+#else 
+KERNEL_EXPORT void LouKeAcquireSpinLock(spinlock_t* LockValue, LouKIRQL* Irql);
+KERNEL_EXPORT void LouKeReleaseSpinLock(spinlock_t* LockValue, LouKIRQL* Irql);
+#endif
 #ifdef __cplusplus
 }
 #endif

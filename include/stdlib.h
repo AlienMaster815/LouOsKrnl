@@ -26,6 +26,11 @@ static inline unsigned int ROUND_UP(unsigned int value, unsigned int multiple) {
 }
 
 int abs(int x);
+#else 
+static inline unsigned int ROUND_UP(unsigned int value, unsigned int multiple) {
+    return (value + multiple - 1) / multiple * multiple;
+}
+
 #endif
 
 #endif 

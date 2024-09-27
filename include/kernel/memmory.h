@@ -287,3 +287,65 @@ void LouKeFreeFromPool(PLMPOOL_DIRECTORY Pool, void* Address, uint64_t size);
 //typedef __uint128_t uint128_t;
 
 #endif
+
+
+#ifdef _KERNEL_MODULE_
+
+KERNEL_EXPORT void LouFree(uint8_t* Addr);
+
+KERNEL_EXPORT void LouKeMallocVMmIO(
+    uint64_t PAddress,
+    uint64_t size,
+    uint64_t FLAGS
+);
+
+KERNEL_EXPORT uint64_t LouKeVMemmorySearchPhysicalSpace(
+    uint64_t VAddress
+);
+
+KERNEL_EXPORT uint64_t LouKeVMemmorySearchVirtualSpace(
+    uint64_t PAddress
+);
+
+KERNEL_EXPORT uint64_t SearchForMappedAddressSize(uint64_t Address);
+KERNEL_EXPORT void* LouKeAllocateUncachedVMemory(uint64_t NumberOfBytes);
+KERNEL_EXPORT void* LouKeAllocateUncachedVMemoryEx(
+    uint64_t NumberOfBytes,
+    uint64_t Alignment
+);
+
+KERNEL_EXPORT void* LouVMallocEx(size_t BytesToAllocate, uint64_t Alignment);
+KERNEL_EXPORT void* LouVMalloc(size_t BytesToAllocate);
+
+KERNEL_EXPORT void LouKeMapcontinuousMemmoryBlock(
+    uint64_t PAddress, 
+    uint64_t VAddress,
+    uint64_t size, 
+    uint64_t FLAGS
+);
+
+KERNEL_EXPORT uint64_t LouKeVMemmoryGetSize(uint64_t VAddress);
+
+KERNEL_EXPORT LOUSTATUS RequestPhysicalAddress(
+    uint64_t VAddress,
+    uint64_t* PAddress
+);
+
+KERNEL_EXPORT PLMPOOL_DIRECTORY LouKeMapPool(
+    uint64_t LocationOfPool,
+    uint64_t PoolSize,
+    uint64_t ObjectSize,
+    string Tag,
+    uint64_t Flags
+);
+
+KERNEL_EXPORT void LouKeFreePool(PLMPOOL_DIRECTORY PoolToFree);
+
+KERNEL_EXPORT void* LouKeMallocFromPool(
+    PLMPOOL_DIRECTORY Pool, 
+    uint64_t size, 
+    uint64_t* Offset
+);
+KERNEL_EXPORT void LouKeFreeFromPool(PLMPOOL_DIRECTORY Pool, void* Address, uint64_t size);
+
+#endif

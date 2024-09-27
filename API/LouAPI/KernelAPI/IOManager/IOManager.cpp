@@ -56,24 +56,11 @@ extern "C" void ReadStorageDrive(char Drive, uint32_t Location , uint32_t Buffer
 
 /*
  * Tyler Grenier 10-10-23
- * This is an important table file because
- * the table here in this cpp file will
- * allow our kernel to talk to drivers from
- * the cpp universe without having serious
- * effect on how usermode and or other drivers
- * also in cpp interacts
- * with drivers we can either jump from cpp to c
- * and back to cpp or with this design determine
- * the fastest route and if determined just jump
- * from cpp to cpp without having to do translation
- * that also takes too long
+
 */
 
 /*
--- Tyler Grenier 2-16-24 11:09 AM
--- This File Is Now modified significantly at this 
--- point and Is now significant in the initialization
--- of this kernel
+
 */
 
 #include <WDKSubsystem/WDKSubsystem.h>

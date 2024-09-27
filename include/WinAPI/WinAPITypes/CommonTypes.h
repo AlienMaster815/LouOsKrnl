@@ -1039,6 +1039,7 @@ typedef struct _DEVOBJ_EXTENSION {
 
 #define LOUSTATUS uint32_t
 
+
 typedef struct _DRIVER_OBJECT {
   SHORT             Type;
   SHORT             Size;
@@ -1056,6 +1057,8 @@ typedef struct _DRIVER_OBJECT {
   PDRIVER_UNLOAD     DriverUnload;
   PDRIVER_DISPATCH   MajorFunction[IRP_MJ_MAXIMUM_FUNCTION + 1];
   //DriverObjectModificationss for ldm
+  uintptr_t PDEV; //uintptr_t For Definitions Issues
+  bool (*PciScanBus)(struct _PCI_DEVICE_OBJECT*, struct _DRIVER_OBJECT* , struct _UNICODE_STRING*);
   LOUSTATUS (*InitializePciDevice)(struct _PCI_DEVICE_OBJECT*, struct _DRIVER_OBJECT*, struct _UNICODE_STRING*);
 } DRIVER_OBJECT, *PDRIVER_OBJECT;
 

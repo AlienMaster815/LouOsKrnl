@@ -50,7 +50,7 @@ typedef struct _PCI_DEVICE_OBJECT {
 	pci_power_t CurrentState;
 	uint8_t PmCap;
 	atomic_t enable_cnt;
-	uintptr_t DeviceExtendedObject;
+	uintptr_t DeviceExtendedObject; 
 }PCI_DEVICE_OBJECT,*P_PCI_DEVICE_OBJECT;
 #endif
 

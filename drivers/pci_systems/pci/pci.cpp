@@ -39,11 +39,10 @@ LOUDDK_API_ENTRY void checkBus(uint8_t bus) {
     }
 }
 
-static PCI_DEVICE_OBJECT Dev;
 
 LOUDDK_API_ENTRY void checkDevice(uint8_t bus, uint8_t device) {
     uint8_t function = 0;
-
+    PCI_DEVICE_OBJECT Dev;
     uint16_t vendorID = PciGetVendorID(bus, device);
     if (vendorID == NOT_A_PCI_DEVICE) return; // Device doesn't exist
     checkFunction(bus, device, function);

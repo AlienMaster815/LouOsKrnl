@@ -178,11 +178,11 @@ extern "C" void insw(uint16_t __port, void *__buf, unsigned long __n);
  
 extern "C" void outsw(uint16_t __port, const void *__buf, unsigned long __n);
 #endif
-
 #else
 
 
-
+KERNEL_EXPORT insw(uint16_t __port, void *__buf, unsigned long __n);
+KERNEL_EXPORT outsw(uint16_t __port, const void *__buf, unsigned long __n);
 
 #endif
 #endif

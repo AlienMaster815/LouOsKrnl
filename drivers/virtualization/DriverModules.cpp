@@ -9,5 +9,12 @@ LOUDDK_API_ENTRY
 void InitializePreLoadedModule(uintptr_t Entry, uint8_t DriverNumber){
     DriverEntry = (LOUSTATUS (*)(PDRIVER_OBJECT, PUNICODE_STRING))Entry;
     DriverEntry(PreLoadedDriverObjects[DriverNumber], 0);
-    while(1);
+}
+
+LOUDDK_API_ENTRY bool PciScanBusCheck(P_PCI_DEVICE_OBJECT PDEV, uint8_t DriverNumber){
+    DRIVER_OBJECT Driver = *PreLoadedDriverObjects[DriverNumber];
+    if(Driver.PciScanBus != 0x00){
+        return Driver.PciScanBus(PDEV, &Driver, 0); //pre loaded modules don have registry enties    
+    }
+    return false;
 }

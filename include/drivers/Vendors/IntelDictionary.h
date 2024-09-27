@@ -2,8 +2,6 @@
 -- Tyler Grenier 2/19/24 3:08:47 PM
 -- This document is for defining a sane definition
 -- for intel vendor ids and Device IDs
--- and yes i did all of this in 2 days myself 
--- not copy and paste but actually writing it out
 */
 
 #ifndef _INTEL_DICTIONARY_H
