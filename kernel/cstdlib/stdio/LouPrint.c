@@ -16,7 +16,7 @@
 void VgaPutCharecterRgb(char Charecter, PWINDHANDLE Handle, uint8_t r, uint8_t g, uint8_t b);
 bool LouUpdateTextWindow(PWINDHANDLE WindowHandle,TEXT_WINDOW_EVENT Update);
 
-
+int _vsnprintf(char *buffer, size_t buffer_size, const char *format, ...);
 static PWINDHANDLE DebugWindow = 0x00; 
 
 #define INCREASE_Y 16+1

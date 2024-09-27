@@ -2351,9 +2351,10 @@ struct radeon_atcs {
 typedef uint32_t (*radeon_rreg_t)(struct radeon_device*, uint32_t);
 typedef void (*radeon_wreg_t)(struct radeon_device*, uint32_t, uint32_t);
 
+#pragma pack(push, 1)
 struct radeon_device {
 	struct device				   	*dev;
-	struct drm_device			   	*ddev;
+	PDrsdDevice				 	   	ddev;
 	P_PCI_DEVICE_OBJECT		 		pdev;
 #ifdef __alpha__
 	struct pci_controller		*hose;
@@ -2361,6 +2362,7 @@ struct radeon_device {
 	struct radeon_agp_head		*agp;
 	//struct rw_semaphore		exclusive_lock;
 	/* ASIC */
+	uint64_t DeviceFlags;
 	union radeon_asic_config	config;
 	enum radeon_family		family;
 	unsigned long			flags;
@@ -2496,7 +2498,8 @@ struct radeon_device {
 	/* tracking pinned memory */
 	uint64_t vram_pin_size;
 	uint64_t gart_pin_size;
-} __attribute__((packed));
+};
+#pragma pack(pop)
 
 bool radeon_is_px(struct drm_device *dev);
 int radeon_device_init(struct radeon_device *rdev,
@@ -3017,5 +3020,78 @@ void radeon_audio_component_init(struct radeon_device *rdev);
 void radeon_audio_component_fini(struct radeon_device *rdev);
 
 #include "radeon_object.h"
+
+#define AMD_VENDOR_ID 0x1002
+
+
+
+#define CHIP_KAVERI (1 << 3)
+#define CHIP_RV380  (2 << 3)
+#define CHIP_RS100  (3 << 3)
+#define CHIP_RS200  (4 << 3)
+#define CHIP_R300   (5 << 3)
+#define CHIP_R350   (6 << 3)
+#define CHIP_RV350  (7 << 3)
+#define CHIP_R200   (8 << 3)
+#define CHIP_RV250  (9 << 3)
+#define CHIP_R420   (10 << 3)
+#define CHIP_RV200  (11 << 3)
+#define CHIP_RV100  (12 << 3)
+#define CHIP_R100   (13 << 3)
+#define CHIP_R423   (14 << 3)
+#define CHIP_RV410  (15 << 3)
+#define CHIP_RS300  (16 << 3)
+#define CHIP_RS480  (17 << 3)
+#define CHIP_RV280  (18 << 3)
+#define CHIP_RS400  (19 << 3)
+#define CHIP_OLAND  (20 << 3)
+#define CHIP_BONAIRE (21 << 3)
+#define CHIP_HAINAN (22 << 3)
+#define CHIP_CAYMAN (23 << 3)
+#define CHIP_BARTS  (24 << 3)
+#define CHIP_TURKS  (25 << 3)
+#define CHIP_CAICOS (26 << 3)
+#define CHIP_TAHITI (27 << 3)
+#define CHIP_HAWAII (28 << 3)
+#define CHIP_PITCAIRN (29 << 3)
+#define CHIP_VERDE (30 << 3)
+#define CHIP_CYPRESS (31 << 3)
+#define CHIP_HEMLOCK (32 << 3)
+#define CHIP_JUNIPER (33 << 3)
+#define CHIP_REDWOOD (34 << 3)
+#define CHIP_CEDAR (35 << 3)
+#define CHIP_R520 (36 << 3)
+#define CHIP_RV515 (36 << 3)
+#define CHIP_RV530 (37 << 3)
+#define CHIP_R580   (38 << 3)
+#define CHIP_RV570  (39 << 3)
+#define CHIP_RV560  (40 << 3)
+#define CHIP_RS690  (41 << 3)
+#define CHIP_RS600  (42 << 3)
+#define CHIP_RS740  (43 << 3)
+#define CHIP_R600   (44 << 3)
+#define CHIP_RV740  (45 << 3)
+#define CHIP_RV770  (46 << 3)
+#define CHIP_RV730  (47 << 3)
+#define CHIP_RV610  (48 << 3)
+#define CHIP_RV670  (49 << 3)
+#define CHIP_RV710  (50 << 3)
+#define CHIP_RV630  (51 << 3)
+#define CHIP_RV635  (52 << 3)
+#define CHIP_RV620  (53 << 3)
+#define CHIP_RS780  (54 << 3)
+#define CHIP_SUMO   (55 << 3)
+#define CHIP_SUMO2  (56 << 3)
+#define CHIP_RS880  (57 << 3)
+#define CHIP_PALM   (58 << 3)
+#define CHIP_KABINI (59 << 3)
+#define CHIP_MULLINS (60 << 3)
+#define CHIP_ARUBA  (61 << 3)
+
+#define RADEON_MOBILITY     0b1
+#define RADEON_NEW_MEMMAP   0b10
+#define RADEON_IS_IGP       0b100
+
+#define PCI_ANY_ID 0xFFFF
 
 #endif

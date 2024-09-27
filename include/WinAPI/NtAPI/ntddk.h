@@ -666,9 +666,9 @@ void DriverReinitialize(
 	_In_           ULONG Count
 );
 
-void ExFreePool(
-	uintptr_t a
-);
+//void ExFreePool(
+//	uintptr_t a
+//);
 
 void ExpandStackCallout(
 	_In_opt_ PVOID Parameter
@@ -1581,9 +1581,9 @@ LONG RtlCompareString(
   _In_ BOOLEAN      CaseInSensitive
 );
 
-NTAPI_INLINE RtlConvertUlongToLuid(
-  _In_ ULONG Ulong
-);
+//NTAPI_INLINE RtlConvertUlongToLuid(
+//  _In_ ULONG Ulong
+//);
 
 VOID RtlCopyString(
   _Out_          PSTRING      DestinationString,

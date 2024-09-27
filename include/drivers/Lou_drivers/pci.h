@@ -1,6 +1,7 @@
 /*
 -- Tyler Grenier 2/6/24 11:14:45 AM
 */
+#pragma pack(push, 1)
 
 
 //Define the Lou Driver Kit For Our Constants
@@ -38,8 +39,9 @@ typedef struct _PCIBuffer {
 
 typedef int pci_power_t;
 
-
-typedef struct __attribute__((packed)) _PCI_DEVICE_OBJECT {
+#ifndef _PCI_DEVICE_OBJECT_
+#define _PCI_DEVICE_OBJECT_
+typedef struct _PCI_DEVICE_OBJECT {
 	uint16_t VendorID;
 	uint16_t DeviceID;
 	uint8_t bus;
@@ -50,7 +52,7 @@ typedef struct __attribute__((packed)) _PCI_DEVICE_OBJECT {
 	atomic_t enable_cnt;
 	uintptr_t DeviceExtendedObject;
 }PCI_DEVICE_OBJECT,*P_PCI_DEVICE_OBJECT;
-
+#endif
 
 
 #define PCI_CONFIG_ADDRESS_PORT 0xCF8
@@ -75,6 +77,8 @@ typedef struct __attribute__((packed)) _PCI_DEVICE_OBJECT {
 #define PCI_UNKNOWN	((pci_power_t) 5)
 #define PCI_POWER_ERROR	((pci_power_t) -1)
 
+#define ANY_PCI_ID 0xFFFF
+
 enum BaseAddressRegisterType {
 	MemoryMapping = 0,
 	InputOutPut = 1
@@ -82,6 +86,8 @@ enum BaseAddressRegisterType {
 
 #ifdef __cplusplus
 #include <LouDDK.h>
+
+#ifndef _KERNEL_MODULE_
 uint8_t LouKePciReadHeaderType(P_PCI_DEVICE_OBJECT PDEV);
 uint32_t LouKeReadPciVendorId(P_PCI_DEVICE_OBJECT PDEV);
 uint32_t LouKeReadPciDeviceId(P_PCI_DEVICE_OBJECT PDEV);
@@ -191,6 +197,7 @@ bool IsPciEnable(uint8_t bus, uint8_t slot, uint8_t func);
 
 void pciConfigWriteByte(uint8_t bus, uint8_t device, uint8_t function, uint8_t reg, uint8_t value);
 void pciConfigWriteWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset, uint16_t value);
+#endif
 
 #endif
 
@@ -201,3 +208,4 @@ void pciConfigWriteWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset,
 
 
 #endif
+#pragma pack(pop)

@@ -1,7 +1,7 @@
+#pragma pack(push, 1)
 #ifndef SYS_H
 #define SYS_H
 #include <LouDDK.h>
-
 
 
 enum DebugType {
@@ -154,7 +154,7 @@ enum coff_characteristics {
 
 
 
-typedef struct __attribute__((packed)){
+typedef struct {
 	uint8_t VersionAndFlag;
 	uint8_t SizeOfProlog;
 	uint8_t CountOfUnwindCodes;
@@ -162,7 +162,7 @@ typedef struct __attribute__((packed)){
 }UNWIND_INFO;
 
 
-typedef struct __attribute__((packed)){
+typedef struct {
 	char name[0x8];
 	uint32_t virtualSize;
 	uint32_t virtualAddress;
@@ -176,7 +176,7 @@ typedef struct __attribute__((packed)){
 }Section_Header;
 
 
-typedef struct __attribute__((packed)){
+typedef struct {
 	uint32_t e_magic__DanS;
 	uint32_t e_align[0x3];
 	uint32_t e_entry_id0__01076b14;
@@ -198,12 +198,12 @@ typedef struct __attribute__((packed)){
 }Rich_Header;
 
 
-typedef struct __attribute__((packed)){
+typedef struct {
 	uint32_t virtualAddress;
 	uint32_t size;
 }PE_Data_Directory_Entry;
 
-typedef struct __attribute__((packed))
+typedef struct 
 {
 	uint16_t magic;
 	uint8_t majorLinkerVersion;
@@ -253,7 +253,7 @@ typedef struct __attribute__((packed))
 }PE64_Optional_Header;
 
 
-typedef struct __attribute__((packed)){
+typedef struct {
 	uint32_t characteristics;
 	uint32_t timeDateStamp;
 	uint16_t majorVersion;
@@ -301,7 +301,7 @@ typedef struct __attribute__((packed)){
 	uint64_t volatileMetadataPointer;
 }Load_Configuration_Directory_Table;
 
-typedef struct __attribute__((packed)){
+typedef struct {
 	uint32_t importLookupTableRva;
 	uint32_t timeDateStamp;
 	uint32_t forwarderChain;
@@ -310,13 +310,13 @@ typedef struct __attribute__((packed)){
 }Import_Directory_Table;
 
 
-typedef struct __attribute__((packed)){
+typedef struct {
 	uint32_t beginAddress;
 	uint32_t endAddress;
 	uint32_t unwindInformation;
 }Exception_Directory_Entry;
 
-typedef struct __attribute__((packed)){
+typedef struct {
 	uint32_t characteristics;
 	uint32_t timeDateStamp;
 	uint16_t majorVersion;
@@ -347,9 +347,10 @@ typedef struct {
 	int16_t e_oeminfo; // 38 + 2 = 40
 	char e_res2[0x14]; // 40 + 14 = 54
 	uint32_t e_lfanew; // 58
-}__attribute__((packed)) DOS_Header;
+} DOS_Header;
 
-typedef struct __attribute((packed)) {
+
+typedef struct {
 	char magic[0x04];
 	uint16_t machine;
 	uint16_t NumOfSections;
@@ -365,12 +366,15 @@ typedef struct __attribute((packed)) {
 
 #define MAGIC_SECURITY_COOKIE 0x2b992ddfa232
 
-
+#ifndef _KERNEL_MODULE_
 PE64_Optional_Header* FindPE64Header(COFF_Header* Coff);
 bool LinkIOManagerDriverEntryPoint(PE64_Optional_Header* PE64, DOS_Header* DRV_Address, uint64_t* DRIVER_ENTRY);
 COFF_Header* FindCoffHeader(DOS_Header* DOSHeader);
 DOS_Header* FindDriverFile(uintptr_t MemmoryOffset = (10ULL * 1024 * 1024));
 Import_Directory_Table* GetImportTableDirectories(PE64_Optional_Header* PE64, DOS_Header* DRV_Address, uint32_t* size);
 bool LinkExports(Import_Directory_Table* ImporTables, PE64_Optional_Header* PE64,uint32_t* TableSize);
+#endif
+
 
 #endif
+#pragma pack(pop)

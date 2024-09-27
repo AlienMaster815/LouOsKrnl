@@ -110,6 +110,8 @@
 #ifndef _IO_H
 #define _IO_H
 
+#ifndef _KERNEL_MODULE_
+
 #ifdef __cplusplus
 class Port{
     protected:
@@ -175,6 +177,7 @@ class Port32Bit : public Port{
 extern "C" void insw(uint16_t __port, void *__buf, unsigned long __n);
  
 extern "C" void outsw(uint16_t __port, const void *__buf, unsigned long __n);
+#endif
 
 #else
 

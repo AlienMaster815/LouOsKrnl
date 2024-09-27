@@ -3,6 +3,6 @@
 #include <bootloader/grub/multiboot.h>
 #include <kernel/memmory.h>
 
-RSDP* Find_RSDP();
+//RSDP* Find_RSDP();
 //handle our acpi tasks
 VOID HANDLE_ACPI();

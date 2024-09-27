@@ -1,9 +1,10 @@
 #ifndef _WINDOWS_H
 #define _WINDOWS_H
+#pragma pack(push, 1)
 
 #include <LouAPI.h>
 
-typedef struct __attribute__((packed)) _COLOR_MAP{
+typedef struct  _COLOR_MAP{
     uint8_t r;
     uint8_t g;
     uint8_t b;
@@ -15,7 +16,7 @@ typedef enum{
     CANVAS_WINDOW = 2,
 }WINDOW_TYPE;
 
-typedef struct __attribute__((packed)) _WINDOW_CURSOR{
+typedef struct  _WINDOW_CURSOR{
     uint16_t x;
     uint16_t y;
 }WINDOW_CURSOR, * PWINDOW_CURSOR;
@@ -23,7 +24,7 @@ typedef struct __attribute__((packed)) _WINDOW_CURSOR{
 //notice: the dementions are only for the internal window 
 //not the window itself the window itself is in the window
 //handle
-typedef struct __attribute__((packed)) _WINDOW_DIMENTIONS{
+typedef struct  _WINDOW_DIMENTIONS{
     uint16_t x;         //Current X Location
     uint16_t y;         //Current Y Location
     uint16_t width;     //Current Width
@@ -36,20 +37,20 @@ typedef enum{
     MENU_TEXT_BUTTON = 2,
 }BUTTON_TYPE;
 
-typedef struct __attribute__((packed)) _BUTTON_CHARECTERISTICS{
+typedef struct  _BUTTON_CHARECTERISTICS{
     bool IsButton3D;
     BUTTON_TYPE Type;
     string ButtonName;
     string ButtonText;
 }BUTTON_CHARECTERISTICS, * PBUTTON_CHARECTERISTICS;
 
-typedef struct __attribute__((packed)) _WINDOW_CHARECTERISTICS{
+typedef struct  _WINDOW_CHARECTERISTICS{
     WINDOW_TYPE Type;
     WINDOW_DIMENTIONS Dimentions;
     string WindowName;
 }WINDOW_CHARECTERISTICS, * PWINDOW_CHARECTERISTICS;
 
-typedef struct __attribute__((packed)) _WINDHANDLE{
+typedef struct  _WINDHANDLE{
     COLOR_MAP ForgroundColor;
     COLOR_MAP BackgroundColor;
     COLOR_MAP BorderFront;
@@ -68,7 +69,7 @@ typedef struct __attribute__((packed)) _WINDHANDLE{
     uint16_t NumberOfChildWindows;
 } WINDHANDLE, * PWINDHANDLE;
 
-typedef struct __attribute__((packed)) _BUTTONHANDLE{
+typedef struct  _BUTTONHANDLE{
     COLOR_MAP Letters;
     COLOR_MAP ButtonColor;
     //keep in mind the system will flip
@@ -84,7 +85,7 @@ typedef struct __attribute__((packed)) _BUTTONHANDLE{
     uintptr_t ChildWindow;
     uint16_t NumberOfChildWindows; 
 } BUTTONHANDLE, * PBUTTONHANDLE;
-
+#ifndef _KERNEL_MODULE_
 bool Draw3DBorder(
     uint16_t x,
     uint16_t y,
@@ -137,18 +138,19 @@ bool DrawRectangle(
 bool AttatchWindowToKrnlDebug(
     PWINDHANDLE WindowToAtttch
 );
+#endif
 
 typedef enum{
     TEXT_WINDOW_BUFFER_OVERFLOW = 1,
 }TEXT_WINDOW_EVENT;
 
-typedef struct __attribute__((packed)) _FramebufferHandle{
+typedef struct  _FramebufferHandle{
     uint16_t x;
     uint16_t y;
     uint16_t width;
     uint16_t height;
 }FRAME_BUFFER_HANDLE, * PFRAME_BUFFER_HANDLE;
-
+#ifndef _KERNEL_MODULE_
 void* GetFrameBufferAddress(
     uint16_t x, uint16_t y
 );
@@ -184,3 +186,5 @@ PBUTTONHANDLE LouCreateButton(
 );
 
 #endif
+#endif
+#pragma pack(pop)

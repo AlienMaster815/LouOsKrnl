@@ -30,7 +30,7 @@ uintptr_t RBP_Current;
 
 
 
-string KERNEL_VERSION = "0.0.455 RSC-2 Multiboot 2 With EFI Support";
+string KERNEL_VERSION = "0.1.0 RSC-2 Multiboot 2 With EFI Support";
 
 
 #ifdef __x86_64__
@@ -81,6 +81,7 @@ void VirtualizationException();
 void ControlProtectionException();
 void CookieCheckFail();
 
+void InitPreLoadedModules();
 void ParseMBootTags(struct multiboot_tag* MBOOT);
 void CreateNewPageSystem();
 uint64_t GetRamSize();
@@ -257,16 +258,9 @@ uint64_t GetThreadContext(
     int Thread
 );
 
-void GetUser32MouduleStart(uintptr_t* Start, uintptr_t* End);
-DllModuleEntry LouUserDllModule(uintptr_t Start);
-
 void User_Mode_Initialization(){
     
-    uintptr_t User32Start, User32End;
 
-    GetUser32MouduleStart(&User32Start, &User32End);
-
-    DllModuleEntry Usr32Entry = LouUserDllModule(User32Start);
 
 }
 
@@ -287,20 +281,22 @@ KERNEL_ENTRY Lou_kernel_start(
     LouKeMapEfiMemory();
     LouKeMapPciMemory();
     LouKeRunOnNewStack(setup_vga_systems, 0x00, 32  * KILOBYTE);
-    StartDebugger();
 
 	LouPrint("Lou Version %s %s\n", KERNEL_VERSION ,KERNEL_ARCH);
     LouPrint("Hello Im Lousine Getting Things Ready\n");
 
     //INITIALIZE IMPORTANT THINGS FOR US LATER
     Lou_kernel_early_initialization();
-    InitializeGenericTables();
+    
+
+    LouKeRunOnNewStack(InitializeGenericTables, 0x00, 16 * KILOBYTE);
     
     Advanced_Kernel_Initialization();
 
+    InitPreLoadedModules();
+
     //SETUP DEVICES AND DRIVERS
     LouKeRunOnNewStack(LookForStorageDevices, 0x00, 32  * KILOBYTE);
-
     //UpdateDeviceInformationTable();
     //LouKeRunOnNewStack(FileSystemSetup, 0x00, 64 * KILOBYTE);
     //ScanTheRestOfHarware();
@@ -313,8 +309,6 @@ KERNEL_ENTRY Lou_kernel_start(
 
     LouPrint("Lousine Kernel Video Mode:%dx%d\n", GetScreenBufferWidth(), GetScreenBufferHeight());
     LouPrint("Hello World\n");
-
-
 
     while(1){
         asm("hlt");

@@ -1,6 +1,4 @@
 #include "VBOX/VBoxVGA.h"
-#include <drivers/display/IntelGpu.h>
-#include <drivers/display/AmdGpu.h>
 
 void InitializeAmdGpu(P_PCI_DEVICE_OBJECT PDEV);
 
@@ -31,7 +29,7 @@ bool IsVGA(uint8_t bus,uint8_t slot,uint8_t function) {
 }
 
 
-
+LOUSTATUS VBoxPciProbe(P_PCI_DEVICE_OBJECT PDEV);
 
 // Function to initialize the VGA device
 void InitializeVgaDevice(P_PCI_DEVICE_OBJECT PDEV) {	
@@ -44,28 +42,30 @@ void InitializeVgaDevice(P_PCI_DEVICE_OBJECT PDEV) {
 	PDEV->VendorID = VendorID;
 	PDEV->DeviceID = DeviceID;
 
+	VBoxPciProbe(PDEV);
+
 	if(VendorID == 0x80EE){
 		PreVBoxVGAInit(PDEV);
 		InitializeVirtualBoxVgaAdapter(PDEV);
 		return;
 	}
-	//else if(VendorID == 0x1002){
+	else if(VendorID == 0x1002){
 		//jump to AMDGPU
-	//	InitializeAmdGpu(PDEV);
+	
+	}
+	//else if(VendorID == 0x8086){
+	//	if(IsWESTMERE(DeviceID)){
+	//		InitializeWestmere(PDEV);
+	//	}
+	//	else if(IsSANDYBRIDGEGT1(DeviceID)){
+	//		InitializeSandyBridgeGt1(PDEV);
+	//	}
+	//	else if(IsSANDYBRIDGEGT2(DeviceID)){
+	//		InitializeSandyBridgeGt2(PDEV);
+	//	}
 	//}
-	else if(VendorID == 0x8086){
-		if(IsWESTMERE(DeviceID)){
-			InitializeWestmere(PDEV);
-		}
-		else if(IsSANDYBRIDGEGT1(DeviceID)){
-			InitializeSandyBridgeGt1(PDEV);
-		}
-		else if(IsSANDYBRIDGEGT2(DeviceID)){
-			InitializeSandyBridgeGt2(PDEV);
-		}
-	}
-	else{
-		//here for a known compiler bug with if statements
-	}
+	//else{
+	//	//here for a known compiler bug with if statements
+	//}
 
 }

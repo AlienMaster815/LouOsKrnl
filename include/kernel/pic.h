@@ -30,7 +30,7 @@
 #define PIC_READ_IRR                0x0a    /* OCW3 irq ready next CMD read */
 #define PIC_READ_ISR                0x0b    /* OCW3 irq service next CMD read */
 
-
+#ifndef _KERNEL_MODULE_
 void StartPic();
 void PIC_sendEOI(unsigned char irq);
 
@@ -56,5 +56,6 @@ uint16_t pic_get_isr(void);
 void Mask_All_Programable_Interrupts();
 
 void UnMaskKeyboard();
+#endif
 
 #endif

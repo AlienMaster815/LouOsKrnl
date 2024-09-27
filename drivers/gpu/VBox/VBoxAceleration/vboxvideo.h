@@ -1,3 +1,4 @@
+#pragma pack(push, 1)
 /* SPDX-License-Identifier: MIT */
 /* Copyright (C) 2006-2016 Oracle Corporation */
 
@@ -58,7 +59,7 @@ struct vbva_cmd_hdr {
 	int16_t y;
 	uint16_t w;
 	uint16_t h;
-} __attribute__((packed));
+} ;
 
 /*
  * The VBVA ring buffer is suitable for transferring large (< 2GB) amount of
@@ -93,7 +94,7 @@ struct vbva_cmd_hdr {
 
 struct vbva_record {
 	uint32_t len_and_flags;
-} __attribute__((packed));
+} ;
 
 /*
  * The minimum HGSMI heap size is PAGE_SIZE (4096 bytes) and is a restriction of
@@ -118,7 +119,7 @@ struct vbva_record {
 struct vbva_host_flags {
 	uint32_t host_events;
 	uint32_t supported_orders;
-} __attribute__((packed));
+} ;
 
 struct vbva_buffer {
 	struct vbva_host_flags host_flags;
@@ -139,7 +140,7 @@ struct vbva_buffer {
 	uint32_t data_len;
 	/* variable size for the rest of the vbva_buffer area in VRAM. */
 	uint8_t data[];
-} __attribute__((packed));
+} ;
 
 #define VBVA_MAX_RECORD_SIZE (128 * 1024 * 1024)
 
@@ -204,7 +205,7 @@ struct vbva_buffer {
 struct vbva_conf32 {
 	uint32_t index;
 	uint32_t value;
-} __attribute__((packed));
+} ;
 
 /* Reserved for historical reasons. */
 #define VBOX_VBVA_CURSOR_CAPABILITY_RESERVED0   BIT(0)
@@ -234,11 +235,11 @@ struct vbva_infoview {
 
 	/* The recommended maximum size of the VRAM memory for the screen. */
 	uint32_t max_screen_size;
-} __attribute__((packed));
+} ;
 
 struct vbva_flush {
 	uint32_t reserved;
-} __attribute__((packed));
+} ;
 
 /* vbva_infoscreen.flags */
 #define VBVA_SCREEN_F_NONE			0x0000
@@ -287,7 +288,7 @@ struct vbva_infoscreen {
 
 	/* VBVA_SCREEN_F_* */
 	uint16_t flags;
-} __attribute__((packed));
+} ;
 
 /* vbva_enable.flags */
 #define VBVA_F_NONE				0x00000000
@@ -302,12 +303,12 @@ struct vbva_enable {
 	uint32_t flags;
 	uint32_t offset;
 	int32_t result;
-} __attribute__((packed));
+} ;
 
 struct vbva_enable_ex {
 	struct vbva_enable base;
 	uint32_t screen_id;
-} __attribute__((packed));
+} ;
 
 struct vbva_mouse_pointer_shape {
 	/* The host result. */
@@ -355,7 +356,7 @@ struct vbva_mouse_pointer_shape {
 	 * Preallocate 4 bytes for accessing actual data as p->data.
 	 */
 	uint8_t data[4];
-} __attribute__((packed));
+} ;
 
 /* pointer is visible */
 #define VBOX_MOUSE_POINTER_VISIBLE		0x0001
@@ -381,7 +382,7 @@ struct vbva_mouse_pointer_shape {
 struct vbva_caps {
 	int32_t rc;
 	uint32_t caps;
-} __attribute__((packed));
+} ;
 
 /* Query the most recent mode hints received from the host. */
 struct vbva_query_mode_hints {
@@ -391,7 +392,7 @@ struct vbva_query_mode_hints {
 	uint16_t hint_structure_guest_size;
 	/* Return code for the operation. Initialise to VERR_NOT_SUPPORTED. */
 	int32_t rc;
-} __attribute__((packed));
+} ;
 
 /*
  * Structure in which a mode hint is returned. The guest allocates an array
@@ -411,7 +412,7 @@ struct vbva_modehint {
 	uint32_t dx;			/* X offset into the virtual frame-buffer. */
 	uint32_t dy;			/* Y offset into the virtual frame-buffer. */
 	uint32_t enabled;		/* Not flags. Add new members for new flags. */
-} __attribute__((packed));
+} ;
 
 #define VBVAMODEHINT_MAGIC 0x0801add9u
 
@@ -426,7 +427,7 @@ struct vbva_report_input_mapping {
 	int32_t y;	/* Upper left Y co-ordinate relative to the first screen. */
 	uint32_t cx;	/* Rectangle width. */
 	uint32_t cy;	/* Rectangle height. */
-} __attribute__((packed));
+} ;
 
 /*
  * Report the guest cursor position and query the host one. The host may wish
@@ -437,6 +438,8 @@ struct vbva_cursor_position {
 	uint32_t report_position;	/* Are we reporting a position? */
 	uint32_t x;			/* Guest cursor X position */
 	uint32_t y;			/* Guest cursor Y position */
-} __attribute__((packed));
+} ;
 
 #endif
+
+#pragma pack(pop)

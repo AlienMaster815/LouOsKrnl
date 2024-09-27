@@ -12,9 +12,11 @@
 
 #define QWERTY 0x01
 
+#ifndef _KERNEL_MODULE_
 static uint8_t KBDLNG = QWERTY;
 
 void PS2KeyboardHandler();
 void USBKeyboardHandler();
+#endif
 
 #endif

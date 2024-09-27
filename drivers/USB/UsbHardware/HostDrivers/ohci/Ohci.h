@@ -1,7 +1,9 @@
 #ifndef _OHCI_H
 #define _OHCI_H
 
-typedef struct __attribute__((packed)) _OHCI_MEM{
+#pragma pack(push, 1)
+
+typedef struct  _OHCI_MEM{
     uint32_t HcRevision;
     uint32_t HcControl;
     uint32_t HcCommandStatus;
@@ -28,14 +30,14 @@ typedef struct __attribute__((packed)) _OHCI_MEM{
 
 typedef uint32_t HcRhPortStatus;
 
-typedef struct __attribute__((packed)) _OHCI_ENDPOINT_DESCRIPTOR{
+typedef struct  _OHCI_ENDPOINT_DESCRIPTOR{
     uint32_t EDWord0;      // Endpoint descriptor first word
     uint32_t TailP;        // Tail pointer
     uint32_t HeadP;        // Head pointer (Contains Halted and ToggleCarry)
     uint32_t NextED;       // Next Endpoint Descriptor
 }OHCI_ENDPOINT_DESCRIPTOR, * POHCI_ENDPOINT_DESCRIPTOR;
 
-typedef struct __attribute__((packed)) _OHCI_TRANSFER_DESCRIPTORS{
+typedef struct  _OHCI_TRANSFER_DESCRIPTORS{
     uint32_t Control;
     uint32_t FirstByteAddress;
     uint32_t NextTDAddress;
@@ -122,7 +124,7 @@ void IsOHCIFunction(
     uint8_t Port
 );
 
-typedef struct __attribute__((packed)) _OHCI_SETUP_PACKET{
+typedef struct  _OHCI_SETUP_PACKET{
     uint8_t BmRequestType;
     uint8_t BRequest;
     uint16_t WValue;
@@ -130,7 +132,7 @@ typedef struct __attribute__((packed)) _OHCI_SETUP_PACKET{
     uint16_t WLength;
 }OHCI_SETUP_PACKET, * POHCI_SETUP_PACKET;
  
- typedef struct __attribute__((packed)) _OHCI_DEVICE_DESCRIPTOR{
+ typedef struct  _OHCI_DEVICE_DESCRIPTOR{
     uint8_t BLength;
     uint8_t BDescriptorLength;
     uint16_t BcdUSB;
@@ -155,14 +157,14 @@ LOUSTATUS OhciControlTransfer(
     int PacketLength
 );
 
-typedef struct __attribute__((packed)) _OHCI_ED{
+typedef struct  _OHCI_ED{
     uint32_t Flags;
     uint32_t TailTD;
     uint32_t HeadTD;
     uint32_t NextED;
 }OHCI_ED, * POHCI_ED;
 
-typedef struct __attribute__((packed)) _OHCI_TD{
+typedef struct  _OHCI_TD{
     uint32_t CBP;
     uint32_t NextTD;
     uint32_t BE;
@@ -170,3 +172,4 @@ typedef struct __attribute__((packed)) _OHCI_TD{
 }OHCI_TD, * POHCI_TD;
 
 #endif //OHCI H
+#pragma pack(pop)

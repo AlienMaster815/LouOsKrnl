@@ -14,6 +14,7 @@ bool IsAGPDevice(uint8_t bus, uint8_t slot, uint8_t function);
 bool isVirtualizationDevice(uint8_t bus, uint8_t slot, uint8_t function);
 
 void RegisterUnkownDevice(uint8_t bus,uint8_t device,uint8_t function);
+bool PciExternalModuleScan(uint8_t bus, uint8_t slot, uint8_t func);
 
 LOUDDK_API_ENTRY void scan_pci_bridges();
 
@@ -233,8 +234,6 @@ bool IsPataCheck(uint8_t bus, uint8_t slot, uint8_t function);
 LOUDDK_API_ENTRY void checkForStorageDevice(uint8_t bus, uint8_t device) {
     uint8_t function = 0;
 
-    bool DeviceIdentified = false;
-
     uint16_t vendorID = PciGetVendorID(bus, device);
     if (vendorID == NOT_A_PCI_DEVICE) return; // Device doesn't exist
     checkFunction(bus, device, function);
@@ -250,9 +249,7 @@ LOUDDK_API_ENTRY void checkForStorageDevice(uint8_t bus, uint8_t device) {
                 if (PciGetDeviceID(bus,device,function) == NOT_A_PCI_DEVICE) continue;
                 else {
                     LouPrint("Multi Function PCI Device Found Vedor Is: %h and Device Is: %h\n", vendorID, PciGetDeviceID(bus, device, function));
-                    if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
-                    //if (!DeviceIdentified)DeviceIdentified = IsPataCheck(bus, device, function);
-                    //if (!DeviceIdentified)DeviceIdentified = isUsb(bus, device, function);
+                    if(PciExternalModuleScan(bus, device, function))return;
                }
             }
         }
@@ -260,9 +257,8 @@ LOUDDK_API_ENTRY void checkForStorageDevice(uint8_t bus, uint8_t device) {
     }
     else{
         LouPrint("Single Function PCI Device Found Vedor Is: %h and Device Is: %h\n", vendorID, PciGetDeviceID(bus, device, function));
-        if (!DeviceIdentified)DeviceIdentified = IsSataCheck(bus, device, function);
-        //if (!DeviceIdentified)DeviceIdentified = IsPataCheck(bus, device, function);
-        //if (!DeviceIdentified)DeviceIdentified = isUsb(bus, device, function);
+        if(PciExternalModuleScan(bus, device, function))return;
+
     }
 }
 
@@ -313,4 +309,17 @@ void LouKeMapPciMemory(){
 LOUDDK_API_ENTRY
 void ScanTheRestOfHarware(){
     LouPrint("Scanning For All Other Hardware\n");
+}
+
+KERNEL_IMPORT
+bool LouKeSeachPreLoadedSystemModules(P_PCI_DEVICE_OBJECT PDEV);
+
+bool PciExternalModuleScan(uint8_t bus, uint8_t slot, uint8_t func){
+
+    P_PCI_DEVICE_OBJECT PDEV = (P_PCI_DEVICE_OBJECT)LouMalloc(sizeof(PCI_DEVICE_OBJECT));
+    PDEV->bus = bus;
+    PDEV->slot = slot;
+    PDEV->func = func;
+
+    return LouKeSeachPreLoadedSystemModules(PDEV);
 }

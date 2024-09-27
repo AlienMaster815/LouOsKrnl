@@ -342,7 +342,7 @@ typedef struct _KDPC {
     PVOID DeferredContext;
     PVOID SystemArgument1;
     PVOID SystemArgument2;
-    __volatile PVOID DpcData;
+    PVOID DpcData;
 } KDPC, *PKDPC, *PRKDPC;
 
 
@@ -988,7 +988,7 @@ typedef struct _DEVICE_OBJECT {
   PIO_TIMER                Timer;
   ULONG                    Flags;
   ULONG                    Characteristics;
-  __volatile PVPB          Vpb;
+  PVPB          Vpb;
   PVOID                    DeviceExtension;
   DEVICE_TYPE              DeviceType;
   CHAR                    StackSize;
@@ -1025,19 +1025,19 @@ typedef struct _DEVOBJ_EXTENSION {
     ULONG ExtensionFlags;
     PVOID           DeviceNode;
     PDEVICE_OBJECT  AttachedTo;
-    __volatile LONG StartIoCount;
+    LONG StartIoCount;
     LONG           StartIoKey;
     ULONG          StartIoFlags;
     PVPB           Vpb;
     PVOID DependencyNode;
     PVOID InterruptContext;
-    __volatile LONG InterruptCount;
+    LONG InterruptCount;
 
-    __volatile PVOID VerifierContext;
+    PVOID VerifierContext;
 
 } DEVOBJ_EXTENSION, *PDEVOBJ_EXTENSION;
 
-
+#define LOUSTATUS uint32_t
 
 typedef struct _DRIVER_OBJECT {
   SHORT             Type;
@@ -1055,6 +1055,8 @@ typedef struct _DRIVER_OBJECT {
   PDRIVER_STARTIO    DriverStartIo;
   PDRIVER_UNLOAD     DriverUnload;
   PDRIVER_DISPATCH   MajorFunction[IRP_MJ_MAXIMUM_FUNCTION + 1];
+  //DriverObjectModificationss for ldm
+  LOUSTATUS (*InitializePciDevice)(struct _PCI_DEVICE_OBJECT*, struct _DRIVER_OBJECT*, struct _UNICODE_STRING*);
 } DRIVER_OBJECT, *PDRIVER_OBJECT;
 
 

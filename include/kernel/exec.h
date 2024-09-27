@@ -12,7 +12,8 @@ extern "C" {
 typedef void* HANDLE;
 typedef HANDLE* PHANDLE;
 
-typedef struct __attribute__((packed)) _IMPORT_DIRECTORY_ENTRY{
+#pragma pack(push, 1)
+typedef struct _IMPORT_DIRECTORY_ENTRY{
     uint32_t ImportLookupRva;
     uint32_t TimeDateStamp;
     uint32_t ForwarderChain;
@@ -20,7 +21,7 @@ typedef struct __attribute__((packed)) _IMPORT_DIRECTORY_ENTRY{
     uint32_t ImportAddressTableRva;
 }IMPORT_DIRECTORY_ENTRY, * PIMPORT_DIRECTORY_ENTRY;
 
-typedef struct __attribute__((packed)) _EXPORT_DIRECTORY_ENTRY{
+typedef struct _EXPORT_DIRECTORY_ENTRY{
     uint32_t exportFlags;
     uint32_t timeDateStamp;
     uint16_t majorVersion;
@@ -34,7 +35,7 @@ typedef struct __attribute__((packed)) _EXPORT_DIRECTORY_ENTRY{
     uint32_t ordinalTableRva;
 }EXPORT_DIRECTORY_ENTRY, * PEXPORT_DIRECTORY_ENTRY;
 
-typedef struct __attribute__((packed)) _SECTION_HEADER{
+typedef struct _SECTION_HEADER{
     char name[0x8];
     uint32_t virtualSize;
     uint32_t virtualAddress;
@@ -47,13 +48,13 @@ typedef struct __attribute__((packed)) _SECTION_HEADER{
     uint32_t characteristics;
 }SECTION_HEADER, * PSECTION_HEADER;
 
-typedef struct __attribute__((packed)) _PE_DATA_DIRECTORY_ENTRY{
+typedef struct _PE_DATA_DIRECTORY_ENTRY{
     uint32_t VirtualAddress;
     uint32_t Size;
 }PE_DATA_DIRECTORY_ENTRY, * PPE_DATA_DIRECTORY_ENTRY;
 
 
-typedef struct __attribute__((packed)) _PE64_OPTIONAL_HEADER{
+typedef struct _PE64_OPTIONAL_HEADER{
     uint16_t magic;
     uint8_t majorLinkerVersion;
     uint8_t minorLinkerVersion;
@@ -86,7 +87,7 @@ typedef struct __attribute__((packed)) _PE64_OPTIONAL_HEADER{
     PE_DATA_DIRECTORY_ENTRY PE_Data_Directory_Entries[];
 }PE64_OPTIONAL_HEADER, * PPE64_OPTIONAL_HEADER;
 
-typedef struct __attribute__((packed)) _COFF_HEADER{
+typedef struct _COFF_HEADER{
     char magic[0x4];
     uint16_t machine;
     uint16_t numberOfSections;
@@ -98,7 +99,7 @@ typedef struct __attribute__((packed)) _COFF_HEADER{
 }COFF_HEADER, * PCOFF_HEADER;
 
 //RICH HEADER
-typedef struct __attribute__((packed)) _RICH_HEADER{
+typedef struct _RICH_HEADER{
     uint32_t e_magic__DanS;
     uint32_t e_align[0x3];
     uint32_t e_entry_id0__01078170;
@@ -120,7 +121,7 @@ typedef struct __attribute__((packed)) _RICH_HEADER{
 }RICH_HEADER, * PRICH_HEADER;
 
 //DOS HEADER USED FOR THE SYSTEM TO FIND A VALID PROGRAM OR EXECUTABLE FILE
-typedef struct __attribute__((packed)) _DOS_HEADER{
+typedef struct _DOS_HEADER{
     char e_magic[0x02];     //DOS Magic
     uint16_t e_cblp;        //Count Bytes Last Page
     uint16_t e_cp;          //Num 512 Pages
@@ -141,8 +142,9 @@ typedef struct __attribute__((packed)) _DOS_HEADER{
     char e_res2[0x14];      //reserv 2
     uint32_t e_lfanew;  //portable Executabkle HEader Offset
 }DOS_HEADER, * PDOS_HEADER;
+#pragma pack(pop)
 
-//TODO: Tommorw Finish these functions in c
+#ifndef _KERNEL_MODULE_
 bool CheckDosHeaderValidity(PDOS_HEADER PHeader);
 void GetAllPEHeaders(
     PDOS_HEADER DosHeader,          //in
@@ -151,10 +153,10 @@ void GetAllPEHeaders(
     PSECTION_HEADER* SectionHeaders, //out
     PRICH_HEADER* RichHeader       //out opt
 );
+#endif
 
-PHANDLE LoadAhciModule(uintptr_t Start, uintptr_t End);
-
-typedef struct __attribute__((packed)) _CONFIG_TABLE_TAG{
+#pragma pack(push, 1)
+typedef struct _CONFIG_TABLE_TAG{
     uint32_t Charecteristics;
     uint32_t TimeDateStamp;
     uint16_t MajorVersion;
@@ -206,6 +208,7 @@ typedef struct __attribute__((packed)) _CONFIG_TABLE_TAG{
     uint64_t guardXFGDispatchFunctionPointer;
     uint64_t guardXFGTableDispatchFunctionPointer;
 }CONFIG_TABLE, * PCONFIG_TABLE;
+#pragma pack(pop)
 
 typedef void* HMODULE;
 typedef void* LPVOID;

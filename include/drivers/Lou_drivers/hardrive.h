@@ -1,14 +1,10 @@
 
+#pragma pack(push, 1)
 
 #ifndef GLOBAL_HARDRIVE_VARIABLES
 #define GLOBAL_HARDRIVE_VARIABLES
-#pragma pack(push, 1)
 
 
-
-
-
-#pragma pack(1) // Ensure byte alignment
 
 
 
@@ -80,7 +76,6 @@
 #endif
 
 
-
 #ifdef __cplusplus
 #include <LouDDK.h>
 
@@ -88,6 +83,7 @@
 #define _IDE_
 
 #define READ_ERROR 0x00
+#ifndef _KERNEL_MODULE_
 
 extern "C" uint16_t * GetAtaBufferAddr();
 
@@ -130,7 +126,7 @@ class PATA{
 };
 
 
-
+#endif //kernel mod
 
 #endif
 
@@ -138,8 +134,9 @@ class PATA{
 #define _SATA
 
 
-
+#ifndef _KERNEL_MODULE_
 LOUDDK_API_ENTRY bool IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func);
+#endif
 
 #endif
 
@@ -151,14 +148,14 @@ LOUDDK_API_ENTRY bool IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func);
 
 #define READ_ERROR 0x00
 
-
+#ifndef _KERNEL_MODULE_
 void Sata_init(uint8_t bus, uint8_t slot, uint8_t func);
 void IsSataCheck(uint8_t bus, uint8_t slot, uint8_t func);
 
 void pata_device_scanc();
-
 #endif
 
 
-
 #endif
+#endif
+#pragma pack(pop)

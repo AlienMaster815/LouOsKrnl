@@ -13,7 +13,11 @@
 #ifdef __cplusplus
 LOUDDK_API_ENTRY{
 #endif
+
+#ifndef _KERNEL_MODULE_
 void LouKePutPixelVga(int x, int y, uint8_t r, uint8_t g, uint8_t b);
+#endif //KERNEL_MOD
+
 #ifdef __cplusplus
 }
 #endif
@@ -43,6 +47,7 @@ enum vga_color {
 	VGA_COLOR_WHITE = 15,
 };
 
+#ifndef _KERNEL_MODULE_
 static inline uint16_t vga_entry(unsigned char uc, uint8_t color);
 static inline uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg);
 
@@ -53,6 +58,8 @@ static inline uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg) {
 static inline uint16_t vga_entry(unsigned char uc, uint8_t color) {
 	return (uint16_t)uc | (uint16_t)color << 8;
 }
+#endif //kernek_mod
+
 
 #endif
 
@@ -93,9 +100,9 @@ typedef struct{
 	uint8_t color;
 }Char;
 
+#ifndef _KERNEL_MODULE_
 static uint8_t vga_current;
 static uint8_t vga_new;
-
 
 void setup_vga_systems();
 STATUS register_new_mode(uint8_t new_vga,uint8_t mode);
@@ -107,6 +114,8 @@ void init_terminal();
 void Set_Color(enum VGA_COLOR fg, enum VGA_COLOR bg);
 void Set_Y(uint64_t y);
 void Set_X(uint64_t x);
+#endif //kernel mod
+
 #endif
 
 #endif
@@ -147,6 +156,7 @@ typedef struct {
     uint8_t color;
 } Char;
 
+#ifndef _KERNEL_MODULE_
 // Function to clear the screen
 void print_clear();
 
@@ -167,7 +177,7 @@ void Set_Y(uint16_t y);
 
 // Function to set the cursor position
 void Set_X(uint16_t x);
-
+#endif //kernel mod
 
 #endif
 

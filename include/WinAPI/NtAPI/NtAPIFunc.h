@@ -481,8 +481,12 @@ typedef size_t SIZE_T, * PSIZE_T;
 
 
 //VOID RtlCopyUnicodeString(_Inout_ PUNICODE_STRING DestinationString, _In_opt_ PUNICODE_STRING SourceString);
+#ifndef _KERNEL_MODULE_
 ULONG DbgPrint(_In_z_ _Printf_format_string_ PCSTR Format, ...);
 ULONG DbgPrintEx ( _In_ ULONG ComponentId, _In_ ULONG Level, _In_z_ _Printf_format_string_ PCSTR Format, ...);
+#else 
+KERNEL_IMPORT unsigned long DbgPrint(char const*, ...);
+#endif
 
 #include "Misc/undocumentedTypes.h"
 #include "aux_klib.h"

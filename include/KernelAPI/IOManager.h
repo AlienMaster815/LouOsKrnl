@@ -6,6 +6,7 @@
 #ifndef _IO_MANAGER_H
 #define _IO_MANAGER_H
 
+#ifndef _KERNEL_MODULE_
 #ifdef __cplusplus
 
 extern "C" LOUSTATUS IO_Manager_Init();
@@ -21,6 +22,7 @@ LOUSTATUS IO_Manager_Init();
 //void Register_Storage_DeviceA(uint8_t DriveType,uint8_t DriveNum); Not An Extern C
 void WriteStorageDrive(char Drive, uint8_t* Data, uint32_t Location,uint32_t BufferSize);
 void ReadStorageDrive(char Drive, uint32_t Location , uint32_t BufferSize);
+#endif
 
 #endif
 #endif

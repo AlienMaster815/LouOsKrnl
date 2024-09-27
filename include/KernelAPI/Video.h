@@ -33,12 +33,15 @@
 
 #ifdef __cplusplus
 
+#ifndef _KERNEL_MODULE_
 extern "C" void SwitchVideoDevice(uint8_t DeviceType, uint8_t DeviceNum, uint8_t DriverType);
-
+#endif
 
 #else
 
+#ifndef _KERNEL_MODULE_
 void SwitchVideoDevice(uint8_t DeviceType, uint8_t DeviceNum, uint8_t DriverType);
+#endif
 
 #endif
 #endif

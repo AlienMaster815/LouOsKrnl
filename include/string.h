@@ -8,6 +8,7 @@
 #define StrCmpTrue 0
 
 #ifndef __cplusplus
+#ifndef _KERNEL_MODULE_
 void* memcpy(void* destination, const void* source, size_t num);
 int strncmp(const char* str1, const char* str2, size_t n);
 int strcmp(const char* str1, const char* str2);
@@ -30,11 +31,11 @@ void double_to_string(string Buffer, long double value);
 void float_to_string(string Buffer, float value);
 void long_double_to_string(string Buffer, long double value);
 char* ConvertWCharToChar(const wchar_t* wstr);
-void LouSprintf(char *buffer, const char *format, ...);
-int LouSnprintf(char *buffer, size_t n, const char *format, ...);
+int _vsnprintf(char *buffer, size_t buffer_size, const char *format, ...);
+#endif
 #else
 #include <LouDDK.h>
-
+#ifndef _KERNEL_MODULE_
 KERNEL_IMPORT void* memcpy(void* destination, const void* source, size_t num);
 KERNEL_IMPORT int strncmp(const char* str1, const char* str2, size_t n);
 KERNEL_IMPORT int strcmp(const char* str1, const char* str2);
@@ -57,10 +58,9 @@ KERNEL_IMPORT void double_to_string(string Buffer, long double value);
 KERNEL_IMPORT void float_to_string(string Buffer, float value);
 KERNEL_IMPORT void long_double_to_string(string Buffer, long double value);
 KERNEL_IMPORT char* ConvertWCharToChar(const wchar_t* wstr);
-KERNEL_IMPORT void LouSprintf(char *buffer, const char *format, ...);
-KERNEL_IMPORT int LouSnprintf(char *buffer, size_t n, const char *format, ...);
+KERNEL_IMPORT int _vsnprintf(char *buffer, size_t buffer_size, const char *format, ...);
 #endif
-
+#endif
 #define CHAR_WIDTH 16
 #define CHAR_HEIGHT 16
 

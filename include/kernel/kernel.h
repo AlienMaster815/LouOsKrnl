@@ -28,17 +28,23 @@
 #include <kernel/Binarys.h>
 #include "threads.h"
 #include "exec.h"
-
+#include "LouQs.h"
 #include "DRSD.h"
 
+#ifndef _KERNEL_ENTRY_
+#define _KERNEL_ENTRY_
 #define KERNEL_ENTRY extern void
+#endif
 
 #ifdef __x86_64__
 
 
 #define KernelCodeSegment 0x08
 #ifndef __cplusplus
+
+#ifndef _KERNEL_MODULE_
 static bool IsKernelMode = true;
+#endif
 
 #endif
 
@@ -46,7 +52,9 @@ static bool IsKernelMode = true;
 
 #ifdef __i386__
 
+#ifndef _KERNEL_MODULE_
 #define KernelCodeSegment 0x08
+#endif
 
 #endif
 

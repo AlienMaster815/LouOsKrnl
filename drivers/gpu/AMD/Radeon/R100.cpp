@@ -15,6 +15,12 @@
 
 ///TODO:RadeonBoSize
 
+LOUSTATUS R100CsParse(struct radeon_cs_parser *p){
+
+
+	return STATUS_SUCCESS;
+}
+
 static void R100CsTrackTexturePrint(struct r100_cs_track_texture *t)
 {
 	LouPrint("pitch                      %d\n", t->pitch);

@@ -1,5 +1,6 @@
 #include <LouDDK.h>
 #include <NtAPI.h>
+#pragma pack(push, 1)
 
 #ifndef _MINIPORT_H
 #define _MINIPORT_H
@@ -197,7 +198,7 @@ typedef struct _PCI_COMMON_CONFIG {
     UCHAR   DeviceSpecific[192];
 } PCI_COMMON_CONFIG, *PPCI_COMMON_CONFIG;
 
-typedef struct __attribute__((packed)) _PCI_CONTEXT{
+typedef struct  _PCI_CONTEXT{
     PCI_COMMON_CONFIG PciConfig;
     void* PDEV;
 }PCI_CONTEXT, * PPCI_CONTEXT;
@@ -911,7 +912,7 @@ typedef struct _ACCESS_RANGE {
 
 #define StorSynchronizeFullDuplex 0x01
 
-typedef struct __attribute__((packed)) _PORT_CONFIGURATION_INFORMATION {
+typedef struct  _PORT_CONFIGURATION_INFORMATION {
     ULONG Length;
     ULONG SystemIoBusNumber;
 	ULONG AdapterInterfaceType;
@@ -937,7 +938,7 @@ typedef struct __attribute__((packed)) _PORT_CONFIGURATION_INFORMATION {
 } PORT_CONFIGURATION_INFORMATION, *PPORT_CONFIGURATION_INFORMATION;
 
 
-typedef struct __attribute__((packed)) _SCSI_REQUEST_BLOCK {
+typedef struct  _SCSI_REQUEST_BLOCK {
     USHORT Length;
     UCHAR Function;
     UCHAR SrbStatus;
@@ -1008,7 +1009,7 @@ typedef struct _STORPORT_HW_INITIALIZATION_DATA {
   PHW_ADAPTER_CONTROL HwAdapterControl;
 } STORPORT_HW_INITIALIZATION_DATA, *PSTORPORT_HW_INITIALIZATION_DATA;
 
-typedef struct __attribute__((packed)) _STOR_PORT_STACK_OBJECT{
+typedef struct  _STOR_PORT_STACK_OBJECT{
     PDRIVER_OBJECT DrvObj;
     PUNICODE_STRING RegistryEntry;
 	uint64_t FindAdapter;
@@ -1059,3 +1060,4 @@ typedef struct _AHCI_SRB_EXTENSION {
 
 
 #endif
+#pragma pack(pop)

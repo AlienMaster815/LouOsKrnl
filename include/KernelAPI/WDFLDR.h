@@ -73,6 +73,7 @@ struct _WDF_LIBRARY_INFO
     struct _WDF_VERSION Version;
 };
 
+#ifndef _KERNEL_MODULE_
 int32_t WdfLdrDiagnosticsValueByNameAsULONG(UNICODE_STRING const* arg1, uint32_t* arg2);
 int32_t DllInitialize(UNICODE_STRING* arg1);
 int32_t DllUnload();
@@ -89,6 +90,7 @@ int32_t WdfRegisterLibrary(struct _WDF_LIBRARY_INFO* arg1, struct _UNICODE_STRIN
 
 int32_t WdfRegisterClassLibrary(struct _WDF_CLASS_LIBRARY_INFO* arg1, struct _UNICODE_STRING* arg2,
     struct _UNICODE_STRING const* arg3);
+#endif
 #else
 // C Code Goes Here
 

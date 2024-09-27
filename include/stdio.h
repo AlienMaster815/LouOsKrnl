@@ -7,6 +7,9 @@
 #ifdef __x86_64__
 #ifdef __cplusplus
 #include <LouDDK.h>
+
+#ifndef _KERNEL_MODULE_
+
 extern "C" void uintToHexString(uint64_t number, char* hexString);
 KERNEL_IMPORT void LouKePrintLittleEndianBufferDecimal(
     uintptr_t DataPointer,
@@ -39,10 +42,12 @@ KERNEL_IMPORT bool LouKeIsLittleEndianBufferEqualTo(
     uint64_t Length
     );
 
+#endif
 
 #else
 #include <LouAPI.h>
 
+#ifndef _KERNEL_MODULE_
 void VgaPutPixelRgb(int x, int y, uint8_t r, uint8_t g, uint8_t b);
 
 int LouPrint(char *format, ...);
@@ -80,20 +85,25 @@ bool LouKeIsLittleEndianBufferEqualTo(
     uint64_t Length
     );
 #endif
+
+#endif
 #endif
 
 #ifdef __i386__
 #ifdef __cplusplus
 
+#ifndef _KERNEL_MODULE_
 extern "C" void uintToHexString(uint32_t number, char* hexString);
+#endif
 
 
 #else
 
-int LouPrint(char *format, ...);
+#ifndef _KERNEL_MODULE_
+//KERNEL_EXPORT int LouPrint(char *format, ...);
 int putchar(int ic);
 void uintToHexString(uint32_t number, char* hexString);
-
+#endif
 
 #endif
 #endif

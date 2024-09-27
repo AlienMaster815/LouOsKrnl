@@ -3764,7 +3764,7 @@ typedef struct _IRP {
     ULONG                     Flags;
     union {
         struct _IRP* MasterIrp;
-        __volatile LONG IrpCount;
+        LONG IrpCount;
         PVOID           SystemBuffer;
     } AssociatedIrp;
     LIST_ENTRY                ThreadListEntry;
@@ -3799,7 +3799,7 @@ typedef struct _IRP {
         } AsynchronousParameters;
         LARGE_INTEGER AllocationSize;
     } Overlay;
-    __volatile PDRIVER_CANCEL CancelRoutine;
+    PDRIVER_CANCEL CancelRoutine;
     PVOID                     UserBuffer;
     union {
         struct {

@@ -1,3 +1,4 @@
+#pragma pack(push, 1)
 #include <SharedTypes.h>
 
 #ifndef _INTERRUPTS_H
@@ -91,7 +92,7 @@ void LouKeSetIrql(
 #ifdef __x86_64__
 
 
-typedef struct __attribute__((packed)){
+typedef struct {
     uint16_t base_low;      // Lower 16 bits of the handler function's address
     uint16_t selector;      // Code segment selector
     uint8_t ist;            // Interrupt Stack Table offset
@@ -103,13 +104,13 @@ typedef struct __attribute__((packed)){
 
 static Interrupt_Descriptor_Table IDT[256];
 
-typedef struct __attribute__((packed)){
+typedef struct {
     uint16_t limit;
     uint64_t base;
 } IDTP;
 
 // Rest of the code...
-
+#ifndef _KERNEL_MODULE_
 static uint8_t PicMaster = 0x20, PicSlave = 0x28;
 
 void PS2KeyboardHandler();
@@ -138,7 +139,7 @@ struct interrupt_frame {
     uint64_t rsp;
     uint64_t ss;
 };
-
+#endif
 #endif
 
 #ifdef __i386__
@@ -146,7 +147,7 @@ struct interrupt_frame {
 // Same content as for x86_64...
 
 
-typedef struct __attribute__((packed)){
+typedef struct {
     uint16_t base_low;
     uint16_t selector;
     uint8_t always0;
@@ -156,7 +157,7 @@ typedef struct __attribute__((packed)){
 
 static Interrupt_Descriptor_Table idt[256]; // 256 entries for the IDT
 
-typedef struct __attribute__((packed)){
+typedef struct {
     uint16_t limit;
     uint32_t base;
 }IDTP32;
@@ -164,7 +165,7 @@ typedef struct __attribute__((packed)){
 LOUSTATUS SetBasicInterrupts(bool init);
 
 
-
+#ifndef _KERNEL_MODULE_
 static bool PageTableDeletion = false;
 static bool MemoryProbing = false;
 static bool USBKeyboardInterrupt = false;
@@ -195,16 +196,19 @@ void LouKeSetIrql(
     LouKIRQL  NewIrql,
     LouKIRQL* OldIrql
 );
+#endif
 
 #endif //i386
 #endif // c
 
 #ifdef __cplusplus
-
+#ifndef _KERNEL_MODULE_
 KERNEL_IMPORT void LouKeSetIrql(
     LouKIRQL  NewIrql,
     LouKIRQL* OldIrql
 );
-
 #endif
+#endif
+
+#pragma pack(pop)
 #endif

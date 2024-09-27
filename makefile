@@ -84,6 +84,8 @@ ifeq ($(TARGET_ARCH),x86_64)
 CFLAGS = -c -ffreestanding -Werror -I include -Wno-multichar -fno-omit-frame-pointer -O0 -mmmx -msse
 CPPFLAGS = -c -ffreestanding -Wall -fno-exceptions -fno-rtti -Werror -Wno-write-strings -fno-use-cxa-atexit -I include -Wno-multichar -fno-omit-frame-pointer -O0 -mmmx -msse
 
+
+
 endif
 
 ifeq ($(TARGET_ARCH),x86)
@@ -98,9 +100,24 @@ kernel_object_files := $(patsubst kernel/%.c, build/kernel/%.o, $(kernel_source_
 x86_64_c_source_files := $(shell find init -name *.c)
 x86_64_c_object_files := $(patsubst init/%.c, build/x86_64/init/%.o, $(x86_64_c_source_files))
 
-driver_cpp_source_files := $(shell find drivers -name *.cpp)
-driver_cpp_object_files := $(patsubst drivers/%.cpp, build/drivers/%.o, $(driver_cpp_source_files))
+driver_cpp_source_files := $(shell find drivers/AGP -name *.cpp)
+driver_cpp_source_files += $(shell find drivers/Audio -name *.cpp)
+driver_cpp_source_files += $(shell find drivers/DriverInterrupts -name *.cpp)
+driver_cpp_source_files += $(shell find drivers/FileSystems -name *.cpp)
+driver_cpp_source_files += $(shell find drivers/gpu -name *.cpp)
+driver_cpp_source_files += $(shell find drivers/io -name *.cpp)
+driver_cpp_source_files += $(shell find drivers/ISA -name *.cpp)
+driver_cpp_source_files += $(shell find drivers/MotherBoards -name *.cpp)
+driver_cpp_source_files += $(shell find drivers/Networking -name *.cpp)
+driver_cpp_source_files += $(shell find drivers/pci_systems -name *.cpp)
+driver_cpp_source_files += $(shell find drivers/PnP -name *.cpp)
+driver_cpp_source_files += $(shell find drivers/processors -name *.cpp)
+driver_cpp_source_files += $(shell find drivers/Serial -name *.cpp)
+driver_cpp_source_files += $(shell find drivers/storage/InternalStorageDrivers -name *.cpp)
+driver_cpp_source_files += $(shell find drivers/USB -name *.cpp)
+driver_cpp_source_files += $(shell find drivers/virtualization -name *.cpp)
 
+driver_cpp_object_files := $(patsubst drivers/%.cpp, build/drivers/%.o, $(driver_cpp_source_files))
 
 x86_64_API_cpp_source_files := $(shell find API -name *.cpp)
 x86_64_API_cpp_object_files := $(patsubst API/%.cpp, build/x86_64/API/%.o, $(x86_64_API_cpp_source_files))
@@ -108,10 +125,6 @@ x86_64_API_cpp_object_files := $(patsubst API/%.cpp, build/x86_64/API/%.o, $(x86
 
 x86_64_c_source_files := $(shell find init -name *.c)
 x86_64_c_object_files := $(patsubst init/%.c, build/x86_64/init/%.o, $(x86_64_c_source_files))
-
-driver_cpp_source_files := $(shell find drivers -name *.cpp)
-driver_cpp_object_files := $(patsubst drivers/%.cpp, build/drivers/%.o, $(driver_cpp_source_files))
-
 
 
 x86_64_API_cpp_source_files := $(shell find API -name *.cpp)

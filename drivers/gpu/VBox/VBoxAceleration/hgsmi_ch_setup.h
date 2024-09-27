@@ -10,11 +10,11 @@
  * polled by the guest without a need to port IO.
  */
 #define HGSMI_CC_HOST_FLAGS_LOCATION 0
-
+#pragma pack(push, 1)
 struct hgsmi_buffer_location {
 	uint32_t buf_location;
 	uint32_t buf_len;
-} __attribute__((packed));
+};
 
 /* HGSMI setup and configuration data structures. */
 
@@ -27,6 +27,7 @@ struct hgsmi_buffer_location {
 struct hgsmi_host_flags {
 	uint32_t host_flags;
 	uint32_t reserved[3];
-} __attribute__((packed));
+};
+#pragma pack(pop)
 
 #endif

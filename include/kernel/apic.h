@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 #ifdef __x86_64__
-
+#ifndef _KERNEL_MODULE_
 LOUSTATUS InitializeAdvancedProgramableController();
 
 
@@ -22,8 +22,11 @@ void ConfigureLocalAdvancedProgramableInterruptController(uint8_t version, uint8
 void ConfigureIOAdvancedProgramableInterruptController(uint8_t version);
 #endif
 
+#endif
+
 
 #ifdef __i386__
+#ifndef _KERNEL_MODULE_
 
 LOUSTATUS InitializeAdvancedProgramableController();
 
@@ -38,6 +41,7 @@ void StartIOAdvancedProgramableInterruptController(uint8_t version);
 void ConfigureMainAdvancedProgramableInterruptController(uint8_t version);
 void ConfigureLocalAdvancedProgramableInterruptController(uint8_t version, uint8_t localApicNumber);
 void ConfigureIOAdvancedProgramableInterruptController(uint8_t version);
+#endif 
 
 #endif
 

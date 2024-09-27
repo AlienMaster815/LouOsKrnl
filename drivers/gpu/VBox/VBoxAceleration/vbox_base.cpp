@@ -37,7 +37,7 @@ void VbvaBufferPlaceDataAt(
 
 }
 
-void VbvaBufferFlush(struct gen_pool *ctx)
+void VbvaBufferFlush(PLMPOOL_DIRECTORY ctx)
 {
 	struct vbva_flush *p;
 
@@ -51,7 +51,7 @@ void VbvaBufferFlush(struct gen_pool *ctx)
 	HgsmiBufferFree(ctx, p);
 }
 
-bool VbvaWrite(struct vbva_buf_ctx *vbva_ctx, struct gen_pool *ctx,
+bool VbvaWrite(struct vbva_buf_ctx *vbva_ctx, PLMPOOL_DIRECTORY ctx,
 		const void *p, uint32_t len)
 {
 	struct vbva_record *record;
@@ -98,7 +98,7 @@ bool VbvaWrite(struct vbva_buf_ctx *vbva_ctx, struct gen_pool *ctx,
 }
 
 bool VbvaInformHost(struct vbva_buf_ctx *vbva_ctx,
-			     struct gen_pool *ctx, int32_t screen, bool enable)
+			     PLMPOOL_DIRECTORY ctx, int32_t screen, bool enable)
 {
 	struct vbva_enable_ex *p;
 	bool ret;
@@ -127,7 +127,7 @@ bool VbvaInformHost(struct vbva_buf_ctx *vbva_ctx,
 	return ret;
 }
 
-void VbvaDisable(struct vbva_buf_ctx *vbva_ctx, struct gen_pool *ctx,
+void VbvaDisable(struct vbva_buf_ctx *vbva_ctx, PLMPOOL_DIRECTORY ctx,
 		  int32_t screen
 ){
 	vbva_ctx->buffer_overflow = false;
@@ -137,7 +137,7 @@ void VbvaDisable(struct vbva_buf_ctx *vbva_ctx, struct gen_pool *ctx,
 	VbvaInformHost(vbva_ctx, ctx, screen, false);
 }
 
-bool VbvaEnable(struct vbva_buf_ctx *vbva_ctx, struct gen_pool *ctx,
+bool VbvaEnable(struct vbva_buf_ctx *vbva_ctx, PLMPOOL_DIRECTORY ctx,
 		 struct vbva_buffer *vbva, int32_t screen
 ){
 	bool ret = false;
@@ -155,7 +155,7 @@ bool VbvaEnable(struct vbva_buf_ctx *vbva_ctx, struct gen_pool *ctx,
 }
 
 bool vbva_buffer_begin_update(struct vbva_buf_ctx *vbva_ctx,
-			      struct gen_pool *ctx)
+			      PLMPOOL_DIRECTORY ctx)
 {
 	struct vbva_record *record;
 	uint32_t next;
@@ -203,4 +203,15 @@ void VbvaSetupBufferContext(struct vbva_buf_ctx *vbva_ctx,
 			       uint32_t buffer_offset, uint32_t buffer_length){
 	vbva_ctx->buffer_offset = buffer_offset;
 	vbva_ctx->buffer_length = buffer_length;
+}
+
+int HgsmiTestQueryConf(PLMPOOL_DIRECTORY ctx){
+	uint32_t value = 0;
+	int ret;
+
+	ret = HgsmiQueryConf(ctx, 0xFFFFFFFF, &value);
+	if (ret)
+		return ret;
+
+	return value == 0xFFFFFFFF ? 0 : STATUS_UNSUCCESSFUL;
 }

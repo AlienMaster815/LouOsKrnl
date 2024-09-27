@@ -3,6 +3,7 @@
 #include <LouDDK.h>
 #include <NtAPI.h>
 
+#ifndef _KERNEL_MODULE_
 class FAT{
     public:
         FAT();
@@ -26,5 +27,6 @@ class FAT{
 
         FatFileSystemType DetermineFileSystemType(uint8_t DriveNumber, FSStruct* FSS);
 };
+#endif //kernel mod
 
 #endif

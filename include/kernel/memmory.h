@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <bootloader/grub/multiboot.h>
-
+#include <SharedTypes.h>
 
 #define FORCE_ALIGNMENT(alignment) __attribute__((aligned(alignment)))
 
@@ -53,6 +53,7 @@
 
 #include <LouAPI.h>
 
+#ifndef _KERNEL_MODULE_
 extern void Write16BitValueToAddress(uint64_t Address, uint16_t Value);
 extern uint16_t Get16BitValueFromAddress(uint64_t Address);
 extern void Write8BitValueToAddress(uint64_t Address, uint8_t Value);
@@ -66,18 +67,19 @@ RAMADD Lou_Alloc_Mem(SIZE size);
 STATUS Lou_Free_Mem(RAMADD Addr, SIZE size);
 void* Lou_Calloc_Mem(size_t numElements, size_t sizeOfElement);
 RAMADD Lou_Alloc_Mem_Alligned(SIZE size,uint64_t allignment);
-void* LouMalloc(size_t BytesToAllocate);
 void LouFree(RAMADD Addr);
 void* LouMalloc(size_t BytesToAllocate);
 void* LouMallocEx(size_t BytesToAllocate, size_t Aligned);
+#endif
+
 
 #include <stdint.h>
 
 #define MachineMemoryBase 0 
-#define Pack (__attribute__((packed)))
+
 
 //Paging Stub
-
+#ifndef _KERNEL_MODULE_
 typedef struct  __attribute__((packed, aligned(4096))) _PageTable {
     uint64_t entries[512];
 } PageTable;
@@ -88,7 +90,9 @@ typedef struct __attribute__((packed, aligned(4096))) _PML {
     PageTable PML2;
     PageTable PML1;
 }PML;
+#endif
 
+#ifndef _KERNEL_MODULE_
 bool LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize);
 bool LouUnMapAddress(uint64_t VAddress, uint64_t PageSize);
 uint64_t GetPageOfFaultValue(uint64_t VAddress);
@@ -107,6 +111,7 @@ void MapIoMemory(
     uint64_t Address,
     uint64_t MapSize
 );
+#endif
 //Directory Entry FLAGS
 
 //2mb Entry
@@ -119,20 +124,22 @@ typedef uint64_t pte_t; // Page Table Entry
 
 //endof Paging Stubs
 
-
+#ifndef _KERNEL_MODULE_
 void* memset(void* dest, int value, size_t count);
 
 void* align_memory(void* ptr, size_t alignment);
-
+#endif
 
 // Initialize a page table
 #else
 #include <LouDDK.h>
 
+#ifndef _KERNEL_MODULE_
 KERNEL_IMPORT void MapIoMemory(
     uint64_t Address,
     uint64_t MapSize
 );
+#endif
 
 #define GIGABYTE 0x40000000
 #define MEGABYTE 0x100000
@@ -141,7 +148,7 @@ KERNEL_IMPORT void MapIoMemory(
 #define KERNEL_PAGE_WRITE_PRESENT 0b10000011
 #define KERNEL_PAGE_WRITE_UNCAHEABLE_PRESENT 0b10010011
 
-
+#ifndef _KERNEL_MODULE_
 KERNEL_IMPORT bool LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize);
 KERNEL_IMPORT void remove_padding(const void* struct_ptr, size_t struct_size, uint8_t* buffer);
 KERNEL_IMPORT void LouFree(uint8_t* Addr);
@@ -158,12 +165,46 @@ KERNEL_IMPORT bool EnforceSystemMemoryMap(
     uint64_t Address, 
     uint64_t size
 );
-KERNEL_IMPORT 
+#else 
+KERNEL_EXPORT void* LouMalloc(size_t BytesToAllocate);
+
+#endif
 #endif
 
 #ifdef __cplusplus
 KERNEL_IMPORT{
 #endif
+
+#define LouClamp_t(type, val, min, max) ({           \
+    type __val = (val);                              \
+    type __min = (min);                              \
+    type __max = (max);                              \
+    __val < __min ? __min : __val > __max ? __max : __val; \
+})
+
+#pragma pack(push, 1)
+typedef struct LMPOOL_DIRECTORY{
+    ListHeader List;
+    string Tag;
+    uint64_t Location;
+    uint64_t PoolSize;
+    uint64_t ObjectSize;
+    uint64_t Flags;
+    uint8_t* PoolBitMap;
+}LMPOOL_DIRECTORY, * PLMPOOL_DIRECTORY;
+
+typedef struct _BO{
+    ListHeader Header;
+    size_t size;
+    uintptr_t CpuDmaAddress;
+    uintptr_t VRamTranslatedAddress;
+    uint64_t Flags;
+    int ReferenceCount;
+    bool BufferIsInVRam;
+}BO, *PBO;
+#pragma pack(pop)
+
+#ifndef _KERNEL_MODULE_
 void* MallocVariacHeap(size_t InitialSize);
 void FreeVariacHeap(
 void* VariacPointerToFree, 
@@ -222,11 +263,27 @@ LOUSTATUS RequestPhysicalAddress(
     uint64_t* PAddress
 );
 
+PLMPOOL_DIRECTORY LouKeMapPool(
+    uint64_t LocationOfPool,
+    uint64_t PoolSize,
+    uint64_t ObjectSize,
+    string Tag,
+    uint64_t Flags
+);
 
+void LouKeFreePool(PLMPOOL_DIRECTORY PoolToFree);
+
+void* LouKeMallocFromPool(
+    PLMPOOL_DIRECTORY Pool, 
+    uint64_t size, 
+    uint64_t* Offset
+);
+void LouKeFreeFromPool(PLMPOOL_DIRECTORY Pool, void* Address, uint64_t size);
+#endif
 #ifdef __cplusplus
 }
 #endif
 
-typedef __uint128_t uint128_t;
+//typedef __uint128_t uint128_t;
 
 #endif

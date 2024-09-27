@@ -12,13 +12,14 @@ typedef void* FILE;
 
 typedef char* FILE_NAME;
 
+#ifndef _KERNEL_MODULE_
 string GetNextDirectoryName(string PATH);
 uint8_t CurrenDirectoryStringLength(string Dir);
 
 
 FILE* fopen(string PATH);
 void fclose(FILE* FileHandle);
-
+#endif
 
 #ifdef __cplusplus
 }

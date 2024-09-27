@@ -901,7 +901,7 @@ void radeon_atombios_init_crtc(struct drm_device *dev,
 void radeon_legacy_init_crtc(struct drm_device *dev,
 			     struct radeon_crtc *radeon_crtc);
 
-LOUSTATUS RadeonGetClockInfo(struct drm_device *dev);
+LOUSTATUS RadeonGetClockInfo(PDrsdDevice dev);
 
 extern bool radeon_get_atom_connector_info_from_object_table(struct drm_device *dev);
 extern bool radeon_get_atom_connector_info_from_supported_devices_table(struct drm_device *dev);
@@ -937,20 +937,9 @@ void dce4_program_fmt(struct drm_encoder *encoder);
 void dce8_program_fmt(struct drm_encoder *encoder);
 
 /* fbdev layer */
-#if defined(CONFIG_DRM_FBDEV_EMULATION)
 void radeon_fbdev_setup(struct radeon_device *rdev);
 void radeon_fbdev_set_suspend(struct radeon_device *rdev, int state);
 bool radeon_fbdev_robj_is_fb(struct radeon_device *rdev, struct radeon_bo *robj);
-#else
-static inline void radeon_fbdev_setup(struct radeon_device *rdev)
-{ }
-static inline void radeon_fbdev_set_suspend(struct radeon_device *rdev, int state)
-{ }
-static inline bool radeon_fbdev_robj_is_fb(struct radeon_device *rdev, struct radeon_bo *robj)
-{
-	return false;
-}
-#endif
 
 void radeon_crtc_handle_vblank(struct radeon_device *rdev, int crtc_id);
 

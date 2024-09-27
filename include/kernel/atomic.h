@@ -39,7 +39,7 @@ typedef atomic_t* p_atomic_t;
 #include <LouDDK.h>
 #include <NtAPI.h>
 
-
+#ifndef _KERNEL_MODULE_
 KERNEL_IMPORT uint64_t LouKeAndOperationULongLong(
 	uint64_t volatile* Destination,
 	uint64_t Value
@@ -375,7 +375,7 @@ int8_t LouKeXorOperationChar(
 	int8_t volatile* Destination,
 	int8_t Value
 );
-
+#endif
 
 
 #endif

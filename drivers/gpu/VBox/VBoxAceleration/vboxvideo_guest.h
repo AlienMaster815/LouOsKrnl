@@ -29,35 +29,35 @@ struct vbva_buf_ctx {
 	struct vbva_buffer *vbva;
 };
 
-int HgsmiReportFlagsLocation(struct gen_pool *ctx, uint32_t location);
-int HgsmiSendCapsInfo(struct gen_pool *ctx, uint32_t caps);
-int HgsmiTestQueryConf(struct gen_pool *ctx);
-int HgsmiQueryConf(struct gen_pool *ctx, uint32_t index, uint32_t *value_ret);
-int HgsmiUpdatePointerShape(struct gen_pool *ctx, uint32_t flags,
+int HgsmiReportFlagsLocation(PLMPOOL_DIRECTORY ctx, uint32_t location);
+int HgsmiSendCapsInfo(PLMPOOL_DIRECTORY ctx, uint32_t caps);
+int HgsmiTestQueryConf(PLMPOOL_DIRECTORY ctx);
+int HgsmiQueryConf(PLMPOOL_DIRECTORY ctx, uint32_t index, uint32_t *value_ret);
+int HgsmiUpdatePointerShape(PLMPOOL_DIRECTORY ctx, uint32_t flags,
 			       uint32_t hot_x, uint32_t hot_y, uint32_t width, uint32_t height,
 			       uint8_t *pixels, uint32_t len);
-int HgsmiCursorPosition(struct gen_pool *ctx, bool report_position,
+int HgsmiCursorPosition(PLMPOOL_DIRECTORY ctx, bool report_position,
 			  uint32_t x, uint32_t y, uint32_t *x_host, uint32_t *y_host);
 
-bool VbvaEnable(struct vbva_buf_ctx *vbva_ctx, struct gen_pool *ctx,
+bool VbvaEnable(struct vbva_buf_ctx *vbva_ctx,PLMPOOL_DIRECTORY ctx,
 		 struct vbva_buffer *vbva, int32_t screen);
-void VbvaDisable(struct vbva_buf_ctx *vbva_ctx, struct gen_pool *ctx,
+void VbvaDisable(struct vbva_buf_ctx *vbva_ctx, PLMPOOL_DIRECTORY ctx,
 		  int32_t screen);
 bool VbvaBufferBeginUpdate(struct vbva_buf_ctx *vbva_ctx,
-			      struct gen_pool *ctx);
+			      PLMPOOL_DIRECTORY ctx);
 void VbvaBufferEndUpdate(struct vbva_buf_ctx *vbva_ctx);
-bool VbvaWrite(struct vbva_buf_ctx *vbva_ctx, struct gen_pool *ctx,
+bool VbvaWrite(struct vbva_buf_ctx *vbva_ctx, PLMPOOL_DIRECTORY ctx,
 		const void *p, uint32_t len);
 void VbvaSetupBufferContext(struct vbva_buf_ctx *vbva_ctx,
 			       uint32_t buffer_offset, uint32_t buffer_length);
 
-void HgsmiProcessDisplayInfo(struct gen_pool *ctx, uint32_t display,
+void HgsmiProcessDisplayInfo(PLMPOOL_DIRECTORY ctx, uint32_t display,
 				int32_t origin_x, int32_t origin_y, uint32_t start_offset,
 				uint32_t pitch, uint32_t width, uint32_t height,
 				uint16_t bpp, uint16_t flags);
-int HgsmiUpdateInputMapping(struct gen_pool *ctx, int32_t origin_x, int32_t origin_y,
+int HgsmiUpdateInputMapping(PLMPOOL_DIRECTORY ctx, int32_t origin_x, int32_t origin_y,
 			       uint32_t width, uint32_t height);
-int HgsmiGetModeHints(struct gen_pool *ctx, unsigned int screens,
+int HgsmiGetModeHints(PLMPOOL_DIRECTORY ctx, unsigned int screens,
 			 struct vbva_modehint *hints);
 
 #endif

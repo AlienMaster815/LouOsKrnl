@@ -275,4 +275,3 @@ void LouUpdatePciCurrentState(P_PCI_DEVICE_OBJECT PDEV, pci_power_t State) {
 
 }
 
-

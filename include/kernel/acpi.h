@@ -19,7 +19,7 @@
 -- already tonight... 
 */
 #ifdef __x86_64__
-typedef struct __attribute__((packed)) {
+typedef struct  {
 	char signature[8];
 	uint8_t checksum;
 	char oem_id[6];
@@ -33,7 +33,7 @@ typedef struct __attribute__((packed)) {
 }ACPITable;
 
 
-typedef struct __attribute__((packed)) {
+typedef struct  {
 	char signature[8]; // "RSD PTR " (8 bytes)
 	uint8_t checksum;  // Checksum of the first 20 bytes
 	char oem_id[6];    // OEM ID (6 bytes)
@@ -48,7 +48,7 @@ typedef struct __attribute__((packed)) {
 
 
 
-typedef struct __attribute__((packed)) {
+typedef struct  {
 	char signature[4];
 	uint32_t length;
 	uint8_t revision;
@@ -61,7 +61,7 @@ typedef struct __attribute__((packed)) {
 }ACPITableHeader;
 
 
-typedef struct __attribute__((packed)) {
+typedef struct  {
 	char signature[8]; // "RSD PTR " (8 bytes)
 	uint8_t checksum;  // Checksum of the first 20 bytes
 	char oem_id[6];    // OEM ID (6 bytes)
@@ -73,7 +73,7 @@ typedef struct __attribute__((packed)) {
 	uint8_t reserved[3]; // Reserved (3 bytes)
 } RSDP2;
 
-typedef struct __attribute__((packed)){
+typedef struct {
 	char signature[8]; // "RSD PTR " (8 bytes)
 	uint8_t checksum;  // Checksum of the first 20 bytes
 	char oem_id[6];    // OEM ID (6 bytes)
@@ -82,7 +82,7 @@ typedef struct __attribute__((packed)){
 } RSDP1;
 
 
-typedef struct __attribute__((packed)){
+typedef struct {
 	char signature[8];   // "RSD PTR "
 	uint8_t checksum;
 	char oem_id[6];
@@ -135,10 +135,11 @@ typedef struct  {
 
 #pragma pack()
 
-
+#ifndef _KERNEL_MODULE_
 RSDP* PROBE_RSDP(uintptr_t memory_base, uintptr_t memory_limit);
 STATUS ACPI_PARSE(RSDP* rsdp);
 uint8_t FIND_ACPI_VERSION(RSDP* rsdp);
+#endif
 
 #endif
 
@@ -161,7 +162,7 @@ uint8_t FIND_ACPI_VERSION(RSDP* rsdp);
 #define NotPresent 0x0
 
 /*
-typedef struct __attribute__((packed)) {
+typedef struct  {
     char signature[8];
     uint8_t checksum;
     char oem_id[6];
@@ -175,7 +176,7 @@ typedef struct __attribute__((packed)) {
 }ACPITable;
 
 
-typedef struct __attribute__((packed)) {
+typedef struct  {
     char signature[8]; // "RSD PTR " (8 bytes)
     uint8_t checksum;  // Checksum of the first 20 bytes
     char oem_id[6];    // OEM ID (6 bytes)
@@ -189,8 +190,8 @@ typedef struct __attribute__((packed)) {
 } RSDP3;
 
 */
-
-typedef struct __attribute__((packed)) {
+#pragma pack(push,1)
+typedef struct  {
     char signature[4];
     uint32_t length;
     uint8_t revision;
@@ -203,7 +204,7 @@ typedef struct __attribute__((packed)) {
 }ACPITableHeader;
 
 /*
-typedef struct __attribute__((packed)) {
+typedef struct  {
     char signature[8]; // "RSD PTR " (8 bytes)
     uint8_t checksum;  // Checksum of the first 20 bytes
     char oem_id[6];    // OEM ID (6 bytes)
@@ -215,7 +216,7 @@ typedef struct __attribute__((packed)) {
     uint8_t reserved[3]; // Reserved (3 bytes)
 } RSDP2;
 */
-typedef struct __attribute__((packed)){
+typedef struct {
     char signature[8]; // "RSD PTR " (8 bytes)
     uint8_t checksum;  // Checksum of the first 20 bytes
     char oem_id[6];    // OEM ID (6 bytes)
@@ -224,7 +225,7 @@ typedef struct __attribute__((packed)){
 } RSDP1;
 
 
-typedef struct __attribute__((packed)){
+typedef struct {
     char signature[8];   // "RSD PTR "
     uint8_t checksum;
     char oem_id[6];
@@ -232,6 +233,8 @@ typedef struct __attribute__((packed)){
     uint32_t rsdt_address;
     // Depending on the version (revision), additional fields may be present
 }RSDP;
+
+#pragma pack(pop)
 
 #pragma pack(1)
 
@@ -277,10 +280,11 @@ typedef struct  {
 
 #pragma pack()
 
-
+#ifndef _KERNEL_MODULE_
 RSDP* PROBE_RSDP(uintptr_t memory_base, uintptr_t memory_limit);
 STATUS ACPI_PARSE(RSDP* rsdp);
 uint8_t FIND_ACPI_VERSION(RSDP* rsdp);
+#endif
 
 #endif
 

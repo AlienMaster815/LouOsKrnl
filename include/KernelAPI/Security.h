@@ -18,6 +18,8 @@ typedef enum{
     LousineInternalAntivirus,
 }OperatingMode;
 
+#ifndef _KERNEL_MODULE_
 OperatingMode LouKeCheckOperatingMode();
+#endif
 
 #endif

@@ -15,6 +15,7 @@
 /* The last buffer in a sequence. */
 #define HGSMI_BUFFER_HEADER_F_SEQ_END      0x03
 
+#pragma pack(push, 1)
 /* 16 bytes buffer header. */
 struct hgsmi_buffer_header {
 	uint32_t data_size;		/* Size of data that follows the header. */
@@ -51,7 +52,7 @@ struct hgsmi_buffer_header {
 			uint32_t sequence_offset;
 		} sequence_continue;
 	} u;
-} __attribute__((packed));
+};
 
 /* 8 bytes buffer tail. */
 struct hgsmi_buffer_tail {
@@ -62,12 +63,12 @@ struct hgsmi_buffer_tail {
 	 * Over the header, offset and for first 4 bytes of the tail.
 	 */
 	uint32_t checksum;
-} __attribute__((packed));
+};
 
 /*
  * The size of the array of channels. Array indexes are uint8_t.
  * Note: the value must not be changed.
  */
 #define HGSMI_NUMBER_OF_CHANNELS 0x100
-
+#pragma pack(pop)
 #endif

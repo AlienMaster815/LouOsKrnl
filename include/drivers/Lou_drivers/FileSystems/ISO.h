@@ -47,7 +47,6 @@ typedef struct _sint32_LSB_MSB{
     sint32_LSB LSB;
     sint32_MSB MSB;
 }sint32_LSB_MSB, *psint32_LSB_MSB;
-#pragma pack(0)
 
 
 typedef struct _VolumeDescriptor{
@@ -77,6 +76,7 @@ typedef struct _DirectoryTable {
 #define ISO_VolumePartitionDescriptor 3
 #define ISO_VolumeDescriptorSetTerminator 255
 
+#ifndef _KERNEL_MODULE_
 class ISO9660{
     
     public:
@@ -98,5 +98,7 @@ class ISO9660{
         FILE* ISOLouKeFindDirectory(uint32_t RootLBA, uint32_t RootSize, uint8_t DrvNum, string Dir);
 
 };
+#endif //kernel mod
 
 #endif
+#pragma pack(0)

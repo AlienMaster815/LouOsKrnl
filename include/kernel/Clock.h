@@ -11,7 +11,9 @@
 #define TIMERCLOCK_500HZ 500
 #define TIMERCLOCK_1HZ 1
 
+#ifndef _KERNEL_MODULE_
 void ChangeTimerClock(uint64_t SPEED);
+#endif
 
 #endif
 #endif

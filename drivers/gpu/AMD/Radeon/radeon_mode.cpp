@@ -2,7 +2,7 @@
 #include <NtAPI.h>
 #include "radeon.h"
 
-LOUSTATUS RadeonGetClockInfo(struct drm_device *dev){
+LOUSTATUS RadeonGetClockInfo(PDrsdDevice dev){
     LOUSTATUS Status = STATUS_SUCCESS;
 
     

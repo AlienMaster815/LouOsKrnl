@@ -6,6 +6,7 @@
 #include <LouDDK.h>
 #endif
 
+#ifndef _KERNEL_MODULE_
 
 //Intel Stub
 
@@ -141,6 +142,7 @@ KERNEL_IMPORT uint8_t GetCPUCoreVersion();
 
 KERNEL_IMPORT uint64_t GetCPUCoreGeneration();
 
+#endif
 
 #endif
 

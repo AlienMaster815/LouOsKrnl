@@ -1,4 +1,5 @@
 #include "VBoxVGA.h"
+#include "VBoxAceleration/vbox_drv.h"
 #include <bootloader/grub/multiboot2.h>
 #include <hal.h>
 
@@ -39,9 +40,20 @@ LOUDDK_API_ENTRY void VirtualBoxChangeResolution(
 
 }
 
+
+LOUSTATUS VboxHwInit(struct vbox_private *vbox);
+
+KERNEL_IMPORT void StartDebugger();
+
+UNUSED static LINUX_PCI_DEVICE_ID VBoxDeviceIds[] = {
+    {0x80EE, ANY_PCI_ID, ANY_PCI_ID, ANY_PCI_ID, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0} // Correctly initializing all fields to 0
+};
+
 void InitializeVirtualBoxVgaAdapter(P_PCI_DEVICE_OBJECT PDEV){
 
 	LouPrint("Initializeng Virtualbox VGA Adapter\n");
+
 
     if(VirtualboxVGAC == 0x00){
         VirtualboxVGAC = (PVBVCD)LouMalloc(sizeof(VBVCD));
@@ -56,6 +68,10 @@ void InitializeVirtualBoxVgaAdapter(P_PCI_DEVICE_OBJECT PDEV){
     GetPciConfiguration(PDEV->bus, PDEV->slot, PDEV->func, PciConfig);
 
     VBE_INFO.vbe_mode_info.framebuffer = (uint64_t)LouKeHalGetPciVirtualBaseAddress(PciConfig, 0);
-    LouFree((RAMADD)PciConfig);
     VirtualBoxChangeResolution(1024, 768);
+
+    StartDebugger();
+
+    LouFree((RAMADD)PciConfig);
+    //while(1);
 }

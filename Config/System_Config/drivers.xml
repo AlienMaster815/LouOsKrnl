@@ -2,5 +2,5 @@
     <DRIVERTOCPY32>cp SYS/X86/KModeDrvRevEng.sys ISO/Annya/System32/Drivers/KModeDrvRevEng.sys</DRIVERTOCPY32>
 </Target32>
 <Target64>
-    <DRIVERTOCPY64>cp SYS/X64/Storage/uniata.sys ISO/Annya/System64/Drivers/uniata.sys<DRIVERTOCPY64>
+    <DRIVERTOCPY64>cp drivers/storage/ATA/SATA/ahci/X64/Debug/ahci.sys ISO/Annya/System64/Drivers/Ahci.sys<DRIVERTOCPY64>
 </Target64>

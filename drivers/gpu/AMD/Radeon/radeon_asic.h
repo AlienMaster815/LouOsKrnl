@@ -79,7 +79,7 @@ bool r100_semaphore_ring_emit(struct radeon_device *rdev,
 			      struct radeon_ring *cp,
 			      struct radeon_semaphore *semaphore,
 			      bool emit_wait);
-int r100_cs_parse(struct radeon_cs_parser *p);
+LOUSTATUS R100CsParse(struct radeon_cs_parser *p);
 void R100PllWReg(struct radeon_device *rdev, uint32_t reg, uint32_t v);
 uint32_t R100PllRReg(struct radeon_device *rdev, uint32_t reg);
 struct radeon_fence *r100_copy_blit(struct radeon_device *rdev,

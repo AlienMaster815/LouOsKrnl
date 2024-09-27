@@ -21,7 +21,9 @@ typedef struct _ISO_STRUCT{
 
 #else
 
+#ifndef _KERNEL_MODULE_
 void FileSystemSetup();
+#endif //kernel mod 
 
 #endif
 

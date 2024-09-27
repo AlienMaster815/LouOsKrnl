@@ -292,10 +292,6 @@ PHANDLE LoadKernelModule(uintptr_t Start) {
     }
 }
 
-PHANDLE LoadAhciModule(uintptr_t Start, uintptr_t End) {
-    return LoadKernelModule(Start);
-}
-
 void ParseExportTables(
     uint64_t ModuleStart,
     PEXPORT_DIRECTORY_ENTRY ExportTable
@@ -315,7 +311,7 @@ void ParseExportTables(
     while(1);
 }
 
-DllModuleEntry LouUserDllModule(uintptr_t Start){
+DllModuleEntry LoadUserDllModule(uintptr_t Start){
     PCOFF_HEADER CoffHeader;
     PPE64_OPTIONAL_HEADER PE64Header;
     PSECTION_HEADER SectionHeader;

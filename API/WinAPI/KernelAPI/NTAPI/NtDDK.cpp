@@ -51,7 +51,7 @@ void DriverReinitialize(
 }
 
 void ExFreePool(
-	uintptr_t a
+  _In_ PVOID P
 ){
 
 }
@@ -69,6 +69,7 @@ void ExRaiseAccessViolation() {
 
 void ExRaiseDatatypeMisalignment() {
 	LouPrint("DataTypeMissAlligned\n");
+	while(1);
 }
 
 KERNEL_IMPORT uint64_t GetCurrentTimeInMilliseconds();
@@ -272,9 +273,10 @@ LPCGUID IoGetActivityIdThread(){
 }
 
 PCONFIGURATION_INFORMATION IoGetConfigurationInformation(){
-	
+	LouPrint("IoGetConfigurationInformation()\n");
 
-
+	LouPrint("IoGetConfigurationInformation() STATUS_SUCCESS\n");
+	while(1);
 	return 0x00;
 }
 

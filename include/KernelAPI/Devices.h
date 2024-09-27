@@ -1,6 +1,6 @@
 #ifndef _DEVICES_API_H
 #define _DEVICES_API_H
-
+#pragma pack(push, 1)
 #ifndef __cplusplus
 #include <LouAPI.h>
 #endif
@@ -26,7 +26,7 @@ extern "C" {
 #define DEV_ARCH_IDE 0x01
 #define DEV_ARCH_AHCI 0x02
 
-typedef struct __attribute__((packed)) _DeviceTableTag{
+typedef struct  _DeviceTableTag{
     uint8_t DeviceType;
     uint8_t DeviceSubType;
     uint8_t DeviceArchitecture;
@@ -63,7 +63,7 @@ uint8_t Drive
 );
 
 //global device information
-typedef struct __attribute__((packed)) _GLOBAL_DEVICE_INFORMATON{
+typedef struct  _GLOBAL_DEVICE_INFORMATON{
 	bool UsingDma;
 }GLOBAL_DEVICE_INFORMATON, * PGLOBAL_DEVICE_INFORMATON;
 
@@ -99,7 +99,7 @@ typedef struct _SATA_CAP_TAG{
 
 
 
-typedef struct __attribute__((packed)) _AHCI_DEVICE{
+typedef struct  _AHCI_DEVICE{
 	AHCI_TYPE Type;
 	uintptr_t PortAddress;
 	uint8_t PortNumber;
@@ -133,5 +133,5 @@ LOUSTATUS* State
 #ifdef __cplusplus
 }
 #endif
-
+#pragma pack(pop)
 #endif

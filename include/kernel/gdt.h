@@ -29,7 +29,9 @@
 
 #if __x86_64__
 
-typedef struct __attribute__((packed)){
+#pragma pack(push, 1)
+
+typedef struct {
     uint16_t limit_low;      // The lower 16 bits of the limit
     uint16_t base_low;       // The lower 16 bits of the base address
     uint8_t base_middle;     // The next 8 bits of the base address
@@ -38,7 +40,7 @@ typedef struct __attribute__((packed)){
     uint8_t base_high;       // The upper 8 bits of the base address
 }GDT_ENTRY;
 
-typedef struct __attribute__((packed)){
+typedef struct {
     GDT_ENTRY NULL_DATA;
     GDT_ENTRY KERNEL_CODE;
     GDT_ENTRY KERNEL_DATA;
@@ -66,12 +68,12 @@ typedef struct __attribute__((packed)){
     GDT_ENTRY STACK_DATA;
 }GDT;
 
-typedef struct __attribute__((packed)){
+typedef struct {
     uint16_t limit;        // 16-bit limit
     uint64_t base;         // 48-bit base address
 }GDTP;
 
-
+#ifndef _KERNEL_MODULE_
 LOUSTATUS Initialize_Gdt();
 
 LOUSTATUS Set_Kernel_Segment(bool Code_Seg, uint64_t Base, uint64_t Limit, GDT* gdt);
@@ -95,6 +97,7 @@ LOUSTATUS Modify_Gdt_Registers();
 LOUSTATUS Uninitialize_Gdt();
 
 LOUSTATUS Load_Gdt(GDT* gdt);
+#endif
 
 #endif
 
@@ -121,7 +124,7 @@ LOUSTATUS Load_Gdt(GDT* gdt);
 
 
 
-typedef struct __attribute__((packed)){
+typedef struct {
     uint16_t limit_low;      // The lower 16 bits of the limit
     uint16_t base_low;       // The lower 16 bits of the base address
     uint8_t base_middle;     // The next 8 bits of the base address
@@ -130,7 +133,7 @@ typedef struct __attribute__((packed)){
     uint8_t base_high;       // The upper 8 bits of the base address
 }GDT_ENTRY;
 
-typedef struct __attribute__((packed)){
+typedef struct {
     GDT_ENTRY NULL_DATA;
     GDT_ENTRY KERNEL_CODE;
     GDT_ENTRY KERNEL_DATA;
@@ -158,12 +161,13 @@ typedef struct __attribute__((packed)){
     GDT_ENTRY STACK_DATA;
 }GDT;
 
-typedef struct __attribute__((packed)){
+typedef struct {
     uint16_t limit;        // 16-bit limit
     uint32_t base;         // 48-bit base address
 }GDTP;
 
-
+#pragma pack(pop)
+#ifndef _KERNEL_MODULE_
 LOUSTATUS Initialize_Gdt();
 
 LOUSTATUS Set_Kernel_Segment(bool Code_Seg, uint32_t Base, uint32_t Limit, GDT* gdt);
@@ -187,7 +191,7 @@ LOUSTATUS Modify_Gdt_Registers();
 LOUSTATUS Uninitialize_Gdt();
 
 LOUSTATUS Load_Gdt(GDT* gdt);
-
+#endif
 
 #endif
 

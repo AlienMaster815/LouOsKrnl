@@ -45,7 +45,7 @@ struct vbox_private {
 
 	uint8_t *guest_heap;
 	uint8_t *vbva_buffers;
-	struct gen_pool *guest_pool;
+	PLMPOOL_DIRECTORY guest_pool;
 	struct vbva_buf_ctx *vbva_info;
 	bool any_pitch;
 	uint32_t num_crtcs;
@@ -125,7 +125,7 @@ struct vbox_encoder {
 #define to_vbox_dev(x) container_of(x, struct vbox_private, ddev)
 
 bool VboxCheckSupported(uint16_t id);
-int VboxHwInit(struct vbox_private *vbox);
+LOUSTATUS VboxHwInit(struct vbox_private *vbox);
 void VboxHwFini(struct vbox_private *vbox);
 
 int VboxModeInit(struct vbox_private *vbox);
@@ -141,10 +141,10 @@ void VboxIrqFini(struct vbox_private *vbox);
 void VboxReportHotplug(struct vbox_private *vbox);
 
 /* vbox_hgsmi.c */
-void *HgsmiBufferAlloc(struct gen_pool *guest_pool, size_t size,
+void *HgsmiBufferAlloc(PLMPOOL_DIRECTORY guest_pool, size_t size,
 			 uint8_t channel, uint16_t channel_info);
-void HgsmiBufferFree(struct gen_pool *guest_pool, void *buf);
-int HgsmiBufferSubmit(struct gen_pool *guest_pool, void *buf);
+void HgsmiBufferFree(PLMPOOL_DIRECTORY guest_pool, void *buf);
+int HgsmiBufferSubmit(PLMPOOL_DIRECTORY guest_pool, void *buf);
 
 static inline void VboxWriteIoport(uint16_t index, uint16_t data)
 {

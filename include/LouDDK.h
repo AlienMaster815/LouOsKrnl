@@ -1,10 +1,40 @@
 #ifndef _LOUDDK_H
 #define _LOUDDK_H
 
+
+#ifdef _KERNEL_MODULE_
+#pragma warning(push)
+#pragma warning(disable: 4083) // Disable specific warning
+#pragma warning(disable: 4005) // Disable macro redefinition warning
+#pragma warning(disable: 5051) // Disable C5051 warning
+#pragma warning(disable: 4103) // Disable C4103
+#pragma warning(disable: 4201) // Disable C4103
+#pragma warning(disable: 4200) // Disable C4103
+#pragma warning(disable: 4086) // Disable C4103
+#pragma warning(disable: 4100) // Disable C4103warning C4273
+#pragma warning(disable: 4217) // Disable C4103
+//#pragma warning(disable: 1218) // Disable C4103
+#endif
+
 #include <stdlib.h>
+
 
 #define LOUDDK_API_ENTRY extern "C"
 #define DRIVER_IO_FUNCTION extern "C"
+
+#ifdef _KERNEL_MODULE_
+
+#ifndef PVOID
+typedef void* PVOID;
+#endif
+
+#ifndef _KERNEL_EXPORTS_
+#define _KERNEL_EXPORTS_
+#define KERNEL_EXPORT extern "C" __declspec(dllimport)
+
+#endif
+#endif
+
 #define KERNEL_IMPORT extern "C"
 
 //define common used cpp functions with drivers
@@ -23,6 +53,7 @@
 #include <Kernel/threads.h>
 #include <SharedTypes.h>
 #include <Kernel/DRSD.h>
+#include <Kernel/LouQs.h>
 
 typedef void* FILE;
 
@@ -62,20 +93,24 @@ typedef void* FILE;
 
 //define kernel c functions that we translate to the cpp world
 //Printing And Debugging
+#ifndef _KERNEL_MODULE_
 KERNEL_IMPORT int LouPrint(char *format, ...);
+#else
+KERNEL_EXPORT int LouPrint(char *format, ...);
+#endif
 // PORTS Stuff
 
 #ifdef __x86_64__
     KERNEL_IMPORT uint64_t read_msr(uint32_t msr_id);
 #endif
 
-#include <KernelAPI/DriverAPI.h>
-#include <drivers/Lou_drivers/hardrive.h>
+#include <KernelAPI/DriverAPI.h> 
+#include <drivers/Lou_drivers/hardrive.h> 
 #include <drivers/Lou_drivers/storage_struct.h>
 #include <drivers/Lou_drivers/FileSystem.h>
-#include <KernelAPI/IOManager.h>
+#include <KernelAPI/IOManager.h> 
 #include <drivers/Lou_drivers/FileSystems/ISO.h>
-#include <KernelAPI/Drives.h>
+#include <KernelAPI/Drives.h> 
 #include <drivers/Lou_drivers/hardrive.h>
 #include <stdio.h>
 #include <drivers/Lou_drivers/io.h> 
@@ -90,6 +125,8 @@ KERNEL_IMPORT int LouPrint(char *format, ...);
 #include <Random.h>
 
 
+#ifndef _KERNEL_MODULE_
+#define KERNEL_EXPORT extern "C"
 
 KERNEL_IMPORT uint8_t inb(uint64_t port);
 KERNEL_IMPORT void outb(uint64_t port, uint8_t data);
@@ -124,8 +161,13 @@ KERNEL_IMPORT void sleep(uint64_t Time);
 
 LOUDDK_API_ENTRY LOUSTATUS RegisterHardwareInterruptHandler(void(*Handler)(), uint8_t InterruptNumber);
 
+#else 
+
+#endif//kernelmod
+
 #else
 
 
 #endif
 #endif
+

@@ -1,13 +1,20 @@
 #include <LouAPI.h>
 
+PHANDLE LoadKernelModule(uintptr_t Start);
+void InitializePreLoadedModule(uintptr_t Entry, uint8_t DriverNumber);
+
 typedef struct __attribute__((packed)) _ModuleTrack{
     uintptr_t ModuleStart;
     uintptr_t ModuleEnd;
     bool BeingUsed;
+    uintptr_t Entry;
 }MoudleTrack, * PMoudleTrack;
 
-static MoudleTrack Track[1];
+static MoudleTrack Track[255];
 
+#define PRE_LOADED_SYSTEM_FILES 1
+
+static uint8_t StartupModules = 0;
 void handle_module(
     uintptr_t ModuleStart,
     uintptr_t ModuleEnd
@@ -15,16 +22,26 @@ void handle_module(
 
     EnforceSystemMemoryMap(ModuleStart, ModuleEnd - ModuleStart);
 
-    Track[0].ModuleStart = ModuleStart;
-    Track[0].ModuleEnd = ModuleEnd;
 
-    //LouPrint("Module Start:%h\n", ModuleStart);
-    //LouPrint("Module End:%h\n", ModuleEnd);
-    //while(1);
+
+    Track[StartupModules].ModuleStart = ModuleStart;
+    Track[StartupModules].ModuleEnd = ModuleEnd;
+
+
+    StartupModules++;
 }
 
-void GetUser32MouduleStart(uintptr_t* Start, uintptr_t* End){
-    *Start= Track[0].ModuleStart;
-    *End = Track[0].ModuleEnd;
-    Track[0].BeingUsed = true;
+void InitPreLoadedModules(){
+    for(uint8_t i = 0 ; i < PRE_LOADED_SYSTEM_FILES; i++){
+        Track[i].Entry = (uintptr_t)LoadKernelModule(Track[i].ModuleStart);
+        InitializePreLoadedModule(Track[i].Entry, i);
+    }
+}
+
+
+bool LouKeSeachPreLoadedSystemModules(P_PCI_DEVICE_OBJECT PDEV){
+
+
+
+    return false;
 }

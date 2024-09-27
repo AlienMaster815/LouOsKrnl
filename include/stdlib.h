@@ -20,11 +20,13 @@
 #define IS_X86 __i386__
 #define IS_X86_64 __x86_64__
 
+#ifndef _KERNEL_MODULE_
 static inline unsigned int ROUND_UP(unsigned int value, unsigned int multiple) {
     return (value + multiple - 1) / multiple * multiple;
 }
 
 int abs(int x);
+#endif
 
 #endif 
 

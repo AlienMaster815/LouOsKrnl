@@ -89,6 +89,7 @@ void ValidateOrSetPositionHints(struct vbox_private *vbox){
 }
 
 void VboxUpdateModeHints(struct vbox_private *vbox){
+	LouPrint("VboxUpdateModeHints()\n");
 	//struct drm_connector_list_iter conn_iter;
 	//struct drm_device *dev = &vbox->ddev;
 	//struct drm_connector *connector;
@@ -141,6 +142,7 @@ void VboxUpdateModeHints(struct vbox_private *vbox){
 	//}
 	//drm_connector_list_iter_end(&conn_iter);
 	//drm_modeset_unlock(&dev->mode_config.connection_mutex);
+	LouPrint("VboxUpdateModeHints() STATUS_SUCCESS\n");
 }
 
 void VboxHotplugWorker(void* work){
@@ -172,4 +174,3 @@ void VboxIrqFini(struct vbox_private *vbox)
 	//free_irq(pdev->irq, dev);
 	//flush_work(&vbox->hotplug_work);
 }
- 

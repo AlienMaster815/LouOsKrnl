@@ -10,10 +10,9 @@
 #define VBE_DISPI_ENABLED 0x01  // Common value used to enable the adapter
 #define VBE_DISPI_LFB_ENABLED 0x40  // Value to enable linear framebuffer mode
 
-#define VBE_DISPI_INDEX_XRES      0x01
-#define VBE_DISPI_INDEX_YRES      0x02
-#define VBE_DISPI_INDEX_BPP       0x03
-#define VBE_DISPI_INDEX_ENABLE    0x04 
+//#define VBE_DISPI_INDEX_XRES      0x01
+//#define VBE_DISPI_INDEX_YRES      0x02
+//#define VBE_DISPI_INDEX_BPP       0x03
 
 
 void PreVBoxVGAInit(P_PCI_DEVICE_OBJECT PDEV);

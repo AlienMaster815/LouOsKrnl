@@ -1,0 +1,4 @@
+LIBRARY louoskrnl.exe
+
+EXPORTS	
+	LouPrint
