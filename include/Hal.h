@@ -48,9 +48,8 @@ KERNEL_EXPORT uint64_t LouKeHalLinuxPciCheckForCompatibleConfiguration(
     PPCI_COMMON_CONFIG PciSearch, 
     PLINUX_PCI_DEVICE_ID LinuxCmpatibleDirectory
 );
-
-
 KERNEL_EXPORT void GetPciConfiguration(ULONG SystemIoBusNumber,ULONG SlotNumber,ULONG Function,PPCI_COMMON_CONFIG ConfigBuffer);
+
 
 #endif
 

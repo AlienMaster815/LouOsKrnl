@@ -10,11 +10,15 @@ typedef struct _TABLE_ENTRY{
 }TABLE_ENTRY, * PTABLE_ENTRY;
 #pragma pack(pop)
 
-#define PRE_LOADED_MODULES 4
+#define PRE_LOADED_MODULES 5
 #define PRE_LOADED_NTOSKRNL_FUNCTIONS 66
 #define PRE_LOADED_UNKOWN_FUNCTIONS 12
 #define PRE_LOADED_WDFLDR_FUNCTIONS 5
 #define PRE_LOADED_STORPORT_FUNCTIONS 9
+#define PRE_LOADED_LOUOSKRNL_FUNCTIONS 7
+
+static uint64_t LouOsKrnlFunctionAddresses[PRE_LOADED_LOUOSKRNL_FUNCTIONS];
+static FUNCTION_NAME LouOsKrnlFunctionNames[PRE_LOADED_LOUOSKRNL_FUNCTIONS];
 
 static uint64_t NTFunctionAddresses[PRE_LOADED_NTOSKRNL_FUNCTIONS];
 static FUNCTION_NAME NTFunctionNames[PRE_LOADED_NTOSKRNL_FUNCTIONS];
@@ -47,8 +51,37 @@ RtlUnwind(
     _In_ PVOID ReturnValue
 );
 
+
+static inline 
+void InitializeLousineKernelTables(){
+    ImportTables[4].ModuleName = "louoskrnl.exe";
+    ImportTables[4].NumberOfFunctions = PRE_LOADED_LOUOSKRNL_FUNCTIONS;
+
+    ImportTables[4].FunctionName = LouOsKrnlFunctionNames;   
+    
+    ImportTables[4].FunctionName[0] = "LouPrint";
+    ImportTables[4].FunctionName[1] = "RegisterHardwareInterruptHandler";
+    ImportTables[4].FunctionName[2] = "memcpy";
+    ImportTables[4].FunctionName[3] = "strncmp";
+    ImportTables[4].FunctionName[4] = "strcmp";
+    ImportTables[4].FunctionName[5] = "memcmp";
+    ImportTables[4].FunctionName[6] = "strncpy";
+
+    ImportTables[4].VirtualAddress = LouOsKrnlFunctionAddresses;
+
+    ImportTables[4].VirtualAddress[0] = (uint64_t)LouPrint;
+    ImportTables[4].VirtualAddress[1] = (uint64_t)RegisterHardwareInterruptHandler;
+    ImportTables[4].VirtualAddress[2] = (uint64_t)memcpy;
+    ImportTables[4].VirtualAddress[3] = (uint64_t)strncmp;
+    ImportTables[4].VirtualAddress[4] = (uint64_t)strcmp;
+    ImportTables[4].VirtualAddress[5] = (uint64_t)memcmp;
+    ImportTables[4].VirtualAddress[6] = (uint64_t)strncpy;
+
+
+}
+
 static inline
-void InitializeKernelTable(){
+void InitializeNtKernelTable(){
     ImportTables[0].ModuleName = "ntoskrnl.exe";
     ImportTables[0].NumberOfFunctions = PRE_LOADED_NTOSKRNL_FUNCTIONS;
     
@@ -91,6 +124,40 @@ void InitializeKernelTable(){
     ImportTables[0].FunctionName[30] = "MmAllocateContiguousMemory";
     ImportTables[0].FunctionName[31] = "MmFreeContiguousMemory";
     ImportTables[0].FunctionName[32] = "MmGetPhysicalAddress";
+
+    ImportTables[0].FunctionName[33] = "_vsnprintf";
+    ImportTables[0].FunctionName[34] = "wcslen";
+    ImportTables[0].FunctionName[35] = "RtlAppendUnicodeToString";
+    ImportTables[0].FunctionName[36] = "swprintf";
+    ImportTables[0].FunctionName[37] = "KeNumberProcessors";
+    ImportTables[0].FunctionName[38] = "strncpy";
+    //ImportTables[0].FunctionName[39] = "_aullrem";
+    ImportTables[0].FunctionName[40] = "InterlockedIncrement";
+    ImportTables[0].FunctionName[41] = "InterlockedDecrement";
+    //ImportTables[0].FunctionName[42] = "_aulldiv";
+    //ImportTables[0].FunctionName[43] = "_strnicmp";
+    ImportTables[0].FunctionName[44] = "InterlockedExchange";
+    //ImportTables[0].FunctionName[45] = "_allmul";
+    //ImportTables[0].FunctionName[46] = (uint64_t)_alldiv;
+    ImportTables[0].FunctionName[47] = "KeQuerySystemTime";
+    ImportTables[0].FunctionName[48] = "RtlQueryRegistryValues";
+    ImportTables[0].FunctionName[49] = "IoDisconnectInterrupt";
+    ImportTables[0].FunctionName[50] = "_snwprintf";
+    ImportTables[0].FunctionName[51] = "IoConnectInterrupt";
+    ImportTables[0].FunctionName[52] = "RtlInitUnicodeString";
+    ImportTables[0].FunctionName[53] = "IoCreateDevice";
+    ImportTables[0].FunctionName[54] = "IoDeleteDevice";
+    ImportTables[0].FunctionName[55] = "RtlCompareUnicodeString";
+    //ImportTables[0].FunctionName[56] = "NtBuildNumber";
+    ImportTables[0].FunctionName[57] = "KefReleaseSpinLockFromDpcLevel";
+    //ImportTables[0].FunctionName[58] = "KefAcquireSpinLockAtDpcLeve"l;
+    ImportTables[0].FunctionName[59] = "KeGetCurrentThread";
+    ImportTables[0].FunctionName[60] = "RtlUnwind";
+    ImportTables[0].FunctionName[61] = "_snprintf";
+    ImportTables[0].FunctionName[62] = "IoGetConfigurationInformation";
+    ImportTables[0].FunctionName[63] = "ExAllocatePoolWithTag";
+    //ImportTables[0].FunctionName[64] = "sprintf";
+    ImportTables[0].FunctionName[65] = "ExFreePool";
 
     ImportTables[0].VirtualAddress = NTFunctionAddresses;
 
@@ -319,10 +386,11 @@ void InitializeStorePort_SYS(){
 
 LOUDDK_API_ENTRY void InitializeGenericTables(){
     
-    InitializeKernelTable();
+    InitializeNtKernelTable();
     InitializeUnKownTable();
     InitializeWDFLDR_SYS();
     InitializeStorePort_SYS();
+    InitializeLousineKernelTables();
 
 }
 
@@ -330,19 +398,28 @@ LOUDDK_API_ENTRY uint64_t FindWdkFunctionAddress(
     string ModuleName,
     string FunctionName
 ){
-    static uint8_t i = 0;
-    static uint8_t j = 0;
+    uint8_t i = 0;
+    uint8_t j = 0;
+
 
     for(i = 0; i < PRE_LOADED_MODULES; i++){
+
         if(strncmp(ImportTables[i].ModuleName, ModuleName, strlen(ModuleName)) == 0){
             //LouPrint("Getting A Address From Loaded Module:%s ", ModuleName);
+            if(strncmp(FunctionName, "LouPrint", strlen("LouPrint")) == 0){
+                LouPrint("Yay Module:%d\n", i);
+            }
             for(j = 0; j < ImportTables[i].NumberOfFunctions; j++){
                 //LouPrint("Getting A Address From Loaded Module:%s ", ImportTables[i].FunctionName[j]);
+                if(strncmp(FunctionName, "LouPrint", strlen("LouPrint")) == 0){
+                    LouPrint("Yay Module:%d : Fuction:%s\n", i, ImportTables[i].FunctionName[j]);
+                }
                 if(strncmp(ImportTables[i].FunctionName[j], FunctionName, strlen(FunctionName)) == 0){
+                    //LouPrint("Getting A Address From Loaded Module:%s ", ImportTables[i].FunctionName[j]);
+
                     return ImportTables[i].VirtualAddress[j];
                 }
             }
-            //im just adding a fucking goto
             goto WDK_MODULE_FALLBACK_FUNCTIONS;
         }  
     }

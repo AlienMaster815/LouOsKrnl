@@ -1,24 +1,5 @@
 /*
 -- Tyler Grenier 10/26/23 10:04
--- This File Will Be Used To Standardize The Drives
--- So That The Drivers can Just Boom I want To Select
--- The C Drive or the E Drive And read or Write From it
--- As Well as give an automatiic Request Drive Acces
--- Implemented into the Read And Write Call Unlike The
--- Linux Kernel That You Request The Permision To acces
--- The Drive And Then You Can Do Whatever You Want When
--- There Should In My Oppinion Be Constant Acces Checks
--- OtherWise things Can Just be injected or written Where
--- They arent supposed To be __-- SUDO rm -r / --__ I swear
--- Try it Youll Erase The entire Fucking Drive Only The
--- Kernel Itself Should Ever Have The Right To Minipulate System
--- Files Windows Fucks This Up Too Just Not As Bad The Windows
--- System Allows The Coppying Of Files From Windows
--- System directories with basic copy and paste Which
--- Shouldent be a thing And Honestly Dosent Even Block System
--- Files From Even Being Read By Non Sytstem Administrators AND
--- ITS WAAAAY TO EASY FOR YOU TO BECOME AN ADMISISRATOR... Anywayse
--- Thats Todays Rant...
 */
 
 

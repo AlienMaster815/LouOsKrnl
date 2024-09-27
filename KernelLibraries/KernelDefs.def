@@ -2,3 +2,9 @@ LIBRARY louoskrnl.exe
 
 EXPORTS	
 	LouPrint
+	RegisterHardwareInterruptHandler
+	memcpy
+	strncmp
+	strcmp
+	memcmp
+	strncpy

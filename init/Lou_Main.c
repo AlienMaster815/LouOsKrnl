@@ -30,7 +30,7 @@ uintptr_t RBP_Current;
 
 
 
-string KERNEL_VERSION = "0.1.0 RSC-2 Multiboot 2 With EFI Support";
+string KERNEL_VERSION = "0.1.01 RSC-2 Multiboot 2 With EFI Support";
 
 
 #ifdef __x86_64__
@@ -289,8 +289,9 @@ KERNEL_ENTRY Lou_kernel_start(
     Lou_kernel_early_initialization();
     
 
-    LouKeRunOnNewStack(InitializeGenericTables, 0x00, 16 * KILOBYTE);
-    
+    //LouKeRunOnNewStack(InitializeGenericTables, 0x00, 16 * KILOBYTE);
+    InitializeGenericTables();
+
     Advanced_Kernel_Initialization();
 
     InitPreLoadedModules();

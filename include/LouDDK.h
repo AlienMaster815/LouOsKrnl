@@ -165,6 +165,13 @@ LOUDDK_API_ENTRY LOUSTATUS RegisterHardwareInterruptHandler(void(*Handler)(), ui
 
 #endif//kernelmod
 
+KERNEL_EXPORT LOUSTATUS RegisterHardwareInterruptHandler(void(*Handler)(), uint8_t InterruptNumber);
+KERNEL_EXPORT void* memcpy(void* dest, const void* src, size_t n);
+KERNEL_EXPORT int strncmp(const char* str1, const char* str2, size_t n);
+KERNEL_EXPORT int strcmp(const char* str1, const char* str2);
+KERNEL_EXPORT int memcmp(const void* ptr1, const void* ptr2, size_t num);
+KERNEL_EXPORT char* strncpy(char* dest, const char* src, size_t n);
+
 #else
 
 
