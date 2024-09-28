@@ -345,7 +345,7 @@ LOUSTATUS AhciInitOne(
     PUNICODE_STRING RegistryEntry
 ){
 
-    //LouPrint("Initializing AHCI Device\n");
+    LouPrint("Initializing AHCI Device\n");
 
 
     while(1);
@@ -401,6 +401,7 @@ bool AhciPciScan(P_PCI_DEVICE_OBJECT PDEV,  PDRIVER_OBJECT DriverObject, PUNICOD
     uint64_t DeviceDetected = LouKeHalLinuxPciCheckForCompatibleConfiguration(&PciConfig, AhciPciTable);
 
     if(DeviceDetected < SUPPORTED_AHCI_DEVICES){
+        LouPrint("Found A Compatible Device\n");
         PAHCI_DRIVER_EXTENDED_OBJECT DevExtObj = (PAHCI_DRIVER_EXTENDED_OBJECT)LouMalloc(sizeof(AHCI_DRIVER_EXTENDED_OBJECT));
         DevExtObj->DeviceNumber = DeviceDetected;
         PDEV->DeviceExtendedObject = (uintptr_t)DevExtObj;

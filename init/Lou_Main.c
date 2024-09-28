@@ -297,7 +297,7 @@ KERNEL_ENTRY Lou_kernel_start(
     InitPreLoadedModules();
 
     //SETUP DEVICES AND DRIVERS
-    LouKeRunOnNewStack(LookForStorageDevices, 0x00, 32  * KILOBYTE);
+    LouKeRunOnNewStack(LookForStorageDevices, 0x00, 64  * KILOBYTE);
     //UpdateDeviceInformationTable();
     //LouKeRunOnNewStack(FileSystemSetup, 0x00, 64 * KILOBYTE);
     //ScanTheRestOfHarware();
