@@ -30,12 +30,16 @@ void handle_module(
 
     StartupModules++;
 }
+static spinlock_t ModuleLock;
 
 void InitPreLoadedModules(){
+    LouKIRQL OldLevel;
+    LouKeAcquireSpinLock(&ModuleLock, &OldLevel);
     for(uint8_t i = 0 ; i < PRE_LOADED_SYSTEM_FILES; i++){
         Track[i].Entry = (uintptr_t)LoadKernelModule(Track[i].ModuleStart);
         InitializePreLoadedModule(Track[i].Entry, i);
     }
+    LouKeReleaseSpinLock(&ModuleLock, &OldLevel);
 }
 
 bool PciScanBusCheck(P_PCI_DEVICE_OBJECT PDEV, uint8_t DriverNumber);

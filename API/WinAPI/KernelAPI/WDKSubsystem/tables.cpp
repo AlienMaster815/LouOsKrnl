@@ -16,7 +16,7 @@ typedef struct _TABLE_ENTRY{
 #define PRE_LOADED_UNKOWN_FUNCTIONS 12
 #define PRE_LOADED_WDFLDR_FUNCTIONS 5
 #define PRE_LOADED_STORPORT_FUNCTIONS 9
-#define PRE_LOADED_LOUOSKRNL_FUNCTIONS 85
+#define PRE_LOADED_LOUOSKRNL_FUNCTIONS 86
 
 static uint64_t LouOsKrnlFunctionAddresses[PRE_LOADED_LOUOSKRNL_FUNCTIONS];
 static FUNCTION_NAME LouOsKrnlFunctionNames[PRE_LOADED_LOUOSKRNL_FUNCTIONS];
@@ -52,6 +52,7 @@ RtlUnwind(
     _In_opt_ PEXCEPTION_RECORD ExceptionRecord,
     _In_ PVOID ReturnValue
 );
+
 
 
 static inline 
@@ -147,6 +148,7 @@ void InitializeLousineKernelTables(){
     ImportTables[4].FunctionName[82] = "LouKeWritePciUint8";
     ImportTables[4].FunctionName[83] = "LouKeWritePciUint16";
     ImportTables[4].FunctionName[84] = "LouKeWritePciUint32";
+    ImportTables[4].FunctionName[85] = "LouKeHalEnablePciDevice";
 
     ImportTables[4].VirtualAddress = LouOsKrnlFunctionAddresses;
 
@@ -236,6 +238,7 @@ void InitializeLousineKernelTables(){
     ImportTables[4].VirtualAddress[82] = (uint64_t)LouKeWritePciUint8;
     ImportTables[4].VirtualAddress[83] = (uint64_t)LouKeWritePciUint16;
     ImportTables[4].VirtualAddress[84] = (uint64_t)LouKeWritePciUint32;
+    ImportTables[4].VirtualAddress[85] = (uint64_t)LouKeHalEnablePciDevice;
 
 }
 
@@ -509,7 +512,6 @@ NTSTATUS StorPortGetBusData(
   PVOID Buffer,
   ULONG Length
 );
-
 static inline
 void InitializeStorePort_SYS(){
 

@@ -30,7 +30,7 @@ uintptr_t RBP_Current;
 
 
 
-string KERNEL_VERSION = "0.1.06 RSC-3 Multiboot 2 With EFI & Moudle Support";
+string KERNEL_VERSION = "0.1.06 RSC-4 Multiboot 2 With EFI & Moudle Support";
 
 
 #ifdef __x86_64__
@@ -280,7 +280,7 @@ KERNEL_ENTRY Lou_kernel_start(
     //vga set for debug
     LouKeMapEfiMemory();
     LouKeMapPciMemory();
-    LouKeRunOnNewStack(setup_vga_systems, 0x00, 32  * KILOBYTE);
+    setup_vga_systems();
 
 	LouPrint("Lou Version %s %s\n", KERNEL_VERSION ,KERNEL_ARCH);
     LouPrint("Hello Im Lousine Getting Things Ready\n");
@@ -288,8 +288,6 @@ KERNEL_ENTRY Lou_kernel_start(
     //INITIALIZE IMPORTANT THINGS FOR US LATER
     Lou_kernel_early_initialization();
     
-
-    //LouKeRunOnNewStack(InitializeGenericTables, 0x00, 16 * KILOBYTE);
     InitializeGenericTables();
 
     Advanced_Kernel_Initialization();
@@ -297,7 +295,7 @@ KERNEL_ENTRY Lou_kernel_start(
     InitPreLoadedModules();
 
     //SETUP DEVICES AND DRIVERS
-    LouKeRunOnNewStack(LookForStorageDevices, 0x00, 64  * KILOBYTE);
+    LookForStorageDevices();
     //UpdateDeviceInformationTable();
     //LouKeRunOnNewStack(FileSystemSetup, 0x00, 64 * KILOBYTE);
     //ScanTheRestOfHarware();

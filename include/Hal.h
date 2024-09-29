@@ -14,42 +14,42 @@ typedef struct _LINUX_PCI_DEVICE_ID {
 }LINUX_PCI_DEVICE_ID, * PLINUX_PCI_DEVICE_ID;
 
 #ifndef _KERNEL_MODULE_
-void* LouKeHalGetPciVirtualBaseAddress(
+LOUDDK_API_ENTRY void* LouKeHalGetPciVirtualBaseAddress(
     PPCI_COMMON_CONFIG Config,
     uint8_t BarNumber
 );
 
-void LouKeHalRegisterPCiDevice(
+LOUDDK_API_ENTRY void LouKeHalRegisterPCiDevice(
     P_PCI_DEVICE_OBJECT PDEV
 );
 
-PPCI_CONTEXT LouKeHalPciSaveContext(
+LOUDDK_API_ENTRY PPCI_CONTEXT LouKeHalPciSaveContext(
     P_PCI_DEVICE_OBJECT PDEV
 );
 
-void LouKeHalPciRestoreContext(
+LOUDDK_API_ENTRY void LouKeHalPciRestoreContext(
     PPCI_CONTEXT PciContext
 );
 
-void LouKeHalPciClearMaster(
+LOUDDK_API_ENTRY void LouKeHalPciClearMaster(
     P_PCI_DEVICE_OBJECT PDEV
 );
 
 
 
-uint64_t LouKeHalLinuxPciCheckForCompatibleConfiguration(
+LOUDDK_API_ENTRY uint64_t LouKeHalLinuxPciCheckForCompatibleConfiguration(
     PPCI_COMMON_CONFIG PciSearch, 
     PLINUX_PCI_DEVICE_ID LinuxCmpatibleDirectory
 );
 
-LOUSTATUS LouKeHalEnablePciDevice(P_PCI_DEVICE_OBJECT PDEV);
+LOUDDK_API_ENTRY LOUSTATUS LouKeHalEnablePciDevice(P_PCI_DEVICE_OBJECT PDEV);
 #else 
 KERNEL_EXPORT uint64_t LouKeHalLinuxPciCheckForCompatibleConfiguration(
     PPCI_COMMON_CONFIG PciSearch, 
     PLINUX_PCI_DEVICE_ID LinuxCmpatibleDirectory
 );
 KERNEL_EXPORT void GetPciConfiguration(ULONG SystemIoBusNumber,ULONG SlotNumber,ULONG Function,PPCI_COMMON_CONFIG ConfigBuffer);
-
+KERNEL_EXPORT LOUSTATUS LouKeHalEnablePciDevice(P_PCI_DEVICE_OBJECT PDEV);
 
 #endif
 

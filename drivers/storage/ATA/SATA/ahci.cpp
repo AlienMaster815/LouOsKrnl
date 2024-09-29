@@ -349,7 +349,7 @@ LOUSTATUS AhciInitOne(
     uint64_t DeviceFlags = AhciPciTable[ExtendedObject->DeviceNumber].Flags;
     LOUSTATUS Status = STATUS_SUCCESS;
     //int nports, i;
-    //uint8_t AhciBar = AHCI_DEFAULT_BAR;
+    uint8_t AhciBar = AHCI_DEFAULT_BAR;
     //PAHCI_MEMORY_REGISTERS Host;
     PCI_COMMON_CONFIG Config;
     LouPrint("Initializing AHCI Device\n");
@@ -366,7 +366,12 @@ LOUSTATUS AhciInitOne(
         LouPrint("AHCI DEVICE : PDC42819 can only drive SATA devices with this driver\n");
     }
 
-
+    if ((Config.Header.VendorID == 0x104A) && (Config.Header.DeviceID == 0xCC06)) {
+        AhciBar = AHCI_PCI_BAR_STA2x11;
+    }
+    else if ((Config.Header.VendorID == 0x1C44) && (Config.Header.DeviceID == 0x8000)) {
+        AhciBar = AHCI_PCI_BAR_ENMOTUS;
+    }
 
     LouPrint("AhciInitOne() STATUS_SUCCESS\n");
     while(1);
@@ -458,7 +463,7 @@ LOUDDK_API_ENTRY
 LOUSTATUS
 DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryEntry) {
     LouPrint("Ahci Driver Entry()\n");
-    LouPrint("%s : %s",DRIVER_NAME, DRIVER_VERSION);
+    LouPrint("%s : %s\n",DRIVER_NAME, DRIVER_VERSION);
 
     DriverObject->PciScanBus = AhciPciScan;
     LouPrint("Ahci Driver Entry() STATUS_SUCCESS\n");
