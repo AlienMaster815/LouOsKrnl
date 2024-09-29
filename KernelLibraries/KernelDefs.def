@@ -86,3 +86,4 @@ EXPORTS
     LouKeWritePciUint8
     LouKeWritePciUint16
     LouKeWritePciUint32
+    LouKeHalEnablePciDevice

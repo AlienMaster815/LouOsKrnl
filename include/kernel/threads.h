@@ -1,6 +1,8 @@
 #ifndef _THREADS_H
 #define _THREADS_H
 
+typedef void* PTHREAD;
+typedef void* PTHREAD_DATA;
 
 #ifdef __cplusplus
 #include <LouDDK.h>

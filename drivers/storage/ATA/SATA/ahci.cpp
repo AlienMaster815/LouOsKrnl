@@ -35,15 +35,17 @@
 #pragma pack(push, 1)
 typedef struct _AHCI_DRIVER_EXTENDED_OBJECT{
     uint64_t DeviceNumber;
+    AHCI_PORT_INFO DeviceportInfo;
     PCI_COMMON_CONFIG SavedConfig;
 }AHCI_DRIVER_EXTENDED_OBJECT, * PAHCI_DRIVER_EXTENDED_OBJECT;
 #pragma pack(pop)
 
 enum{
     AHCI_PCI_BAR_STA2x11    = 0,
-    AHCI_PCI_BAR_VAVIUM     = 0,
+    AHCI_PCI_BAR_CAVIUM     = 0,
     AHCI_PCI_BAR_LOONGSON   = 0,
     AHCI_PCI_BAR_ENMOTUS    = 2,
+    AHCI_PCI_BAR_CAVIUM_GEN5 = 4,
     AHCI_BAR_STANDARD       = 5,
 };
 
@@ -78,6 +80,12 @@ enum BoarIds{
 #define SUPPORTED_AHCI_DEVICES 220
 #define PCI_CLASS_STORAGE_SATA_AHCI	0x010601
 #define PCI_CLASS_STORAGE_RAID		0x0104
+
+
+
+//const AHCI_PORT_INFO PortInfoTable[18]{
+    
+//};
 
 UNUSED static LINUX_PCI_DEVICE_ID AhciPciTable[] = {
     //Intel Devices
@@ -324,6 +332,12 @@ UNUSED static LINUX_PCI_DEVICE_ID AhciPciTable[] = {
     {0,0,0,0,0,0,0} // null terminator
 };
 
+void GetAhciDevicePortInfo(uint64_t BoardId, PAHCI_PORT_INFO PPortInfo) {
+    
+
+
+}
+
 LOUSTATUS AhciInitOne(    
     P_PCI_DEVICE_OBJECT PDEV, 
     PDRIVER_OBJECT DriverObject, 
@@ -372,6 +386,40 @@ LOUSTATUS AhciInitOne(
     else if ((Config.Header.VendorID == 0x1C44) && (Config.Header.DeviceID == 0x8000)) {
         AhciBar = AHCI_PCI_BAR_ENMOTUS;
     }
+    else if (Config.Header.VendorID == 0x177D) {
+        if (Config.Header.DeviceID == 0xA01C) {
+            AhciBar = AHCI_PCI_BAR_CAVIUM;
+        }
+        if (Config.Header.DeviceID == 0xA084) {
+            AhciBar = AHCI_PCI_BAR_CAVIUM_GEN5;
+        }
+    }
+    else if((Config.Header.VendorID == 0x0014) && (Config.Header.DeviceID == 0x7A08)){
+        AhciBar = AHCI_PCI_BAR_LOONGSON;
+    }
+
+    Status = LouKeHalEnablePciDevice(PDEV);
+    if (Status != STATUS_SUCCESS) {
+        return Status;
+    }
+
+    if ((Config.Header.VendorID == 0x8086) &&
+        (Config.Header.DeviceID == 0x2652 || 
+         Config.Header.DeviceID == 0x2653)) {
+        uint8_t Map;
+            
+        Map = LouKeReadPciUint8(PDEV, ICH_MAP);
+        if (Map & 0x03) {
+            LouPrint("Controller Is In Combined Mode, Cant Enable AHCI Mode\n");
+            return (LOUSTATUS)STATUS_NO_SUCH_DEVICE;
+        }
+    }
+    //next step would to get all the bars but they are already stored in our PCI Config Header
+    //acording to the linux Implementation MCP65 A1 And A2 Cannot Do MSI So We Are Going To
+    //skip to flags
+    AHCI_PORT_INFO DevicePortInfo;
+
+    GetAhciDevicePortInfo(DeviceFlags, &DevicePortInfo);
 
     LouPrint("AhciInitOne() STATUS_SUCCESS\n");
     while(1);

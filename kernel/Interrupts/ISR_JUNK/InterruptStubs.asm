@@ -70,7 +70,6 @@ extern local_apic_send_eoi
 	pop r14
 	pop r15
 
-	
 %endmacro
 
 ;PIC_sendEOI(unsigned char irq)

@@ -47,6 +47,7 @@ typedef struct _PCI_DEVICE_OBJECT {
 	uint8_t bus;
 	uint8_t slot;
 	uint8_t func;
+	void* Dev;
 	pci_power_t CurrentState;
 	uint8_t PmCap;
 	atomic_t enable_cnt;
