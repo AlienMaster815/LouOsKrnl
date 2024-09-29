@@ -33,47 +33,70 @@
 #define BlinkOn 2
 #define BlinkOff 3
 
+#define SDEV_CREATED 1
+#define SDEV_RUNNING 2
+#define SDEV_CANCEL 3
+#define SDEV_DELETE 4
+#define SDEV_QUEIESCE 5
+#define SDEV_OFFLINE 6
+#define SDEV_TRANSPORT_OFFLINE 7
+#define SDEV_BLOCK 8
+#define SDEV_CREATE_BLOCK 9
+
 typedef uint32_t AtaLpmPolicy;
 typedef uint32_t AtaCompletionErrors;
 typedef uint32_t SwAvtivity;
 typedef uint64_t BListFlags;
+typedef uint32_t ScsiDeviceState;
 
 #pragma pack(push,1)
 
-typedef struct _SCSI_TARGET{
+typedef struct _ATA_TASKFILE{
+    void* Foo;
+}ATA_TASKFILE, * PATA_TASKFILE;
 
+typedef struct _BSG_DEVICE{
+    void* Foo;
+}BSG_DEVICE, * PBSG_DEVICE;
+
+typedef struct _SCSI_DEVICE_HANDLER{
+    void* Foo;
+}SCSI_DEVICE_HANDLER, * PSCSI_DEVICE_HANDLER;
+
+typedef struct _SCSI_TARGET{
+    void* Foo;
 }SCSI_TARGET, * PSCSI_TARGET;
 
 typedef struct _SCSI_VPD{
-
+    void* Foo;
 }SCSI_VPD, * PSCSI_VPD;
 
 typedef struct _SBITMAP{
-
+    void* Foo;
 }SBITMAP, * PSBITMAP;
 
 typedef struct _REQUEST_QUEUE{
-
+    void* Foo;
 }REQUEST_QUEUE, * PREQUEST_QUEUE;
 
 typedef struct _WAIT_QUEUE_HEAD{
-
+    void* Foo;
 }WAIT_QUEUE_HEAD, * PWAIT_QUEUE_HEAD;
 
 typedef struct _COMPLETION{
-
-}COMPLETION, * PCOMPLETION
+    void* Foo;
+}COMPLETION, * PCOMPLETION;
 
 typedef struct _TIMER_LIST{
-
+    void* Foo;
 }TIMER_LIST, *PTIMER_LIST;
 
 typedef struct ATA_BMDMA_PRD{
-
+    void* Foo;
 }ATA_BMDMA_PRD, * PATA_BMDMA_PRD;
 
 typedef struct _ATA_IO_PORTS{
-
+    void* Foo;
 }ATA_IO_PORTS, * PATA_IO_PORTS;
 
 typedef struct pm_message {
@@ -82,36 +105,32 @@ typedef struct pm_message {
 
 
 typedef struct _ATA_EH_CONTEXT{
-
+    void* Foo;
 }ATA_EH_CONTEXT, * PATA_EH_CONTEXT;
 
 typedef struct _ATA_EH_INFO{
-
+    void* Foo;
 }ATA_EH_INFO, * PATA_EH_INFO;
 
 typedef struct _ATA_ERING{
-
+    void* Foo;
 }ATA_ERING, * PATA_ERING;
 
 typedef struct _ATA_CDL{
-
+    void* Foo;
 } ATA_CDL, *PATA_CDL;
 
 typedef struct _ATA_CPR_LOG{
-
+    void* Foo;
 }ATA_CPR_LOG, * PATA_CPR_LOG;
 
 typedef struct _SCSI_DEVICE{
-
     struct _SCSI_HOST* Host;
     struct _REQUEST_QUEUE* RequestQueue;
-
     ListHeader Siblings;
     ListHeader SameTargetSibling;
-
     struct _SBITMAP BudgetMap;
     atomic_t DeviceBlocked;
-
     atomic_t Restarts;
     spinlock_t ListLock;
     ListHeader StarvedEntries;
@@ -133,7 +152,7 @@ typedef struct _SCSI_DEVICE{
     char InqPeriphialQuality;
     mutex_t InqMutex;
     uint8_t InqLength;
-    uint8_t* InqLength;
+    uint8_t* Inq;
     const string Vendor;
     const string Model;
     const string Revision;
@@ -178,26 +197,79 @@ typedef struct _SCSI_DEVICE{
     bool SkipMsPage8;
     bool SkipMsPage3F;
     bool SkipVpfPages;
+    bool TryVpdPages;
+    bool Use192BytesFor3F;
+    bool NoStartOnAdd;
+    bool AllowRestart;
+    bool StartStopPowerCondition;
+    bool NoUldAttatch;
+    bool SelectNotn;
+    bool FixCapacity;
+    bool GuessCapacity;
+    bool RetryHwError;
+    bool LastSectorBug;
+    bool NoReadDiskInfo;
+    bool NoReadCapacity16;
+    bool TryRc10First;
+    bool SecuritySupported;
+    bool IsVisable;
+    bool WceDefaultOn;
+    bool NoDif;
+    bool BrokenFua;
+    bool LunInCdb;
+    bool UnmapLimitForWs;
+    bool RpmAutoSuspend;
+    bool IgnoreMediaChange;
+    bool SilenceSusspend;
+    bool NoVpdSize;
+    bool CdlSupported;
+    bool CdlEnabled;
+    uint32_t QueueStoped;
+    bool OfflineAlready;
+    atomic_t DiskEventsDisabledDepth;
+    ListHeader EventList;
+    PTHREAD_DATA Event;
+    uint32_t MaxDevicesBlocked;
+    #define SCSI_DEFAULT_DEVICE_BLOCKED	3
+    atomic_t IoRequestCount;
+	atomic_t IoDoneCount;
+	atomic_t IoErrCount;
+	atomic_t IoTmoCount;
+    void* SDevGenev;
+    void* SDev;
+    PTHREAD_DATA RequeuedWork;
+    struct _SCSI_DEVICE_HANDLER* Handler;
+    void*                        HandlerData;
+    size_t DmaDrainLength;
+    void* DmaDrainBuffer;
+    uint32_t SgTimeOut;
+    uint32_t SgReservedSize;
+    struct _BSG_DEVICE* BsgDevice;
+    uint8_t AccessState;
+    mutex_t StateMutex;
+    ScsiDeviceState DevState;
+    PTHREAD_DATA QueiescedBy;
+    uint32_t SDevData[];
 }SCSI_DEVICE, * PSCSI_DEVICE;
 
 typedef struct _ATA_PORT_STATS{
-
+    void* Foo;
 }ATA_PORT_STATS, * PATA_PORT_STATS;
 
 typedef struct _SCSI_HOST{
-
+    void* Foo;
 }SCSI_HOST, * PSCSI_HOST;
 
 typedef struct _SCSI_COMMAND{
-
+    void* Foo;
 }SCSI_COMMAND, PSCSI_COMMAND;
 
 typedef struct _SCATTER_GATHER{
-
+    void* Foo;
 }SCATTER_GATHER, * PSCATTER_GATHER;
 
 typedef struct _ATA_QC_CB{
-
+    void* Foo;
 }ATA_QC_CB, * PATA_QC_CB;
 
 typedef struct _ATA_QUEUED_COMMAND{
@@ -223,70 +295,10 @@ typedef struct _ATA_QUEUED_COMMAND{
     uint32_t CurSgOffset;
     uint32_t ErrorMask;
     struct _ATA_TASKFILE ReultTaskFile;
-    struct ATA_QC_CB CompleteFn;
+    struct _ATA_QC_CB CompleteFn;
     void* PrivateData;
     void* LLDTask;
 }ATA_QUEUED_COMMAND, * PATA_QUEUED_COMMAND;
-
-
-typedef struct _ATA_PORT{
-    struct _SCSI_HOST* ScsiHost;
-    struct _ATA_PORT_OPERATION_TABLE* Operations;
-    spinlock_t* Lock;
-    uint32_t Flags;
-    uint32_t PFlags;
-    uint32_t PrintId;
-    uint32_t PortNumber;
-
-    //ATA SFF
-    struct _ATA_IO_PORTS IoAddr;
-    uint8_t Ctl;
-    uint8_t LastCtl;
-    struct _ATA_LINK* SffPIoTaskLink;
-    PTHREAD SffPIoTask;
-
-    //BMDMA
-    struct ATA_BMDMA_PRD* BmDmaPrd;
-    void* BmDmaPrdAddress;
-
-    uint32_t PIoMask;
-    uint32_t MwDmaMask;
-    uint32_t UDmaMask;
-    uint32_t Cbl;
-
-    struct _ATA_QUEUED_COMMAND QCMD[ATA_MAX_QUEUE + 1];
-    uint64_t QcActive;
-    int32_t NrActiveLinks;
-
-    struct _ATA_LINK Link;
-    struct _ATA_LINK *SlaveLink;
-
-    int NrPmpLink;
-    struct _ATA_LINK* PmpLink;
-    struct _ATA_LINK* ExeclLink;
-
-    struct _ATA_PORT_STATS Stats;
-    struct _ATA_HOST* Host;
-    void* Dev;
-    void* TDev;
-    mutex_t ScsiScanMutex;
-    PTHREAD HotPlugTask;
-    PTHREAD ScsiRescanTask;
-    uint32_t HsmTaskState;
-    ListHeader EhDone;
-    struct _WAIT_QUEUE_HEAD EhWaitQueueHead;
-    int EhTries;
-    struct _COMPLETION ParkReqPending;
-    PmMessage PowrMessage;
-    AtaLpmPolicy TargetLpmPolicy;
-    struct _TIMER_LIST FastDrainTimer;
-    uint32_t FastDrainCount;
-    uint64_t Cookie;
-    int EmMessageType;
-    void* PrivateData;
-
-}ATA_PORT, * PATA_PORT;
-
 
 typedef struct _ATA_DEVICE{
     struct _ATA_LINK* Link;
@@ -346,31 +358,77 @@ typedef struct _ATA_LINK{
     uint32_t LastLpmChange;
 }ATA_LINK, * PATA_LINK;
 
+typedef struct _ATA_PORT{
+    struct _SCSI_HOST* ScsiHost;
+    struct _ATA_PORT_OPERATION_TABLE* Operations;
+    spinlock_t* Lock;
+    uint32_t Flags;
+    uint32_t PFlags;
+    uint32_t PrintId;
+    uint32_t PortNumber;
 
-typedef struct _ATA_TASKFILE{
+    //ATA SFF
+    struct _ATA_IO_PORTS IoAddr;
+    uint8_t Ctl;
+    uint8_t LastCtl;
+    struct _ATA_LINK* SffPIoTaskLink;
+    PTHREAD SffPIoTask;
 
-}ATA_TASKFILE, * PATA_TASKFILE;
+    //BMDMA
+    struct ATA_BMDMA_PRD* BmDmaPrd;
+    void* BmDmaPrdAddress;
 
+    uint32_t PIoMask;
+    uint32_t MwDmaMask;
+    uint32_t UDmaMask;
+    uint32_t Cbl;
+
+    struct _ATA_QUEUED_COMMAND QCMD[ATA_MAX_QUEUE + 1];
+    uint64_t QcActive;
+    int32_t NrActiveLinks;
+
+    struct _ATA_LINK Link;
+    struct _ATA_LINK *SlaveLink;
+
+    int NrPmpLink;
+    struct _ATA_LINK* PmpLink;
+    struct _ATA_LINK* ExeclLink;
+
+    struct _ATA_PORT_STATS Stats;
+    struct _ATA_HOST* Host;
+    void* Dev;
+    void* TDev;
+    mutex_t ScsiScanMutex;
+    PTHREAD HotPlugTask;
+    PTHREAD ScsiRescanTask;
+    uint32_t HsmTaskState;
+    ListHeader EhDone;
+    struct _WAIT_QUEUE_HEAD EhWaitQueueHead;
+    int EhTries;
+    struct _COMPLETION ParkReqPending;
+    PmMessage PowrMessage;
+    AtaLpmPolicy TargetLpmPolicy;
+    struct _TIMER_LIST FastDrainTimer;
+    uint32_t FastDrainCount;
+    uint64_t Cookie;
+    int EmMessageType;
+    void* PrivateData;
+
+}ATA_PORT, * PATA_PORT;
 
 typedef struct _ATA_RESET_FN{
-
+    void* Foo;
 }ATA_RESET_FN, * PATA_RESET_FN;
 
 
 typedef struct _ATA_POST_RESET_FN{
-
+    void* Foo;
 }ATA_POST_RESET_FN, * PATA_POST_RESET_FN;
 
 
 typedef struct _ATA_PRE_RESET_FN{
-
+    void* Foo;
 }ATA_PRE_RESET_FN, * PATA_PRE_RESET_FN;
-
-
-typedef struct _PmMessage{
-
-}PmMessage, * PPmMessage
-
 
 typedef struct _ATA_HOST{
     spinlock_t Lock;
@@ -444,7 +502,7 @@ typedef struct _ATA_PORT_OPERATION_TABLE{
     void (*SFFTaskFileLoad)(PATA_PORT Port, PATA_TASKFILE TaskFile);
     void (*SFTaskFileRead)(PATA_PORT Port, PATA_TASKFILE TaskFile);
     void (*SFFExecCommand)(PATA_PORT Port, PATA_TASKFILE TaskFile);
-    uint32_t (*SFFDataXFer)(PATA_QUEUED_COMMAND Qc, uint8_t* Buf, uint32-t BufLength, int Rw);
+    uint32_t (*SFFDataXFer)(PATA_QUEUED_COMMAND Qc, uint8_t* Buf, uint32_t BufLength, int Rw);
     void (*SFFIrqOn)(PATA_PORT Port);
     bool (*SFFIrqCheck)(PATA_PORT Port);
     void (SFFIrqClear)(PATA_PORT Port);

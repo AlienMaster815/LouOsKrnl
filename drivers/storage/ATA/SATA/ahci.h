@@ -3,6 +3,7 @@
 
 #include <LouDDK.h>
 #include <NtAPI.h>
+#include "../atalib.h"
 
 #pragma pack(push, 1)
 
