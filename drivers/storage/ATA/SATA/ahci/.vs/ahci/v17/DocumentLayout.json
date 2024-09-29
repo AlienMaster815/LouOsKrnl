@@ -26,7 +26,7 @@
               "RelativeDocumentMoniker": "..\\ahci.cpp",
               "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\storage\\ATA\\SATA\\ahci.cpp",
               "RelativeToolTip": "..\\ahci.cpp",
-              "ViewState": "AQIAAHUBAAAAAAAAAAAIwFsBAAAEAAAA",
+              "ViewState": "AQIAAEkBAAAAAAAAAAAAAHABAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-09-26T06:12:27.625Z",
               "IsPinned": true,
@@ -40,9 +40,10 @@
               "RelativeDocumentMoniker": "..\\ahci.h",
               "ToolTip": "E:\\LOUOSKRNL.EXE\\drivers\\storage\\ATA\\SATA\\ahci.h",
               "RelativeToolTip": "..\\ahci.h",
-              "ViewState": "AQIAAI4EAADAAAAAAEAgwJAEAAALAAAA",
+              "ViewState": "AQIAAFgEAADAAAAAAEAgwJAEAAALAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-09-26T12:48:02.41Z"
+              "WhenOpened": "2024-09-26T12:48:02.41Z",
+              "EditorCaption": ""
             }
           ]
         }

@@ -1,6 +1,6 @@
 #include <LouAPI.h>
 
-uint32_t pci_read(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset) {
+uint32_t pci_read(uint8_t bus, uint8_t slot, uint8_t func, uint32_t offset) {
     uint32_t address;
     uint32_t lbus = (uint32_t)bus;
     uint32_t lslot = (uint32_t)slot;
@@ -16,14 +16,14 @@ uint32_t pci_read(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset) {
     return inl(PCI_CONFIG_DATA_PORT);
 }
 
-void write_pci(uint8_t bus, uint8_t slot, uint8_t function, uint8_t offset, uint32_t value) {
+void write_pci(uint8_t bus, uint8_t slot, uint8_t function, uint32_t offset, uint32_t value) {
     // Calculate the address based on bus, device, function, and offset
     uint32_t address = (1U << 31) | ((uint32_t)bus << 16) | ((uint32_t)slot << 11) | ((uint32_t)function << 8) | (offset & 0xFC);
     // Write to PCI configuration space
     outl(address, value);
 }
 
-uint16_t pciConfigReadWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset) {
+uint16_t pciConfigReadWord(uint8_t bus, uint8_t slot, uint8_t func, uint32_t offset) {
     uint32_t address;
     uint32_t lbus = (uint32_t)bus;
     uint32_t lslot = (uint32_t)slot;
@@ -42,7 +42,7 @@ uint16_t pciConfigReadWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offs
     return tmp;
 }
 
-void pciConfigWriteWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset, uint16_t value) {
+void pciConfigWriteWord(uint8_t bus, uint8_t slot, uint8_t func, uint32_t offset, uint16_t value) {
     uint32_t address;
     uint32_t lbus = (uint32_t)bus;
     uint32_t lslot = (uint32_t)slot;
@@ -70,12 +70,12 @@ void pciConfigWriteWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset,
 
 
 
-uint32_t pciConfigAddress(uint8_t bus, uint8_t device, uint8_t function, uint8_t reg) {
+uint32_t pciConfigAddress(uint8_t bus, uint8_t device, uint8_t function, uint32_t reg) {
     // Construct the address for PCI configuration space access
     return (1U << 31) | (bus << 16) | (device << 11) | (function << 8) | (reg & 0xFC);
 }
 
-uint8_t pciConfigReadByte(uint8_t bus, uint8_t device, uint8_t function, uint8_t reg) {
+uint8_t pciConfigReadByte(uint8_t bus, uint8_t device, uint8_t function, uint32_t reg) {
     // Calculate the address for PCI configuration space access
     uint32_t address = pciConfigAddress(bus, device, function, reg);
 
@@ -86,7 +86,7 @@ uint8_t pciConfigReadByte(uint8_t bus, uint8_t device, uint8_t function, uint8_t
     return inb(PCI_CONFIG_DATA_PORT + (reg & 3));
 }
 
-void pciConfigWriteByte(uint8_t bus, uint8_t device, uint8_t function, uint8_t reg, uint8_t value) {
+void pciConfigWriteByte(uint8_t bus, uint8_t device, uint8_t function, uint32_t reg, uint8_t value) {
     // Calculate the address for PCI configuration space access
     uint32_t address = pciConfigAddress(bus, device, function, reg);
 

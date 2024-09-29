@@ -76,5 +76,13 @@ EXPORTS
     LouKeAcquireSpinLock
     LouKeReleaseSpinLock
     LouMalloc
-    GetPciConfiguration;
-    LouKeHalLinuxPciCheckForCompatibleConfiguration;
+    GetPciConfiguration
+    LouKeHalLinuxPciCheckForCompatibleConfiguration
+    pci_read
+    write_pci
+    LouKeReadPciUint8
+    LouKeReadPciUint16
+    LouKeReadPciUint32
+    LouKeWritePciUint8
+    LouKeWritePciUint16
+    LouKeWritePciUint32

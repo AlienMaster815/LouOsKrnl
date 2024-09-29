@@ -16,7 +16,7 @@ typedef struct _TABLE_ENTRY{
 #define PRE_LOADED_UNKOWN_FUNCTIONS 12
 #define PRE_LOADED_WDFLDR_FUNCTIONS 5
 #define PRE_LOADED_STORPORT_FUNCTIONS 9
-#define PRE_LOADED_LOUOSKRNL_FUNCTIONS 77
+#define PRE_LOADED_LOUOSKRNL_FUNCTIONS 85
 
 static uint64_t LouOsKrnlFunctionAddresses[PRE_LOADED_LOUOSKRNL_FUNCTIONS];
 static FUNCTION_NAME LouOsKrnlFunctionNames[PRE_LOADED_LOUOSKRNL_FUNCTIONS];
@@ -42,6 +42,7 @@ KERNEL_IMPORT int _snprintf(char *buffer, size_t buffer_size, const char *format
 ULONG KeNumberProcessors();
 
 KERNEL_IMPORT int _snwprintf(wchar_t *buffer, size_t buffer_size, const wchar_t *format, ...);
+
 
 
 VOID
@@ -131,7 +132,6 @@ void InitializeLousineKernelTables(){
     ImportTables[4].FunctionName[68] = "LouKeTestBitU64";
     ImportTables[4].FunctionName[69] = "LouKeUnSetBitU64";
     ImportTables[4].FunctionName[70] = "LouKeSetBitU64";
-
     ImportTables[4].FunctionName[71] = "LouKeCreateThread";
     ImportTables[4].FunctionName[72] = "LouKeAcquireSpinLock";
     ImportTables[4].FunctionName[73] = "LouKeReleaseSpinLock";
@@ -139,6 +139,14 @@ void InitializeLousineKernelTables(){
     ImportTables[4].FunctionName[75] = "GetPciConfiguration";
     ImportTables[4].FunctionName[76] = "LouKeHalLinuxPciCheckForCompatibleConfiguration";
 
+    ImportTables[4].FunctionName[77] = "pci_read";
+    ImportTables[4].FunctionName[78] = "write_pci";
+    ImportTables[4].FunctionName[79] = "LouKeReadPciUint8";
+    ImportTables[4].FunctionName[80] = "LouKeReadPciUint16";
+    ImportTables[4].FunctionName[81] = "LouKeReadPciUint32";
+    ImportTables[4].FunctionName[82] = "LouKeWritePciUint8";
+    ImportTables[4].FunctionName[83] = "LouKeWritePciUint16";
+    ImportTables[4].FunctionName[84] = "LouKeWritePciUint32";
 
     ImportTables[4].VirtualAddress = LouOsKrnlFunctionAddresses;
 
@@ -213,7 +221,6 @@ void InitializeLousineKernelTables(){
     ImportTables[4].VirtualAddress[68] = (uint64_t)LouKeTestBitU64;
     ImportTables[4].VirtualAddress[69] = (uint64_t)LouKeUnSetBitU64;
     ImportTables[4].VirtualAddress[70] = (uint64_t)LouKeSetBitU64;
-
     ImportTables[4].VirtualAddress[71] = (uint64_t)LouKeCreateThread;
     ImportTables[4].VirtualAddress[72] = (uint64_t)LouKeAcquireSpinLock;
     ImportTables[4].VirtualAddress[73] = (uint64_t)LouKeReleaseSpinLock;
@@ -221,6 +228,14 @@ void InitializeLousineKernelTables(){
     ImportTables[4].VirtualAddress[75] = (uint64_t)GetPciConfiguration;
     ImportTables[4].VirtualAddress[76] = (uint64_t)LouKeHalLinuxPciCheckForCompatibleConfiguration;
 
+    ImportTables[4].VirtualAddress[77] = (uint64_t)pci_read;
+    ImportTables[4].VirtualAddress[78] = (uint64_t)write_pci;
+    ImportTables[4].VirtualAddress[79] = (uint64_t)LouKeReadPciUint8;
+    ImportTables[4].VirtualAddress[80] = (uint64_t)LouKeReadPciUint16;
+    ImportTables[4].VirtualAddress[81] = (uint64_t)LouKeReadPciUint32;
+    ImportTables[4].VirtualAddress[82] = (uint64_t)LouKeWritePciUint8;
+    ImportTables[4].VirtualAddress[83] = (uint64_t)LouKeWritePciUint16;
+    ImportTables[4].VirtualAddress[84] = (uint64_t)LouKeWritePciUint32;
 
 }
 

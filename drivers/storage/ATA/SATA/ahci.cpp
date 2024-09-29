@@ -8,10 +8,10 @@
 
 #include "ahci.h"
 
-
+#define AHCI_DEFAULT_BAR 5
 
 #define DRIVER_NAME "Lousine Internal AHCI .SYS Driver"
-#define DRIVER_VERSION "1.01"
+#define DRIVER_VERSION "1.04"
 
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
@@ -35,6 +35,7 @@
 #pragma pack(push, 1)
 typedef struct _AHCI_DRIVER_EXTENDED_OBJECT{
     uint64_t DeviceNumber;
+    PCI_COMMON_CONFIG SavedConfig;
 }AHCI_DRIVER_EXTENDED_OBJECT, * PAHCI_DRIVER_EXTENDED_OBJECT;
 #pragma pack(pop)
 
@@ -47,26 +48,26 @@ enum{
 };
 
 enum BoarIds{
-    BoardAhci,
-    BoardAhci43BitDma,
-    BoardAhciIgnIferr,
-    BoardAhciNoDebounceDelay,
-    BoardAhciNoMsi,
+    BoardAhci = 1,
+    BoardAhci43BitDma = 2,
+    BoardAhciIgnIferr = 3,
+    BoardAhciNoDebounceDelay = 4,
+    BoardAhciNoMsi = 5,
 
-    BoardAhciPcsQuirk,
-    BoardAhciPcsQuirkNoDevslp,
-    BoardAhciPcsQuirkNoSntf,
-    BoardAhciYesFbs,
+    BoardAhciPcsQuirk = 6,
+    BoardAhciPcsQuirkNoDevslp = 7,
+    BoardAhciPcsQuirkNoSntf = 8,
+    BoardAhciYesFbs = 9,
 
-    BoardAhciAl,
-    BoardAhciAvn,
-    BoardAhciMcp65,
-    BoardAhciMcp77,
-    BoardAhciMcp89,
-    BoardAhciMv,
-    BoardAhciSb600,
-    BoardAhciSb700,
-    BoardAhciVt8251,
+    BoardAhciAl = 10,
+    BoardAhciAvn = 11,
+    BoardAhciMcp65 = 12,
+    BoardAhciMcp77 = 13,
+    BoardAhciMcp89 = 14,
+    BoardAhciMv = 15,
+    BoardAhciSb600 = 16,
+    BoardAhciSb700 = 17,
+    BoardAhciVt8251 = 18,
 
     BoardAhciMcpLinux = BoardAhciMcp65,
     BoardAhciMcp67 = BoardAhciMcp65,    
@@ -333,23 +334,43 @@ void AhciShutdownOne(P_PCI_DEVICE_OBJECT PDEV, PPCI_COMMON_CONFIG Config);
 void AhciIntelPcsQuirk(P_PCI_DEVICE_OBJECT PDEV,PPCI_COMMON_CONFIG Config, PAHCI_MEMORY_REGISTERS Hba);
 LOUSTATUS AhciVt8251HardReset(P_PCI_DEVICE_OBJECT PDEV,PPCI_COMMON_CONFIG Config, PAHCI_MEMORY_REGISTERS Hba);
 LOUSTATUS AhciAvnHardReset(P_PCI_DEVICE_OBJECT PDEV,PPCI_COMMON_CONFIG Config, PAHCI_MEMORY_REGISTERS Hba); 
-LOUSTATUS AhciMcp89Apple(P_PCI_DEVICE_OBJECT PDEV,PPCI_COMMON_CONFIG Config, PAHCI_MEMORY_REGISTERS Hba);
+void AhciMcp89Apple(P_PCI_DEVICE_OBJECT PDEV,PPCI_COMMON_CONFIG Config);
 LOUSTATUS AhciP5WdhHardReset(P_PCI_DEVICE_OBJECT PDEV,PPCI_COMMON_CONFIG Config, PAHCI_MEMORY_REGISTERS Hba);
 LOUSTATUS AhciPciDeviceRuntimeSuspend(P_PCI_DEVICE_OBJECT PDEV,PPCI_COMMON_CONFIG Config, PAHCI_MEMORY_REGISTERS Hba);
 LOUSTATUS AhciPciDeviceRuntimeResume(P_PCI_DEVICE_OBJECT PDEV,PPCI_COMMON_CONFIG Config, PAHCI_MEMORY_REGISTERS Hba);
-
 
 LOUSTATUS AhciInitOne(
     P_PCI_DEVICE_OBJECT PDEV, 
     PDRIVER_OBJECT DriverObject, 
     PUNICODE_STRING RegistryEntry
 ){
-
+    LouPrint("AhciInitOne()\n");
+    PAHCI_DRIVER_EXTENDED_OBJECT ExtendedObject = (PAHCI_DRIVER_EXTENDED_OBJECT)PDEV->DeviceExtendedObject;
+    uint64_t DeviceFlags = AhciPciTable[ExtendedObject->DeviceNumber].Flags;
+    LOUSTATUS Status = STATUS_SUCCESS;
+    //int nports, i;
+    //uint8_t AhciBar = AHCI_DEFAULT_BAR;
+    //PAHCI_MEMORY_REGISTERS Host;
+    PCI_COMMON_CONFIG Config;
     LouPrint("Initializing AHCI Device\n");
+    GetPciConfiguration(PDEV->bus, PDEV->slot, PDEV->func, &Config);
+    
+    if (Config.Header.VendorID == 0x11AB) {//let ahci out of the way for pata
+        return (LOUSTATUS)STATUS_NO_SUCH_DEVICE;
+    }
+
+    if (DeviceFlags == BoardAhciMcp89) {
+        AhciMcp89Apple(PDEV, &Config);
+    }
+    if (Config.Header.VendorID == 0x105A) {
+        LouPrint("AHCI DEVICE : PDC42819 can only drive SATA devices with this driver\n");
+    }
 
 
+
+    LouPrint("AhciInitOne() STATUS_SUCCESS\n");
     while(1);
-    return STATUS_SUCCESS;
+    return Status;
 }
 void AhciRemoveOne(P_PCI_DEVICE_OBJECT PDEV, PPCI_COMMON_CONFIG Config){
 
@@ -370,11 +391,33 @@ LOUSTATUS AhciAvnHardReset(P_PCI_DEVICE_OBJECT PDEV,PPCI_COMMON_CONFIG Config, P
 
     return STATUS_SUCCESS;
 }
-LOUSTATUS AhciMcp89Apple(P_PCI_DEVICE_OBJECT PDEV,PPCI_COMMON_CONFIG Config, PAHCI_MEMORY_REGISTERS Hba){
+//AhciMcp89Apple Initialization
+void AhciMcp89Apple(P_PCI_DEVICE_OBJECT PDEV,PPCI_COMMON_CONFIG Config){
+    uint32_t Tmp;
+    LouPrint("Ahci: Enableing MCP89 AHCI Mode\n");
 
+    Tmp = LouKeReadPciUint32(PDEV, 0xF8);
+    Tmp |= (1 << 0x1b);
+    LouKeWritePciUint32(PDEV, 0xF8, Tmp);
 
-    return STATUS_SUCCESS;
+    Tmp = LouKeReadPciUint32(PDEV, 0x54C);
+    Tmp |= (1 << 0x0C);
+    LouKeWritePciUint32(PDEV, 0x54C, Tmp);
+
+    Tmp = LouKeReadPciUint32(PDEV, 0x4A4);
+    Tmp &= 0xFF;
+    Tmp |= 0x01060100;
+    LouKeWritePciUint32(PDEV, 0x4A4, Tmp);
+
+    Tmp = LouKeReadPciUint32(PDEV, 0x54C);
+    Tmp |= ~(1 << 0x0C);
+    LouKeWritePciUint32(PDEV, 0x54C, Tmp);
+
+    Tmp = LouKeReadPciUint32(PDEV, 0xF8);
+    Tmp |= ~(1 << 0x1b);
+    LouKeWritePciUint32(PDEV, 0xF8, Tmp);
 }
+
 LOUSTATUS AhciP5WdhHardReset(P_PCI_DEVICE_OBJECT PDEV,PPCI_COMMON_CONFIG Config, PAHCI_MEMORY_REGISTERS Hba){
 
 
@@ -415,6 +458,8 @@ LOUDDK_API_ENTRY
 LOUSTATUS
 DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryEntry) {
     LouPrint("Ahci Driver Entry()\n");
+    LouPrint("%s : %s",DRIVER_NAME, DRIVER_VERSION);
+
     DriverObject->PciScanBus = AhciPciScan;
     LouPrint("Ahci Driver Entry() STATUS_SUCCESS\n");
     return STATUS_SUCCESS;
