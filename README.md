@@ -27,6 +27,3 @@ email me directly at (tgrenier.815@aol.com) for me to explain the issue further
 and to explain why the binaries are being blocked based on the emails i have from
 microsoft : Sorry For The Inconvienence
     -Tyler Grenier
-
-ATTENTION: Due To Hostility ReactOS Will Not Be Allowed To Use My Source
-    
