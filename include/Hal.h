@@ -51,6 +51,11 @@ KERNEL_EXPORT uint64_t LouKeHalLinuxPciCheckForCompatibleConfiguration(
 KERNEL_EXPORT void GetPciConfiguration(ULONG SystemIoBusNumber,ULONG SlotNumber,ULONG Function,PPCI_COMMON_CONFIG ConfigBuffer);
 KERNEL_EXPORT LOUSTATUS LouKeHalEnablePciDevice(P_PCI_DEVICE_OBJECT PDEV);
 
+KERNEL_EXPORT void* LouKeHalGetPciVirtualBaseAddress(
+    PPCI_COMMON_CONFIG Config,
+    uint8_t BarNumber
+);
+
 #endif
 
 #pragma pack(pop)

@@ -95,9 +95,9 @@ int LouPrint(char* format, ...) {
                     break;
                 }
                 case 'h': {
-                    int64_t num = va_arg(args, int32_t);
+                    int64_t num = va_arg(args, uint64_t);
                     char hexString[21];
-                    uintToHexString((uint32_t)num, hexString);
+                    uintToHexString((uint64_t)num, hexString);
                     char* p = hexString;
                     while (*p  != '\0') {
                         VgaPutCharecterRgb(*p++, DebugWindow, 0, 255, 0);

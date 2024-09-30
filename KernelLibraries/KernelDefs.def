@@ -87,3 +87,4 @@ EXPORTS
     LouKeWritePciUint16
     LouKeWritePciUint32
     LouKeHalEnablePciDevice
+    LouKeHalGetPciVirtualBaseAddress

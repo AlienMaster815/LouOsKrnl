@@ -877,7 +877,7 @@ typedef struct  _AHCI_ADAPTER_EXTENSION{
 #define EM_MSG_LED_PMP_PORT             0xF0000
 #define EM_MSG_LED_VALUE                0xFFFF0000
 #define EM_MSG_LED_VALUE_ACTIVITY       0x70000
-#define EM_MSG_LED_ VALUE_OFF           0xFFFF0000
+#define EM_MSG_LED_VALUE_OFF            0xFFFF0000
 #define EM_MSG_LED_VALUE_ON             0x10000
 
 #define SATA_PMP_MAX_PORTS 15
@@ -1033,13 +1033,18 @@ typedef struct  _AHCI_ADAPTER_EXTENSION{
 #define AHCI_HFLAG_NO_DEVSLP		 (1 << 17)
 #define AHCI_HFLAG_NO_FBS		 (1 << 18)
 #define AHCI_HFLAG_MULTI_MSI		 (1 << 20)
-#define  AHCI_HFLAG_WAKE_BEFORE_STOP	 (1 << 22)
+#define AHCI_HFLAG_WAKE_BEFORE_STOP	 (1 << 22)
 #define AHCI_HFLAG_YES_ALPM		 (1 << 23) 
 #define AHCI_HFLAG_NO_WRITE_TO_RO	 (1 << 24)
 #define AHCI_HFLAG_SUSPEND_PHYS		 (1 << 25) 						     
 #define AHCI_HFLAG_NO_SXS		 (1 << 26) 
 #define AHCI_HFLAG_43BIT_ONLY		 (1 << 27) 
 #define AHCI_HFLAG_INTEL_PCS_QUIRK	 (1 << 28) 
+#define ATA_FLAG_SATA (1 << 0)
+#define ATA_FLAG_PIO_DMA (1 << 1) 
+#define ATA_FLAG_ACPI_SATA (1 << 2)
+#define ATA_FLAG_AN (1 << 3) 
+#define ATA_FLAG_NO_DIPM (1 << 4)
 #define AHCI_FLAG_COMMON		 ATA_FLAG_SATA | ATA_FLAG_PIO_DMA | \
 					          ATA_FLAG_ACPI_SATA | ATA_FLAG_AN
 #define ICH_MAP				 0x90 
@@ -1166,11 +1171,16 @@ UNUSED static uintptr_t AhciPmpRetrySrstOperations;
 //void AhciErrorHandler(uintptr_t AtaPort);
 //void AhciHandlePortInterrupt(uintptr_t AtaHost, uint32_t IrqMask);
 
+#define ATA_PIO4 4
+#define ATA_UDMA6 6
+
 typedef struct  _AHCI_PORT_INFO{
-    uint64_t flags;
-    uint64_t pio_mask;
-    uint64_t udma_mask;
-    uint64_t OperationFlags;
+    uint64_t HFlags;
+    uint64_t Flags;
+    uint64_t PIoMask;
+    uint64_t UDmaMask;
+    uint64_t JITFlags; 
+    PATA_PORT_OPERATIONS_TABLE AhciOperations;
 }AHCI_PORT_INFO, * PAHCI_PORT_INFO; 
 
 
