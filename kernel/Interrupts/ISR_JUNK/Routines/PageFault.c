@@ -37,13 +37,13 @@ void PageFault() {
         if(PAddress != 0x00){
             //PAddress = (uint64_t)LouMalloc(KILOBYTE_PAGE);
             LouPrint("Physicall Address Is:%h\n", PAddress);
-            LouKeMapcontinuousMemmoryBlock(PAddress, VAddress, KILOBYTE_PAGE, KERNEL_PAGE_WRITE_PRESENT);
+            LouKeMapContinuousMemmoryBlock(PAddress, VAddress, KILOBYTE_PAGE, KERNEL_PAGE_WRITE_PRESENT);
         }
         else{
             LouPrint("Allocateing New Page\n");
             PAddress = (uint64_t)LouMalloc(KILOBYTE_PAGE);
             //LouKeMapcontinuousMemmoryBlock(PAddress, VAddress, KILOBYTE_PAGE, KERNEL_PAGE_WRITE_PRESENT);
-            LouKeMapcontinuousMemmoryBlock(VAddress, VAddress, KILOBYTE_PAGE, KERNEL_PAGE_WRITE_PRESENT);
+            LouKeMapContinuousMemmoryBlock(VAddress, VAddress, KILOBYTE_PAGE, KERNEL_PAGE_WRITE_PRESENT);
         }
     }
 

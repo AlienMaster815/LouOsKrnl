@@ -48,7 +48,7 @@ VOID WRITE_REGISTER_USHORT(volatile PUSHORT Register, USHORT Value){
     *Register = Value;
 }
 
-ULONG READ_REGISTER_ULONG(volatile PULONG Register){
+LOUDDK_API_ENTRY ULONG READ_REGISTER_ULONG(volatile PULONG Register){
     return *Register;
 }
 

@@ -46,7 +46,7 @@ uint64_t LouKeVMemmoryGetSize(uint64_t VAddress){
     return 0x00;
 }
 
-void LouKeMapcontinuousMemmoryBlock(
+void LouKeMapContinuousMemmoryBlock(
     uint64_t PAddress, 
     uint64_t VAddress,
     uint64_t size, 
@@ -102,7 +102,7 @@ void LouKeMallocVMmIO(
 
     uint64_t VAddress = (uint64_t)LouVMalloc(size);
 
-    LouKeMapcontinuousMemmoryBlock(
+    LouKeMapContinuousMemmoryBlock(
         PAddress,
         VAddress,
         size,
@@ -142,7 +142,7 @@ void* LouKeAllocateUncachedVMemoryEx(
     void* AllocatedPMemory = LouMallocEx(sizeof(NumberOfBytes), Alignment);
     void* AllocatedVMemory = LouVMallocEx(sizeof(NumberOfBytes), Alignment);
 
-    LouKeMapcontinuousMemmoryBlock((uint64_t)AllocatedPMemory, (uint64_t)AllocatedVMemory, NumberOfBytes, KERNEL_PAGE_WRITE_PRESENT | CACHE_DISABLED_PAGE);
+    LouKeMapContinuousMemmoryBlock((uint64_t)AllocatedPMemory, (uint64_t)AllocatedVMemory, NumberOfBytes, KERNEL_PAGE_WRITE_PRESENT | CACHE_DISABLED_PAGE);
 
     return AllocatedVMemory;
 }

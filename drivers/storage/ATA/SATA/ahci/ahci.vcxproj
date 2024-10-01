@@ -117,6 +117,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\ahci.cpp" />
+    <ClCompile Include="..\LibAhci.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ahci.h" />

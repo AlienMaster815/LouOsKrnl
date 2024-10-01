@@ -56,6 +56,18 @@ KERNEL_EXPORT void* LouKeHalGetPciVirtualBaseAddress(
     uint8_t BarNumber
 );
 
+KERNEL_EXPORT PPCI_CONTEXT LouKeHalPciSaveContext(
+    P_PCI_DEVICE_OBJECT PDEV
+);
+
+KERNEL_EXPORT void LouKeHalPciRestoreContext(
+    PPCI_CONTEXT PciContext
+);
+
+KERNEL_EXPORT void LouKeHalPciClearMaster(
+    P_PCI_DEVICE_OBJECT PDEV
+);
+
 #endif
 
 #pragma pack(pop)

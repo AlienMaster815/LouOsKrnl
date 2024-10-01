@@ -1040,13 +1040,7 @@ typedef struct  _AHCI_ADAPTER_EXTENSION{
 #define AHCI_HFLAG_NO_SXS		 (1 << 26) 
 #define AHCI_HFLAG_43BIT_ONLY		 (1 << 27) 
 #define AHCI_HFLAG_INTEL_PCS_QUIRK	 (1 << 28) 
-#define ATA_FLAG_SATA (1 << 0)
-#define ATA_FLAG_PIO_DMA (1 << 1) 
-#define ATA_FLAG_ACPI_SATA (1 << 2)
-#define ATA_FLAG_AN (1 << 3) 
-#define ATA_FLAG_NO_DIPM (1 << 4)
-#define AHCI_FLAG_COMMON		 ATA_FLAG_SATA | ATA_FLAG_PIO_DMA | \
-					          ATA_FLAG_ACPI_SATA | ATA_FLAG_AN
+
 #define ICH_MAP				 0x90 
 #define PCS_6				 0x92
 #define PCS_7				 0x94 
@@ -1067,7 +1061,20 @@ typedef struct  _AHCI_ADAPTER_EXTENSION{
 #define EM_MSG_TYPE_SES2	 (1 << 2)
 #define EM_MSG_TYPE_SGPIO	 (1 << 3)
 
+#define ATA_FLAG_SATA (1 << 0)
+#define ATA_FLAG_PIO_DMA (1 << 1) 
+#define ATA_FLAG_ACPI_SATA (1 << 2)
+#define ATA_FLAG_AN (1 << 3) 
+#define ATA_FLAG_NO_DIPM (1 << 4)
+#define ATA_FLAG_NCQ (1 << 5)
+#define ATA_FLAG_FPDMA_AA (1 << 6) 
+#define ATA_FLAG_FPDMA_AUX (1 << 7)
+#define ATA_FLAG_PMP (1 << 8)
+#define ATA_FLAG_EM (1 << 9)
+#define ATA_FLAG_SW_ACTIVITY (1 << 10)
 
+#define AHCI_FLAG_COMMON		 ATA_FLAG_SATA | ATA_FLAG_PIO_DMA | \
+					          ATA_FLAG_ACPI_SATA | ATA_FLAG_AN
 
 typedef struct  _AHCI_SG{
     uint32_t Address;
@@ -1164,7 +1171,6 @@ UNUSED static uintptr_t AhciPmpRetrySrstOperations;
 //int AhciCheckReady(uintptr_t AtaLink);
 //int AhciKickEngine(uintptr_t AtaPort);
 //int AhciPortResume(uintptr_t AtaPort);
-//void AhciSetEmMessage(PAHCI_HOST_PRIVATE HostPrivate, uintptr_t AtaPortInfo);
 //int AhciResetEm(uintptr_t AtaHost);
 //void AhciPrintInfo(uintptr_t AhciHost);
 //int AhciHostActive(uintptr_t AtaHost, uintptr_t SHT);
@@ -1184,11 +1190,29 @@ typedef struct  _AHCI_PORT_INFO{
 }AHCI_PORT_INFO, * PAHCI_PORT_INFO; 
 
 
+typedef struct _AHCI_DRIVER_EXTENDED_OBJECT {
+    uint64_t DeviceNumber;
+    AHCI_PORT_INFO DevicePortInfo;
+    PCI_COMMON_CONFIG SavedConfig;
+    PAHCI_MEMORY_REGISTERS Host;
+    PPCI_CONTEXT HandOffPciContext;
+    uint32_t StoredEmLoc;
+    uint32_t EmLocBufferSize;
+    uint32_t EmMessageType;
+}AHCI_DRIVER_EXTENDED_OBJECT, * PAHCI_DRIVER_EXTENDED_OBJECT;
+
 
 static inline int AhciNrPorts(uint32_t cap){
 	return (cap & 0x1f) + 1;
 }
 
+void AhciSetEmMessage(PAHCI_DRIVER_EXTENDED_OBJECT HostPrivate, PAHCI_PORT_INFO AtaPortInfo);
+
+PATA_HOST AhciHostAllocatePortInfo(
+    P_PCI_DEVICE_OBJECT PDEV,
+    PAHCI_DRIVER_EXTENDED_OBJECT ExtendedObject,
+    int NumberOfPorts
+);
 
 #pragma pack(pop)
 #endif//_AHCI_H_

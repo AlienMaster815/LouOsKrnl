@@ -66,7 +66,32 @@ typedef struct __attribute__((packed)) _SMBIOS_LOOKUP{
 	uintptr_t SMBIOS_TabeStart;
 }SMBIOS_LOOKUP;
 
-static SMBIOS_LOOKUP* SMBIOS_MASTER = 0x00;
+typedef struct __attribute__((packed)) _SMBIOSEntryPoint{
+    char anchor[4];              // "_SM_"
+    uint8_t checksum;
+    uint8_t length;
+    uint8_t major_version;
+    uint8_t minor_version;
+    uint16_t max_structure_size;
+    uint8_t revision;
+    char formatted_area[5];
+    char intermediate_anchor[5];  // "_DMI_"
+    uint8_t intermediate_checksum;
+    uint16_t table_length;
+    uint32_t table_address;       // Address of the actual SMBIOS table
+    uint16_t structure_count;
+    uint8_t bcd_revision;
+} SMBIOSEntryPoint, * PSMBIOSEntryPoint;
+
+// SMBIOS Structure Header
+typedef struct __attribute__((packed)) {
+    uint8_t  Type;          // Structure Type (e.g., 0 for BIOS Information, 1 for System Information)
+    uint8_t  Length;        // Length of the formatted area (not including the string-set)
+    uint16_t Handle;        // Handle, a unique identifier for the structure
+    // Followed by formatted area, then unformatted string area
+} SMBIOSGenericHeader, * PSMBIOSGenericHeader;
+
+static PSMBIOSGenericHeader SMBIOS_MASTER = 0x00;
 
 static struct multiboot_tag_apm* APM_MASTER = 0x00;
 
@@ -74,9 +99,7 @@ LOUSTATUS LouKeSetEfiTable(uint64_t Address) {
     struct multiboot_tag_efi64* TableHeader = (struct multiboot_tag_efi64*)Address;
     
     // Cast the 32-bit pointer to a 64-bit pointer
-	
 	EnforceSystemMemoryMap((uint64_t)(uintptr_t)TableHeader->pointer, TableHeader->size);
-    LouMapAddress(EFI_TABLE, EFI_TABLE, KERNEL_PAGE_WRITE_PRESENT, KILOBYTE_PAGE);
 	EFI_TABLE = (uint64_t)(uintptr_t)TableHeader->pointer;
 
     return STATUS_SUCCESS;  // Assuming LOUSTATUS_SUCCESS is your success code
@@ -84,7 +107,7 @@ LOUSTATUS LouKeSetEfiTable(uint64_t Address) {
 
 LOUSTATUS LouKeSetSmbios(uintptr_t SMBIOS) {
 
-	SMBIOS_MASTER = (SMBIOS_LOOKUP*)SMBIOS;
+	SMBIOS_MASTER = (PSMBIOSGenericHeader)SMBIOS;
 	EnforceSystemMemoryMap(SMBIOS, sizeof(struct multiboot_tag_smbios));
 	//LouPrint("SMBIOS Address Is:%d\n", SMBIOS_MASTER);
 	return LOUSTATUS_GOOD;
@@ -137,7 +160,6 @@ LOUSTATUS LouKeGetSystemFirmwareTableProviderSignature(
 			}
 		}
 		else {
-
 
 			PRSDP_Descriptor2 Rsdp2 = (PRSDP_Descriptor2)Rsdp;
 
@@ -295,23 +317,32 @@ typedef struct {
 } EFI_TABLE_HEADER;
 
 typedef struct {
-    uint64_t Signature;
-    uint32_t Revision;
-    uint32_t HeaderSize;
-    uint32_t CRC32;
-    uint32_t Reserved;
-    string FirmwareVendor;
-    uint32_t FirmwareRevision;
-    void *ConsoleInHandle;
-    void *ConIn;
-    void *ConsoleOutHandle;
-    void *ConOut;
-    void *StandardErrorHandle;
-    void *StdErr;
-    void *RuntimeServices;
-    uint64_t NumberOfTableEntries;
-    void *ConfigurationTable;  // This is an array of EFI_CONFIGURATION_TABLE
+    uint64_t Signature;               // Must be 0x5453595320494249 ("IBI SYST" in ASCII)
+    uint32_t Revision;                // UEFI Specification Revision
+    uint32_t HeaderSize;              // Size of the EFI_SYSTEM_TABLE structure
+    uint32_t CRC32;                   // CRC32 checksum of the entire table
+    uint32_t Reserved;                // Reserved field (must be 0)
+
+    // Firmware information
+    uint16_t* FirmwareVendor;         // Wide string (UTF-16) pointer to the vendor name
+    uint32_t FirmwareRevision;        // Firmware revision
+
+    // Handles to input/output/error devices
+    void* ConsoleInHandle;            // Handle to the console input device
+    void* ConIn;                      // Pointer to EFI_SIMPLE_TEXT_INPUT_PROTOCOL
+    void* ConsoleOutHandle;           // Handle to the console output device
+    void* ConOut;                     // Pointer to EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL
+    void* StandardErrorHandle;        // Handle to the standard error device
+    void* StdErr;                     // Pointer to EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL
+
+    // EFI Runtime Services table
+    void* RuntimeServices;            // Pointer to EFI_RUNTIME_SERVICES
+
+    // Configuration Table
+    uint64_t NumberOfTableEntries;    // Number of entries in the Configuration Table
+    void* ConfigurationTable;         // Pointer to array of EFI_CONFIGURATION_TABLE structures
 } EFI_SYSTEM_TABLE;
+
 
 typedef struct {
     uint32_t Data1;
@@ -370,9 +401,9 @@ typedef struct __attribute__((packed)) _EFI_MEMORY_DESCRIPTOR{
     uint64_t Attribute;
 } EFI_MEMORY_DESCRIPTOR;
 
+static EFI_GUID SMBIOS_GUID = { 0xEB9D2D31, 0x2D88, 0x11D3, { 0x9A, 0x16, 0x00, 0x90, 0x27, 0x3F, 0xC1, 0x4D } };
 
-
-void LouKeMapEfiMemory(){
+bool LouKeMapEfiMemory(){
 
 	if(EfiMemMap){
 		//LouPrint("We Got Somthing\n");
@@ -387,60 +418,64 @@ void LouKeMapEfiMemory(){
 			
 			Desc = (EFI_MEMORY_DESCRIPTOR*)(EfiMemMap + i);
 			switch(Desc->Type){
-
 				case(0):
-					EnforceSystemMemoryMap(Desc->PhysicalStart, 4096 * Desc->NumberOfPages);
-					EnforceSystemMemoryMap(Desc->VirtualStart, 4096 * Desc->NumberOfPages);
-					continue;
 				case(3):
-					EnforceSystemMemoryMap(Desc->PhysicalStart, 4096 * Desc->NumberOfPages);
-					EnforceSystemMemoryMap(Desc->VirtualStart, 4096 * Desc->NumberOfPages);
-					continue;
 				case(4):
-					EnforceSystemMemoryMap(Desc->PhysicalStart, 4096 * Desc->NumberOfPages);
-					EnforceSystemMemoryMap(Desc->VirtualStart, 4096 * Desc->NumberOfPages);
-					continue;
 				case(5):
-					EnforceSystemMemoryMap(Desc->PhysicalStart, 4096 * Desc->NumberOfPages);
-					EnforceSystemMemoryMap(Desc->VirtualStart, 4096 * Desc->NumberOfPages);
-					continue;
 				case(6):
-					EnforceSystemMemoryMap(Desc->PhysicalStart, 4096 * Desc->NumberOfPages);
-					EnforceSystemMemoryMap(Desc->VirtualStart, 4096 * Desc->NumberOfPages);
-					continue;
 				case(8):
-					EnforceSystemMemoryMap(Desc->PhysicalStart, 4096 * Desc->NumberOfPages);
-					EnforceSystemMemoryMap(Desc->VirtualStart, 4096 * Desc->NumberOfPages);
-					continue;
 				case(9):
-					EnforceSystemMemoryMap(Desc->PhysicalStart, 4096 * Desc->NumberOfPages);
-					EnforceSystemMemoryMap(Desc->VirtualStart, 4096 * Desc->NumberOfPages);
-					continue;
 				case(10):
-					EnforceSystemMemoryMap(Desc->PhysicalStart, 4096 * Desc->NumberOfPages);
-					EnforceSystemMemoryMap(Desc->VirtualStart, 4096 * Desc->NumberOfPages);
-					continue;
 				case(11):
-					EnforceSystemMemoryMap(Desc->PhysicalStart, 4096 * Desc->NumberOfPages);
-					EnforceSystemMemoryMap(Desc->VirtualStart, 4096 * Desc->NumberOfPages);
-					continue;
 				case(12):
-					EnforceSystemMemoryMap(Desc->PhysicalStart, 4096 * Desc->NumberOfPages);
-					EnforceSystemMemoryMap(Desc->VirtualStart, 4096 * Desc->NumberOfPages);
-					continue;
 				case(13):
-					EnforceSystemMemoryMap(Desc->PhysicalStart, 4096 * Desc->NumberOfPages);
-					EnforceSystemMemoryMap(Desc->VirtualStart, 4096 * Desc->NumberOfPages);
-					continue;
 				case(14):
 					EnforceSystemMemoryMap(Desc->PhysicalStart, 4096 * Desc->NumberOfPages);
 					EnforceSystemMemoryMap(Desc->VirtualStart, 4096 * Desc->NumberOfPages);
-					continue;
 				default: continue;
 			}
 		}
+		LouMapAddress(EFI_TABLE, EFI_TABLE, KERNEL_PAGE_WRITE_PRESENT, KILOBYTE_PAGE);
+		UNUSED EFI_SYSTEM_TABLE* EfiSystemTable = (EFI_SYSTEM_TABLE*)EFI_TABLE;
+		UNUSED EFI_CONFIGURATION_TABLE* configTable = (EFI_CONFIGURATION_TABLE*)EfiSystemTable->ConfigurationTable;
+
+		for (uint64_t i = 0; i < EfiSystemTable->NumberOfTableEntries; i++) {
+    		EFI_GUID tableGuid = configTable[i].VendorGuid;
+    
+    		if (memcmp(&tableGuid, &SMBIOS_GUID, sizeof(EFI_GUID)) == 0) {
+        		//SMBIOS table found, now you can access it
+        		SMBIOS_MASTER = configTable[i].VendorTable;
+    		}
+		}
+		return true;
+	}
+	return false;
+}
+#define BIOS_START 0xF0000
+#define BIOS_END   0xFFFFF
+
+void LouKeHandleSystemIsBios(){	
+
+	LouKeMapContinuousMemmoryBlock(BIOS_START, BIOS_START, (BIOS_END - BIOS_START), PRESENT_PAGE);
+
+	//Identity Map Bios To Kernel Read Only
+	if(!SMBIOS_MASTER){
+		for (uint32_t* addr = (uint32_t*)BIOS_START; (uintptr_t)addr <= BIOS_END; addr += 16) {
+        	if (*addr == 0x5F4D535F) {  // "_SM_" signature
+            	while(1);
+				PSMBIOSEntryPoint smbios_entry = (PSMBIOSEntryPoint)addr;
+            	// Validate checksum
+            	uint8_t sum = 0;
+            	for (int i = 0; i < smbios_entry->length; i++) {
+                	sum += ((uint8_t*)smbios_entry)[i];
+            	}
+            	if (sum == 0) {
+                	SMBIOS_MASTER = (PSMBIOSGenericHeader)(uintptr_t)smbios_entry->table_address;  
+					return;// Valid SMBIOS entry point found
+            	}
+        	}
+    	}
 
 	}
 
-	//LouPrint("Mapping Memory\n");
 }

@@ -268,9 +268,10 @@ void User_Mode_Initialization(){
 void read_rtc();
 void ManualContextSwitch(uint64_t Context1, uint64_t Context_2);
 void LouKeMapPciMemory();
-void LouKeMapEfiMemory();
+bool LouKeMapEfiMemory();
 void ListAllocatedPorts();
 void ScanTheRestOfHarware();
+void LouKeHandleSystemIsBios();
 
 KERNEL_ENTRY Lou_kernel_start(
     uint32_t MBOOT
@@ -278,7 +279,9 @@ KERNEL_ENTRY Lou_kernel_start(
     struct multiboot_tag* mboot = (struct multiboot_tag*)(uintptr_t)(MBOOT + 8);
     ParseMBootTags(mboot);
     //vga set for debug
-    LouKeMapEfiMemory();
+    if(!LouKeMapEfiMemory()){
+        LouKeHandleSystemIsBios();
+    }
     LouKeMapPciMemory();
     setup_vga_systems();
 
@@ -301,9 +304,6 @@ KERNEL_ENTRY Lou_kernel_start(
     //ScanTheRestOfHarware();
 
     //User_Mode_Initialization();
-
-    //ListUsedAddresses();
-    //ListAllocatedPorts();
 
 
     LouPrint("Lousine Kernel Video Mode:%dx%d\n", GetScreenBufferWidth(), GetScreenBufferHeight());

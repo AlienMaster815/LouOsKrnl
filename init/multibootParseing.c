@@ -66,8 +66,9 @@ void ParseMBootTags(struct multiboot_tag* MBOOT) {
             break;
         }
         case (MULTIBOOT_TAG_TYPE_FRAMEBUFFER):{
-            struct multiboot_tag_framebuffer* frame = (struct multiboot_tag_framebuffer*)MBOOT;
-            InitializeFrameBuffer(frame);
+            //struct multiboot_tag_framebuffer* frame = (struct multiboot_tag_framebuffer*)MBOOT;
+            //InitializeFrameBuffer(frame);
+            break;
         }
         case(MULTIBOOT_TAG_TYPE_EFI_MMAP):{
             SetEfiMap((uint64_t)MBOOT);

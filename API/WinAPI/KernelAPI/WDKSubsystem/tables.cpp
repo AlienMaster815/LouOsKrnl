@@ -16,7 +16,7 @@ typedef struct _TABLE_ENTRY{
 #define PRE_LOADED_UNKOWN_FUNCTIONS 12
 #define PRE_LOADED_WDFLDR_FUNCTIONS 5
 #define PRE_LOADED_STORPORT_FUNCTIONS 9
-#define PRE_LOADED_LOUOSKRNL_FUNCTIONS 87
+#define PRE_LOADED_LOUOSKRNL_FUNCTIONS 91
 
 static uint64_t LouOsKrnlFunctionAddresses[PRE_LOADED_LOUOSKRNL_FUNCTIONS];
 static FUNCTION_NAME LouOsKrnlFunctionNames[PRE_LOADED_LOUOSKRNL_FUNCTIONS];
@@ -76,7 +76,7 @@ void InitializeLousineKernelTables(){
     ImportTables[4].FunctionName[11] = "LouKeMapPool";
     ImportTables[4].FunctionName[12] = "RequestPhysicalAddress";
     ImportTables[4].FunctionName[13] = "LouKeVMemmoryGetSize";
-    ImportTables[4].FunctionName[14] = "LouKeMapcontinuousMemmoryBlock";
+    ImportTables[4].FunctionName[14] = "LouKeMapContinuousMemmoryBlock";
     ImportTables[4].FunctionName[15] = "LouVMalloc";
     ImportTables[4].FunctionName[16] = "LouVMallocEx";
     ImportTables[4].FunctionName[17] = "LouKeAllocateUncachedVMemoryEx";
@@ -150,6 +150,10 @@ void InitializeLousineKernelTables(){
     ImportTables[4].FunctionName[84] = "LouKeWritePciUint32";
     ImportTables[4].FunctionName[85] = "LouKeHalEnablePciDevice";
     ImportTables[4].FunctionName[86] = "LouKeHalGetPciVirtualBaseAddress";
+    ImportTables[4].FunctionName[87] = "LouKeHalPciSaveContext";
+    ImportTables[4].FunctionName[88] = "LouKeHalPciRestoreContext";
+    ImportTables[4].FunctionName[89] = "LouKeHalPciClearMaster";
+    ImportTables[4].FunctionName[90] = "READ_REGISTER_ULONG";
 
     ImportTables[4].VirtualAddress = LouOsKrnlFunctionAddresses;
 
@@ -167,7 +171,7 @@ void InitializeLousineKernelTables(){
     ImportTables[4].VirtualAddress[11] = (uint64_t)LouKeMapPool;
     ImportTables[4].VirtualAddress[12] = (uint64_t)RequestPhysicalAddress;
     ImportTables[4].VirtualAddress[13] = (uint64_t)LouKeVMemmoryGetSize;
-    ImportTables[4].VirtualAddress[14] = (uint64_t)LouKeMapcontinuousMemmoryBlock;
+    ImportTables[4].VirtualAddress[14] = (uint64_t)LouKeMapContinuousMemmoryBlock;
     ImportTables[4].VirtualAddress[15] = (uint64_t)LouVMalloc;
     ImportTables[4].VirtualAddress[16] = (uint64_t)LouVMallocEx;
     ImportTables[4].VirtualAddress[17] = (uint64_t)LouKeAllocateUncachedVMemoryEx;
@@ -230,7 +234,6 @@ void InitializeLousineKernelTables(){
     ImportTables[4].VirtualAddress[74] = (uint64_t)LouMalloc;
     ImportTables[4].VirtualAddress[75] = (uint64_t)GetPciConfiguration;
     ImportTables[4].VirtualAddress[76] = (uint64_t)LouKeHalLinuxPciCheckForCompatibleConfiguration;
-
     ImportTables[4].VirtualAddress[77] = (uint64_t)pci_read;
     ImportTables[4].VirtualAddress[78] = (uint64_t)write_pci;
     ImportTables[4].VirtualAddress[79] = (uint64_t)LouKeReadPciUint8;
@@ -241,6 +244,10 @@ void InitializeLousineKernelTables(){
     ImportTables[4].VirtualAddress[84] = (uint64_t)LouKeWritePciUint32;
     ImportTables[4].VirtualAddress[85] = (uint64_t)LouKeHalEnablePciDevice;
     ImportTables[4].VirtualAddress[86] = (uint64_t)LouKeHalGetPciVirtualBaseAddress;
+    ImportTables[4].VirtualAddress[87] = (uint64_t)LouKeHalPciSaveContext;
+    ImportTables[4].VirtualAddress[88] = (uint64_t)LouKeHalPciRestoreContext;
+    ImportTables[4].VirtualAddress[89] = (uint64_t)LouKeHalPciClearMaster;
+    ImportTables[4].VirtualAddress[90] = (uint64_t)READ_REGISTER_ULONG;
 
 }
 

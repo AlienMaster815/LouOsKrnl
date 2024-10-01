@@ -282,9 +282,9 @@ PHANDLE LoadKernelModule(uintptr_t Start) {
             relocationTableSize
         );
 
-        LouPrint("Program Base:%h\n", allocatedModuleVirtualAddress);
+        //LouPrint("Program Base:%h\n", allocatedModuleVirtualAddress);
         // Print function address debug info
-        LouPrint("Entry Point Address:%h\n", (uint64_t)PE64Header->addressOfEntryPoint + allocatedModuleVirtualAddress);
+        //LouPrint("Entry Point Address:%h\n", (uint64_t)PE64Header->addressOfEntryPoint + allocatedModuleVirtualAddress);
         
         return (PHANDLE)((uint64_t)PE64Header->addressOfEntryPoint + allocatedModuleVirtualAddress);
     } else {

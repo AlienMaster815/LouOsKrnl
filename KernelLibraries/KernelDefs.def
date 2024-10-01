@@ -15,7 +15,7 @@ EXPORTS
     LouKeMapPool
     RequestPhysicalAddress
     LouKeVMemmoryGetSize
-    LouKeMapcontinuousMemmoryBlock
+    LouKeMapContinuousMemmoryBlock
     LouVMalloc
     LouVMallocEx
 	LouKeAllocateUncachedVMemoryEx
@@ -88,3 +88,7 @@ EXPORTS
     LouKeWritePciUint32
     LouKeHalEnablePciDevice
     LouKeHalGetPciVirtualBaseAddress
+    LouKeHalPciSaveContext
+    LouKeHalPciRestoreContext
+    LouKeHalPciClearMaster
+    READ_REGISTER_ULONG

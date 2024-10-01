@@ -32,14 +32,7 @@
  */
 
 //Porting Done By Tyler Grenier
-#pragma pack(push, 1)
-typedef struct _AHCI_DRIVER_EXTENDED_OBJECT{
-    uint64_t DeviceNumber;
-    AHCI_PORT_INFO DevicePortInfo;
-    PCI_COMMON_CONFIG SavedConfig;
-    PAHCI_MEMORY_REGISTERS Host;
-}AHCI_DRIVER_EXTENDED_OBJECT, * PAHCI_DRIVER_EXTENDED_OBJECT;
-#pragma pack(pop)
+
 
 enum{
     AHCI_PCI_BAR_STA2x11    = 0,
@@ -499,11 +492,12 @@ LOUSTATUS AhciInitOne(
     PAHCI_DRIVER_EXTENDED_OBJECT ExtendedObject = (PAHCI_DRIVER_EXTENDED_OBJECT)PDEV->DeviceExtendedObject;
     uint64_t DeviceFlags = AhciPciTable[ExtendedObject->DeviceNumber].Flags;
     LOUSTATUS Status = STATUS_SUCCESS;
-    //int nports, i;
+    int nports;// , i;
     uint8_t AhciBar = AHCI_DEFAULT_BAR;
     PCI_COMMON_CONFIG Config;
     LouPrint("Initializing AHCI Device\n");
     GetPciConfiguration(PDEV->bus, PDEV->slot, PDEV->func, &Config);
+    PATA_HOST AtaHost;
 
     if (Config.Header.VendorID == 0x11AB) {//let ahci out of the way for pata
         return (LOUSTATUS)STATUS_NO_SUCH_DEVICE;
@@ -573,6 +567,28 @@ LOUSTATUS AhciInitOne(
     ExtendedObject->Host = (PAHCI_MEMORY_REGISTERS)LouKeHalGetPciVirtualBaseAddress(&Config, AhciBar);
 
     LouPrint("Host Is:%h\n", ExtendedObject->Host);
+
+    ExtendedObject->HandOffPciContext = LouKeHalPciSaveContext(PDEV);
+    PAHCI_MEMORY_REGISTERS Host = ExtendedObject->Host;
+    //lets rock and roll
+    if (Host->Capabilities & HOST_CAP_NCQ) {
+        ExtendedObject->DevicePortInfo.Flags |= ATA_FLAG_NCQ;
+        if (ExtendedObject->DevicePortInfo.HFlags & AHCI_HFLAG_NO_FPDMA_AA) {
+            ExtendedObject->DevicePortInfo.Flags |= ATA_FLAG_FPDMA_AA;
+        }
+
+        ExtendedObject->DevicePortInfo.Flags |= ATA_FLAG_FPDMA_AUX;
+    }
+
+    if (Host->Capabilities & HOST_CAP_PMP) {
+        ExtendedObject->DevicePortInfo.Flags |= ATA_FLAG_PMP;
+    }
+
+    AhciSetEmMessage(ExtendedObject, &ExtendedObject->DevicePortInfo);
+
+    nports = ((Host->Capabilities >> 8) & 0x1F) + 1;
+
+    AtaHost = AhciHostAllocatePortInfo(PDEV, ExtendedObject, nports);
 
     LouPrint("AhciInitOne() STATUS_SUCCESS\n");
     while(1);
