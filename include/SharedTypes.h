@@ -6,6 +6,10 @@
 #ifndef _STYPES_H
 #define _STYPES_H
 
+#ifndef __INT_MAX__
+#define INT_MAX 2147483647
+#endif
+
 typedef uint8_t LouKIRQL;
 
 typedef struct _Fixed20_12{

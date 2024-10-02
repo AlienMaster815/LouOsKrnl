@@ -12,7 +12,9 @@
 #pragma warning(disable: 4200) // Disable C4103
 #pragma warning(disable: 4086) // Disable C4103
 #pragma warning(disable: 4100) // Disable C4103warning C4273
-#pragma warning(disable: 4217) // Disable C4103
+#pragma warning(disable: 4217) // Disable C4103 4245
+#pragma warning(disable: 4245) // Disable C4103 4245
+#pragma warning(disable: 4293) // Disable C4103 4245
 //#pragma warning(disable: 1218) // Disable C4103
 #endif
 

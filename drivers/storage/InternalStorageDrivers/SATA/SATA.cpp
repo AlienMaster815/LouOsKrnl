@@ -167,9 +167,6 @@ bool GetSataSectorSize(HBA_PORT *port, uint32_t *sectorSize) {
 	return true;
 }
 
-
-
-
 void* ReadSata(
 HBA_PORT* port,
 uintptr_t DeviceObject,
@@ -181,3 +178,4 @@ LOUSTATUS* StatusOfOperation
 
 	return 0x00;
 }
+

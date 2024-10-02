@@ -159,6 +159,8 @@ string DRV_VERSION_APIC = "\nLousine Internal Kernel APIC.SYS Module Version 1.1
 string DRV_UNLOAD_STRING_SUCCESS_APIC = "Driver Execution Completed Successfully Exiting Proccess\n\n"; 
 string DRV_UNLOAD_STRING_FAILURE_APIC = "Driver Execution Failed To Execute Properly Exiting Proccess\n\n"; 
 
+LOUDDK_API_ENTRY void SMPInit();
+
 uint64_t ApicBase;
 
 uint64_t GetApicBase(){
@@ -308,6 +310,8 @@ LOUDDK_API_ENTRY LOUSTATUS InitApicSystems(bool LateStage) {
             return false;
         }
     }
+
+    SMPInit();
 
     LouPrint(DRV_UNLOAD_STRING_SUCCESS_APIC);
 

@@ -23,7 +23,8 @@
 #define MEMORY_SPACE_DISABLE ~(1 << 1)
 #define IO_SPACE_ENABLE (1)
 #define IO_SPACE_DISABLE ~(1)
-
+#define PCI_IRQ_MSI (1 << 32)
+#define PCI_IRQ_MSIX (1 << 33)
 
 #include "pcireg.h"
 #include <kernel/atomic.h>

@@ -1,6 +1,7 @@
 #include <LouDDK.h>
 #include <NtAPI.h>
 #include <Hal.h>
+#include <atalib.h>
 
 #pragma pack(push, 1)
 typedef struct _TABLE_ENTRY{
@@ -16,7 +17,7 @@ typedef struct _TABLE_ENTRY{
 #define PRE_LOADED_UNKOWN_FUNCTIONS 12
 #define PRE_LOADED_WDFLDR_FUNCTIONS 5
 #define PRE_LOADED_STORPORT_FUNCTIONS 9
-#define PRE_LOADED_LOUOSKRNL_FUNCTIONS 91
+#define PRE_LOADED_LOUOSKRNL_FUNCTIONS 93
 
 static uint64_t LouOsKrnlFunctionAddresses[PRE_LOADED_LOUOSKRNL_FUNCTIONS];
 static FUNCTION_NAME LouOsKrnlFunctionNames[PRE_LOADED_LOUOSKRNL_FUNCTIONS];
@@ -42,8 +43,7 @@ KERNEL_IMPORT int _snprintf(char *buffer, size_t buffer_size, const char *format
 ULONG KeNumberProcessors();
 
 KERNEL_IMPORT int _snwprintf(wchar_t *buffer, size_t buffer_size, const wchar_t *format, ...);
-
-
+LOUDDK_API_ENTRY PATA_HOST LouMallocAtaHost(P_PCI_DEVICE_OBJECT PDEV, PATA_PORT Port, int NPorts);
 
 VOID
 RtlUnwind(
@@ -139,7 +139,6 @@ void InitializeLousineKernelTables(){
     ImportTables[4].FunctionName[74] = "LouMalloc";
     ImportTables[4].FunctionName[75] = "GetPciConfiguration";
     ImportTables[4].FunctionName[76] = "LouKeHalLinuxPciCheckForCompatibleConfiguration";
-
     ImportTables[4].FunctionName[77] = "pci_read";
     ImportTables[4].FunctionName[78] = "write_pci";
     ImportTables[4].FunctionName[79] = "LouKeReadPciUint8";
@@ -154,6 +153,8 @@ void InitializeLousineKernelTables(){
     ImportTables[4].FunctionName[88] = "LouKeHalPciRestoreContext";
     ImportTables[4].FunctionName[89] = "LouKeHalPciClearMaster";
     ImportTables[4].FunctionName[90] = "READ_REGISTER_ULONG";
+    ImportTables[4].FunctionName[91] = "LouMallocAtaHost";
+    ImportTables[4].FunctionName[92] = "LouKeHalMallocPciIrqVectors";
 
     ImportTables[4].VirtualAddress = LouOsKrnlFunctionAddresses;
 
@@ -248,6 +249,8 @@ void InitializeLousineKernelTables(){
     ImportTables[4].VirtualAddress[88] = (uint64_t)LouKeHalPciRestoreContext;
     ImportTables[4].VirtualAddress[89] = (uint64_t)LouKeHalPciClearMaster;
     ImportTables[4].VirtualAddress[90] = (uint64_t)READ_REGISTER_ULONG;
+    ImportTables[4].VirtualAddress[91] = (uint64_t)LouMallocAtaHost;
+    ImportTables[4].VirtualAddress[92] = (uint64_t)LouKeHalMallocPciIrqVectors;
 
 }
 

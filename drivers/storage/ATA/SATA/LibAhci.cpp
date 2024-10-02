@@ -4,7 +4,7 @@
 #include <LouDDK.h>
 #include "Ahci.h"
 
-void AhciSetEmMessage(PAHCI_DRIVER_EXTENDED_OBJECT HostPrivate, PAHCI_PORT_INFO AtaPortInfo) {
+void AhciSetEmMessage(PAHCI_DRIVER_EXTENDED_OBJECT HostPrivate, PATA_PORT AtaPortInfo) {
 	uint8_t Messages;
 	PULONG Mmio = (PULONG)HostPrivate->Host;
 	PAHCI_MEMORY_REGISTERS Host = (PAHCI_MEMORY_REGISTERS)HostPrivate->Host;
@@ -27,12 +27,4 @@ void AhciSetEmMessage(PAHCI_DRIVER_EXTENDED_OBJECT HostPrivate, PAHCI_PORT_INFO 
     }
 }
 
-PATA_HOST AhciHostAllocatePortInfo(
-	P_PCI_DEVICE_OBJECT PDEV,
-	PAHCI_DRIVER_EXTENDED_OBJECT ExtendedObject,
-	int NumberOfPorts	
-) {
-
-
-	return 0;
-}
+ 

@@ -328,7 +328,7 @@ bool AhciSb600Enable64Bit(P_PCI_DEVICE_OBJECT PDEV) {
     return false;
 }
 
-void GetAhciDevicePortInfo(uint64_t BoardId, PAHCI_PORT_INFO PPortInfo) {
+void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
     
     if (!PPortInfo)return;
 
@@ -482,6 +482,7 @@ void AhciMcp89Apple(P_PCI_DEVICE_OBJECT PDEV, PPCI_COMMON_CONFIG Config);
 LOUSTATUS AhciP5WdhHardReset(P_PCI_DEVICE_OBJECT PDEV, PPCI_COMMON_CONFIG Config, PAHCI_MEMORY_REGISTERS Hba);
 LOUSTATUS AhciPciDeviceRuntimeSuspend(P_PCI_DEVICE_OBJECT PDEV, PPCI_COMMON_CONFIG Config, PAHCI_MEMORY_REGISTERS Hba);
 LOUSTATUS AhciPciDeviceRuntimeResume(P_PCI_DEVICE_OBJECT PDEV, PPCI_COMMON_CONFIG Config, PAHCI_MEMORY_REGISTERS Hba);
+int AhciInitializeMsi(P_PCI_DEVICE_OBJECT PDEV, int NPorts, PAHCI_DRIVER_EXTENDED_OBJECT ExtendedObject);
 
 LOUSTATUS AhciInitOne(
     P_PCI_DEVICE_OBJECT PDEV,
@@ -541,7 +542,7 @@ LOUSTATUS AhciInitOne(
         Map = LouKeReadPciUint8(PDEV, ICH_MAP);
         if (Map & 0x03) {
             LouPrint("Controller Is In Combined Mode, Cant Enable AHCI Mode\n");
-            return (LOUSTATUS)STATUS_NO_SUCH_DEVICE;
+            return STATUS_NO_SUCH_DEVICE;
         }
     }
     //next step would to get all the bars but they are already stored in our PCI Config Header
@@ -588,10 +589,20 @@ LOUSTATUS AhciInitOne(
 
     nports = ((Host->Capabilities >> 8) & 0x1F) + 1;
 
-    AtaHost = AhciHostAllocatePortInfo(PDEV, ExtendedObject, nports);
+    AtaHost = LouMallocAtaHost(PDEV, &ExtendedObject->DevicePortInfo, nports);
+    if (!AtaHost) {
+        return STATUS_INSUFFICIENT_RESOURCES;
+    }
+    AtaHost->PrivateData = ExtendedObject;
+    AtaHost->IoMap = Host;
+    
+    if (AhciInitializeMsi(PDEV, nports, ExtendedObject)) {
+        LouPrint("Msi Initialization Failed Using PCI Interrupt Pin\n");
+    }
+
+    
 
     LouPrint("AhciInitOne() STATUS_SUCCESS\n");
-    while(1);
     return Status;
 }
 void AhciRemoveOne(P_PCI_DEVICE_OBJECT PDEV, PPCI_COMMON_CONFIG Config){
@@ -687,3 +698,23 @@ DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryEntry) {
     return STATUS_SUCCESS;
 }
 
+int AhciInitializeMsi(
+    P_PCI_DEVICE_OBJECT PDEV, 
+    int NPorts, 
+    PAHCI_DRIVER_EXTENDED_OBJECT ExtendedObject
+) {
+    LouPrint("AhciInitializeMsi()\n");
+    int NumVectors = 0;
+
+    if (ExtendedObject->DevicePortInfo.HFlags & AHCI_HFLAG_NO_MSI) {
+        return STATUS_NO_SUCH_DEVICE;
+    }
+
+    //if (NPorts > 1) {
+    //   NumVectors = LouKeHalMallocPciIrqVectors(PDEV, NPorts, INT_MAX | PCI_IRQ_MSI | PCI_IRQ_MSIX);
+    //}
+
+    NumVectors = LouKeHalMallocPciIrqVectors(PDEV, 1, 1 | PCI_IRQ_MSI | PCI_IRQ_MSIX);
+
+    return NumVectors;
+}

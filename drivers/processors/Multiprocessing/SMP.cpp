@@ -70,15 +70,13 @@ void start_aps() {
     LouPrint("Tailcall Is At:%h\n", getTrampolineAddressTailCall());
     for(uint16_t i = 1; i < NumberOfProcessors; i++){
         LouPrint("Waking Up Processor:%d\n", i+1);
-
         send_ipi(i, ICR_INIT | IPI_DEST_ALL_EXCLUDING_SELF);
+
         uint32_t vectorAddress = (uint32_t)getTrampolineAddressTailCall() >> 12; // Shift right by 12 to fit into the vector field
 
         send_ipi(i, ICR_STARTUP | vectorAddress);
-
-        while(!CheckApCompletion()){
-            sleep(100);
-        }
+        //wait two seconds
+        sleep(100);
 
         LouPrint("Processor:%d Successfully Started\n", i+1);
 
@@ -92,23 +90,22 @@ LOUDDK_API_ENTRY void SMPInit(){
 
     LouPrint("Initializing SMP\n");
 
-    DescriptorTablePointer gdtp;
-    DescriptorTablePointer idtp;
+    //DescriptorTablePointer gdtp;
+    //DescriptorTablePointer idtp;
 
-    get_gdt_pointer(gdtp);
-    get_idt_pointer(idtp);
+    //get_gdt_pointer(gdtp);
+    //get_idt_pointer(idtp);
 
-    GDTPointer = gdtp.base;
-    IDTPointer = idtp.base;
+    //GDTPointer = gdtp.base;
+    //IDTPointer = idtp.base;
 
-    LouPrint("GDT Pointer: Base = %h, Limit = %h\n", GDTPointer, gdtp.limit);
-    LouPrint("IDT Pointer: Base = %h, Limit = %h\n", IDTPointer, idtp.limit);
+    //LouPrint("GDT Pointer: Base = %h, Limit = %h\n", GDTPointer, gdtp.limit);
+    //LouPrint("IDT Pointer: Base = %h, Limit = %h\n", IDTPointer, idtp.limit);
 
     start_aps();
 
     LouPrint("Done With SMP Initialization\n");
-
- }
+}
 
 
 LOUDDK_API_ENTRY uint64_t GetGdtPointer(){

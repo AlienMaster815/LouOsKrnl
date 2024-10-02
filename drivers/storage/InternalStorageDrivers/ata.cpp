@@ -797,3 +797,27 @@ LOUDDK_API_ENTRY bool IsIdeDriveAvailable(uint8_t Drive){
 uint16_t *GetAtaBufferAddr() {
     return (uint16_t *)&atabuffer;
 }
+
+#include <atalib.h>
+
+LOUDDK_API_ENTRY PATA_HOST LouMallocAtaHost(P_PCI_DEVICE_OBJECT PDEV, PATA_PORT Port, int NPorts){
+    LouPrint("Allocating Ata Host\n");
+
+    PATA_HOST NewHost = (PATA_HOST)LouMalloc(sizeof(ATA_HOST));
+    if(!NewHost){
+        return 0x00;
+    }
+    NewHost->PDev = PDEV;
+
+    NewHost->Ports = (PATA_PORT)LouMalloc(sizeof(ATA_PORT) * NPorts);
+    if(!NewHost->Ports){
+        LouFree((RAMADD)NewHost);
+        return 0x00;
+    }
+    for(int i = 0 ; i < NPorts; i++){
+        NewHost->Ports[i] = *Port; //place generic data into the new allocated ports
+    }
+
+    LouPrint("Successfully Allocated Host\n");
+    return NewHost;
+}

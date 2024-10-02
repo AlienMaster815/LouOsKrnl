@@ -1,3 +1,5 @@
+global SetUpSmpPageing
+
 section .rodata
 gdt64:
     dq 0 ; Null segment
@@ -73,6 +75,7 @@ section .text.trampoline
 global WakeTheFuckUpBoys
 extern page_table_l4
 extern gdt64
+
 WakeTheFuckUpBoys:
 
 

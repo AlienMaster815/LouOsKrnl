@@ -39,6 +39,10 @@ extern SetUpPages
 extern Lou_kernel_start
 extern enable_paging
 
+global gdt64.pointer
+global gdt64.code_segment
+global gdt64.data_segment
+
 start:
 
     mov [multiboot_info_ptr], ebx

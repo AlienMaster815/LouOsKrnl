@@ -92,3 +92,5 @@ EXPORTS
     LouKeHalPciRestoreContext
     LouKeHalPciClearMaster
     READ_REGISTER_ULONG
+    LouMallocAtaHost
+    LouKeHalMallocPciIrqVectors

@@ -32,6 +32,7 @@ SetUpPages:
 
 enable_paging:
     ; pass page table location to cpu
+
     mov eax, page_table_l4
     mov cr3, eax
 

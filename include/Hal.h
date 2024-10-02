@@ -43,6 +43,14 @@ LOUDDK_API_ENTRY uint64_t LouKeHalLinuxPciCheckForCompatibleConfiguration(
 );
 
 LOUDDK_API_ENTRY LOUSTATUS LouKeHalEnablePciDevice(P_PCI_DEVICE_OBJECT PDEV);
+
+LOUDDK_API_ENTRY
+int LouKeHalMallocPciIrqVectors(
+    P_PCI_DEVICE_OBJECT PDEV, 
+    int RequestedVectors, 
+    uint64_t Flags
+);
+
 #else 
 KERNEL_EXPORT uint64_t LouKeHalLinuxPciCheckForCompatibleConfiguration(
     PPCI_COMMON_CONFIG PciSearch, 
@@ -66,6 +74,13 @@ KERNEL_EXPORT void LouKeHalPciRestoreContext(
 
 KERNEL_EXPORT void LouKeHalPciClearMaster(
     P_PCI_DEVICE_OBJECT PDEV
+);
+
+KERNEL_EXPORT
+int LouKeHalMallocPciIrqVectors(
+    P_PCI_DEVICE_OBJECT PDEV, 
+    int RequestedVectors, 
+    uint64_t Flags
 );
 
 #endif

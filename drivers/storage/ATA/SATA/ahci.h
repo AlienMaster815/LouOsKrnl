@@ -3,7 +3,7 @@
 
 #include <LouDDK.h>
 #include <NtAPI.h>
-#include "../atalib.h"
+#include <atalib.h>
 
 #pragma pack(push, 1)
 
@@ -1192,7 +1192,7 @@ typedef struct  _AHCI_PORT_INFO{
 
 typedef struct _AHCI_DRIVER_EXTENDED_OBJECT {
     uint64_t DeviceNumber;
-    AHCI_PORT_INFO DevicePortInfo;
+    ATA_PORT DevicePortInfo;
     PCI_COMMON_CONFIG SavedConfig;
     PAHCI_MEMORY_REGISTERS Host;
     PPCI_CONTEXT HandOffPciContext;
@@ -1206,13 +1206,8 @@ static inline int AhciNrPorts(uint32_t cap){
 	return (cap & 0x1f) + 1;
 }
 
-void AhciSetEmMessage(PAHCI_DRIVER_EXTENDED_OBJECT HostPrivate, PAHCI_PORT_INFO AtaPortInfo);
+void AhciSetEmMessage(PAHCI_DRIVER_EXTENDED_OBJECT HostPrivate, PATA_PORT AtaPortInfo);
 
-PATA_HOST AhciHostAllocatePortInfo(
-    P_PCI_DEVICE_OBJECT PDEV,
-    PAHCI_DRIVER_EXTENDED_OBJECT ExtendedObject,
-    int NumberOfPorts
-);
 
 #pragma pack(pop)
 #endif//_AHCI_H_

@@ -273,6 +273,19 @@ void ListAllocatedPorts();
 void ScanTheRestOfHarware();
 void LouKeHandleSystemIsBios();
 
+static mutex_t SmpStartupMutex;
+
+KERNEL_ENTRY LouKernelSmpStart(){
+    while(1);
+    LouPrint("Processor Succesfully Idleing\n");
+    while(1){
+        MutexLock(&SmpStartupMutex);
+        asm ("hlt"); //spin the cpus untill context assignement
+        MutexUnlock(&SmpStartupMutex);
+    }
+}
+
+
 KERNEL_ENTRY Lou_kernel_start(
     uint32_t MBOOT
 ){
@@ -298,7 +311,7 @@ KERNEL_ENTRY Lou_kernel_start(
     InitPreLoadedModules();
 
     //SETUP DEVICES AND DRIVERS
-    LookForStorageDevices();
+    //LookForStorageDevices();
     //UpdateDeviceInformationTable();
     //LouKeRunOnNewStack(FileSystemSetup, 0x00, 64 * KILOBYTE);
     //ScanTheRestOfHarware();
@@ -310,7 +323,7 @@ KERNEL_ENTRY Lou_kernel_start(
     LouPrint("Hello World\n");
 
     while(1){
-        asm("hlt");
+        asm("hlt"); //spin the cpus until we set up user mode
     }
 
 	LouPanic("error kernel has gone too far terminating system\n",BAD);
