@@ -34,13 +34,36 @@ uint8_t GetGlobalInterrupt(){
 
 LouKIRQL InterruptSwitch(LouKIRQL New);
 
+uint8_t GetTotalHardwareInterrupts();
+
+static inline uint32_t get_processor_id() {
+    uint32_t eax, ebx, ecx, edx;
+    eax = 1; // Processor info and feature bits
+    __asm__ volatile(
+        "cpuid"
+        : "=b" (ebx), "=d" (edx), "=c" (ecx)
+        : "a" (eax)
+    );
+    uint32_t processor_id = ebx >> 24;
+    return processor_id;
+}
+
 void InterruptRouter(uint8_t Interrupt, uint64_t Args) {
 
 	InterruptGlobalCheck = Interrupt;
 	LouKIRQL PreInterruptIrql = InterruptSwitch(HIGH_LEVEL);
 	
+	
+
 	if (0x00 != InterruptHandler[Interrupt]) {
-		InterruptHandler[Interrupt](Args);
+
+		if(Interrupt == (GetTotalHardwareInterrupts() + 0x20)){
+			uint64_t ExtendedInterruptNumber = (Interrupt - (GetTotalHardwareInterrupts() + 0x20)) + (256 * get_processor_id());
+			InterruptHandler[Interrupt](ExtendedInterruptNumber);
+		}
+		else{
+			InterruptHandler[Interrupt](Args);
+		}
 		//LouKeRunOnNewStack((void(*)(PVOID))InterruptHandler[Interrupt], (PVOID)Args, 8 * KILOBYTE);
 		//if (!GetAPICStatus())PIC_sendEOI(Interrupt);
 		local_apic_send_eoi();

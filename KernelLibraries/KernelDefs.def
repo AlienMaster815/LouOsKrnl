@@ -94,3 +94,5 @@ EXPORTS
     READ_REGISTER_ULONG
     LouMallocAtaHost
     LouKeHalMallocPciIrqVectors
+    WRITE_PORT_ULONG
+    WRITE_REGISTER_ULONG

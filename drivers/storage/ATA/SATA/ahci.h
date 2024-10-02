@@ -1072,7 +1072,10 @@ typedef struct  _AHCI_ADAPTER_EXTENSION{
 #define ATA_FLAG_PMP (1 << 8)
 #define ATA_FLAG_EM (1 << 9)
 #define ATA_FLAG_SW_ACTIVITY (1 << 10)
-
+#define ATA_NO_HOST_PART (1 << 11)
+#define ATA_HOST_NO_SSC (1 << 12)
+#define ATA_HOST_NO_DEVSLP (1 << 13)
+#define ATA_HOST_PARALLEL_SCAN (1 << 14)
 #define AHCI_FLAG_COMMON		 ATA_FLAG_SATA | ATA_FLAG_PIO_DMA | \
 					          ATA_FLAG_ACPI_SATA | ATA_FLAG_AN
 
@@ -1171,7 +1174,6 @@ UNUSED static uintptr_t AhciPmpRetrySrstOperations;
 //int AhciCheckReady(uintptr_t AtaLink);
 //int AhciKickEngine(uintptr_t AtaPort);
 //int AhciPortResume(uintptr_t AtaPort);
-//int AhciResetEm(uintptr_t AtaHost);
 //void AhciPrintInfo(uintptr_t AhciHost);
 //int AhciHostActive(uintptr_t AtaHost, uintptr_t SHT);
 //void AhciErrorHandler(uintptr_t AtaPort);
@@ -1207,7 +1209,7 @@ static inline int AhciNrPorts(uint32_t cap){
 }
 
 void AhciSetEmMessage(PAHCI_DRIVER_EXTENDED_OBJECT HostPrivate, PATA_PORT AtaPortInfo);
-
+LOUSTATUS AhciResetEm(PATA_HOST Host);
 
 #pragma pack(pop)
 #endif//_AHCI_H_

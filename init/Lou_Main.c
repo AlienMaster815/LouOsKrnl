@@ -107,6 +107,9 @@ uint64_t getTrampolineAddress();
 
 PWINDHANDLE HWind;
 
+void AdvancedInterruptRouter(uint64_t InterruptNumber);
+uint8_t GetTotalHardwareInterrupts();
+
 LOUSTATUS Lou_kernel_early_initialization(){
 
     //basic kernel initialization for IR Exceptions to keep the guru away
@@ -164,6 +167,8 @@ LOUSTATUS Set_Up_Devices(){
     return LOUSTATUS_GOOD;
 }
 
+LOUSTATUS LouKeMallocAdvancedKernelInterruptHandleing();
+
 void Advanced_Kernel_Initialization(){
     LOUSTATUS Status = LOUSTATUS_GOOD;
     //if(LOUSTATUS_GOOD != InitFADT())LouPrint("Unable To Start FADT Handleing\n");
@@ -179,6 +184,13 @@ void Advanced_Kernel_Initialization(){
     InitializeDynamicHardwareInterruptHandleing();
     RegisterHardwareInterruptHandler(PS2KeyboardHandler, 1);
     RegisterHardwareInterruptHandler(PS2MouseHandler, 12);
+    LouKeMallocAdvancedKernelInterruptHandleing();
+
+
+    for(uint8_t i = GetTotalHardwareInterrupts() + 0x20; i < 0x50; i++){
+        RegisterInterruptHandler(AdvancedInterruptRouter,i);
+    }
+
     if (LOUSTATUS_GOOD != InitThreadManager())LouPrint("SHIT!!!:I Hope You Hate Efficency: No Thread Management\n");
     LouKeSetIrql(PASSIVE_LEVEL, 0x00);
     SetInterruptFlags();
@@ -276,12 +288,9 @@ void LouKeHandleSystemIsBios();
 static mutex_t SmpStartupMutex;
 
 KERNEL_ENTRY LouKernelSmpStart(){
-    while(1);
     LouPrint("Processor Succesfully Idleing\n");
     while(1){
-        MutexLock(&SmpStartupMutex);
         asm ("hlt"); //spin the cpus untill context assignement
-        MutexUnlock(&SmpStartupMutex);
     }
 }
 
@@ -311,7 +320,7 @@ KERNEL_ENTRY Lou_kernel_start(
     InitPreLoadedModules();
 
     //SETUP DEVICES AND DRIVERS
-    //LookForStorageDevices();
+    LookForStorageDevices();
     //UpdateDeviceInformationTable();
     //LouKeRunOnNewStack(FileSystemSetup, 0x00, 64 * KILOBYTE);
     //ScanTheRestOfHarware();

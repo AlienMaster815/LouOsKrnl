@@ -596,11 +596,30 @@ LOUSTATUS AhciInitOne(
     AtaHost->PrivateData = ExtendedObject;
     AtaHost->IoMap = Host;
     
-    if (AhciInitializeMsi(PDEV, nports, ExtendedObject)) {
-        LouPrint("Msi Initialization Failed Using PCI Interrupt Pin\n");
+    //if (AhciInitializeMsi(PDEV, nports, ExtendedObject)) {
+    //    LouPrint("Msi Initialization Failed Using PCI Interrupt Pin\n");
+    //}
+
+    if (!(Host->Capabilities & HOST_CAP_SSS)) {
+        ExtendedObject->DevicePortInfo.Flags |= ATA_HOST_PARALLEL_SCAN;
+    }
+    else {
+        LouPrint("SSS Flag Is Set But Parallel Bus Scan Disabled\n");
     }
 
-    
+    if (!(Host->Capabilities & HOST_CAP_PART)) {
+        ExtendedObject->DevicePortInfo.Flags |= ATA_NO_HOST_PART;
+    }
+
+    if (!(Host->Capabilities & HOST_CAP_SSC))
+        ExtendedObject->DevicePortInfo.Flags |= ATA_HOST_NO_SSC;
+
+    if (!(Host->ExtendedCapabilities & HOST_CAP2_SDS)) {
+        ExtendedObject->DevicePortInfo.Flags |= ATA_HOST_NO_DEVSLP;
+    }
+    if (ExtendedObject->DevicePortInfo.Flags & ATA_FLAG_EM) {
+        AhciResetEm(AtaHost);
+    }
 
     LouPrint("AhciInitOne() STATUS_SUCCESS\n");
     return Status;
@@ -710,11 +729,14 @@ int AhciInitializeMsi(
         return STATUS_NO_SUCH_DEVICE;
     }
 
+    //Issues with virtualbox are making it hard to work on this No interrupts for now
+
     //if (NPorts > 1) {
     //   NumVectors = LouKeHalMallocPciIrqVectors(PDEV, NPorts, INT_MAX | PCI_IRQ_MSI | PCI_IRQ_MSIX);
     //}
 
-    NumVectors = LouKeHalMallocPciIrqVectors(PDEV, 1, 1 | PCI_IRQ_MSI | PCI_IRQ_MSIX);
+    //NumVectors = LouKeHalMallocPciIrqVectors(PDEV, 1, PCI_IRQ_MSI | PCI_IRQ_MSIX);
+   
 
     return NumVectors;
 }

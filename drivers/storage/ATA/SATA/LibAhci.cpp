@@ -27,4 +27,15 @@ void AhciSetEmMessage(PAHCI_DRIVER_EXTENDED_OBJECT HostPrivate, PATA_PORT AtaPor
     }
 }
 
- 
+LOUSTATUS AhciResetEm(PATA_HOST Host) {
+
+	PULONG mmio = (PULONG)Host->IoMap;
+	ULONG em_ctl;
+
+	em_ctl = READ_REGISTER_ULONG(mmio + HOST_EM_CTL);
+	if ((em_ctl & EM_CTL_TM) || (em_ctl & EM_CTL_RST))
+		return STATUS_INVALID_PARAMETER;
+
+	WRITE_REGISTER_ULONG(mmio + HOST_EM_CTL,em_ctl | EM_CTL_RST);
+	return STATUS_SUCCESS;
+}
