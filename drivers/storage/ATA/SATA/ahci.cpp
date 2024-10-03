@@ -11,7 +11,7 @@
 #define AHCI_DEFAULT_BAR 5
 
 #define DRIVER_NAME "Lousine Internal AHCI .SYS Driver"
-#define DRIVER_VERSION "1.04"
+#define DRIVER_VERSION "1.10"
 
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
@@ -484,6 +484,68 @@ LOUSTATUS AhciPciDeviceRuntimeSuspend(P_PCI_DEVICE_OBJECT PDEV, PPCI_COMMON_CONF
 LOUSTATUS AhciPciDeviceRuntimeResume(P_PCI_DEVICE_OBJECT PDEV, PPCI_COMMON_CONFIG Config, PAHCI_MEMORY_REGISTERS Hba);
 int AhciInitializeMsi(P_PCI_DEVICE_OBJECT PDEV, int NPorts, PAHCI_DRIVER_EXTENDED_OBJECT ExtendedObject);
 
+void AhciCheckAndMarkExternalPorts(PATA_PORT Ap) {
+    
+    PAHCI_DRIVER_EXTENDED_OBJECT ExtendedObject = (PAHCI_DRIVER_EXTENDED_OBJECT)Ap->PrivateData;
+    PULONG Mmio = (PULONG)Ap->PortMmio;
+    ULONG Tmp = 0;
+
+    Tmp = READ_REGISTER_ULONG(Mmio + PORT_CMD);
+    if (((Tmp & PORT_CMD_ESP) && (ExtendedObject->Host->Capabilities & HOST_CAP_SXS)) ||
+        (Tmp & PORT_CMD_HPCP)) {
+        LouPrint("External ATA Port\n");
+        Ap->PFlags |= ATA_PFLAG_EXTERNAL;
+    }
+
+}
+
+void AhciUpdateInitialiLpmPolicy(PATA_PORT Ap) {
+
+    AtaLpmPolicy Policy = ATA_LPM_MED_POWER;
+    if (Ap->PFlags & ATA_PFLAG_EXTERNAL) {
+        LouPrint("External Port, Not Enableing LPM\n");
+        return;
+    }
+
+    if((Ap->Host->Flags & ATA_NO_HOST_PART) && 
+       (Ap->Host->Flags & ATA_HOST_NO_SSC) &&
+       (Ap->Host->Flags & ATA_HOST_NO_DEVSLP)){
+        LouPrint("No Lpm States Supported, Not Enableing LPM\n");
+        return;
+    }
+
+    Ap->TargetLpmPolicy = Policy;
+
+}
+
+void AhciIntelPcsQuirk(
+    P_PCI_DEVICE_OBJECT PDEV, 
+    PAHCI_DRIVER_EXTENDED_OBJECT ExtendedObject
+){
+    //uint16_t Tmp16 = 0;
+
+    if (!(ExtendedObject->DevicePortInfo.HFlags & AHCI_HFLAG_INTEL_PCS_QUIRK)) {
+        return;
+    }
+    LouPrint("Handling Intel Pcs Quirk\n");
+
+}
+
+LOUSTATUS AhciPciResetController(PATA_HOST Host) {
+    P_PCI_DEVICE_OBJECT PDEV = (P_PCI_DEVICE_OBJECT)Host->PDev;
+    PAHCI_DRIVER_EXTENDED_OBJECT ExtendedObject = (PAHCI_DRIVER_EXTENDED_OBJECT)Host->PrivateData;
+    LOUSTATUS Status = STATUS_SUCCESS;
+        
+    Status = ResetAhciController(Host);
+
+    AhciIntelPcsQuirk(
+        PDEV,
+        ExtendedObject
+    );
+
+    return Status;
+}
+
 LOUSTATUS AhciInitOne(
     P_PCI_DEVICE_OBJECT PDEV,
     PDRIVER_OBJECT DriverObject,
@@ -493,7 +555,7 @@ LOUSTATUS AhciInitOne(
     PAHCI_DRIVER_EXTENDED_OBJECT ExtendedObject = (PAHCI_DRIVER_EXTENDED_OBJECT)PDEV->DeviceExtendedObject;
     uint64_t DeviceFlags = AhciPciTable[ExtendedObject->DeviceNumber].Flags;
     LOUSTATUS Status = STATUS_SUCCESS;
-    int nports;// , i;
+    int nports, i;
     uint8_t AhciBar = AHCI_DEFAULT_BAR;
     PCI_COMMON_CONFIG Config;
     LouPrint("Initializing AHCI Device\n");
@@ -620,6 +682,32 @@ LOUSTATUS AhciInitOne(
     if (ExtendedObject->DevicePortInfo.Flags & ATA_FLAG_EM) {
         AhciResetEm(AtaHost);
     }
+    //update all ports
+    for (i = 0; i < nports; i++) {
+        AtaHost->Ports[i] = ExtendedObject->DevicePortInfo;
+        AtaHost->Ports[i].PrivateData = (void*)ExtendedObject;
+        AtaHost->Ports[i].Host = AtaHost;
+    }
+
+    for (i = 0; i < nports; i++) {
+        PATA_PORT Ap = &AtaHost->Ports[i];
+
+        AtaPortRegisterPortIo(Ap, Host, 0x100 + i * 0x80);
+
+        if (Ap->Flags & ATA_FLAG_EM) {
+            LouPrint("Setting Eclosure Message\n");
+            Ap->EmMessageType = ExtendedObject->EmMessageType;
+        }
+        AhciCheckAndMarkExternalPorts(Ap);
+        AhciUpdateInitialiLpmPolicy(Ap);
+        if (!(Host->PortImplementation & (1 << i))) {
+            Ap->Operations = 0x00;//no implementations
+        }
+    }
+
+    ExtendedObject->SavedHost = *ExtendedObject->Host;//Save Host Contextr
+
+    AhciPciResetController(AtaHost);
 
     LouPrint("AhciInitOne() STATUS_SUCCESS\n");
     return Status;

@@ -116,6 +116,7 @@
     <FilesToPackage Include="$(TargetPath)" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\libata.cpp" />
     <ClCompile Include="..\ahci.cpp" />
     <ClCompile Include="..\LibAhci.cpp" />
   </ItemGroup>

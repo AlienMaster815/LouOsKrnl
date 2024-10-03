@@ -1061,21 +1061,7 @@ typedef struct  _AHCI_ADAPTER_EXTENSION{
 #define EM_MSG_TYPE_SES2	 (1 << 2)
 #define EM_MSG_TYPE_SGPIO	 (1 << 3)
 
-#define ATA_FLAG_SATA (1 << 0)
-#define ATA_FLAG_PIO_DMA (1 << 1) 
-#define ATA_FLAG_ACPI_SATA (1 << 2)
-#define ATA_FLAG_AN (1 << 3) 
-#define ATA_FLAG_NO_DIPM (1 << 4)
-#define ATA_FLAG_NCQ (1 << 5)
-#define ATA_FLAG_FPDMA_AA (1 << 6) 
-#define ATA_FLAG_FPDMA_AUX (1 << 7)
-#define ATA_FLAG_PMP (1 << 8)
-#define ATA_FLAG_EM (1 << 9)
-#define ATA_FLAG_SW_ACTIVITY (1 << 10)
-#define ATA_NO_HOST_PART (1 << 11)
-#define ATA_HOST_NO_SSC (1 << 12)
-#define ATA_HOST_NO_DEVSLP (1 << 13)
-#define ATA_HOST_PARALLEL_SCAN (1 << 14)
+
 #define AHCI_FLAG_COMMON		 ATA_FLAG_SATA | ATA_FLAG_PIO_DMA | \
 					          ATA_FLAG_ACPI_SATA | ATA_FLAG_AN
 
@@ -1164,7 +1150,6 @@ UNUSED static uintptr_t AhciPmpRetrySrstOperations;
 //void FillAhciCommandSlot(PAHCI_PORT_PRIVATE PortPrivate, uint32_t Tag, uint32_t Options);
 //void SaveAhciInitialConfig(P_PCI_DEVICE_OBJECT PDEV, PAHCI_HOST_PRIVATE HostPrivate);
 //void InitializeAhciController(uintptr_t AtaHost);
-//void ResetAhciController(uintptr_t AtaHost);
 //int AhciCommandSoftwareReset(uintptr_t AtaLink, uint32_t* Class, int pmp, uint32_t Dedline, int (*CheckReady)(uintptr_t AtaLink));
 //int AhciCommandHardwareReset(uintptr_t AtaLink, uint32_t* CLass, uint32_t Deadline, bool *Online);
 //uint32_t AhciQcInssue(uintptr_t Qc);
@@ -1197,6 +1182,7 @@ typedef struct _AHCI_DRIVER_EXTENDED_OBJECT {
     ATA_PORT DevicePortInfo;
     PCI_COMMON_CONFIG SavedConfig;
     PAHCI_MEMORY_REGISTERS Host;
+    AHCI_MEMORY_REGISTERS SavedHost;
     PPCI_CONTEXT HandOffPciContext;
     uint32_t StoredEmLoc;
     uint32_t EmLocBufferSize;
@@ -1210,6 +1196,8 @@ static inline int AhciNrPorts(uint32_t cap){
 
 void AhciSetEmMessage(PAHCI_DRIVER_EXTENDED_OBJECT HostPrivate, PATA_PORT AtaPortInfo);
 LOUSTATUS AhciResetEm(PATA_HOST Host);
+LOUSTATUS ResetAhciController(PATA_HOST Host);
+
 
 #pragma pack(pop)
 #endif//_AHCI_H_

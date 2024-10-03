@@ -23,11 +23,11 @@
 #define AC_ERR_NCQ (1 << 10)
 
 #define ATA_LPM_UNKOWN 1
-#define ATA_LPM_MAX_POWER 2
-#define ATA_LPM_MED_POWER 3
+#define ATA_LPM_MAX_POWER 6
+#define ATA_LPM_MED_POWER 5
 #define ATA_LPM_MED_POWER_WITH_DIPM 4
-#define ATA_LPM_MIN_POWER_WITH_PARTIAL 5
-#define ATA_LPM_MIN_POWER 6 
+#define ATA_LPM_MIN_POWER_WITH_PARTIAL 3
+#define ATA_LPM_MIN_POWER 2 
 
 #define SwitchOff 1
 #define BlinkOn 2
@@ -359,6 +359,7 @@ typedef struct _ATA_LINK{
 }ATA_LINK, * PATA_LINK;
 
 typedef struct _ATA_PORT{
+    void* PortMmio;
     struct _SCSI_HOST* ScsiHost;
     struct _ATA_PORT_OPERATION_TABLE* Operations;
     spinlock_t* Lock;
@@ -523,8 +524,34 @@ typedef struct _ATA_PORT_OPERATION_TABLE{
 
 }ATA_PORT_OPERATIONS_TABLE, * PATA_PORT_OPERATIONS_TABLE;
 
+
+#define ATA_FLAG_SATA (1 << 0)
+#define ATA_FLAG_PIO_DMA (1 << 1) 
+#define ATA_FLAG_ACPI_SATA (1 << 2)
+#define ATA_FLAG_AN (1 << 3) 
+#define ATA_FLAG_NO_DIPM (1 << 4)
+#define ATA_FLAG_NCQ (1 << 5)
+#define ATA_FLAG_FPDMA_AA (1 << 6) 
+#define ATA_FLAG_FPDMA_AUX (1 << 7)
+#define ATA_FLAG_PMP (1 << 8)
+#define ATA_FLAG_EM (1 << 9)
+#define ATA_FLAG_SW_ACTIVITY (1 << 10)
+#define ATA_NO_HOST_PART (1 << 11)
+#define ATA_HOST_NO_SSC (1 << 12)
+#define ATA_HOST_NO_DEVSLP (1 << 13)
+#define ATA_HOST_PARALLEL_SCAN (1 << 14)
+
+#define ATA_PFLAG_EXTERNAL 1
+
+
 #ifdef _KERNEL_MODULE_
 KERNEL_EXPORT PATA_HOST LouMallocAtaHost(P_PCI_DEVICE_OBJECT PDEV, PATA_PORT Port, int NPorts);
+
+void AtaPortRegisterPortIo(
+PATA_PORT Ap,
+void* Mmio,
+size_t Offset
+);
 
 #endif
 #pragma pack(pop)

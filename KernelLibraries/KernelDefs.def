@@ -96,3 +96,4 @@ EXPORTS
     LouKeHalMallocPciIrqVectors
     WRITE_PORT_ULONG
     WRITE_REGISTER_ULONG
+    sleep
