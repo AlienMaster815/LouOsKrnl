@@ -104,3 +104,14 @@ void LouKeHalPciClearMaster(P_PCI_DEVICE_OBJECT PDEV){
     // Write the modified value back to the PCI Command Register
     pciConfigWriteWord(PDEV->bus, PDEV->slot, PDEV->func, 0x04, command_reg);
 }
+
+LOUDDK_API_ENTRY void LouKeHalPciSetMaster(P_PCI_DEVICE_OBJECT PDEV){
+         // Read the current value of the PCI Command Register (offset 0x04)
+    uint16_t command_reg = pciConfigReadWord(PDEV->bus, PDEV->slot, PDEV->func, 0x04);
+
+    // Clear the Bus Master bit (bit 2)
+    command_reg &= 0x0004;
+
+    // Write the modified value back to the PCI Command Register
+    pciConfigWriteWord(PDEV->bus, PDEV->slot, PDEV->func, 0x04, command_reg);   
+}

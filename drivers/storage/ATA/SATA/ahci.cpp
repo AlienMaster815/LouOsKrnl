@@ -10,8 +10,8 @@
 
 #define AHCI_DEFAULT_BAR 5
 
-#define DRIVER_NAME "Lousine Internal AHCI .SYS Driver"
-#define DRIVER_VERSION "1.10"
+#define DRIVER_NAME "Lousine External AHCI .SYS Driver"
+#define DRIVER_VERSION "1.12"
 
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
@@ -483,6 +483,8 @@ LOUSTATUS AhciP5WdhHardReset(P_PCI_DEVICE_OBJECT PDEV, PPCI_COMMON_CONFIG Config
 LOUSTATUS AhciPciDeviceRuntimeSuspend(P_PCI_DEVICE_OBJECT PDEV, PPCI_COMMON_CONFIG Config, PAHCI_MEMORY_REGISTERS Hba);
 LOUSTATUS AhciPciDeviceRuntimeResume(P_PCI_DEVICE_OBJECT PDEV, PPCI_COMMON_CONFIG Config, PAHCI_MEMORY_REGISTERS Hba);
 int AhciInitializeMsi(P_PCI_DEVICE_OBJECT PDEV, int NPorts, PAHCI_DRIVER_EXTENDED_OBJECT ExtendedObject);
+void AhciStartEngine(PATA_PORT Port);
+LOUSTATUS AhciStopEngine(PATA_PORT Port);
 
 void AhciCheckAndMarkExternalPorts(PATA_PORT Ap) {
     
@@ -522,12 +524,18 @@ void AhciIntelPcsQuirk(
     P_PCI_DEVICE_OBJECT PDEV, 
     PAHCI_DRIVER_EXTENDED_OBJECT ExtendedObject
 ){
-    //uint16_t Tmp16 = 0;
+    uint16_t Tmp16 = 0;
 
     if (!(ExtendedObject->DevicePortInfo.HFlags & AHCI_HFLAG_INTEL_PCS_QUIRK)) {
         return;
     }
     LouPrint("Handling Intel Pcs Quirk\n");
+
+    Tmp16 = LouKeReadPciUint16(PDEV, PCS_6);
+    if ((Tmp16 & ExtendedObject->Host->PortImplementation) != ExtendedObject->Host->PortImplementation) {
+        Tmp16 |= ExtendedObject->Host->PortImplementation;
+        LouKeWritePciUint16(PDEV, PCS_6, Tmp16);
+    }
 
 }
 
@@ -544,6 +552,49 @@ LOUSTATUS AhciPciResetController(PATA_HOST Host) {
     );
 
     return Status;
+}
+
+
+
+void AhciPciInitializeController(PATA_HOST Host) {
+    PAHCI_DRIVER_EXTENDED_OBJECT ExtendedObject = (PAHCI_DRIVER_EXTENDED_OBJECT)Host->PrivateData;
+    PPCI_COMMON_CONFIG Config = &ExtendedObject->SavedConfig;
+    PULONG Mmio;
+    ULONG Tmp = 0x00;
+    uint8_t Mv = 0x00;
+
+    if (ExtendedObject->DevicePortInfo.HFlags & AHCI_HFLAG_MV_PATA) {
+        if (Config->Header.DeviceID == 0x6121) {
+            Mv = 2;
+        }
+        else {
+            Mv = 4;
+        }
+        Mmio = AhciGetPortBase(ExtendedObject, Mv);
+
+        WRITE_REGISTER_ULONG(Mmio + PORT_IRQ_MASK, 0);
+
+        Tmp = READ_REGISTER_ULONG(Mmio + PORT_IRQ_STATUS);
+        LouPrint("Port Irq Status:%h\n", Tmp);
+        if (Tmp) {
+            WRITE_REGISTER_ULONG(Mmio + PORT_IRQ_STATUS,Tmp);
+        }
+    }
+
+    AhciIntitializeController(Host);
+
+}
+
+void SetUpBasicFunctions(PAHCI_DRIVER_EXTENDED_OBJECT Ext){
+    if (!Ext->StartEngine) {
+        Ext->StartEngine = AhciStartEngine;
+    }
+    if (!Ext->StopEngine) {
+        Ext->StopEngine = AhciStopEngine;
+    }
+    if (!Ext->IrqHandler) {
+        //TODO Interrupt Handler
+    }
 }
 
 LOUSTATUS AhciInitOne(
@@ -632,6 +683,8 @@ LOUSTATUS AhciInitOne(
     LouPrint("Host Is:%h\n", ExtendedObject->Host);
 
     ExtendedObject->HandOffPciContext = LouKeHalPciSaveContext(PDEV);
+    SetUpBasicFunctions(ExtendedObject);
+
     PAHCI_MEMORY_REGISTERS Host = ExtendedObject->Host;
     //lets rock and roll
     if (Host->Capabilities & HOST_CAP_NCQ) {
@@ -693,6 +746,7 @@ LOUSTATUS AhciInitOne(
         PATA_PORT Ap = &AtaHost->Ports[i];
 
         AtaPortRegisterPortIo(Ap, Host, 0x100 + i * 0x80);
+        Ap->PortNumber = i;
 
         if (Ap->Flags & ATA_FLAG_EM) {
             LouPrint("Setting Eclosure Message\n");
@@ -703,11 +757,28 @@ LOUSTATUS AhciInitOne(
         if (!(Host->PortImplementation & (1 << i))) {
             Ap->Operations = 0x00;//no implementations
         }
+        else {
+            LouKeRegisterDevice(
+                PDEV,
+                ATA_DEVICE_T,
+                "HostKeyDevice:Annya/System64/AHCI",
+                Ap,
+                Ap
+            );
+        }
     }
 
     ExtendedObject->SavedHost = *ExtendedObject->Host;//Save Host Contextr
 
-    AhciPciResetController(AtaHost);
+    Status = AhciPciResetController(AtaHost);
+
+    if (Status != STATUS_SUCCESS) {
+        return Status;
+    }
+    LouPrint("Initializing Controller\n");
+
+    AhciPciInitializeController(AtaHost);
+    LouKeHalPciSetMaster(PDEV);
 
     LouPrint("AhciInitOne() STATUS_SUCCESS\n");
     return Status;
@@ -824,7 +895,15 @@ int AhciInitializeMsi(
     //}
 
     //NumVectors = LouKeHalMallocPciIrqVectors(PDEV, 1, PCI_IRQ_MSI | PCI_IRQ_MSIX);
-   
 
     return NumVectors;
+}
+
+void AhciStartEngine(PATA_PORT Port) {
+
+}
+
+LOUSTATUS AhciStopEngine(PATA_PORT Port) {
+
+    return STATUS_SUCCESS;
 }

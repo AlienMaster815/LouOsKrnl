@@ -11,6 +11,47 @@
 extern "C" {
 #endif
 
+#ifndef _PCI_H
+#include <drivers/Lou_drivers/pci.h>
+#endif
+#ifndef _STYPES_H
+#include <SharedTypes.h>
+#endif
+
+typedef enum{
+	MASTER_TABLE				  = 0,
+    ATA_DEVICE_T                  = 1,
+    GRAPHICS_DEVICE_T             = 2,
+    NETWORK_DEVICE_T              = 3,
+    SOUND_DEVICE_T                = 4,
+    MBOARD_DEVICE_T               = 5,
+    ACPI_DEVICE_T                 = 6,
+    POINTING_DEVICE_T             = 7,
+    INTERFACING_DEVICE_T          = 8,
+    SERIAL_DEVICE_T               = 9,
+    SCSI_DEVICE_T                 = 10,
+    GENERIC_PCI_DEVICE_T          = 11,
+    USB_DEVICE_T                  = 12,
+    BLUETOOTH_DEVICE_T            = 13,
+    PRINTER_DEVICE_T              = 14,
+    POWER_MANAGEMENT_DEVICE_T     = 15,
+    VIRTUAL_DEVICE_T              = 16,
+    SECURITY_DEVICE_T             = 17,
+    INPUT_DEVICE_T                = 18,
+    NVME_DEVICE_T                 = 20,
+    WIFI_DEVICE_T                 = 21,
+}SYSTEM_DEVICE_IDENTIFIER;
+
+typedef struct _DEVICE_DIRECTORY_TABLE{
+    ListHeader TableStart;
+    SYSTEM_DEVICE_IDENTIFIER Sdi;
+    string LOUSINE_REGISTRATION_ENTRY;
+    void* KeyData;
+    P_PCI_DEVICE_OBJECT PDEV;
+    void* DevicePrivateData;
+    void* DeviceSpecificData;
+}DEVICE_DIRECTORY_TABLE, * PDEVICE_DIRECTORY_TABLE, DEIVCE_INFORMATION_TABLE, * PDEVICE_INFORMATION_TABLE;
+
 //DEV TYPES
 #define DEV_TYPE_STORAGE 1
 

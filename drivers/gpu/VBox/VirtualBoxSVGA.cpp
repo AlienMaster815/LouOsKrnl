@@ -35,6 +35,7 @@ LOUDDK_API_ENTRY void VirtualBoxChangeResolution(
     VBE_INFO.vbe_mode_info.bpp = 32;
     VBE_INFO.vbe_mode_info.pitch = Width * (32 / 8);
     
+    
 
     print_clear();
 
@@ -49,6 +50,7 @@ UNUSED static LINUX_PCI_DEVICE_ID VBoxDeviceIds[] = {
     {0x80EE, ANY_PCI_ID, ANY_PCI_ID, ANY_PCI_ID, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0} // Correctly initializing all fields to 0
 };
+
 
 void InitializeVirtualBoxVgaAdapter(P_PCI_DEVICE_OBJECT PDEV){
 

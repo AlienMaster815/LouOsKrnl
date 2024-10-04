@@ -636,19 +636,19 @@ LOUSTATUS InitAHCIController(P_PCI_DEVICE_OBJECT PDEV) {
 LOUDDK_API_ENTRY void AHCI_Interrupt_Handler(){
 
 	//open devices 
-	static uint16_t NumDev = GetNumberOfDevices();
-	static PDeviceInformationTable Devices = GetDeviceInformationTable();
+	//static uint16_t NumDev = GetNumberOfDevices();
+	//static PDeviceInformationTable Devices = GetDeviceInformationTable();
 	//parse devices for ahci devices
-	for(uint16_t i = 0; i < NumDev; i++){
-		if(Devices[i].DeviceArchitecture == DEV_ARCH_AHCI){
+	//for(uint16_t i = 0; i < NumDev; i++){
+	//	if(Devices[i].DeviceArchitecture == DEV_ARCH_AHCI){
 			//for all implemented devices check:
 			//the port interrupt status registers
 			//to see if and what needs to be serviced
 
 
 
-		}
-	}
+	//	}
+	//}
 }
 static inline
 LOUSTATUS ResetAhciToKnowState(

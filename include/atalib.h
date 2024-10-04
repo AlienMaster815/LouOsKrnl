@@ -1,4 +1,9 @@
+#ifdef __cplusplus
 #include <LouDDK.h>
+extern "C" {
+#else 
+#include <LouAPI.h>
+#endif
 
 #define ATAPI_CDB_LEN 12
 #define ATA_MAX_QUEUE 32
@@ -507,7 +512,7 @@ typedef struct _ATA_PORT_OPERATION_TABLE{
     uint32_t (*SFFDataXFer)(PATA_QUEUED_COMMAND Qc, uint8_t* Buf, uint32_t BufLength, int Rw);
     void (*SFFIrqOn)(PATA_PORT Port);
     bool (*SFFIrqCheck)(PATA_PORT Port);
-    void (SFFIrqClear)(PATA_PORT Port);
+    void (*SFFIrqClear)(PATA_PORT Port);
     void (*SFFDraiunFifo)(PATA_QUEUED_COMMAND Qc);
     //BMDma
     void (*BMDmaSetup)(PATA_QUEUED_COMMAND Qc);
@@ -543,6 +548,9 @@ typedef struct _ATA_PORT_OPERATION_TABLE{
 
 #define ATA_PFLAG_EXTERNAL 1
 
+#ifdef __cplusplus
+}
+#endif
 
 #ifdef _KERNEL_MODULE_
 KERNEL_EXPORT PATA_HOST LouMallocAtaHost(P_PCI_DEVICE_OBJECT PDEV, PATA_PORT Port, int NPorts);
@@ -552,6 +560,8 @@ PATA_PORT Ap,
 void* Mmio,
 size_t Offset
 );
+
+
 
 #endif
 #pragma pack(pop)

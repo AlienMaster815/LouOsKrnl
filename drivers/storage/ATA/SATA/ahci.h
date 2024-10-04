@@ -1187,6 +1187,12 @@ typedef struct _AHCI_DRIVER_EXTENDED_OBJECT {
     uint32_t StoredEmLoc;
     uint32_t EmLocBufferSize;
     uint32_t EmMessageType;
+
+    //Ahci Functions
+    void (*StartEngine)(PATA_PORT Ap);
+    LOUSTATUS(*StopEngine)(PATA_PORT Ap);
+    void (*IrqHandler)(int Irq, void* DevInstance);
+
 }AHCI_DRIVER_EXTENDED_OBJECT, * PAHCI_DRIVER_EXTENDED_OBJECT;
 
 
@@ -1197,7 +1203,12 @@ static inline int AhciNrPorts(uint32_t cap){
 void AhciSetEmMessage(PAHCI_DRIVER_EXTENDED_OBJECT HostPrivate, PATA_PORT AtaPortInfo);
 LOUSTATUS AhciResetEm(PATA_HOST Host);
 LOUSTATUS ResetAhciController(PATA_HOST Host);
+PULONG AhciGetPortBase(
+    PAHCI_DRIVER_EXTENDED_OBJECT Ext,
+    uint8_t PortNumber
+);
 
+void AhciIntitializeController(PATA_HOST Host);
 
 #pragma pack(pop)
 #endif//_AHCI_H_

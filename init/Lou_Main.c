@@ -150,7 +150,6 @@ LOUSTATUS Lou_kernel_early_initialization(){
     return LOUSTATUS_GOOD;
 }
 
-void UpdateDeviceInformationTable();
 void StorPortInitializeAllDevices();
 
 int InitKThread();
@@ -160,13 +159,11 @@ LOUSTATUS Set_Up_Devices(){
     //initialize_ps2_keyboard();
     //InitializePs2Mouse();
     //PCI_Setup();
-    LastSataRun();
-    UpdateDeviceInformationTable();
     //FileSystemSetup();
 
     return LOUSTATUS_GOOD;
 }
-
+void InitializeDeviceManager();
 LOUSTATUS LouKeMallocAdvancedKernelInterruptHandleing();
 
 void Advanced_Kernel_Initialization(){
@@ -244,11 +241,11 @@ void StartDebugger(){
     WINDOW_CHARECTERISTICS Charecteristics;
 
     Charecteristics.Type = TEXT_WINDOW;
-    Charecteristics.WindowName = "KrnlDebugger.exe";
+    Charecteristics.WindowName = "louoskrnl.exe";
 
     HWind = LouCreateWindow(
-        10, 10,
-        600,400,
+        0, 0,
+        GetScreenBufferWidth(),GetScreenBufferHeight(),
         0x00, 
         &Charecteristics
     );
@@ -316,6 +313,7 @@ KERNEL_ENTRY Lou_kernel_start(
     InitializeGenericTables();
 
     Advanced_Kernel_Initialization();
+
 
     InitPreLoadedModules();
 

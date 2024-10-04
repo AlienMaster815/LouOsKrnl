@@ -17,7 +17,7 @@ typedef struct _TABLE_ENTRY{
 #define PRE_LOADED_UNKOWN_FUNCTIONS 12
 #define PRE_LOADED_WDFLDR_FUNCTIONS 5
 #define PRE_LOADED_STORPORT_FUNCTIONS 9
-#define PRE_LOADED_LOUOSKRNL_FUNCTIONS 96
+#define PRE_LOADED_LOUOSKRNL_FUNCTIONS 98
 
 static uint64_t LouOsKrnlFunctionAddresses[PRE_LOADED_LOUOSKRNL_FUNCTIONS];
 static FUNCTION_NAME LouOsKrnlFunctionNames[PRE_LOADED_LOUOSKRNL_FUNCTIONS];
@@ -158,6 +158,8 @@ void InitializeLousineKernelTables(){
     ImportTables[4].FunctionName[93] = "WRITE_PORT_ULONG";
     ImportTables[4].FunctionName[94] = "WRITE_REGISTER_ULONG";
     ImportTables[4].FunctionName[95] = "sleep";
+    ImportTables[4].FunctionName[96] = "LouKeHalPciSetMaster";
+    ImportTables[4].FunctionName[97] = "LouKeRegisterDevice";
 
     ImportTables[4].VirtualAddress = LouOsKrnlFunctionAddresses;
 
@@ -257,6 +259,8 @@ void InitializeLousineKernelTables(){
     ImportTables[4].VirtualAddress[93] = (uint64_t)WRITE_PORT_ULONG;
     ImportTables[4].VirtualAddress[94] = (uint64_t)WRITE_REGISTER_ULONG;
     ImportTables[4].VirtualAddress[95] = (uint64_t)sleep;
+    ImportTables[4].VirtualAddress[96] = (uint64_t)LouKeHalPciSetMaster;
+    ImportTables[4].VirtualAddress[97] = (uint64_t)LouKeRegisterDevice;
 
 }
 

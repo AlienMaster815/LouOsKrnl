@@ -97,3 +97,5 @@ EXPORTS
     WRITE_PORT_ULONG
     WRITE_REGISTER_ULONG
     sleep
+    LouKeHalPciSetMaster
+    LouKeRegisterDevice

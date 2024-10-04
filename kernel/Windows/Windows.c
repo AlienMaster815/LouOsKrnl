@@ -70,6 +70,7 @@ void DrawWindowTitle(
     Title.Charecteristics.Dimentions.width = WindowHandle->CurrentWidth - 6;
     Title.Cursor.x = 0;
     Title.Cursor.y = 0;
+    VgaPutCharecterRgb(' ', &Title , 255, 255, 255);//prints a null for a memory bug
 
     for(uint8_t i = 0; i < strlen(WindowHandle->WindowName); i++){
         VgaPutCharecterRgb(WindowHandle->WindowName[i], &Title , 255, 255, 255);
@@ -88,18 +89,29 @@ bool DrawWindow(
     uint16_t height,
     PWINDHANDLE WindHandle
 ){
-
     if((width < 50) || (height < 50)){
         return false;
     }
 
-    DrawRectangle(
-        WindHandle->CurrentX,
-        WindHandle->CurrentY,
-        WindHandle->CurrentWidth,
-        WindHandle->CurrentHight,
-        0, 128,128  
-    );
+    //later on we will check for somthing behind it to draw back for now though
+    uint16_t oldX = WindHandle->CurrentX;
+    uint16_t oldY = WindHandle->CurrentY;
+    uint16_t oldWidth = WindHandle->CurrentWidth;
+    uint16_t oldHeight = WindHandle->CurrentHight;
+
+    // Redraw only the parts that have been uncovered (background teal)
+    if (x > oldX) {  // Window moved to the right, restore the left part of old position
+        DrawRectangle(oldX, oldY, x - oldX, oldHeight, 0, 128, 128);
+    } else if (x < oldX) {  // Window moved to the left, restore the right part of old position
+        DrawRectangle(x + width, oldY, (oldX + oldWidth) - (x + width), oldHeight, 0, 128, 128);
+    }
+
+    if (y > oldY) {  // Window moved down, restore the top part of old position
+        DrawRectangle(oldX, oldY, oldWidth, y - oldY, 0, 128, 128);
+    } else if (y < oldY) {  // Window moved up, restore the bottom part of old position
+        DrawRectangle(oldX, y + height, oldWidth, (oldY + oldHeight) - (y + height), 0, 128, 128);
+    }
+
 
     WindHandle->CurrentX = x;
     WindHandle->CurrentY = y;
@@ -115,7 +127,7 @@ bool DrawWindow(
         x,y,
         width,height,
         WindHandle->ForgroundColor.r,
-        WindHandle->ForgroundColor.g ,
+        WindHandle->ForgroundColor.g,
         WindHandle->ForgroundColor.b 
     );
     
@@ -222,7 +234,7 @@ bool DrawWindow(
     //plot_Line(x+5,y+2+27,x+width-5,y+2+27,64,64,64);
     Draw2DBorder(
         x+5,y+2+27,
-        width-x, height-(y+24),         
+        (width-9), (height-2-30),         
         WindHandle->AftHighLight.r,
         WindHandle->AftHighLight.g,
         WindHandle->AftHighLight.b
@@ -311,7 +323,6 @@ bool DrawWindow(
     );
 
     return true;
-
 }
 
 bool LouUpdateWindow(
@@ -331,7 +342,6 @@ bool LouUpdateWindow(
     DrawWindowTitle(
         WindHandle
     );
-
     return true;
 }
 
@@ -343,8 +353,8 @@ bool LouUpdateTextWindow(PWINDHANDLE WindowHandle,TEXT_WINDOW_EVENT Update){
             FRAME_BUFFER_HANDLE FrameHandle;
             FrameHandle.x = WindowHandle->Charecteristics.Dimentions.x;
             FrameHandle.y = WindowHandle->Charecteristics.Dimentions.y + 17;
-            FrameHandle.width = WindowHandle->Charecteristics.Dimentions.width;
-            FrameHandle.height = WindowHandle->Charecteristics.Dimentions.height - 19;
+            FrameHandle.width = WindowHandle->Charecteristics.Dimentions.width - 10;
+            FrameHandle.height = WindowHandle->Charecteristics.Dimentions.height - 27;
 
             FrameBufferMemMov(
                 &FrameHandle,
@@ -353,8 +363,7 @@ bool LouUpdateTextWindow(PWINDHANDLE WindowHandle,TEXT_WINDOW_EVENT Update){
                 WindowHandle->Charecteristics.Dimentions.y   
             );
 
-
-            //Draw2DBorder(FrameHandle.x,FrameHandle.y,FrameHandle.width, FrameHandle.height,255,0,0);
+            //Draw2DBorder(FrameHandle.x ,FrameHandle.y,FrameHandle.width, FrameHandle.height,255,0,0);
             break;
         }
 
@@ -422,12 +431,11 @@ PWINDHANDLE LouCreateWindow(
 
     WindHandle->WindowName = Charecteristics->WindowName;
 
-    if(DrawWindow(
-        x, y,
+    LouUpdateWindow(
+        x, y, 
         width, height,
-        WindHandle) != true){
-        return false;
-    }
+        WindHandle
+    );
 
     DrawWindowTitle(
         WindHandle

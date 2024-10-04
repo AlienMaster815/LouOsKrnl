@@ -50,14 +50,14 @@ void intToString(uint64_t num, char* str);
 //void uintToLittleEndianHexString(uint64_t number, char* hexString);
 void uintToHexString(uint64_t number, char* hexString);
 
-static mutex_t PrintLock; 
+static spinlock_t PrintLock; 
 
 int LouPrint(char* format, ...) {
     va_list args;
     va_start(args, format);
-    MutexLock(&PrintLock);
     if(DebugWindow != 0x00){
-
+    LouKIRQL OldLevel;
+    LouKeAcquireSpinLock(&PrintLock ,&OldLevel);
     while (*format) {
         if (*format == '%') {
             format++; // Move past '%'
@@ -183,8 +183,8 @@ int LouPrint(char* format, ...) {
         }
     }
     va_end(args);
+    LouKeReleaseSpinLock(&PrintLock ,&OldLevel);
     }
-    MutexUnlock(&PrintLock);
     return 0;
 }
 #endif

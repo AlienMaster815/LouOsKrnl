@@ -35,6 +35,7 @@ LOUDDK_API_ENTRY void LouKeHalPciClearMaster(
     P_PCI_DEVICE_OBJECT PDEV
 );
 
+LOUDDK_API_ENTRY void LouKeHalPciSetMaster(P_PCI_DEVICE_OBJECT PDEV);
 
 
 LOUDDK_API_ENTRY uint64_t LouKeHalLinuxPciCheckForCompatibleConfiguration(
@@ -49,6 +50,13 @@ int LouKeHalMallocPciIrqVectors(
     P_PCI_DEVICE_OBJECT PDEV, 
     int RequestedVectors, 
     uint64_t Flags
+);
+
+KERNEL_IMPORT LOUSTATUS LouKeRegisterDevice(
+    P_PCI_DEVICE_OBJECT PDEV, 
+    SYSTEM_DEVICE_IDENTIFIER Sdi,
+    string LRE,
+    void* DevicePrivateData
 );
 
 #else 
@@ -81,6 +89,16 @@ int LouKeHalMallocPciIrqVectors(
     P_PCI_DEVICE_OBJECT PDEV, 
     int RequestedVectors, 
     uint64_t Flags
+);
+
+KERNEL_EXPORT void LouKeHalPciSetMaster(P_PCI_DEVICE_OBJECT PDEV);
+
+KERNEL_EXPORT LOUSTATUS LouKeRegisterDevice(
+    P_PCI_DEVICE_OBJECT PDEV, 
+    SYSTEM_DEVICE_IDENTIFIER Sdi,
+    string LRE, //optional
+    void* KeyData, //optional
+    void* DevicePrivateData
 );
 
 #endif

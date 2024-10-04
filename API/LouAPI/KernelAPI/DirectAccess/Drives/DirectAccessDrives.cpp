@@ -327,8 +327,8 @@ uint64_t* BufferSize,
 LOUSTATUS* State
 ){
 	//all the statics are to save the stack
-    static uint16_t NumberOfDevices = GetNumberOfDevices();
-    static PDeviceInformationTable Devices = GetDeviceInformationTable();
+    static uint16_t NumberOfDevices = 0;//GetNumberOfDevices();
+    static PDeviceInformationTable Devices = 0;//GetDeviceInformationTable();
 
     static uint8_t j = 0;
     for(static uint16_t i = 0; i < NumberOfDevices; i++){
