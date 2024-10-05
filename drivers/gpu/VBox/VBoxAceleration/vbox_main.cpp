@@ -96,7 +96,7 @@ LOUSTATUS VboxHwInit(struct vbox_private *vbox){
 
     vbox->guest_heap = (uint8_t*)((uint64_t)LouKeHalGetPciVirtualBaseAddress(Config, 0) + GUEST_HEAP_OFFSET(vbox));
 
-    vbox->guest_pool = LouKeMapPool((uint64_t)vbox->guest_heap, GUEST_HEAP_USABLE_SIZE, 16, "VBOX_HEAP", 0);    
+    vbox->guest_pool = LouKeMapPool((uint64_t)vbox->guest_heap, (uint64_t)vbox->guest_heap, GUEST_HEAP_USABLE_SIZE, 16, "VBOX_HEAP", 0);    
 
     if(!vbox->guest_pool){
         return STATUS_INSUFFICIENT_RESOURCES;

@@ -187,6 +187,7 @@ typedef struct LMPOOL_DIRECTORY{
     ListHeader List;
     string Tag;
     uint64_t Location;
+    uint64_t VLocation;
     uint64_t PoolSize;
     uint64_t ObjectSize;
     uint64_t Flags;
@@ -265,10 +266,19 @@ LOUSTATUS RequestPhysicalAddress(
 
 PLMPOOL_DIRECTORY LouKeMapPool(
     uint64_t LocationOfPool,
+    uint64_t LocationOf,
     uint64_t PoolSize,
     uint64_t ObjectSize,
     string Tag,
     uint64_t Flags
+);
+
+PLMPOOL_DIRECTORY LouKeCreateMemoryPool(
+    uint64_t NumberOfPoolMembers,
+    uint64_t ObjectSize,
+    string Tag,
+    uint64_t Flags,
+    uint64_t PageFlags
 );
 
 void LouKeFreePool(PLMPOOL_DIRECTORY PoolToFree);

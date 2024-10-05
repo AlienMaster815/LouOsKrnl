@@ -821,3 +821,133 @@ LOUDDK_API_ENTRY PATA_HOST LouMallocAtaHost(P_PCI_DEVICE_OBJECT PDEV, PATA_PORT 
     LouPrint("Successfully Allocated Host\n");
     return NewHost;
 }
+
+LOUSTATUS AtaReadPIOData(
+    PATA_PORT Port,
+    PATA_QUEUED_COMMAND Qc,
+    uint8_t* Buffer,
+    uint32_t BufferLength
+){
+    LOUSTATUS Status = STATUS_SUCCESS;
+
+    // Prepare the queued command for reading
+    if (Port->Operations->QcPrep(Qc) != STATUS_SUCCESS) {
+        return STATUS_UNSUCCESSFUL;
+    }
+
+    // Issue the command
+    Port->Operations->QcIssue(Qc);
+
+    // Transfer data (Read)
+    if (Port->Operations->SFFDataXFer(Qc, Buffer, BufferLength, 0 /* 0 for read */) != BufferLength) {
+        Status = STATUS_UNSUCCESSFUL;
+    }
+
+    // Finalize the command and handle any completion tasks
+    Port->Operations->QcFillRtf(Qc);
+    Port->Operations->PostInternalCommand(Qc);
+
+    return Status;
+}
+
+LOUSTATUS AtaWritePIOData(
+    PATA_PORT Port,
+    PATA_QUEUED_COMMAND Qc,
+    uint8_t* Buffer,
+    uint32_t BufferLength
+){
+    LOUSTATUS Status = STATUS_SUCCESS;
+
+    // Prepare the queued command for writing
+    if (Port->Operations->QcPrep(Qc) != STATUS_SUCCESS) {
+        return STATUS_UNSUCCESSFUL;
+    }
+
+    // Issue the command
+    Port->Operations->QcIssue(Qc);
+
+    // Transfer data (Write)
+    if (Port->Operations->SFFDataXFer(Qc, Buffer, BufferLength, 1 /* 1 for write */) != BufferLength) {
+        Status = STATUS_UNSUCCESSFUL;
+    }
+
+    // Finalize the command and handle any completion tasks
+    Port->Operations->QcFillRtf(Qc);
+    Port->Operations->PostInternalCommand(Qc);
+
+    return Status;
+}
+
+LOUSTATUS AtaReadDMAData(
+    PATA_PORT Port,
+    PATA_QUEUED_COMMAND Qc,
+    uint8_t* Buffer,
+    uint32_t BufferLength
+){
+    LOUSTATUS Status = STATUS_SUCCESS;
+
+    // Prepare the queued command for reading
+    if (Port->Operations->QcPrep(Qc) != STATUS_SUCCESS) {
+        return STATUS_UNSUCCESSFUL;
+    }
+
+    // Setup DMA for data transfer
+    Port->Operations->BMDmaSetup(Qc);
+
+    // Issue the command
+    Port->Operations->QcIssue(Qc);
+
+    // Start the DMA transfer
+    Port->Operations->BMDmaStart(Qc);
+
+    // Check DMA status to ensure successful transfer
+    if (Port->Operations->BMDmaStatus(Port) != STATUS_SUCCESS) {
+        Status = STATUS_UNSUCCESSFUL;
+    }
+
+    // Stop DMA after transfer completion
+    Port->Operations->BMDmaStop(Qc);
+
+    // Finalize the command and handle any completion tasks
+    Port->Operations->QcFillRtf(Qc);
+    Port->Operations->PostInternalCommand(Qc);
+
+    return Status;
+}
+
+LOUSTATUS AtaWriteDMAData(
+    PATA_PORT Port,
+    PATA_QUEUED_COMMAND Qc,
+    uint8_t* Buffer,
+    uint32_t BufferLength
+){
+    LOUSTATUS Status = STATUS_SUCCESS;
+
+    // Prepare the queued command for writing
+    if (Port->Operations->QcPrep(Qc) != STATUS_SUCCESS) {
+        return STATUS_UNSUCCESSFUL;
+    }
+
+    // Setup DMA for data transfer
+    Port->Operations->BMDmaSetup(Qc);
+
+    // Issue the command
+    Port->Operations->QcIssue(Qc);
+
+    // Start the DMA transfer
+    Port->Operations->BMDmaStart(Qc);
+
+    // Check DMA status to ensure successful transfer
+    if (Port->Operations->BMDmaStatus(Port) != STATUS_SUCCESS) {
+        Status = STATUS_UNSUCCESSFUL;
+    }
+
+    // Stop DMA after transfer completion
+    Port->Operations->BMDmaStop(Qc);
+
+    // Finalize the command and handle any completion tasks
+    Port->Operations->QcFillRtf(Qc);
+    Port->Operations->PostInternalCommand(Qc);
+
+    return Status;
+}
