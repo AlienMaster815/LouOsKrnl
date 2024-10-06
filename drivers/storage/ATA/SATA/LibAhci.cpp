@@ -208,14 +208,38 @@ void AhciIntitializeController(PATA_HOST Host) {
 
 }
 
+
+
+bool AtaLinkActive(PATA_LINK Link) {
+
+	return true;
+}
+
+LOUSTATUS SataPmpQcDeferCmdSwitch(PATA_QUEUED_COMMAND Qc) {
+	PATA_LINK Link = Qc->Dev->Link;
+	PATA_PORT Port = Qc->Port;
+
+	if ((Port->ExeclLink == 0x00) || (Port->ExeclLink == Link)) {
+		if ((Port->NrActiveLinks == 0) || (AtaLinkActive(Link))) {
+			Qc->Flags |= ATA_QCFLAG_CLEAR_EXCL;
+			return AtaStdQcDefer(Qc);
+		}
+	}
+
+	return STATUS_UNSUCCESSFUL;
+}
+
 LOUSTATUS AhciPmpQcDefer(PATA_QUEUED_COMMAND Qc) {
 
-	LouPrint("AhciPmpQcDefer()\n");
+	PATA_PORT Port = Qc->Port;
+	PAHCI_PORT_PRIVATE pp = (PAHCI_PORT_PRIVATE)Port->PrivateData;
 
-
-
-	while (1);
-	return STATUS_SUCCESS;
+	if (pp->FbsEnabled) {
+		return AtaStdQcDefer(Qc);
+	}
+	else {
+		return SataPmpQcDeferCmdSwitch(Qc);
+	}
 }
 
 AtaCompletionErrors AhciQcPrep(PATA_QUEUED_COMMAND Qc) {

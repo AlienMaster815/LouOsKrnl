@@ -304,6 +304,7 @@ static inline void DirectDriveAccessReadInitQueueComand(PATA_PORT Ap, PATA_QUEUE
 			if(Ap->Ncq){
 				LouPrint("Createing NCQ Command\n");
 				Qc->TaskFile.Command = ATA_READ_FPDMA_QUEUED;
+				Qc->TaskFile.Protocol |= NCQ_PROT_FLAG;
 			}
 			else{
 				LouPrint("Createing DMA Command\n");
@@ -337,6 +338,13 @@ static inline void DirectDriveAccessReadInitQueueComand(PATA_PORT Ap, PATA_QUEUE
 			Qc->TaskFile.Device  = 0xE0 | ((LBA >> 24) & 0x0F);  // Bits 27:24 (device select)
 			Qc->TaskFile.NSect = SectorCount & 0xFF;  // Number of sectors to transfer
 		}
+		
+	Qc->Dev = (PATA_DEVICE)LouMalloc(sizeof(ATA_DEVICE));
+	Qc->Dev->Link = Ap->ExeclLink;
+}
+
+static inline void DirectDriveAccessReadFreeQueueComand(PATA_QUEUED_COMMAND Qc){
+	LouFree((RAMADD)Qc->Dev);
 }
 
 LOUDDK_API_ENTRY 
@@ -358,7 +366,7 @@ LOUSTATUS* State
 		if(Ap->Operations->QcDefer){
 			Ap->Operations->QcDefer(Qc);
 		}
-
+		DirectDriveAccessReadFreeQueueComand(Qc);
 		LouFree((RAMADD)Qc);
 	}
 	

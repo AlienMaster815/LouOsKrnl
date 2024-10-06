@@ -17,7 +17,7 @@ typedef struct _TABLE_ENTRY{
 #define PRE_LOADED_UNKOWN_FUNCTIONS 12
 #define PRE_LOADED_WDFLDR_FUNCTIONS 5
 #define PRE_LOADED_STORPORT_FUNCTIONS 9
-#define PRE_LOADED_LOUOSKRNL_FUNCTIONS 98
+#define PRE_LOADED_LOUOSKRNL_FUNCTIONS 99
 
 static uint64_t LouOsKrnlFunctionAddresses[PRE_LOADED_LOUOSKRNL_FUNCTIONS];
 static FUNCTION_NAME LouOsKrnlFunctionNames[PRE_LOADED_LOUOSKRNL_FUNCTIONS];
@@ -44,6 +44,7 @@ ULONG KeNumberProcessors();
 
 KERNEL_IMPORT int _snwprintf(wchar_t *buffer, size_t buffer_size, const wchar_t *format, ...);
 LOUDDK_API_ENTRY PATA_HOST LouMallocAtaHost(P_PCI_DEVICE_OBJECT PDEV, PATA_PORT Port, int NPorts);
+LOUDDK_API_ENTRY LOUSTATUS AtaStdQcDefer(PATA_QUEUED_COMMAND Wc);
 
 VOID
 RtlUnwind(
@@ -160,6 +161,7 @@ void InitializeLousineKernelTables(){
     ImportTables[4].FunctionName[95] = "sleep";
     ImportTables[4].FunctionName[96] = "LouKeHalPciSetMaster";
     ImportTables[4].FunctionName[97] = "LouKeRegisterDevice";
+    ImportTables[4].FunctionName[98] = "AtaStdQcDefer";
 
     ImportTables[4].VirtualAddress = LouOsKrnlFunctionAddresses;
 
@@ -261,6 +263,7 @@ void InitializeLousineKernelTables(){
     ImportTables[4].VirtualAddress[95] = (uint64_t)sleep;
     ImportTables[4].VirtualAddress[96] = (uint64_t)LouKeHalPciSetMaster;
     ImportTables[4].VirtualAddress[97] = (uint64_t)LouKeRegisterDevice;
+    ImportTables[4].VirtualAddress[98] = (uint64_t)AtaStdQcDefer;
 
 }
 

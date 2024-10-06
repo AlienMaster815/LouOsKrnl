@@ -1,6 +1,6 @@
 ﻿  Building 'ahci' with toolset 'WindowsKernelModeDriver10.0' and the 'Universal' target platform.
   Stamping x64\Debug\ahci.inf
-  Stamping [Version] section with DriverVer=10/06/2024,1.49.15.646
+  Stamping [Version] section with DriverVer=10/06/2024,11.11.16.307
   libata.cpp
   LibAhci.cpp
   ahci.cpp

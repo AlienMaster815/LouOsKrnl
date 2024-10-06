@@ -48,6 +48,8 @@ extern "C" {
 #define SDEV_BLOCK 8
 #define SDEV_CREATE_BLOCK 9
 
+#define ATA_QCFLAG_CLEAR_EXCL 1
+
 typedef uint32_t AtaLpmPolicy;
 typedef uint32_t AtaCompletionErrors;
 typedef uint32_t SwAvtivity;
@@ -676,6 +678,9 @@ PATA_PORT LouKeGetAtaStoragePortObject(uint8_t DriveNumber);
 #define ATA_IDENTIFY_DEVICE_DMA                 0xEE
 #define ATA_SET_FEATURES                        0xEF
 
+#define NCQ_PROT_FLAG 1
+#define ATA_TAG_INTERNAL 1
+
 //Note Put Kernel Data Before this 
 #ifdef __cplusplus
 }
@@ -690,7 +695,8 @@ void* Mmio,
 size_t Offset
 );
 
-
+KERNEL_EXPORT
+LOUSTATUS AtaStdQcDefer(PATA_QUEUED_COMMAND Wc);
 
 
 #endif

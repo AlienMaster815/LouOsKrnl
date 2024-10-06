@@ -1193,6 +1193,7 @@ typedef struct _AHCI_DRIVER_EXTENDED_OBJECT {
     LOUSTATUS(*StopEngine)(PATA_PORT Ap);
     void (*IrqHandler)(int Irq, void* DevInstance);
 
+    bool FbsEnabled;
 }AHCI_DRIVER_EXTENDED_OBJECT, * PAHCI_DRIVER_EXTENDED_OBJECT;
 
 

@@ -11,7 +11,7 @@
 #define AHCI_DEFAULT_BAR 5
 
 #define DRIVER_NAME "Lousine External AHCI .SYS Driver"
-#define DRIVER_VERSION "1.13"
+#define DRIVER_VERSION "1.14"
 
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
@@ -752,6 +752,10 @@ LOUSTATUS AhciInitOne(
     if (ExtendedObject->DevicePortInfo.Flags & ATA_FLAG_EM) {
         AhciResetEm(AtaHost);
     }
+    if (Host->Capabilities & HOST_CAP_FBS) {
+        ExtendedObject->FbsEnabled = true;
+    }
+
     //update all ports
     for (i = 0; i < nports; i++) {
         AtaHost->Ports[i] = ExtendedObject->DevicePortInfo;
@@ -764,6 +768,17 @@ LOUSTATUS AhciInitOne(
 
         AtaPortRegisterPortIo(Ap, Host, 0x100 + i * 0x80);
         Ap->PortNumber = i;
+        PAHCI_PORT_PRIVATE pp = (PAHCI_PORT_PRIVATE)LouMalloc(sizeof(AHCI_PORT_PRIVATE));
+        PAHCI_PORT Port = (PAHCI_PORT)Ap->PortMmio;
+        Ap->PrivateData = pp;
+        #define AHCI_PxFBS_EN (1 << 0)
+        if (ExtendedObject->FbsEnabled) {
+            LouPrint("AHCI FBS Enabled");
+            if (Port->FisBasedSwitch & AHCI_PxFBS_EN) {
+                LouPrint("Port Is In FBS Mode\n");
+                pp->FbsEnabled = true;
+            }
+        }
 
         if (Ap->Flags & ATA_FLAG_EM) {
             LouPrint("Setting Eclosure Message\n");

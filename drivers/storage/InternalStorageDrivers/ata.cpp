@@ -822,3 +822,38 @@ LOUDDK_API_ENTRY PATA_HOST LouMallocAtaHost(P_PCI_DEVICE_OBJECT PDEV, PATA_PORT 
     return NewHost;
 }
 
+bool IsAtaNcq(PATA_TASKFILE Tf){
+
+    if(Tf->Protocol & NCQ_PROT_FLAG)return true;
+
+    return false;
+}
+
+static inline bool AtaTagInternal(unsigned int tag)
+{
+	return tag == ATA_TAG_INTERNAL;
+}
+
+static inline bool AtaTagValid(unsigned int tag)
+{
+	return tag < ATA_MAX_QUEUE || AtaTagInternal(tag);
+}
+
+LOUDDK_API_ENTRY
+LOUSTATUS AtaStdQcDefer(PATA_QUEUED_COMMAND Qc) {
+
+    PATA_LINK Link = Qc->Dev->Link;
+    if(IsAtaNcq(&Qc->TaskFile)){
+        if(!AtaTagValid(Link->ActiveTag)){
+
+            return STATUS_SUCCESS;
+        }
+    }else{
+        if((!AtaTagValid(Link->ActiveTag)) && (!Link->SActive)){
+            
+            return STATUS_SUCCESS;
+        }
+    }
+
+	return STATUS_UNSUCCESSFUL;
+}

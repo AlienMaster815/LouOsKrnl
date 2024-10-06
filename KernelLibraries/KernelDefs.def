@@ -99,3 +99,4 @@ EXPORTS
     sleep
     LouKeHalPciSetMaster
     LouKeRegisterDevice
+    AtaStdQcDefer
