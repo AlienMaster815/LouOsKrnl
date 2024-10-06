@@ -777,6 +777,10 @@ LOUSTATUS AhciInitOne(
             Ap->Operations = 0x00;//no implementations
         }
         else {
+            if (Host->Capabilities & HOST_CAP_NCQ) {
+                Ap->Ncq = true;
+            }
+            Ap->Dma48 = true;
             Ap->Dma = true;
             LouKeRegisterDevice(
                 PDEV,

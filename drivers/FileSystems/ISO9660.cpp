@@ -118,7 +118,6 @@ VolumeDescriptor ISO9660::ReadVolumeDescriptor(uint8_t DrvNum,uint32_t sector, u
     uint16_t* Test = (uint16_t*)ReadDrive(
         DrvNum,
         sector,
-        0,
         1,
         &BufferSize,
         &Status
@@ -267,7 +266,6 @@ FILE* ISO9660::ISOLouKeFindDirectory(
     uint16_t* Test = (uint16_t*)ReadDrive(
         DrvNum,
         RootLBA,
-        0,
         1,
         &BufferSize,
         &Status
@@ -294,7 +292,6 @@ FILE* ISO9660::ISOLouKeFindDirectory(
                 uint16_t* Test = (uint16_t*)ReadDrive(
                     DrvNum,
                     RootLBA,
-                    0,
                     1,
                     &BufferSize,
                     &Status

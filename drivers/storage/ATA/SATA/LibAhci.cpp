@@ -210,6 +210,10 @@ void AhciIntitializeController(PATA_HOST Host) {
 
 LOUSTATUS AhciPmpQcDefer(PATA_QUEUED_COMMAND Qc) {
 
+	LouPrint("AhciPmpQcDefer()\n");
+
+
+
 	while (1);
 	return STATUS_SUCCESS;
 }

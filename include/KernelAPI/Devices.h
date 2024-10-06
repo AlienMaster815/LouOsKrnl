@@ -167,8 +167,7 @@ void* Data
 void* 
 ReadDrive(
 uint8_t Drive,
-uint32_t LBA_LOW,
-uint32_t LBA_HIGH,
+uint64_t LBA,
 uint32_t SectorCount,
 uint64_t* BufferSize,
 LOUSTATUS* State

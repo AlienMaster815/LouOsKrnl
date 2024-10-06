@@ -297,58 +297,72 @@ typedef volatile struct tagHBA_MEM
 	HBA_PORT	ports[1];	// 1 ~ 32
 } HBA_MEM;
 
-void* ReadSata(
-HBA_PORT* port,
-uintptr_t DeviceObject,
-uint32_t startl, 
-uint32_t starth,
-uint32_t count,
-LOUSTATUS* StatusOfOperation
-);
 
-void* ReadSATAPI(
-HBA_PORT *Port, 
-uintptr_t DriverObject,
-uint32_t lba_low,
-uint32_t lba_hi, 
-uint32_t count, 
-LOUSTATUS* StateOfOperation,
-uint64_t* BufferSize
-);
+static inline void DirectDriveAccessReadInitQueueComand(PATA_PORT Ap, PATA_QUEUED_COMMAND Qc, uint64_t LBA, uint32_t SectorCount){
+		Qc->Port = Ap;
+		if(Ap->Dma){
+			if(Ap->Ncq){
+				LouPrint("Createing NCQ Command\n");
+				Qc->TaskFile.Command = ATA_READ_FPDMA_QUEUED;
+			}
+			else{
+				LouPrint("Createing DMA Command\n");
+				Qc->TaskFile.Command = ATA_READ_DMA_EXT;
+			}
+		}
+		else{
+			LouPrint("Createing PIO Command\n");
+			Qc->TaskFile.Command = ATA_READ_SECTOR;
 
-LOUSTATUS AtaWritePIOData(
-    PATA_PORT Port,
-    PATA_QUEUED_COMMAND Qc,
-    uint8_t* Buffer,
-    uint32_t BufferLength
-);
+		}
+
+		if(Ap->Dma48){
+			LouPrint("Using DMA48 Packet\n");
+			Qc->TaskFile.Lbal  = (LBA & 0xFF);           // Lower 8 bits of LBA
+			Qc->TaskFile.Lbam  = (LBA >> 8) & 0xFF;      // Middle 8 bits of LBA	
+			Qc->TaskFile.Lbah = (LBA >> 16) & 0xFF;     // Upper 8 bits of LBA
+			Qc->TaskFile.Device  = 0x40 | ((LBA >> 24) & 0x0F);  // Bits 27:24
+			Qc->TaskFile.HobLbal  = (LBA >> 24) & 0xFF;       // Higher-order bits for 48-bit LBA
+			Qc->TaskFile.HobLbam  = (LBA >> 32) & 0xFF;
+			Qc->TaskFile.HobLbah = (LBA >> 40) & 0xFF;
+
+			Qc->TaskFile.NSect = (SectorCount & 0xFF);  // Lower 8 bits of sector count
+			Qc->TaskFile.HobNSect = (SectorCount >> 8) & 0xFF;  // Upper 8 bits for 48-bit
+
+		}else{
+			LouPrint("Using DMA28 Packet\n");
+			Qc->TaskFile.Lbal  = (LBA & 0xFF);           // Lower 8 bits of LBA
+			Qc->TaskFile.Lbam  = (LBA >> 8) & 0xFF;      // Middle 8 bits of LBA
+			Qc->TaskFile.Lbah = (LBA >> 16) & 0xFF;     // Upper 8 bits of LBA
+			Qc->TaskFile.Device  = 0xE0 | ((LBA >> 24) & 0x0F);  // Bits 27:24 (device select)
+			Qc->TaskFile.NSect = SectorCount & 0xFF;  // Number of sectors to transfer
+		}
+}
 
 LOUDDK_API_ENTRY 
 void* 
 ReadDrive(
 uint8_t Drive,
-uint32_t LBA_LOW,
-uint32_t LBA_HIGH,
+uint64_t LBA,
 uint32_t SectorCount,
 uint64_t* BufferSize,
 LOUSTATUS* State
 ){
+	void* Result = LouMalloc(*BufferSize);
 	SYSTEM_DEVICE_IDENTIFIER DevID = LouKeGetStorageDeviceSystemIdentifier(Drive);
 	if(DevID == ATA_DEVICE_T){
 		PATA_PORT Ap = LouKeGetAtaStoragePortObject(Drive);
 		// Initialize the queued command for this transfer
         PATA_QUEUED_COMMAND Qc = (PATA_QUEUED_COMMAND)LouMalloc(sizeof(ATA_QUEUED_COMMAND));
-        Qc->Port = Ap;
-
-		if(Ap->Dma){
-			
-		}else{
-			
+		DirectDriveAccessReadInitQueueComand(Ap, Qc, LBA, SectorCount);
+		if(Ap->Operations->QcDefer){
+			Ap->Operations->QcDefer(Qc);
 		}
+
 		LouFree((RAMADD)Qc);
 	}
 	
-	return 0x00;
+	return Result;
 }
 
 LOUDDK_API_ENTRY 

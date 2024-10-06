@@ -441,6 +441,8 @@ typedef struct _ATA_PORT{
     int EmMessageType;
     void* PrivateData;
     bool Dma;
+    bool Ncq;
+    bool Dma48;
 }ATA_PORT, * PATA_PORT;
 
 typedef struct _ATA_HOST{
@@ -559,6 +561,122 @@ typedef struct _ATA_PORT_OPERATION_TABLE{
 
 PATA_PORT LouKeGetAtaStoragePortObject(uint8_t DriveNumber);
 
+
+#define ATA_CMD_IDENTIFY 0xEC
+
+//Command Library
+#define ATA_NOP                                 0x00
+#define ATA_CFA_REQUEST_EXTENDED_ERROR_CODE     0x03
+#define ATA_DATA_SET_MANAGEMENT                 0x06
+#define ATA_DATA_SET_MANAGEMENT_XL              0x07
+#define ATA_DEVICE_RESET                        0x08
+#define ATA_REQUEST_SENCE_DATA_EXT              0x0B
+#define ATA_RECALIBRATE_SPEC2                   0x10
+#define ATA_RECALIBRATE_SPEC3                   0x11
+#define ATA_GET_PHYSICAL_ELEMENT_STATUS         0x12
+#define ATA_READ_SECTOR                         0x20
+#define ATA_READ_SECTOR_NO_RETR                 0x21
+#define ATA_READ_LONG                           0x22
+#define ATA_READ_LONG_NO_RETRY                  0x23
+#define ATA_READ_LONG_SECTOR_EXT                0x24
+#define ATA_READ_DMA_EXT                        0x25
+#define ATA_READ_DMA_QUEUED_EXT                 0x26
+#define ATA_READ_NATIVE_MAX_ADDRESS_EXT         0x27
+#define ATA_READ_MULTIPLE_EXT_LEGACY            0x29
+#define ATA_READ_STREAM_DMA_EXT                 0x2A
+#define ATA_READ_STREAM_EXT                     0x2B
+#define ATA_READ_LOG_EXT                        0x2F
+#define ATA_WRITE_SECTOR                        0x30
+#define ATA_WRITE_SECTOR_NO_RETRY               0x31
+#define ATA_WRITE_LONG                          0x32
+#define ATA_WRITE_LONG_NO_RETRY                 0x33
+#define ATA_WRITE_SECTOR_EXT                    0x34
+#define ATA_WRITE_DMA_EXT                       0x35
+#define ATA_WRITE_DMA_QUEUED_EXT                0x36
+#define ATA_SET_MAX_ADDRESS_EXT                 0x37
+#define ATA_CFA_WRITE_SECTORS_WITHOUGHT_ERASE   0x38
+#define ATA_WRITE_MULTIPLE_EXIT                 0x39
+#define ATA_WRITE_STREAM_DMA_EXT                0x3A
+#define ATA_WRITE_STREAM_EXT                    0x3B
+#define ATA_WRITE_VERIFY                        0x3C
+#define ATA_WRITE_DMA_FUA_EXT                   0x3D
+#define ATA_WRITE_DMA_QUEUED_FUA_EXT            0x3E
+#define ATA_WRITE_LOG_EXT                       0x3F
+#define ATA_READ_VERIFY_SECTOR                  0x40
+#define ATA_READ_VERIFY_SECTOR_NO_RETRY         0x41
+#define ATA_READ_VERIFY_SECTOR_EXT              0x42
+#define ATA_ZERO_EXT                            0x44
+#define ATA_WRITE_UNCORECTABLE_EXT              0x45
+#define ATA_READ_LOG_DMA_EXT                    0x47
+#define ATA_ZAC_MANAGEMENT_IN                   0x4A
+#define ATA_FORMAT_TRACK                        0x50
+#define ATA_CONFIGURE_STREAM                    0x51
+#define ATA_WRITE_LOG_DMA_EXT                   0x57
+#define ATA_TRUSTED_NON_DATA                    0x5B
+#define ATA_TRUSTED_RECIEVE                     0x5C
+#define ATA_TRUSTED_RECIEVE_DMA                 0x5D
+#define ATA_TRUSTED_SEND                        0x5E
+#define ATA_TRUSTED_SEND_DMA                    0x5F
+#define ATA_READ_FPDMA_QUEUED                   0x60
+#define ATA_WRITE_FPDMA_QUEUED                  0x61
+#define ATA_NCQ_NON_DAAT                        0x63
+#define ATA_SEND_FPDMA_QUEUED                   0x64
+#define ATA_RECIEVE_FPDMA_QUEUED                0x65
+#define ATA_ACCESIBLE_MAX_ADDRESS_CONFIGURATION 0x78
+#define ATA_EXECUTE_DEVICE_DIAGNOSTICS          0x90
+#define ATA_INITIALIZE_DEVICE_PARAMETERS        0x91
+#define ATA_STANDBY_IMMEDIATE_LEGACY            0x94
+#define ATA_IDLE_IMMEDIATE_LEGACY               0x95
+#define ATA_STANDBY_LEGACY                      0x96
+#define ATA_IDLE_LEGACY                         0x97
+#define ATA_CHECK_POWER_MODE_LEGACY             0x98
+#define ATA_SLEEP_LEGACY                        0x99
+#define ATA_ZAC_MANAGEMENT_OUT                  0x9F
+#define ATA_PACKET                              0xA0
+#define ATA_IDENTIFY_PACKET_DEVICE              0xA1
+#define ATA_SERVICE                             0xA2
+#define ATA_SMART                               0xB0
+#define ATA_DEVICE_CONFIGURATION_OVERLAY        0xB1
+#define ATA_SET_SECTOR_CONFIGURATION_EXT        0xB2
+#define ATA_SANATIZE_DEVICE                     0xB4
+#define ATA_NV_CAVHE                            0xB6
+#define ATA_CFA_ERASE_SECTORS                   0xC0
+#define ATA_READ_MULTIPLE_EXT                   0xC4
+#define ATA_WRITE_MULTIPLE                      0xC5
+#define ATA_SET_MULTIPLE_MODE                   0xC6
+#define ATA_READ_DMA_QUEUED                     0xC7
+#define ATA_READ_DMA                            0xC8
+#define ATA_READ_DMA_NO_RETRY                   0xC9
+#define ATA_WRITE_DMA                           0xCA
+#define ATA_WRITE_DMA_NO_RETY                   0xCB
+#define ATA_WRITE_DMA_QUEUED                    0xCC
+#define ATA_CFA_WRITE_MULTIPLE_NO_ERASE         0xCD
+#define ATA_WRITE_MULTIPLE_FUA_EXT              0xCE
+#define ATA_CHECK_MEDIA_CARD_TYPE               0xD1
+#define ATA_GET_MEDIA_STATUS                    0xDA
+#define ATA_ACKNOWLEDGE_MEDIA_CHANGE            0xDB
+#define ATA_BOOT_POST_BOOT                      0xDC
+#define ATA_BOOT_PRE_BOOT                       0xDD
+#define ATA_MEDIA_LOCK                          0xDE
+#define ATA_MEDIA_UNLOCK                        0xDF
+#define ATA_STANDBY_IMMEDIATE                   0xE0
+#define ATA_IDLE_IMMEDIATE                      0xE1
+#define ATA_STANDBY                             0xE2
+#define ATA_IDLE                                0xE3
+#define ATA_READ_BUFFER                         0xE4
+#define ATA_CHECK_POWER_MODE                    0xE5
+#define ATA_SLEEP                               0xE6
+#define ATA_FLUSH_CACHE                         0xE7
+#define ATA_WRITE_BUFFER                        0xE8
+#define ATA_READ_BUFFER_DMA                     0xE9
+#define ATA_FLUSH_CACHE_EXT                     0xEA
+#define ATA_WRITE_BUFFER_DMA                    0xEB
+#define ATA_IDENTIFY_DEVICE                     0xEC
+#define ATA_MEDIA_EJECT                         0xED
+#define ATA_IDENTIFY_DEVICE_DMA                 0xEE
+#define ATA_SET_FEATURES                        0xEF
+
+//Note Put Kernel Data Before this 
 #ifdef __cplusplus
 }
 #endif
@@ -571,6 +689,7 @@ PATA_PORT Ap,
 void* Mmio,
 size_t Offset
 );
+
 
 
 

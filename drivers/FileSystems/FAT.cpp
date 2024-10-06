@@ -177,7 +177,6 @@ void FAT::WriteFatSystem(uint8_t DriveNumber, FSStruct* FSP, uint16_t* Data){
     char* FatBuffer = (char*)ReadDrive(
         DriveNumber,
         0,
-        0,
         1, 
         &BufferSize,
         &Status

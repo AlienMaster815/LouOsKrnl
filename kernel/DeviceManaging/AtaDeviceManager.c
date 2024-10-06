@@ -40,15 +40,6 @@ LOUSTATUS LouRegisterAtaDeviceToInformationTable(
     TmpDeviceData->RegisteredDeviceNumber = NumberOfAtaDevices;
 
     Table->DeviceSpecificData = (void*)TmpDeviceData;
-
-    void* IDBuffer = LouMalloc(512);
-    memset(IDBuffer, 0 , 512);
-
-    LouPrint("Gathering Device Data\n");
-    IdentifyAtaDevice((PATA_PORT)DevicePrivateData ,(uint8_t*)IDBuffer, 512);
-    LouPrint("Finished Gathering Device Data\n");
-
-    LouFree((RAMADD)IDBuffer);
     Status = LouRegisterStorageDevice(
         Table
     );
