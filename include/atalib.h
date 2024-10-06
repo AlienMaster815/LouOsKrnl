@@ -57,7 +57,27 @@ typedef uint32_t ScsiDeviceState;
 #pragma pack(push,1)
 
 typedef struct _ATA_TASKFILE{
-    void* Foo;
+    unsigned long Flags;
+    uint8_t Protocol;
+    uint8_t HobFeature;
+    uint8_t HobNSect;
+    uint8_t HobLbal;
+    uint8_t HobLbam;
+    uint8_t HobLbah;
+    union {
+        uint8_t Error;
+        uint8_t Feature;
+    };
+    uint8_t NSect;
+    uint8_t Lbal;
+    uint8_t Lbam;
+    uint8_t Lbah;
+    uint8_t Device;
+    union{
+        uint8_t Status;
+        uint8_t Command;
+    };
+    uint32_t Auxillery;
 }ATA_TASKFILE, * PATA_TASKFILE;
 
 typedef struct _BSG_DEVICE{
@@ -420,22 +440,8 @@ typedef struct _ATA_PORT{
     uint64_t Cookie;
     int EmMessageType;
     void* PrivateData;
-
+    bool Dma;
 }ATA_PORT, * PATA_PORT;
-
-typedef struct _ATA_RESET_FN{
-    void* Foo;
-}ATA_RESET_FN, * PATA_RESET_FN;
-
-
-typedef struct _ATA_POST_RESET_FN{
-    void* Foo;
-}ATA_POST_RESET_FN, * PATA_POST_RESET_FN;
-
-
-typedef struct _ATA_PRE_RESET_FN{
-    void* Foo;
-}ATA_PRE_RESET_FN, * PATA_PRE_RESET_FN;
 
 typedef struct _ATA_HOST{
     spinlock_t Lock;
@@ -473,14 +479,16 @@ typedef struct _ATA_PORT_OPERATION_TABLE{
     void (*DevConfig)(PATA_DEVICE Dev);
     void (*Freeze)(PATA_PORT Port);
     void (*Thaw)(PATA_PORT Port);
-    ATA_PRE_RESET_FN PreReset;
-    ATA_RESET_FN SoftReset;
-    ATA_RESET_FN HardRest;
-    ATA_POST_RESET_FN PostReset;
-    ATA_PRE_RESET_FN PMPPreReset;
-    ATA_RESET_FN PMPSoftReset;
-    ATA_RESET_FN PMPHardReset;
-    ATA_POST_RESET_FN PMPPostReset;
+    //reset functions
+    LOUSTATUS (*PreReset)(PATA_LINK Link, unsigned int* Class, unsigned long DedLine);
+    LOUSTATUS (*SoftReset)(PATA_LINK Link, unsigned int* Class, unsigned long DedLine);
+    LOUSTATUS (*HardRest)(PATA_LINK Link, unsigned int* Class, unsigned long Deadline);
+    LOUSTATUS (*PostReset)(PATA_LINK Link, unsigned int* Class);
+    LOUSTATUS (*PMPPreReset)(PATA_LINK Link, unsigned int* Class, unsigned long DedLine);
+    LOUSTATUS (*PMPSoftReset)(PATA_LINK Link, unsigned int* Class, unsigned long DedLine);
+    LOUSTATUS (*PMPHardReset)(PATA_LINK Link, unsigned int* Class, unsigned long DedLine);
+    LOUSTATUS (*PMPPostReset)(PATA_LINK Link, unsigned int* Class);
+
     void (*ErrorHandler)(PATA_PORT Port);
     void (*LostInterrupt)(PATA_PORT Port);
     void (*PostInternalCommand)(PATA_QUEUED_COMMAND Qc);
@@ -521,8 +529,9 @@ typedef struct _ATA_PORT_OPERATION_TABLE{
     uint8_t (*BMDmaStatus)(PATA_PORT Port);
 
     size_t (*EmShow)(PATA_PORT Port, string Buff);
-    size_t (*EmStorw)(PATA_PORT Port, string Message, size_t MesgSze);
-    size_t (*SwActivityShow)(PATA_DEVICE Dev, SwAvtivity Value);
+    size_t (*EmStore)(PATA_PORT Port, string Message, size_t MesgSze);
+    size_t (*SwActivityShow)(PATA_DEVICE Dev, string Value);
+    size_t (*SwActivityStore)(PATA_DEVICE Dev, SwAvtivity Value);
     size_t (*TransmitLedMessage)(PATA_PORT Port, uint32_t State, size_t size);
 
     const struct _ATA_PORT_OPERATION_TABLE* Inheritance;
@@ -547,6 +556,8 @@ typedef struct _ATA_PORT_OPERATION_TABLE{
 #define ATA_HOST_PARALLEL_SCAN (1 << 14)
 
 #define ATA_PFLAG_EXTERNAL 1
+
+PATA_PORT LouKeGetAtaStoragePortObject(uint8_t DriveNumber);
 
 #ifdef __cplusplus
 }

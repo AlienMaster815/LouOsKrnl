@@ -1,6 +1,6 @@
 #include <LouDDK.h>
 #include <NtAPI.h>
-
+#include <AtaLib.h>
 
 typedef enum
 {
@@ -316,6 +316,13 @@ LOUSTATUS* StateOfOperation,
 uint64_t* BufferSize
 );
 
+LOUSTATUS AtaWritePIOData(
+    PATA_PORT Port,
+    PATA_QUEUED_COMMAND Qc,
+    uint8_t* Buffer,
+    uint32_t BufferLength
+);
+
 LOUDDK_API_ENTRY 
 void* 
 ReadDrive(
@@ -326,84 +333,22 @@ uint32_t SectorCount,
 uint64_t* BufferSize,
 LOUSTATUS* State
 ){
-	//all the statics are to save the stack
-    static uint16_t NumberOfDevices = 0;//GetNumberOfDevices();
-    static PDeviceInformationTable Devices = 0;//GetDeviceInformationTable();
+	SYSTEM_DEVICE_IDENTIFIER DevID = LouKeGetStorageDeviceSystemIdentifier(Drive);
+	if(DevID == ATA_DEVICE_T){
+		PATA_PORT Ap = LouKeGetAtaStoragePortObject(Drive);
+		// Initialize the queued command for this transfer
+        PATA_QUEUED_COMMAND Qc = (PATA_QUEUED_COMMAND)LouMalloc(sizeof(ATA_QUEUED_COMMAND));
+        Qc->Port = Ap;
 
-    static uint8_t j = 0;
-    for(static uint16_t i = 0; i < NumberOfDevices; i++){
-
-        if((j == Drive) 
-         &&(Devices[i].DeviceType == DEV_TYPE_STORAGE)){
-            if(DEV_ARCH_AHCI == Devices[i].DeviceArchitecture){
-
-                if(Devices[i].DeviceSubType == DEV_SUB_TYPE_SATA){
-                    LouPrint("Reading Sata Device\n");
-                    PAHCI_DEVICE PAhciDevice = (PAHCI_DEVICE)Devices[i].DeviceObject;
-					*BufferSize = PAhciDevice->PCap->SectorSize * SectorCount;
-                    return ReadSata(
-                        (HBA_PORT*)PAhciDevice->PortAddress,
-						(uintptr_t)PAhciDevice, 
-                        LBA_LOW, 
-                        LBA_HIGH, 
-                        SectorCount,
-						State
-                        );                    
-                }
-				else if(Devices[i].DeviceSubType == DEV_SUB_TYPE_SATAPI){
-                    LouPrint("Reading SATAPI Device\n");
-                    PAHCI_DEVICE PAhciDevice = (PAHCI_DEVICE)Devices[i].DeviceObject;
-                    return ReadSATAPI(
-                        (HBA_PORT*)PAhciDevice->PortAddress,
-						PAhciDevice->DriverObject, 
-                        LBA_LOW, LBA_HIGH, 
-                        SectorCount,
-						State,
-						BufferSize
-                        );  
-					//return 0x00;  
-				}
-
-                else{
-                    LouPrint("Unsupported AHCI Device\n");
-                    
-                    //LouPrint("Device Type:%h\n", Devices[i].DeviceType);
-                    //LouPrint("Device Sub Type:%h\n", Devices[i].DeviceSubType);
-                    //LouPrint("Device Arch:%h\n", Devices[i].DeviceArchitecture);
-                    //LouPrint("Device Number:%h\n", Devices[i].DeviceNumber);
-                    //LouPrint("Device Object:%h\n", Devices[i].DeviceObject);
-                    return 0x00;
-                }
-            }
-			else if(DEV_ARCH_IDE == Devices[i].DeviceArchitecture){
-				
-				return 0x00;
-			}
-            else{
-                LouPrint("Storage Device Not Supported\n");
-                
-                //LouPrint("Device Type:%h\n", Devices[i].DeviceType);
-                //LouPrint("Device Sub Type:%h\n", Devices[i].DeviceSubType);
-                //LouPrint("Device Arch:%h\n", Devices[i].DeviceArchitecture);
-                //LouPrint("Device Number:%h\n", Devices[i].DeviceNumber);
-                //LouPrint("Device Object:%h\n", Devices[i].DeviceObject);
-                return 0x00;
-            }
-        }
-        else if(Devices[i].DeviceType == DEV_TYPE_STORAGE){
-            j++;                
-            //LouPrint("Device Type:%h\n", Devices[i].DeviceType);
-            //LouPrint("Device Sub Type:%h\n", Devices[i].DeviceSubType);
-            //LouPrint("Device Arch:%h\n", Devices[i].DeviceArchitecture);
-            //LouPrint("Device Number:%h\n", Devices[i].DeviceNumber);
-            //LouPrint("Device Object:%h\n", Devices[i].DeviceObject);
-        }
-		
-    }
-    
-    LouPrint("Sotrage Device Not Found\n");
-
-    return 0x00;
+		if(Ap->Dma){
+			
+		}else{
+			
+		}
+		LouFree((RAMADD)Qc);
+	}
+	
+	return 0x00;
 }
 
 LOUDDK_API_ENTRY 

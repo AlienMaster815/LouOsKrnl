@@ -1,5 +1,6 @@
 #ifndef _DEVICES_API_H
 #define _DEVICES_API_H
+
 #pragma pack(push, 1)
 #ifndef __cplusplus
 #include <LouAPI.h>
@@ -151,6 +152,8 @@ typedef struct  _AHCI_DEVICE{
 	PGLOBAL_DEVICE_INFORMATON Setup;
 	LOUSTATUS InititializationStatus;
 }AHCI_DEVICE, * PAHCI_DEVICE;
+
+SYSTEM_DEVICE_IDENTIFIER LouKeGetStorageDeviceSystemIdentifier(uint8_t DriveNumber);
 
 void 
 WriteDrive(

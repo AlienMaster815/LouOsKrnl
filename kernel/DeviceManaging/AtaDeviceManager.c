@@ -12,6 +12,12 @@ LOUSTATUS LouRegisterStorageDevice(
     PDEVICE_DIRECTORY_TABLE Table
 );
 
+LOUSTATUS IdentifyAtaDevice(
+    PATA_PORT Ap,  
+    uint8_t* Buffer, 
+    uint32_t BufferLength
+);
+
 LOUSTATUS LouRegisterAtaDeviceToInformationTable(
     PDEVICE_DIRECTORY_TABLE Table,
     P_PCI_DEVICE_OBJECT PDEV, 
@@ -22,6 +28,7 @@ LOUSTATUS LouRegisterAtaDeviceToInformationTable(
 ){
     LOUSTATUS Status = STATUS_SUCCESS;
     LouPrint("Registering ATA Device\n");
+
 
     Table->PDEV = PDEV;
     Table->Sdi = Sdi;
@@ -34,14 +41,18 @@ LOUSTATUS LouRegisterAtaDeviceToInformationTable(
 
     Table->DeviceSpecificData = (void*)TmpDeviceData;
 
+    void* IDBuffer = LouMalloc(512);
+    memset(IDBuffer, 0 , 512);
+
+    LouPrint("Gathering Device Data\n");
+    IdentifyAtaDevice((PATA_PORT)DevicePrivateData ,(uint8_t*)IDBuffer, 512);
+    LouPrint("Finished Gathering Device Data\n");
+
+    LouFree((RAMADD)IDBuffer);
     Status = LouRegisterStorageDevice(
         Table
     );
 
     NumberOfAtaDevices++;
     return Status;
-}
-
-PATA_PORT LouKeGetAtaPortHandle(){
-
 }

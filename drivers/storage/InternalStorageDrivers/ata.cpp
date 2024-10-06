@@ -951,3 +951,26 @@ LOUSTATUS AtaWriteDMAData(
 
     return Status;
 }
+
+
+LOUDDK_API_ENTRY
+LOUSTATUS IdentifyAtaDevice(
+    PATA_PORT Ap,  
+    uint8_t* Buffer, 
+    uint32_t BufferLength
+){
+
+
+    PATA_QUEUED_COMMAND Qc = (PATA_QUEUED_COMMAND)LouMalloc(sizeof(ATA_QUEUED_COMMAND));
+    PATA_TASKFILE Tf = (PATA_TASKFILE)LouMalloc(sizeof(PATA_TASKFILE));
+
+//    Ap->Operations->SFFDevSelect(Ap, Ap->PortNumber);
+
+    memset(Tf, 0, sizeof(ATA_TASKFILE));
+
+
+
+    LouFree((RAMADD)Tf);
+    LouFree((RAMADD)Qc);
+    return STATUS_SUCCESS;
+}

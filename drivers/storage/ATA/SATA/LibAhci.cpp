@@ -208,30 +208,32 @@ void AhciIntitializeController(PATA_HOST Host) {
 
 }
 
-int AhciPmpQcDefer(PATA_QUEUED_COMMAND Qc) {
+LOUSTATUS AhciPmpQcDefer(PATA_QUEUED_COMMAND Qc) {
 
-
-	return 0;
+	while (1);
+	return STATUS_SUCCESS;
 }
 
 AtaCompletionErrors AhciQcPrep(PATA_QUEUED_COMMAND Qc) {
 
-
+	while (1);
 	return 0;
 }
 
-unsigned int AhciQcIssue(PATA_QUEUED_COMMAND Qc) {
+LOUSTATUS AhciQcIssue(PATA_QUEUED_COMMAND Qc) {
 
-
-	return 0;
+	while (1);
+	return STATUS_SUCCESS;
 }
 
 void AhciQcFillRtf(PATA_QUEUED_COMMAND Qc) {
+	while (1);
 
 }
 
 void AhciQcNcqFillRtf(PATA_PORT Ap, uint64_t DoneMask) {
 
+	while (1);
 
 
 }
@@ -241,36 +243,46 @@ void AhciQcNcqFillRtf(PATA_PORT Ap, uint64_t DoneMask) {
 
 
 void AhciFreeze(PATA_PORT Ap) {
+	while (1);
 
 }
 
 void AhciThaw(PATA_PORT Ap) {
+	while (1);
 
 }
  
-void AhciSoftReset(PATA_LINK Link, unsigned int* Class, unsigned long DeadLine) {
+LOUSTATUS AhciSoftReset(PATA_LINK Link, unsigned int* Class, unsigned long DeadLine) {
+	while (1);
 
+	return STATUS_SUCCESS;
 }
 
-int AhciHardReset(PATA_LINK Link, unsigned int* Class, unsigned long Deadline) {
+LOUSTATUS AhciHardReset(PATA_LINK Link, unsigned int* Class, unsigned long Deadline) {
+	while (1);
 
 
-	return 0;
+	return STATUS_SUCCESS;
 }
 
-void AhciPostReset(PATA_LINK Link, unsigned int* Class) {
+LOUSTATUS AhciPostReset(PATA_LINK Link, unsigned int* Class) {
+	while (1);
 
+	return STATUS_SUCCESS;
 }
 
 void AhciErrorHandler(PATA_PORT Ap) {
+	while (1);
 
 }
 
 void AhciPostInternalCmd(PATA_QUEUED_COMMAND Qc) {
+	while (1);
 
 }
 
 void AhciDevConfig(PATA_DEVICE Dev) {
+	while (1);
 
 }
 
@@ -278,11 +290,127 @@ void AhciDevConfig(PATA_DEVICE Dev) {
 
 
 LOUSTATUS AhciScrRead(PATA_LINK Link, unsigned int ScReg, uint32_t* Val) {
+	while (1);
 
 	return 0;
 }
 
 LOUSTATUS AhciScrWrite(PATA_LINK Link, unsigned int ScReg, uint32_t Val) {
+	while (1);
 
 	return 0;
+}
+
+void AhciPmpAttatch(PATA_PORT Ap) {
+	while (1);
+
+}
+
+void AhciPmpDetatch(PATA_PORT Ap) {
+	while (1);
+
+}
+
+LOUSTATUS AhciSetLpm(PATA_LINK Link, AtaLpmPolicy Policy, unsigned int Hints) {
+		
+	while (1);
+
+
+	return STATUS_SUCCESS;
+}
+
+size_t AhciLedShow(PATA_PORT Ap, string Buffer){
+	while (1);
+
+	return 0;
+}
+
+size_t AhciLedStore(PATA_PORT Ap, string Buffer, size_t size) {
+	while (1);
+
+	return 0;
+}
+
+size_t AhciActivityShow(PATA_DEVICE dev, string Buffer){
+	while (1);
+
+	return 0;
+}
+
+size_t AhciActivityStore(PATA_DEVICE dev, SwAvtivity Val) {
+
+	while (1);
+
+
+	return 0;
+}
+
+size_t AhciTransmitLedMessage(PATA_PORT Ap, uint32_t State, size_t size) {
+	while (1);
+
+
+
+	return 0;
+}
+
+LOUSTATUS AhciPortSuspend(PATA_PORT Ap, PmMessage Mes) {
+	while (1);
+
+	return STATUS_SUCCESS;
+}
+
+LOUSTATUS AhciPortResume(PATA_PORT Ap) {
+
+	while (1);
+
+
+	return STATUS_SUCCESS;
+}
+
+LOUSTATUS AhciPortStart(PATA_PORT Ap) {
+	while (1);
+
+	return STATUS_SUCCESS;
+}
+
+void AhciPortStop(PATA_PORT Ap) {
+	while (1);
+
+}
+
+void GetGenericAhciOperations(PATA_PORT_OPERATIONS_TABLE Ops) {
+
+	Ops->QcDefer = AhciPmpQcDefer;
+	Ops->QcPrep = AhciQcPrep;
+	Ops->QcIssue = AhciQcIssue;
+	Ops->QcFillRtf = AhciQcFillRtf;
+	Ops->QcNcqFillRtf = AhciQcNcqFillRtf;
+	
+	Ops->Freeze = AhciFreeze;
+	Ops->Thaw = AhciThaw;
+	Ops->SoftReset = AhciSoftReset;
+	Ops->HardRest = AhciHardReset;
+	Ops->PostReset = AhciPostReset;
+	Ops->PMPSoftReset = AhciSoftReset;
+	Ops->ErrorHandler = AhciErrorHandler;
+	Ops->PostInternalCommand = AhciPostInternalCmd;
+	Ops->DevConfig = AhciDevConfig;
+
+	Ops->ScrRead = AhciScrRead;
+	Ops->ScrWrite = AhciScrWrite;
+	Ops->PmpAttatch = AhciPmpAttatch;
+	Ops->PmpDetatch = AhciPmpDetatch;
+
+	Ops->SetLpm = AhciSetLpm;
+	Ops->EmShow = AhciLedShow;
+	Ops->EmStore = AhciLedStore;
+	Ops->SwActivityShow = AhciActivityShow;
+	Ops->SwActivityStore = AhciActivityStore;
+	Ops->TransmitLedMessage = AhciTransmitLedMessage;
+
+	Ops->PortSuspend = AhciPortSuspend;
+	Ops->PortResume = AhciPortResume;
+
+	Ops->PortStart = AhciPortStart;
+	Ops->PortStop = AhciPortStop;
 }
