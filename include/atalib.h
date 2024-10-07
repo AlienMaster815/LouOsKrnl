@@ -681,6 +681,18 @@ PATA_PORT LouKeGetAtaStoragePortObject(uint8_t DriveNumber);
 #define NCQ_PROT_FLAG 1
 #define ATA_TAG_INTERNAL 1
 
+static inline bool AtaTagInternal(unsigned int tag){
+	return tag == ATA_TAG_INTERNAL;
+}
+
+static inline bool AtaTagValid(unsigned int tag){
+	return tag < ATA_MAX_QUEUE || AtaTagInternal(tag);
+}
+
+static inline int AtaLinkActive(PATA_LINK link){
+	return AtaTagValid(link->ActiveTag) || link->SActive;
+}
+
 //Note Put Kernel Data Before this 
 #ifdef __cplusplus
 }

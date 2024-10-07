@@ -1,16 +1,16 @@
 ﻿  Building 'ahci' with toolset 'WindowsKernelModeDriver10.0' and the 'Universal' target platform.
   Stamping x64\Debug\ahci.inf
-  Stamping [Version] section with DriverVer=10/06/2024,11.11.16.307
+  Stamping [Version] section with DriverVer=10/06/2024,20.46.47.699
   libata.cpp
-  LibAhci.cpp
   ahci.cpp
+  LibAhci.cpp
   Generating Code...
   ahci.vcxproj -> E:\LOUOSKRNL.EXE\drivers\storage\ATA\SATA\ahci\x64\Debug\ahci.sys
   Done Adding Additional Store
   Successfully signed: E:\LOUOSKRNL.EXE\drivers\storage\ATA\SATA\ahci\x64\Debug\ahci.sys
   
   Driver is 'Universal'.
-  .........................
+  ........................
   Signability test complete.
   
   Errors:

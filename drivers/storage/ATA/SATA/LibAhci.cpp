@@ -209,12 +209,6 @@ void AhciIntitializeController(PATA_HOST Host) {
 }
 
 
-
-bool AtaLinkActive(PATA_LINK Link) {
-
-	return true;
-}
-
 LOUSTATUS SataPmpQcDeferCmdSwitch(PATA_QUEUED_COMMAND Qc) {
 	PATA_LINK Link = Qc->Dev->Link;
 	PATA_PORT Port = Qc->Port;

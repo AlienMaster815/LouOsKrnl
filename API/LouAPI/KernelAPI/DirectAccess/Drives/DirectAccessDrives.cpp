@@ -361,6 +361,10 @@ LOUSTATUS* State
 	if(DevID == ATA_DEVICE_T){
 		PATA_PORT Ap = LouKeGetAtaStoragePortObject(Drive);
 		// Initialize the queued command for this transfer
+		if(Ap->ExeclLink == 0x00){
+			Ap->ExeclLink = (PATA_LINK)LouMalloc(sizeof(ATA_LINK));
+			Ap->ExeclLink->ActiveTag = 0xFFFF;// if the tag is being created invalidate the tag
+		}
         PATA_QUEUED_COMMAND Qc = (PATA_QUEUED_COMMAND)LouMalloc(sizeof(ATA_QUEUED_COMMAND));
 		DirectDriveAccessReadInitQueueComand(Ap, Qc, LBA, SectorCount);
 		if(Ap->Operations->QcDefer){

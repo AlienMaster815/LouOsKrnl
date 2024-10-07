@@ -11,7 +11,7 @@
 #define AHCI_DEFAULT_BAR 5
 
 #define DRIVER_NAME "Lousine External AHCI .SYS Driver"
-#define DRIVER_VERSION "1.14"
+#define DRIVER_VERSION "1.14 Rsc 2"
 
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
@@ -788,12 +788,17 @@ LOUSTATUS AhciInitOne(
         AhciCheckAndMarkExternalPorts(Ap);
         AhciUpdateInitialiLpmPolicy(Ap);
 
+        #define AHCI_PxCMD_CR (1 << 15)  // Command List Running
+        #define AHCI_PxCMD_FR (1 << 14)  // FIS Receive Running
+
         if (!(Host->PortImplementation & (1 << i))) {
             Ap->Operations = 0x00;//no implementations
         }
         else {
             if (Host->Capabilities & HOST_CAP_NCQ) {
-                Ap->Ncq = true;
+                if ((Port->CommandnStatus & AHCI_PxCMD_CR) && (Port->CommandnStatus & AHCI_PxCMD_FR)) {
+                    Ap->Ncq = true;
+                }
             }
             Ap->Dma48 = true;
             Ap->Dma = true;
