@@ -765,23 +765,35 @@ LOUSTATUS AhciInitOne(
 
 
     void* Table = LouMallocEx(1024 * nports, 1024);
+    void* Fb = LouMallocEx(256 * nports, 256);
+
     if (!(Host->Capabilities & HOST_CAP_64)) {
-        if ((uint64_t)Table >= (0xFFFFFFFF - (1024 * nports))) {
+        if (((uint64_t)Table >= (0xFFFFFFFF - (1024 * nports))) || ((uint64_t)Fb >= (0xFFFFFFFF - (256 * nports)))) {
             LouFree((RAMADD)Table);
             return STATUS_UNSUCCESSFUL;
         }
     }
 
-
+    #define AHCI_PxCMD_CR (1 << 15)  // Command List Running
+    #define AHCI_PxCMD_FR (1 << 14)  // FIS Receive Running
     for (i = 0; i < nports; i++) {
         PATA_PORT Ap = &AtaHost->Ports[i];
         uint64_t TableAddress = (uint64_t)Table + (1024 * i); // Calculate the specific address for this port
+        uint64_t FisBase = (uint64_t)Fb + (256 * i);
         AtaPortRegisterPortIo(Ap, Host, 0x100 + i * 0x80);
         Ap->PortNumber = i;
         PAHCI_PORT_PRIVATE pp = (PAHCI_PORT_PRIVATE)LouMalloc(sizeof(AHCI_PORT_PRIVATE));
         PAHCI_PORT Port = (PAHCI_PORT)Ap->PortMmio;
         Ap->PrivateData = pp;
         #define AHCI_PxFBS_EN (1 << 0)
+        // Clear ST (Command Processing) and FRE (FIS Reception) to stop them
+        Port->CommandnStatus &= ~(1 << 0); // Clear ST (bit 0)
+        Port->CommandnStatus &= ~(1 << 4); // Clear FRE (bit 4)
+        while ((Port->CommandnStatus & AHCI_PxCMD_CR) || (Port->CommandnStatus & AHCI_PxCMD_FR)) {
+            sleep(10);
+            //spinn
+        }
+        
         if (ExtendedObject->FbsEnabled) {
             LouPrint("AHCI FBS Enabled");
             if (Port->FisBasedSwitch & AHCI_PxFBS_EN) {
@@ -797,9 +809,6 @@ LOUSTATUS AhciInitOne(
 
         AhciCheckAndMarkExternalPorts(Ap);
         AhciUpdateInitialiLpmPolicy(Ap);
-
-        #define AHCI_PxCMD_CR (1 << 15)  // Command List Running
-        #define AHCI_PxCMD_FR (1 << 14)  // FIS Receive Running
 
         if (!(Host->PortImplementation & (1 << i))) {
             Ap->Operations = 0x00;//no implementations
@@ -817,8 +826,10 @@ LOUSTATUS AhciInitOne(
 
             if ((Host->Capabilities & HOST_CAP_64) && ((uint64_t)TableAddress >= 0xFFFFFFFF)) {
                 Port->CommandListBaseHigh = (TableAddress >> 32);
+                Port->FisBaseHigh = (FisBase >> 32);
             }
             Port->CommandListBase = TableAddress & 0xFFFFFFFF;
+            Port->FisBase = FisBase & 0xFFFFFFFF;
 
             pp->CommandTable = (void*)TableAddress;
             pp->CmdTableDma = TableAddress;
@@ -826,7 +837,8 @@ LOUSTATUS AhciInitOne(
 
             Ap->Dma48 = true;
             Ap->Dma = true;
-
+            Port->CommandnStatus |= (1 << 0); // Clear ST (bit 0)
+            Port->CommandnStatus |= (1 << 4); // Clear FRE (bit 4)
             LouKeRegisterDevice(
                 PDEV,
                 ATA_DEVICE_T,
