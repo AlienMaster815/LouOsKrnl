@@ -1101,6 +1101,7 @@ typedef struct  _AHCI_PORT_PRIVATE{
     AHCI_EM_PRIVATE EmPrivate[EM_MAX_SLOTS];
     //later we will have a id strings for interrupt processing so well include it now
     string InterruptProccessingString;
+    PATA_LINK ActiveLink;
 }AHCI_PORT_PRIVATE, * PAHCI_PORT_PRIVATE;
 
 typedef struct  _AHCI_HOST_PRIVATE{
@@ -1210,6 +1211,50 @@ PULONG AhciGetPortBase(
 );
 
 void AhciIntitializeController(PATA_HOST Host);
+
+// Define the Physical Region Descriptor (PRD) entry
+typedef struct {
+    uint32_t DataBaseAddress;       // Physical base address of data buffer (low 32 bits)
+    uint32_t DataBaseAddressUpper;  // Physical base address of data buffer (high 32 bits)
+    uint32_t ByteCount : 22;        // Byte count (22 bits), set to buffer size - 1
+    uint32_t Reserved : 9;          // Reserved bits
+    uint32_t InterruptOnCompletion : 1; // Interrupt on completion (IOC)
+} AHCI_PRDT_ENTRY;
+// Define the Command Table
+typedef struct {
+    uint8_t CFIS[64];               // Command FIS (64 bytes)
+    uint8_t ACMD[16];               // ATAPI Command (16 bytes), unused for non-ATAPI commands
+    uint8_t Reserved[48];           // Reserved space (48 bytes)
+    AHCI_PRDT_ENTRY PRDT[];         // PRDT array; size depends on the number of PRDT entries required
+} AHCI_CMD_TABLE;
+
+// Define the Command List Entry structure
+typedef struct {
+    uint32_t Options;          // Command options and flags
+    uint32_t PRDTLength : 16;  // Number of PRDT entries
+    uint32_t PRDBC : 16;       // PRD Byte Count (not commonly used but reserved)
+    uint32_t TableAddress;     // Lower 32 bits of the Command Table address
+    uint32_t TableAddressHi;   // Upper 32 bits of the Command Table address
+    uint32_t Reserved[4];      // Reserved for future use
+} AHCI_CMD_LIST_ENTRY;
+
+
+// Port Command (PxCMD) Register Bits
+#define PORT_CMD_ST         (1 << 0)  // Start (ST)
+#define PORT_CMD_FRE        (1 << 4)  // FIS Receive Enable (FRE)
+#define PORT_CMD_CR         (1 << 15) // Command List Running (CR)
+#define PORT_CMD_FR         (1 << 14) // FIS Receive Running (FR)
+
+// Port SControl (PxSCTL) Register Fields
+#define PORT_SCTL           0x2C      // Offset for the PxSCTL register
+#define PORT_SCTL_DET_INIT  (1 << 0)  // DET Field - Set to 1 for reset
+#define PORT_SCTL_DET_NO_INIT 0x00    // DET Field - Set to 0 to clear reset
+
+// Port SError (PxSERR) Register
+#define PORT_SERR           0x30      // Offset for the PxSERR register
+
+// Port IRQ Status (PxIS) Register
+#define PORT_IRQ_STATUS     0x10      // Offset for the PxIS register
 
 #pragma pack(pop)
 #endif//_AHCI_H_

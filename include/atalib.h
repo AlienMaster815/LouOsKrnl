@@ -49,6 +49,9 @@ extern "C" {
 #define SDEV_CREATE_BLOCK 9
 
 #define ATA_QCFLAG_CLEAR_EXCL 1
+#define ATA_QCFLAG_DMAMAP (1 << 1)
+
+#define ATA_TFLAG_WRITE 1
 
 typedef uint32_t AtaLpmPolicy;
 typedef uint32_t AtaCompletionErrors;
@@ -80,6 +83,7 @@ typedef struct _ATA_TASKFILE{
         uint8_t Command;
     };
     uint32_t Auxillery;
+    uint8_t Ctl;
 }ATA_TASKFILE, * PATA_TASKFILE;
 
 typedef struct _BSG_DEVICE{
@@ -325,6 +329,8 @@ typedef struct _ATA_QUEUED_COMMAND{
     struct _ATA_QC_CB CompleteFn;
     void* PrivateData;
     void* LLDTask;
+    void* DataBuffer;
+    uint64_t BufferSize;
 }ATA_QUEUED_COMMAND, * PATA_QUEUED_COMMAND;
 
 typedef struct _ATA_DEVICE{
@@ -445,6 +451,7 @@ typedef struct _ATA_PORT{
     bool Dma;
     bool Ncq;
     bool Dma48;
+    bool IsAtapi;
 }ATA_PORT, * PATA_PORT;
 
 typedef struct _ATA_HOST{

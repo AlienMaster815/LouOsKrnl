@@ -100,3 +100,5 @@ EXPORTS
     LouKeHalPciSetMaster
     LouKeRegisterDevice
     AtaStdQcDefer
+    LouMallocEx
+    

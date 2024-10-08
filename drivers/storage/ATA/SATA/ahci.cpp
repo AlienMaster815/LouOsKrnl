@@ -11,7 +11,7 @@
 #define AHCI_DEFAULT_BAR 5
 
 #define DRIVER_NAME "Lousine External AHCI .SYS Driver"
-#define DRIVER_VERSION "1.14 Rsc 2"
+#define DRIVER_VERSION "1.25 Rsc 2"
 
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
@@ -763,9 +763,19 @@ LOUSTATUS AhciInitOne(
         AtaHost->Ports[i].Host = AtaHost;
     }
 
+
+    void* Table = LouMallocEx(1024 * nports, 1024);
+    if (!(Host->Capabilities & HOST_CAP_64)) {
+        if ((uint64_t)Table >= (0xFFFFFFFF - (1024 * nports))) {
+            LouFree((RAMADD)Table);
+            return STATUS_UNSUCCESSFUL;
+        }
+    }
+
+
     for (i = 0; i < nports; i++) {
         PATA_PORT Ap = &AtaHost->Ports[i];
-
+        uint64_t TableAddress = (uint64_t)Table + (1024 * i); // Calculate the specific address for this port
         AtaPortRegisterPortIo(Ap, Host, 0x100 + i * 0x80);
         Ap->PortNumber = i;
         PAHCI_PORT_PRIVATE pp = (PAHCI_PORT_PRIVATE)LouMalloc(sizeof(AHCI_PORT_PRIVATE));
@@ -800,8 +810,23 @@ LOUSTATUS AhciInitOne(
                     Ap->Ncq = true;
                 }
             }
+            if (Port->Signature == 0xEB140101) {
+                LouPrint("Port Has An ATAPI Device\n");
+                Ap->IsAtapi = true;
+            }
+
+            if ((Host->Capabilities & HOST_CAP_64) && ((uint64_t)TableAddress >= 0xFFFFFFFF)) {
+                Port->CommandListBaseHigh = (TableAddress >> 32);
+            }
+            Port->CommandListBase = TableAddress & 0xFFFFFFFF;
+
+            pp->CommandTable = (void*)TableAddress;
+            pp->CmdTableDma = TableAddress;
+            pp->CmdSlots = (PAHCI_COMMAND_HEADER)TableAddress;
+
             Ap->Dma48 = true;
             Ap->Dma = true;
+
             LouKeRegisterDevice(
                 PDEV,
                 ATA_DEVICE_T,

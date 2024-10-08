@@ -298,8 +298,24 @@ typedef volatile struct tagHBA_MEM
 } HBA_MEM;
 
 
-static inline void DirectDriveAccessReadInitQueueComand(PATA_PORT Ap, PATA_QUEUED_COMMAND Qc, uint64_t LBA, uint32_t SectorCount){
+void PrepareRead12Cdb(uint8_t* Cdb, uint64_t LBA, uint32_t SectorCount) {
+    memset(Cdb, 0, 12);  // Clear the CDB first to ensure no leftover values
+    Cdb[0] = 0xA8;       // READ (12) operation code
+    Cdb[2] = (LBA >> 24) & 0xFF; // LBA (high byte)
+    Cdb[3] = (LBA >> 16) & 0xFF; // LBA
+    Cdb[4] = (LBA >> 8) & 0xFF;  // LBA
+    Cdb[5] = LBA & 0xFF;         // LBA (low byte)
+    Cdb[6] = (SectorCount >> 24) & 0xFF; // Transfer length (high byte)
+    Cdb[7] = (SectorCount >> 16) & 0xFF;
+    Cdb[8] = (SectorCount >> 8) & 0xFF;
+    Cdb[9] = SectorCount & 0xFF;         // Transfer length (low byte)
+    Cdb[11] = 0x00;                      // Control byte
+}
+
+
+static inline void DirectDriveAccessReadInitQueueComand(PATA_PORT Ap, PATA_QUEUED_COMMAND Qc, uint64_t LBA, uint32_t SectorCount, void* DmaAddress){
 		Qc->Port = Ap;
+
 		if(Ap->Dma){
 			if(Ap->Ncq){
 				LouPrint("Createing NCQ Command\n");
@@ -340,7 +356,15 @@ static inline void DirectDriveAccessReadInitQueueComand(PATA_PORT Ap, PATA_QUEUE
 		}
 		
 	Qc->Dev = (PATA_DEVICE)LouMalloc(sizeof(ATA_DEVICE));
+	
 	Qc->Dev->Link = Ap->ExeclLink;
+	Qc->DataBuffer = DmaAddress;
+
+	if(Ap->IsAtapi){
+		LouPrint("Preparing ATAPI CDB for READ (12)\n");
+		Qc->Dev->CdbLength = 12;
+		PrepareRead12Cdb((uint8_t*)&Qc->Cdb, LBA, SectorCount);
+	}
 }
 
 static inline void DirectDriveAccessReadFreeQueueComand(PATA_QUEUED_COMMAND Qc){
@@ -365,11 +389,41 @@ LOUSTATUS* State
 			Ap->ExeclLink = (PATA_LINK)LouMalloc(sizeof(ATA_LINK));
 			Ap->ExeclLink->ActiveTag = 0xFFFF;// if the tag is being created invalidate the tag
 		}
+
         PATA_QUEUED_COMMAND Qc = (PATA_QUEUED_COMMAND)LouMalloc(sizeof(ATA_QUEUED_COMMAND));
-		DirectDriveAccessReadInitQueueComand(Ap, Qc, LBA, SectorCount);
+		DirectDriveAccessReadInitQueueComand(Ap, Qc, LBA, SectorCount, Result);
+		Qc->BufferSize = *BufferSize;
 		if(Ap->Operations->QcDefer){
-			Ap->Operations->QcDefer(Qc);
+			*State = Ap->Operations->QcDefer(Qc);
 		}
+		else{
+			*State = STATUS_UNSUCCESSFUL;
+		}
+		if(*State != STATUS_SUCCESS){
+			LouFree((RAMADD)Qc);
+			return Result;
+		}
+		LouPrint("Qc Is Ready To Be Preped\n");
+		if(Ap->Operations->QcPrep){
+			*State = Ap->Operations->QcPrep(Qc);
+		}
+		if(*State != STATUS_SUCCESS){
+			LouFree((RAMADD)Qc);
+			return Result;
+		}
+		LouPrint("Qc Is Ready To Be Issued\n");
+		if (Ap->Operations->QcIssue){
+			*State = Ap->Operations->QcIssue(Qc);
+		}
+		else{
+			*State = STATUS_UNSUCCESSFUL;
+		}
+		if(*State != STATUS_SUCCESS){
+			LouFree((RAMADD)Qc);
+			return Result;
+		}
+		LouPrint("Command Completed\n");
+
 		DirectDriveAccessReadFreeQueueComand(Qc);
 		LouFree((RAMADD)Qc);
 	}

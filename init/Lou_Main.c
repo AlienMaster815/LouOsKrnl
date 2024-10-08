@@ -325,9 +325,10 @@ KERNEL_ENTRY Lou_kernel_start(
 
     uint64_t BufferSize = 512;
     LOUSTATUS Status = STATUS_SUCCESS;
-    uint16_t* Foo = ReadDrive(0,0, 1, &BufferSize, &Status);
+    uint8_t* Foo = (uint8_t*)ReadDrive(0,0, 1, &BufferSize, &Status);
 
-    LouPrint("Foo Is:%h\n", Foo[512/2]);
+    
+    LouPrint("Type Code:%h\n", Foo[0]);    
 
     LouPrint("Lousine Kernel Video Mode:%dx%d\n", GetScreenBufferWidth(), GetScreenBufferHeight());
     LouPrint("Hello World\n");

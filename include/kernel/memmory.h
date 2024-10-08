@@ -167,6 +167,8 @@ KERNEL_IMPORT bool EnforceSystemMemoryMap(
 );
 #else 
 KERNEL_EXPORT void* LouMalloc(size_t BytesToAllocate);
+KERNEL_EXPORT void* LouMallocEx(size_t BytesToAllocate, size_t Aligned);
+KERNEL_EXPORT void* memset(void* dest, int value, size_t count);
 
 #endif
 #endif

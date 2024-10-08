@@ -236,16 +236,191 @@ LOUSTATUS AhciPmpQcDefer(PATA_QUEUED_COMMAND Qc) {
 	}
 }
 
-AtaCompletionErrors AhciQcPrep(PATA_QUEUED_COMMAND Qc) {
+void AtaTfToFis(PATA_TASKFILE Tf, int Pmp, int IsCmd, uint8_t* Fis) {
 
-	while (1);
+	Fis[0] = 0x27;
+	Fis[1] = Pmp & 0x0F;
+	if (IsCmd) {
+		Fis[1] |= (1 << 7);
+	}
+	Fis[2] = Tf->Command;
+	Fis[3] = Tf->Feature;
+	
+	Fis[4] = Tf->Lbal;
+	Fis[5] = Tf->Lbam;
+	Fis[6] = Tf->Lbah;
+	Fis[7] = Tf->Device;
+
+	Fis[8] = Tf->HobLbal;
+	Fis[9] = Tf->HobLbam;
+	Fis[10] = Tf->HobLbah;
+	Fis[11] = Tf->HobFeature;
+
+	Fis[12] = Tf->NSect;
+	Fis[13] = Tf->HobNSect;
+	Fis[14] = 0;
+	Fis[15] = Tf->Ctl;
+
+	Fis[16] = Tf->Auxillery & 0xFF;
+	Fis[17] = (Tf->Auxillery >> 8) & 0xFF;
+	Fis[18] = (Tf->Auxillery >> 16) & 0xFF;
+	Fis[19] = (Tf->Auxillery >> 24) & 0xFF;
+
+}
+
+unsigned int AhciFillSg(PATA_QUEUED_COMMAND Qc, uint8_t* CmdTable) {
+	//we are going to do this later
+	LouPrint("Scatter Gather Is Incomplete Wait For A Later Release:(\n");
 	return 0;
+}
+
+void AhciFillCmdSlot(PAHCI_PORT_PRIVATE pp, uint32_t HwTag, uint32_t Options) {
+
+	uintptr_t CmdTblDma = pp->CmdTableDma;
+
+
+	pp->CmdSlots[HwTag].Options = Options;
+	pp->CmdSlots[HwTag].Status = STATUS_SUCCESS;
+	pp->CmdSlots[HwTag].TableAddress = CmdTblDma & 0xFFFFFFFF;
+	pp->CmdSlots[HwTag].TableAddressHi = (CmdTblDma >> 32);
+	
+}
+
+// Assuming a maximum of 32 slots, but adjust based on your specific AHCI controller's capabilities
+#define AHCI_MAX_SLOTS 32
+
+int FindOpenSlot(PATA_PORT Ap) {
+	PULONG PortMmio = (PULONG)Ap->PortMmio;
+	ULONG CommandIssue = READ_REGISTER_ULONG(PortMmio + PORT_CMD_ISSUE);
+
+	for (int slot = 0; slot < AHCI_MAX_SLOTS; slot++) {
+		if ((CommandIssue & (1 << slot)) == 0) { // Check if the slot is open
+			return slot; // Return the first open slot found
+		}
+	}
+
+	LouPrint("Error: No open slot found.\n");
+	return -1; // No open slot found
+}
+
+
+AtaCompletionErrors AhciQcPrep(PATA_QUEUED_COMMAND Qc) {
+	PATA_PORT Ap = Qc->Port;
+	PAHCI_PORT_PRIVATE pp = (PAHCI_PORT_PRIVATE)Ap->PrivateData;
+	uint8_t* CmdTable;
+	uint32_t Options;
+	const uint32_t CMdFisLen = 5;
+	unsigned int NumElements;
+
+	Qc->HwTag = FindOpenSlot(Ap);
+	
+	if (Qc->HwTag == -1) {
+		return STATUS_UNSUCCESSFUL;
+	}
+
+	CmdTable = (uint8_t*)((uint64_t)pp->CommandTable + (Qc->HwTag * AHCI_CMD_TABLE_SIZE));
+
+	AtaTfToFis(&Qc->TaskFile, Qc->Dev->Link->PMP, 1, (uint8_t*)CmdTable);
+
+	if (Ap->IsAtapi) {
+		//LouPrint("Device Is Atapi\n");
+		memset(CmdTable + AHCI_CMD_TABLE_CDB, 0, 32);
+		memcpy(CmdTable + AHCI_CMD_TABLE_CDB, Qc->Cdb, Qc->Dev->CdbLength);
+	}
+	NumElements = 0;
+
+	if (Qc->Flags & ATA_QCFLAG_DMAMAP) {
+		NumElements = AhciFillSg(Qc, CmdTable);
+	}
+
+	Options = CMdFisLen | NumElements << 16 | (Qc->Dev->Link->PMP << 12);
+	if (Qc->TaskFile.Flags & ATA_TFLAG_WRITE) {
+		Options |= AHCI_CMD_WRITE;
+	}
+	if (Ap->IsAtapi) {
+		Options |= AHCI_CMD_ATAPI | AHCI_CMD_PREFETCH;
+	}
+
+	AhciFillCmdSlot(pp, Qc->HwTag, Options);
+	
+	AHCI_CMD_TABLE* cmd_table = (AHCI_CMD_TABLE*)(pp->CmdTableDma);
+
+	uint64_t BufferPhysicalAddress = (uint64_t)Qc->DataBuffer;
+
+	uint64_t BufferSize = Qc->BufferSize;
+
+	cmd_table->PRDT[0].DataBaseAddress = BufferPhysicalAddress & 0xFFFFFFFF;
+	cmd_table->PRDT[0].DataBaseAddressUpper = (BufferPhysicalAddress >> 32) & 0xFFFFFFFF;
+	cmd_table->PRDT[0].ByteCount = (BufferSize - 1); // AHCI expects size - 1
+	cmd_table->PRDT[0].InterruptOnCompletion = 1; // Optionally enable interrupt
+
+	return AC_ERR_OK;
+}
+
+void AhciSwActivity(PATA_LINK Link) {
+
+}
+
+#define PORT_TFD 0x20            // Task File Data Register Offset
+#define ERROR_FLAG 0x01          // Error bit in the Task File Data Register
+
+LOUSTATUS AhciQcPollCompletion(PATA_QUEUED_COMMAND Qc) {
+	PATA_PORT Ap = Qc->Port;
+	PULONG PortMmio = (PULONG)Ap->PortMmio;
+	ULONG Ci;
+	uint32_t Timeout = 10000; // Adjust as necessary
+
+	while (Timeout--) {
+		// Read the Command Issue (CI) register
+		Ci = READ_REGISTER_ULONG(PortMmio + PORT_CMD_ISSUE);
+
+		// Check if the command's bit is cleared, indicating completion
+		if ((Ci & (1 << Qc->HwTag)) == 0) {
+			// Optionally check for errors in the Status register
+			ULONG Status = READ_REGISTER_ULONG(PortMmio + PORT_TFD);
+			if (Status & (ERROR_FLAG)) {
+				LouPrint("Command completed with error on HwTag %d. Status:%h\n", Qc->HwTag, Status);
+				return STATUS_UNSUCCESSFUL;
+			}
+			LouPrint("Command completed successfully on HwTag %d.\n", Qc->HwTag);
+			return STATUS_SUCCESS;
+		}
+
+		// Optional small delay to avoid a busy wait
+		sleep(100);
+	}
+
+	LouPrint("Command timed out on HwTag %d.\n", Qc->HwTag);
+	return STATUS_TIMEOUT;
 }
 
 LOUSTATUS AhciQcIssue(PATA_QUEUED_COMMAND Qc) {
 
-	while (1);
-	return STATUS_SUCCESS;
+	PATA_PORT Ap = Qc->Port;
+	PULONG PortMmio = (PULONG)Ap->PortMmio;
+	PAHCI_PORT_PRIVATE pp = (PAHCI_PORT_PRIVATE)Ap->PrivateData;
+
+	pp->ActiveLink = Qc->Dev->Link;
+	
+	if (Ap->Ncq) {
+		WRITE_REGISTER_ULONG(PortMmio + PORT_SRC_ACTIVE, 1 << Qc->HwTag);
+	}
+
+	if ((pp->FbsEnabled) && (pp->FbsLastDev != Qc->Dev->Link->PMP)) {
+		uint32_t Fbs = READ_REGISTER_ULONG(PortMmio + PORT_FBS);
+		Fbs &= ~(PORT_FBS_DEV_MASK | PORT_FBS_DEC);
+		Fbs |= Qc->Dev->Link->PMP << PORT_FBS_DEV_OFFSET;
+		WRITE_REGISTER_ULONG(PortMmio + PORT_FBS, Fbs);
+		pp->FbsLastDev = Qc->Dev->Link->PMP;
+	}
+
+	LouPrint("Issueing Command\n");
+	WRITE_REGISTER_ULONG(PortMmio + PORT_CMD_ISSUE, 1 << Qc->HwTag);
+
+	AhciSwActivity(Qc->Dev->Link);
+
+	return AhciQcPollCompletion(Qc);
+
 }
 
 void AhciQcFillRtf(PATA_QUEUED_COMMAND Qc) {
