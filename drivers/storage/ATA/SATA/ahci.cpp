@@ -322,13 +322,6 @@ UNUSED static LINUX_PCI_DEVICE_ID AhciPciTable[] = {
     {0,0,0,0,0,0,0} // null terminator
 };
 
-bool AhciSb600Enable64Bit(P_PCI_DEVICE_OBJECT PDEV) {
-
-
-    return false;
-}
-void GetGenericAhciOperations(PATA_PORT_OPERATIONS_TABLE Ops);
-
 void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
     
     if (!PPortInfo)return;
@@ -340,21 +333,21 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->Flags = AHCI_FLAG_COMMON;
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
-        GetGenericAhciOperations(PPortInfo->Operations);
+        //GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhci43BitDma:
         PPortInfo->HFlags = AHCI_HFLAG_43BIT_ONLY;
         PPortInfo->Flags = AHCI_FLAG_COMMON;
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
-        GetGenericAhciOperations(PPortInfo->Operations);
+        //GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciIgnIferr:
         PPortInfo->HFlags = AHCI_HFLAG_IGN_IRQ_IF_ERR;
         PPortInfo->Flags = AHCI_FLAG_COMMON;
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
-        GetGenericAhciOperations(PPortInfo->Operations);
+        //GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciNoDebounceDelay:
         //PPortInfo->HFlags = AHCI_HFLAG_IGN_IRQ_IF_ERR;
@@ -362,7 +355,7 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        GetGenericAhciOperations(PPortInfo->Operations);
+        //GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciNoMsi:
         PPortInfo->HFlags = AHCI_HFLAG_MULTI_MSI;
@@ -370,7 +363,7 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        GetGenericAhciOperations(PPortInfo->Operations);
+        //GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciPcsQuirk:
         PPortInfo->HFlags = AHCI_HFLAG_INTEL_PCS_QUIRK;
@@ -378,7 +371,7 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        GetGenericAhciOperations(PPortInfo->Operations);
+        //GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciPcsQuirkNoDevslp:
         PPortInfo->HFlags = AHCI_HFLAG_INTEL_PCS_QUIRK | AHCI_HFLAG_NO_SNTF;
@@ -386,7 +379,7 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        GetGenericAhciOperations(PPortInfo->Operations);
+        //GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciYesFbs:
         PPortInfo->HFlags = AHCI_HFLAG_YES_FBS;
@@ -394,7 +387,7 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        GetGenericAhciOperations(PPortInfo->Operations);
+        //GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciAl:
         PPortInfo->HFlags = AHCI_HFLAG_NO_PMP | AHCI_HFLAG_NO_MSI;
@@ -402,7 +395,7 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        GetGenericAhciOperations(PPortInfo->Operations);
+        //GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciAvn:
         PPortInfo->HFlags = AHCI_HFLAG_INTEL_PCS_QUIRK;
@@ -410,7 +403,7 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        GetGenericAhciOperations(PPortInfo->Operations);
+        //GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciMcp65:
         PPortInfo->HFlags = AHCI_HFLAG_NO_FPDMA_AA | AHCI_HFLAG_NO_PMP | AHCI_HFLAG_YES_NCQ;
@@ -418,7 +411,7 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        GetGenericAhciOperations(PPortInfo->Operations);
+        //GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciMcp77:
         PPortInfo->HFlags = AHCI_HFLAG_NO_FPDMA_AA | AHCI_HFLAG_NO_PMP;
@@ -426,7 +419,7 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        GetGenericAhciOperations(PPortInfo->Operations);
+        //GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciMcp89:
         PPortInfo->HFlags = AHCI_HFLAG_NO_FPDMA_AA;
@@ -434,7 +427,7 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        GetGenericAhciOperations(PPortInfo->Operations);
+        //GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciMv:
         PPortInfo->HFlags = AHCI_HFLAG_NO_NCQ | AHCI_HFLAG_NO_MSI | AHCI_HFLAG_MV_PATA | AHCI_HFLAG_NO_PMP;
@@ -442,7 +435,7 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        GetGenericAhciOperations(PPortInfo->Operations);
+        //GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciSb600:
         PPortInfo->HFlags = AHCI_HFLAG_IGN_SERR_INTERNAL | AHCI_HFLAG_NO_MSI | AHCI_HFLAG_SECT255 | AHCI_HFLAG_32BIT_ONLY;
@@ -450,7 +443,7 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        GetGenericAhciOperations(PPortInfo->Operations);
+        //GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciSb700:
         PPortInfo->HFlags = AHCI_HFLAG_IGN_SERR_INTERNAL;
@@ -458,7 +451,7 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        GetGenericAhciOperations(PPortInfo->Operations);
+        //GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciVt8251:
         PPortInfo->HFlags = AHCI_HFLAG_NO_NCQ | AHCI_HFLAG_NO_PMP;
@@ -466,152 +459,9 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        GetGenericAhciOperations(PPortInfo->Operations);
+        //GetGenericAhciOperations(PPortInfo->Operations);
         return;
     }
-}
-
-LOUSTATUS AhciInitOne(
-    P_PCI_DEVICE_OBJECT PDEV,
-    PDRIVER_OBJECT DriverObject,
-    PUNICODE_STRING RegistryEntry
-);
-void AhciRemoveOne(P_PCI_DEVICE_OBJECT PDEV, PPCI_COMMON_CONFIG Config);
-void AhciShutdownOne(P_PCI_DEVICE_OBJECT PDEV, PPCI_COMMON_CONFIG Config);
-void AhciIntelPcsQuirk(P_PCI_DEVICE_OBJECT PDEV, PPCI_COMMON_CONFIG Config, PAHCI_MEMORY_REGISTERS Hba);
-LOUSTATUS AhciVt8251HardReset(P_PCI_DEVICE_OBJECT PDEV, PPCI_COMMON_CONFIG Config, PAHCI_MEMORY_REGISTERS Hba);
-LOUSTATUS AhciAvnHardReset(P_PCI_DEVICE_OBJECT PDEV, PPCI_COMMON_CONFIG Config, PAHCI_MEMORY_REGISTERS Hba);
-void AhciMcp89Apple(P_PCI_DEVICE_OBJECT PDEV, PPCI_COMMON_CONFIG Config);
-LOUSTATUS AhciP5WdhHardReset(P_PCI_DEVICE_OBJECT PDEV, PPCI_COMMON_CONFIG Config, PAHCI_MEMORY_REGISTERS Hba);
-LOUSTATUS AhciPciDeviceRuntimeSuspend(P_PCI_DEVICE_OBJECT PDEV, PPCI_COMMON_CONFIG Config, PAHCI_MEMORY_REGISTERS Hba);
-LOUSTATUS AhciPciDeviceRuntimeResume(P_PCI_DEVICE_OBJECT PDEV, PPCI_COMMON_CONFIG Config, PAHCI_MEMORY_REGISTERS Hba);
-int AhciInitializeMsi(P_PCI_DEVICE_OBJECT PDEV, int NPorts, PAHCI_DRIVER_EXTENDED_OBJECT ExtendedObject);
-void AhciStartEngine(PATA_PORT Port);
-LOUSTATUS AhciStopEngine(PATA_PORT Port);
-void GetGenericAhciOperations(PATA_PORT_OPERATIONS_TABLE Ops);
-
-void AhciCheckAndMarkExternalPorts(PATA_PORT Ap) {
-    
-    PAHCI_DRIVER_EXTENDED_OBJECT ExtendedObject = (PAHCI_DRIVER_EXTENDED_OBJECT)Ap->PrivateData;
-    PULONG Mmio = (PULONG)Ap->PortMmio;
-    ULONG Tmp = 0;
-
-    Tmp = READ_REGISTER_ULONG(Mmio + PORT_CMD);
-    if (((Tmp & PORT_CMD_ESP) && (ExtendedObject->Host->Capabilities & HOST_CAP_SXS)) ||
-        (Tmp & PORT_CMD_HPCP)) {
-        LouPrint("External ATA Port\n");
-        Ap->PFlags |= ATA_PFLAG_EXTERNAL;
-    }
-
-}
-
-void AhciUpdateInitialiLpmPolicy(PATA_PORT Ap) {
-
-    AtaLpmPolicy Policy = ATA_LPM_MED_POWER;
-    if (Ap->PFlags & ATA_PFLAG_EXTERNAL) {
-        LouPrint("External Port, Not Enableing LPM\n");
-        return;
-    }
-
-    if((Ap->Host->Flags & ATA_NO_HOST_PART) && 
-       (Ap->Host->Flags & ATA_HOST_NO_SSC) &&
-       (Ap->Host->Flags & ATA_HOST_NO_DEVSLP)){
-        LouPrint("No Lpm States Supported, Not Enableing LPM\n");
-        return;
-    }
-
-    Ap->TargetLpmPolicy = Policy;
-
-}
-
-void AhciIntelPcsQuirk(
-    P_PCI_DEVICE_OBJECT PDEV, 
-    PAHCI_DRIVER_EXTENDED_OBJECT ExtendedObject
-){
-    uint16_t Tmp16 = 0;
-
-    if (!(ExtendedObject->DevicePortInfo.HFlags & AHCI_HFLAG_INTEL_PCS_QUIRK)) {
-        return;
-    }
-    LouPrint("Handling Intel Pcs Quirk\n");
-
-    Tmp16 = LouKeReadPciUint16(PDEV, PCS_6);
-    if ((Tmp16 & ExtendedObject->Host->PortImplementation) != ExtendedObject->Host->PortImplementation) {
-        Tmp16 |= ExtendedObject->Host->PortImplementation;
-        LouKeWritePciUint16(PDEV, PCS_6, Tmp16);
-    }
-
-}
-
-LOUSTATUS AhciPciResetController(PATA_HOST Host) {
-    P_PCI_DEVICE_OBJECT PDEV = (P_PCI_DEVICE_OBJECT)Host->PDev;
-    PAHCI_DRIVER_EXTENDED_OBJECT ExtendedObject = (PAHCI_DRIVER_EXTENDED_OBJECT)Host->PrivateData;
-    LOUSTATUS Status = STATUS_SUCCESS;
-        
-    Status = ResetAhciController(Host);
-
-    AhciIntelPcsQuirk(
-        PDEV,
-        ExtendedObject
-    );
-
-    return Status;
-}
-
-
-
-void AhciPciInitializeController(PATA_HOST Host) {
-    PAHCI_DRIVER_EXTENDED_OBJECT ExtendedObject = (PAHCI_DRIVER_EXTENDED_OBJECT)Host->PrivateData;
-    PPCI_COMMON_CONFIG Config = &ExtendedObject->SavedConfig;
-    PULONG Mmio;
-    ULONG Tmp = 0x00;
-    uint8_t Mv = 0x00;
-
-    if (ExtendedObject->DevicePortInfo.HFlags & AHCI_HFLAG_MV_PATA) {
-        if (Config->Header.DeviceID == 0x6121) {
-            Mv = 2;
-        }
-        else {
-            Mv = 4;
-        }
-        Mmio = AhciGetPortBase(ExtendedObject, Mv);
-
-        WRITE_REGISTER_ULONG(Mmio + PORT_IRQ_MASK, 0);
-
-        Tmp = READ_REGISTER_ULONG(Mmio + PORT_IRQ_STATUS);
-        LouPrint("Port Irq Status:%h\n", Tmp);
-        if (Tmp) {
-            WRITE_REGISTER_ULONG(Mmio + PORT_IRQ_STATUS,Tmp);
-        }
-    }
-
-    AhciIntitializeController(Host);
-
-}
-
-void SetUpBasicFunctions(PAHCI_DRIVER_EXTENDED_OBJECT Ext){
-    if (!Ext->StartEngine) {
-        Ext->StartEngine = AhciStartEngine;
-    }
-    if (!Ext->StopEngine) {
-        Ext->StopEngine = AhciStopEngine;
-    }
-    if (!Ext->IrqHandler) {
-        //TODO Interrupt Handler
-    }
-}
-
-bool IsAppleMcp89(PPCI_COMMON_CONFIG Config) {
-    if (
-        (Config->Header.VendorID == 0x10DE) && 
-        (Config->Header.DeviceID == 0x0D85) && 
-        (Config->Header.u.type0.SubVendorID == 0x106B) &&
-        (Config->Header.u.type0.SubSystemID == 0xCB89)
-    ) {
-        return true;
-    }
-
-    return false;
 }
 
 LOUSTATUS AhciInitOne(
@@ -620,313 +470,10 @@ LOUSTATUS AhciInitOne(
     PUNICODE_STRING RegistryEntry
 ) {
     LouPrint("AhciInitOne()\n");
-    PAHCI_DRIVER_EXTENDED_OBJECT ExtendedObject = (PAHCI_DRIVER_EXTENDED_OBJECT)PDEV->DeviceExtendedObject;
-    uint64_t DeviceFlags = AhciPciTable[ExtendedObject->DeviceNumber].Flags;
-    LOUSTATUS Status = STATUS_SUCCESS;
-    int nports, i;
-    uint8_t AhciBar = AHCI_DEFAULT_BAR;
-    PCI_COMMON_CONFIG Config;
-    LouPrint("Initializing AHCI Device\n");
-    GetPciConfiguration(PDEV->bus, PDEV->slot, PDEV->func, &Config);
-    PATA_HOST AtaHost;
-
-    if (Config.Header.VendorID == 0x11AB) {//let ahci out of the way for pata
-        return (LOUSTATUS)STATUS_NO_SUCH_DEVICE;
-    }
-
-    if (IsAppleMcp89(&Config)) {
-        AhciMcp89Apple(PDEV, &Config);
-    }
-    if (Config.Header.VendorID == 0x105A) {
-        LouPrint("AHCI DEVICE : PDC42819 can only drive SATA devices with this driver\n");
-    }
-
-    if ((Config.Header.VendorID == 0x104A) && (Config.Header.DeviceID == 0xCC06)) {
-        AhciBar = AHCI_PCI_BAR_STA2x11;
-    }
-    else if ((Config.Header.VendorID == 0x1C44) && (Config.Header.DeviceID == 0x8000)) {
-        AhciBar = AHCI_PCI_BAR_ENMOTUS;
-    }
-    else if (Config.Header.VendorID == 0x177D) {
-        if (Config.Header.DeviceID == 0xA01C) {
-            AhciBar = AHCI_PCI_BAR_CAVIUM;
-        }
-        if (Config.Header.DeviceID == 0xA084) {
-            AhciBar = AHCI_PCI_BAR_CAVIUM_GEN5;
-        }
-    }
-    else if ((Config.Header.VendorID == 0x0014) && (Config.Header.DeviceID == 0x7A08)) {
-        AhciBar = AHCI_PCI_BAR_LOONGSON;
-    }
-
-    Status = LouKeHalEnablePciDevice(PDEV);
-    if (Status != STATUS_SUCCESS) {
-        return Status;
-    }
-
-    if ((Config.Header.VendorID == 0x8086) &&
-        (Config.Header.DeviceID == 0x2652 ||
-            Config.Header.DeviceID == 0x2653)) {
-        uint8_t Map;
-
-        Map = LouKeReadPciUint8(PDEV, ICH_MAP);
-        if (Map & 0x03) {
-            LouPrint("Controller Is In Combined Mode, Cant Enable AHCI Mode\n");
-            return STATUS_NO_SUCH_DEVICE;
-        }
-    }
-    //next step would to get all the bars but they are already stored in our PCI Config Header
-    //acording to the linux Implementation MCP65 A1 And A2 Cannot Do MSI So We Are Going To
-    //skip to flags
-
-    GetAhciDevicePortInfo(DeviceFlags, &ExtendedObject->DevicePortInfo);
-
-    if ((DeviceFlags == BoardAhciMcp65) && ((Config.Header.RevisionID == 0xA1) || (Config.Header.RevisionID == 0xA2))) {
-        ExtendedObject->DevicePortInfo.HFlags |= AHCI_HFLAG_NO_MSI;
-    }
-
-    if ((DeviceFlags == BoardAhciSb700) && (Config.Header.RevisionID > 0x40)) {
-        ExtendedObject->DevicePortInfo.HFlags &= ~(AHCI_HFLAG_IGN_SERR_INTERNAL);
-    }
-
-    if (DeviceFlags == BoardAhciSb600) {
-        if(AhciSb600Enable64Bit(PDEV)){
-            ExtendedObject->DevicePortInfo.HFlags &= ~(AHCI_HFLAG_32BIT_ONLY);
-        }
-    }
-
-    ExtendedObject->Host = (PAHCI_MEMORY_REGISTERS)LouKeHalGetPciVirtualBaseAddress(&Config, AhciBar);
-
-    LouPrint("Host Is:%h\n", ExtendedObject->Host);
-
-    ExtendedObject->HandOffPciContext = LouKeHalPciSaveContext(PDEV);
-    SetUpBasicFunctions(ExtendedObject);
-
-    PAHCI_MEMORY_REGISTERS Host = ExtendedObject->Host;
-    //lets rock and roll
-    if (Host->Capabilities & HOST_CAP_NCQ) {
-        ExtendedObject->DevicePortInfo.Flags |= ATA_FLAG_NCQ;
-        if (ExtendedObject->DevicePortInfo.HFlags & AHCI_HFLAG_NO_FPDMA_AA) {
-            ExtendedObject->DevicePortInfo.Flags |= ATA_FLAG_FPDMA_AA;
-        }
-
-        ExtendedObject->DevicePortInfo.Flags |= ATA_FLAG_FPDMA_AUX;
-    }
-
-    if (Host->Capabilities & HOST_CAP_PMP) {
-        ExtendedObject->DevicePortInfo.Flags |= ATA_FLAG_PMP;
-    }
-
-    AhciSetEmMessage(ExtendedObject, &ExtendedObject->DevicePortInfo);
-
-    nports = ((Host->Capabilities >> 8) & 0x1F) + 1;
-
-    AtaHost = LouMallocAtaHost(PDEV, &ExtendedObject->DevicePortInfo, nports);
-    if (!AtaHost) {
-        return STATUS_INSUFFICIENT_RESOURCES;
-    }
-    AtaHost->PrivateData = ExtendedObject;
-    AtaHost->IoMap = Host;
-    
-    //if (AhciInitializeMsi(PDEV, nports, ExtendedObject)) {
-    //    LouPrint("Msi Initialization Failed Using PCI Interrupt Pin\n");
-    //}
-
-    if (!(Host->Capabilities & HOST_CAP_SSS)) {
-        ExtendedObject->DevicePortInfo.Flags |= ATA_HOST_PARALLEL_SCAN;
-    }
-    else {
-        LouPrint("SSS Flag Is Set But Parallel Bus Scan Disabled\n");
-    }
-
-    if (!(Host->Capabilities & HOST_CAP_PART)) {
-        ExtendedObject->DevicePortInfo.Flags |= ATA_NO_HOST_PART;
-    }
-
-    if (!(Host->Capabilities & HOST_CAP_SSC))
-        ExtendedObject->DevicePortInfo.Flags |= ATA_HOST_NO_SSC;
-
-    if (!(Host->ExtendedCapabilities & HOST_CAP2_SDS)) {
-        ExtendedObject->DevicePortInfo.Flags |= ATA_HOST_NO_DEVSLP;
-    }
-    if (ExtendedObject->DevicePortInfo.Flags & ATA_FLAG_EM) {
-        AhciResetEm(AtaHost);
-    }
-    if (Host->Capabilities & HOST_CAP_FBS) {
-        ExtendedObject->FbsEnabled = true;
-    }
-
-    //update all ports
-    for (i = 0; i < nports; i++) {
-        AtaHost->Ports[i] = ExtendedObject->DevicePortInfo;
-        AtaHost->Ports[i].PrivateData = (void*)ExtendedObject;
-        AtaHost->Ports[i].Host = AtaHost;
-    }
-
-
-    void* Table = LouMallocEx(1024 * nports, 1024);
-    void* Fb = LouMallocEx(256 * nports, 256);
-
-    if (!(Host->Capabilities & HOST_CAP_64)) {
-        if (((uint64_t)Table >= (0xFFFFFFFF - (1024 * nports))) || ((uint64_t)Fb >= (0xFFFFFFFF - (256 * nports)))) {
-            LouFree((RAMADD)Table);
-            return STATUS_UNSUCCESSFUL;
-        }
-    }
-
-    #define AHCI_PxCMD_CR (1 << 15)  // Command List Running
-    #define AHCI_PxCMD_FR (1 << 14)  // FIS Receive Running
-    for (i = 0; i < nports; i++) {
-        PATA_PORT Ap = &AtaHost->Ports[i];
-        uint64_t TableAddress = (uint64_t)Table + (1024 * i); // Calculate the specific address for this port
-        uint64_t FisBase = (uint64_t)Fb + (256 * i);
-        AtaPortRegisterPortIo(Ap, Host, 0x100 + i * 0x80);
-        Ap->PortNumber = i;
-        PAHCI_PORT_PRIVATE pp = (PAHCI_PORT_PRIVATE)LouMalloc(sizeof(AHCI_PORT_PRIVATE));
-        PAHCI_PORT Port = (PAHCI_PORT)Ap->PortMmio;
-        Ap->PrivateData = pp;
-        #define AHCI_PxFBS_EN (1 << 0)
-        // Clear ST (Command Processing) and FRE (FIS Reception) to stop them
-        Port->CommandnStatus &= ~(1 << 0); // Clear ST (bit 0)
-        Port->CommandnStatus &= ~(1 << 4); // Clear FRE (bit 4)
-        while ((Port->CommandnStatus & AHCI_PxCMD_CR) || (Port->CommandnStatus & AHCI_PxCMD_FR)) {
-            sleep(10);
-            //spinn
-        }
-        
-        if (ExtendedObject->FbsEnabled) {
-            LouPrint("AHCI FBS Enabled");
-            if (Port->FisBasedSwitch & AHCI_PxFBS_EN) {
-                LouPrint("Port Is In FBS Mode\n");
-                pp->FbsEnabled = true;
-            }
-        }
-
-        if (Ap->Flags & ATA_FLAG_EM) {
-            LouPrint("Setting Eclosure Message\n");
-            Ap->EmMessageType = ExtendedObject->EmMessageType;
-        }
-
-        AhciCheckAndMarkExternalPorts(Ap);
-        AhciUpdateInitialiLpmPolicy(Ap);
-
-        if (!(Host->PortImplementation & (1 << i))) {
-            Ap->Operations = 0x00;//no implementations
-        }
-        else {
-            if (Host->Capabilities & HOST_CAP_NCQ) {
-                if ((Port->CommandnStatus & AHCI_PxCMD_CR) && (Port->CommandnStatus & AHCI_PxCMD_FR)) {
-                    Ap->Ncq = true;
-                }
-            }
-            if (Port->Signature == 0xEB140101) {
-                LouPrint("Port Has An ATAPI Device\n");
-                Ap->IsAtapi = true;
-            }
-
-            if ((Host->Capabilities & HOST_CAP_64) && ((uint64_t)TableAddress >= 0xFFFFFFFF)) {
-                Port->CommandListBaseHigh = (TableAddress >> 32);
-                Port->FisBaseHigh = (FisBase >> 32);
-            }
-            Port->CommandListBase = TableAddress & 0xFFFFFFFF;
-            Port->FisBase = FisBase & 0xFFFFFFFF;
-
-            pp->CommandTable = (void*)TableAddress;
-            pp->CmdTableDma = TableAddress;
-            pp->CmdSlots = (PAHCI_COMMAND_HEADER)TableAddress;
-
-            Ap->Dma48 = true;
-            Ap->Dma = true;
-            Port->CommandnStatus |= (1 << 0); // Clear ST (bit 0)
-            Port->CommandnStatus |= (1 << 4); // Clear FRE (bit 4)
-            LouKeRegisterDevice(
-                PDEV,
-                ATA_DEVICE_T,
-                "HostKeyDevice:Annya/System64/AHCI",
-                Ap,
-                Ap
-            );
-        }
-    }
-
-    ExtendedObject->SavedHost = *ExtendedObject->Host;//Save Host Contextr
-
-    Status = AhciPciResetController(AtaHost);
-
-    if (Status != STATUS_SUCCESS) {
-        return Status;
-    }
-    LouPrint("Initializing Controller\n");
-
-    AhciPciInitializeController(AtaHost);
-    LouKeHalPciSetMaster(PDEV);
-
-    LouPrint("AhciInitOne() STATUS_SUCCESS\n");
-    return Status;
-}
-void AhciRemoveOne(P_PCI_DEVICE_OBJECT PDEV, PPCI_COMMON_CONFIG Config){
-
-}
-void AhciShutdownOne(P_PCI_DEVICE_OBJECT PDEV, PPCI_COMMON_CONFIG Config){
-
-}
-void AhciIntelPcsQuirk(P_PCI_DEVICE_OBJECT PDEV,PPCI_COMMON_CONFIG Config, PAHCI_MEMORY_REGISTERS Hba){
-
-}
-LOUSTATUS AhciVt8251HardReset(P_PCI_DEVICE_OBJECT PDEV,PPCI_COMMON_CONFIG Config, PAHCI_MEMORY_REGISTERS Hba){
-
+ 
 
     return STATUS_SUCCESS;
 }
-LOUSTATUS AhciAvnHardReset(P_PCI_DEVICE_OBJECT PDEV,PPCI_COMMON_CONFIG Config, PAHCI_MEMORY_REGISTERS Hba){
-
-
-    return STATUS_SUCCESS;
-}
-//AhciMcp89Apple Initialization
-void AhciMcp89Apple(P_PCI_DEVICE_OBJECT PDEV,PPCI_COMMON_CONFIG Config){
-    uint32_t Tmp;
-    LouPrint("Ahci: Enableing MCP89 AHCI Mode\n");
-
-    Tmp = LouKeReadPciUint32(PDEV, 0xF8);
-    Tmp |= (1 << 0x1b);
-    LouKeWritePciUint32(PDEV, 0xF8, Tmp);
-
-    Tmp = LouKeReadPciUint32(PDEV, 0x54C);
-    Tmp |= (1 << 0x0C);
-    LouKeWritePciUint32(PDEV, 0x54C, Tmp);
-
-    Tmp = LouKeReadPciUint32(PDEV, 0x4A4);
-    Tmp &= 0xFF;
-    Tmp |= 0x01060100;
-    LouKeWritePciUint32(PDEV, 0x4A4, Tmp);
-
-    Tmp = LouKeReadPciUint32(PDEV, 0x54C);
-    Tmp |= ~(1 << 0x0C);
-    LouKeWritePciUint32(PDEV, 0x54C, Tmp);
-
-    Tmp = LouKeReadPciUint32(PDEV, 0xF8);
-    Tmp |= ~(1 << 0x1b);
-    LouKeWritePciUint32(PDEV, 0xF8, Tmp);
-}
-
-LOUSTATUS AhciP5WdhHardReset(P_PCI_DEVICE_OBJECT PDEV,PPCI_COMMON_CONFIG Config, PAHCI_MEMORY_REGISTERS Hba){
-
-
-    return STATUS_SUCCESS;
-}
-LOUSTATUS AhciPciDeviceRuntimeSuspend(P_PCI_DEVICE_OBJECT PDEV,PPCI_COMMON_CONFIG Config, PAHCI_MEMORY_REGISTERS Hba){
-
-
-    return STATUS_SUCCESS;
-}
-LOUSTATUS AhciPciDeviceRuntimeResume(P_PCI_DEVICE_OBJECT PDEV,PPCI_COMMON_CONFIG Config, PAHCI_MEMORY_REGISTERS Hba){
-
-
-    return STATUS_SUCCESS;
-}
-
-
 
 bool AhciPciScan(P_PCI_DEVICE_OBJECT PDEV,  PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryEntry){
 
@@ -954,37 +501,5 @@ DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryEntry) {
 
     DriverObject->PciScanBus = AhciPciScan;
     LouPrint("Ahci Driver Entry() STATUS_SUCCESS\n");
-    return STATUS_SUCCESS;
-}
-
-int AhciInitializeMsi(
-    P_PCI_DEVICE_OBJECT PDEV, 
-    int NPorts, 
-    PAHCI_DRIVER_EXTENDED_OBJECT ExtendedObject
-) {
-    LouPrint("AhciInitializeMsi()\n");
-    int NumVectors = 0;
-
-    if (ExtendedObject->DevicePortInfo.HFlags & AHCI_HFLAG_NO_MSI) {
-        return STATUS_NO_SUCH_DEVICE;
-    }
-
-    //Issues with virtualbox are making it hard to work on this No interrupts for now
-
-    //if (NPorts > 1) {
-    //   NumVectors = LouKeHalMallocPciIrqVectors(PDEV, NPorts, INT_MAX | PCI_IRQ_MSI | PCI_IRQ_MSIX);
-    //}
-
-    //NumVectors = LouKeHalMallocPciIrqVectors(PDEV, 1, PCI_IRQ_MSI | PCI_IRQ_MSIX);
-
-    return NumVectors;
-}
-
-void AhciStartEngine(PATA_PORT Port) {
-
-}
-
-LOUSTATUS AhciStopEngine(PATA_PORT Port) {
-
     return STATUS_SUCCESS;
 }
