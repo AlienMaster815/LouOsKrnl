@@ -383,49 +383,8 @@ LOUSTATUS* State
 	void* Result = LouMalloc(*BufferSize);
 	SYSTEM_DEVICE_IDENTIFIER DevID = LouKeGetStorageDeviceSystemIdentifier(Drive);
 	if(DevID == ATA_DEVICE_T){
-		PATA_PORT Ap = LouKeGetAtaStoragePortObject(Drive);
-		// Initialize the queued command for this transfer
-		if(Ap->ExeclLink == 0x00){
-			Ap->ExeclLink = (PATA_LINK)LouMalloc(sizeof(ATA_LINK));
-			Ap->ExeclLink->ActiveTag = 0xFFFF;// if the tag is being created invalidate the tag
-		}
-
-        PATA_QUEUED_COMMAND Qc = (PATA_QUEUED_COMMAND)LouMalloc(sizeof(ATA_QUEUED_COMMAND));
-		DirectDriveAccessReadInitQueueComand(Ap, Qc, LBA, SectorCount, Result);
-		Qc->BufferSize = *BufferSize;
-		if(Ap->Operations->QcDefer){
-			*State = Ap->Operations->QcDefer(Qc);
-		}
-		else{
-			*State = STATUS_UNSUCCESSFUL;
-		}
-		if(*State != STATUS_SUCCESS){
-			LouFree((RAMADD)Qc);
-			return Result;
-		}
-		LouPrint("Qc Is Ready To Be Preped\n");
-		if(Ap->Operations->QcPrep){
-			*State = Ap->Operations->QcPrep(Qc);
-		}
-		if(*State != STATUS_SUCCESS){
-			LouFree((RAMADD)Qc);
-			return Result;
-		}
-		LouPrint("Qc Is Ready To Be Issued\n");
-		if (Ap->Operations->QcIssue){
-			*State = Ap->Operations->QcIssue(Qc);
-		}
-		else{
-			*State = STATUS_UNSUCCESSFUL;
-		}
-		if(*State != STATUS_SUCCESS){
-			LouFree((RAMADD)Qc);
-			return Result;
-		}
-		LouPrint("Command Completed\n");
-
-		DirectDriveAccessReadFreeQueueComand(Qc);
-		LouFree((RAMADD)Qc);
+		//PATA_PORT Ap = LouKeGetAtaStoragePortObject(Drive);
+		LouPrint("Device Detection Success\n");
 	}
 	
 	return Result;

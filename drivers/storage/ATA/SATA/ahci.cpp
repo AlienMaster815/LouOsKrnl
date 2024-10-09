@@ -11,28 +11,7 @@
 #define AHCI_DEFAULT_BAR 5
 
 #define DRIVER_NAME "Lousine External AHCI .SYS Driver"
-#define DRIVER_VERSION "1.25 Rsc 2"
-
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  ahci.c - AHCI SATA support
- *
- *  Maintained by:  Tejun Heo <tj@kernel.org>
- *    		    Please ALWAYS copy linux-ide@vger.kernel.org
- *		    on emails.
- *
- *  Copyright 2004-2005 Red Hat, Inc.
- *
- * libata documentation is available via 'make {ps|pdf}docs',
- * as Documentation/driver-api/libata.rst
- *
- * AHCI hardware documentation:
- * http://www.intel.com/technology/serialata/pdf/rev1_0.pdf
- * http://www.intel.com/technology/serialata/pdf/rev1_1.pdf
- */
-
-//Porting Done By Tyler Grenier
-
+#define DRIVER_VERSION "0.1"
 
 enum{
     AHCI_PCI_BAR_STA2x11    = 0,
@@ -464,13 +443,242 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
     }
 }
 
+bool AhciSetAe(PAHCI_MEMORY_REGISTERS Host) {
+    //if not set wack it a few times
+    if (Host->GlobalHost & HOST_AHCI_ENABLE) {
+        return true;
+    }
+    
+    for (uint8_t i = 0; i < 5; i++) {
+        Host->GlobalHost |= HOST_AHCI_ENABLE;
+        if (Host->GlobalHost & HOST_AHCI_ENABLE) {
+            return true;
+        }
+        sleep(100);
+    }
+
+    //return an error if so
+    return false;
+}
+
+bool AhciResetHost(PAHCI_MEMORY_REGISTERS Host){
+
+    Host->GlobalHost |= 0x01;
+    for (uint16_t i = (5000 / 10); i > 0; i--) {
+        sleep(10);
+        if (!(Host->GlobalHost & 0x01)) {
+            return true;
+        }
+    }
+
+
+    return false;
+}
+
+bool IsAppleBios(PPCI_COMMON_CONFIG Config) {
+    if (
+        (Config->Header.VendorID == PCI_VENDOR_ID_NVIDIA) &&
+        (Config->Header.DeviceID == PCI_DEVICE_ID_NVIDIA_NFORCE_MCP89_SATA) &&
+        (Config->Header.u.type0.SubSystemID == 0xCB89) &&
+        (Config->Header.u.type0.SubVendorID == PCI_VENDOR_ID_APPLE)
+       ) {
+        return true;
+    }
+    return false;
+}
+
+void AppleBiosSetup(P_PCI_DEVICE_OBJECT PDEV) {
+    uint32_t Value;
+    LouPrint("AHIC : Enableing Apple Bios Ahci\n");
+
+    Value = LouKeReadPciUint32(PDEV, 0xF8);
+    Value |= (1 << 0x1B);
+    LouKeWritePciUint32(PDEV, 0xF8, Value);
+
+    Value = LouKeReadPciUint32(PDEV, 0x54C);
+    Value |= (1 << 0xC);
+    LouKeWritePciUint32(PDEV, 0x54C, Value);
+
+    Value = LouKeReadPciUint32(PDEV, 0x4A4);
+    Value &= 0xFF;
+    Value |= 0x01060100;
+    LouKeWritePciUint32(PDEV, 0x4A4, Value);
+
+    Value = LouKeReadPciUint32(PDEV, 0x54C);
+    Value &= ~(1 << 0xC);
+    LouKeWritePciUint32(PDEV, 0x54C, Value);
+
+    Value = LouKeReadPciUint32(PDEV, 0xF8);
+    Value &= ~(1 << 0x1B);
+    LouKeWritePciUint32(PDEV, 0xF8, Value);
+}
+
+uint8_t GetABAR(PPCI_COMMON_CONFIG Config) {
+    uint8_t ABAR = 5;
+
+    if (
+       (Config->Header.VendorID == PCI_VENDOR_ID_STMICRO) &&
+       (Config->Header.DeviceID == 0xCC06)
+    ) {
+        //STA2X11 ABAR = 0
+        ABAR = AHCI_PCI_BAR_STA2x11;
+    }
+    else if (
+            (Config->Header.VendorID == 0x1C44) &&
+            (Config->Header.DeviceID == 0x8000)
+    ) {
+        //ENMOTUS ABAR = 2
+        ABAR = AHCI_PCI_BAR_ENMOTUS;
+    }
+    else if (
+            (Config->Header.VendorID == PCI_VENDOR_ID_CAVIUM)
+    ) {
+        //CAVIUM ABAR = 0
+        if (Config->Header.DeviceID == 0xA01C) {
+            ABAR = AHCI_PCI_BAR_CAVIUM;
+        }//CAVIUM ABAR GEN5 = 4
+        else if (Config->Header.DeviceID == 0xA084) {
+            ABAR = AHCI_PCI_BAR_CAVIUM_GEN5;
+        }
+    }
+    else if (
+        (Config->Header.VendorID == PCI_VENDOR_ID_LOONGSON) &&
+        (Config->Header.DeviceID == 0x7A08)
+    ){
+        //LOONGSON ABAR = 0
+        ABAR = AHCI_PCI_BAR_LOONGSON;
+    }
+
+    return ABAR;
+}
+
+bool CheckValidIntelDevice(P_PCI_DEVICE_OBJECT PDEV, PPCI_COMMON_CONFIG Config) {
+
+    if (Config->Header.VendorID == PCI_VENDOR_ID_INTEL) {
+        if ((Config->Header.DeviceID == 0x2562) || (Config->Header.DeviceID == 0x2563)) {
+            uint8_t Map = LouKeReadPciUint8(PDEV, ICH_MAP);
+
+            if (Map & 0x03) {
+                LouPrint("AHCI : Controller Is In Combined Mdoe Cannot Use Ahci\n");
+                return false;
+            }
+
+        }
+    }
+    return true;
+}
+
+bool AhciSb600Enable64Bit(P_PCI_DEVICE_OBJECT PDEV) {
+    ///TODO: Ask System For the Implementation and 
+    // Set or return as Needed
+
+    return false;
+}
+
 LOUSTATUS AhciInitOne(
     P_PCI_DEVICE_OBJECT PDEV,
     PDRIVER_OBJECT DriverObject,
     PUNICODE_STRING RegistryEntry
 ) {
     LouPrint("AhciInitOne()\n");
- 
+    PAHCI_DRIVER_EXTENDED_OBJECT Ext = (PAHCI_DRIVER_EXTENDED_OBJECT)PDEV->DeviceExtendedObject;
+    uint64_t QuirksDev = Ext->DeviceNumber;
+    PATA_PORT PortInfo = (PATA_PORT)LouMalloc(sizeof(ATA_PORT));
+    PCI_COMMON_CONFIG PciConfig;
+    //Save Pci Context 
+    Ext->HandOffPciContext = LouKeHalPciSaveContext(PDEV);
+    //Get the Port Info
+    GetAhciDevicePortInfo(QuirksDev, PortInfo);
+    //Lets us talk to the device 
+    LouKeHalEnablePciDevice(PDEV);
+    //Resets Hba
+    LouKeHalPciClearMaster(PDEV);
+    //Pci Context Get Hba
+    GetPciConfiguration(PDEV->bus,PDEV->slot, PDEV->func, &PciConfig);
+    //if apple bios unlock the controller
+    if (IsAppleBios(&PciConfig)) {
+        AppleBiosSetup(PDEV);
+    }
+    if (!CheckValidIntelDevice(PDEV, &PciConfig)) {
+        return STATUS_NO_SUCH_DEVICE;
+    }
+    uint8_t ABAR = GetABAR(&PciConfig);
+    Ext->Host = (PAHCI_MEMORY_REGISTERS)LouKeHalGetPciVirtualBaseAddress(&PciConfig, ABAR);
+    //save the rest of the config
+    Ext->SavedConfig = PciConfig;
+    //Indicate Ae Is On
+    if (!AhciSetAe(Ext->Host)) {
+        LouPrint("Unable To Set The Ae Bit\n");
+        return STATUS_UNSUCCESSFUL;
+    }
+    //Reset the Host
+    if (!AhciResetHost(Ext->Host)) {
+        LouPrint("Global Host Reset Failed\n");
+        return STATUS_UNSUCCESSFUL;
+    }
+    //check Port Features
+    if ((QuirksDev == BoardAhciMcp65) &&
+        (PciConfig.Header.RevisionID == 0xA1 || PciConfig.Header.RevisionID == 0xA2)
+       ) {
+        PortInfo->HFlags |= AHCI_HFLAG_NO_MSI;
+    }
+    if ((QuirksDev == BoardAhciSb700) && (PciConfig.Header.RevisionID >= 0x40)) {
+        PortInfo->HFlags &= ~(AHCI_HFLAG_IGN_SERR_INTERNAL);
+    }
+    if (AhciSb600Enable64Bit(PDEV)) {
+        PortInfo->HFlags &= ~(AHCI_HFLAG_32BIT_ONLY);
+    }
+    
+    if (Ext->Host->Capabilities & HOST_CAP_NCQ) {
+        PortInfo->Flags |= ATA_FLAG_NCQ;
+
+        if (!(PortInfo->HFlags & AHCI_HFLAG_NO_FPDMA_AA)) {
+            PortInfo->Flags |= ATA_FLAG_FPDMA_AA;
+        }
+
+        PortInfo->Flags |= ATA_FLAG_FPDMA_AUX;
+    }
+
+    if (Ext->Host->Capabilities & HOST_CAP_PMP) {
+        PortInfo->Flags |= ATA_FLAG_PMP;
+    }
+
+    if (!(Ext->Host->Capabilities & HOST_CAP_SSS)) {
+        PortInfo->Flags |= ATA_HOST_PARALLEL_SCAN;
+    }
+    else {
+        LouPrint("SSS flag set, parallel bus scan disabled\n");
+    }
+
+    if (!(Ext->Host->Capabilities & HOST_CAP_PART)) {
+        PortInfo->Flags |= ATA_NO_HOST_PART;
+    }
+    if (!(Ext->Host->Capabilities & HOST_CAP_SSC)) {
+        PortInfo->Flags |= ATA_HOST_NO_SSC;
+    }
+
+    if (!(Ext->Host->ExtendedCapabilities & HOST_CAP2_SDS)) {
+        PortInfo->Flags |= ATA_HOST_NO_DEVSLP;
+    }
+
+    Ext->DevicePortInfo = *PortInfo;
+    //start probing ports
+    uint8_t NumPorts = 32; //fuck it its 32
+    //allocate host for ports
+    PATA_HOST AtaHost = LouMallocAtaHost(PDEV, PortInfo, NumPorts);
+
+    for (uint8_t i = 0; i < NumPorts; i++) {
+        PATA_PORT Ap = &AtaHost->Ports[i];
+        if (Ext->Host->PortImplementation & (1 << i)) {
+            LouPrint("Setting up Port:%d\n", i);
+            Ap->PortMmio = (void*)((uint64_t)Ext->Host + (0x100 + (i * 0x80)));
+
+
+        }
+        else {
+            Ap->Operations = 0x00;//Null Operations
+        }
+    }
 
     return STATUS_SUCCESS;
 }

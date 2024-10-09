@@ -3,11 +3,11 @@
 */
 #pragma pack(push, 1)
 
-
 //Define the Lou Driver Kit For Our Constants
 
 #ifndef _PCI_H
 #define _PCI_H
+#include "PciIds.h"
 
 #define PROGIF 9
 

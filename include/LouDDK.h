@@ -1,6 +1,7 @@
 #ifndef _LOUDDK_H
 #define _LOUDDK_H
 
+#include <drivers/Lou_drivers/PciIds.h>
 
 #ifdef _KERNEL_MODULE_
 #pragma warning(push)
