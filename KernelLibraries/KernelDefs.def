@@ -101,4 +101,5 @@ EXPORTS
     LouKeRegisterDevice
     AtaStdQcDefer
     LouMallocEx
-    
+    LouKeWaitForMmioState
+    LouKeCreateMemoryPool

@@ -112,3 +112,15 @@ void LouKeGetTime(
     TimeStruct->Month = month + 1; // Month is zero-based
     TimeStruct->Day = days_since_epoch + 1; // Day is one-based
 }
+
+
+bool LouKeWaitForMmioState(uint32_t* Register, uint32_t State, uint32_t Mask, uint64_t MsTimeout){
+    for(uint64_t i = 0; i < MsTimeout; i++){
+        sleep(1);
+        if((*Register & Mask) == State){
+            return true;
+        }
+    }
+    //Device Timeout
+    return false;
+}

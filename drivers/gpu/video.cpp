@@ -1,4 +1,5 @@
 #include "VBOX/VBoxVGA.h"
+#include <Hal.h>
 
 void InitializeAmdGpu(P_PCI_DEVICE_OBJECT PDEV);
 
@@ -30,6 +31,7 @@ bool IsVGA(uint8_t bus,uint8_t slot,uint8_t function) {
 
 
 LOUSTATUS VBoxPciProbe(P_PCI_DEVICE_OBJECT PDEV);
+LOUSTATUS InitializeGenericVgaDriver(P_PCI_DEVICE_OBJECT PDEV);
 
 // Function to initialize the VGA device
 void InitializeVgaDevice(P_PCI_DEVICE_OBJECT PDEV) {	
@@ -47,12 +49,22 @@ void InitializeVgaDevice(P_PCI_DEVICE_OBJECT PDEV) {
 	if(VendorID == 0x80EE){
 		PreVBoxVGAInit(PDEV);
 		InitializeVirtualBoxVgaAdapter(PDEV);
-		return;
+		//return;
 	}
-	else if(VendorID == 0x1002){
+	//else if(VendorID == 0x1002){
 		//jump to AMDGPU
 	
-	}
+	//}
+
+	LouPrint("Hello World\n");
+	//PCI_COMMON_CONFIG Config;
+	//LouKeGetPciConfiguration(PDEV, &Config);
+	//LouPrint("SubClass Code:%h\n", Config.Header.SubClass);
+	//LouPrint("ProgIF:%h\n",Config.Header.ProgIf);
+	InitializeGenericVgaDriver(PDEV);
+	
+	while(1);
+
 	//else if(VendorID == 0x8086){
 	//	if(IsWESTMERE(DeviceID)){
 	//		InitializeWestmere(PDEV);

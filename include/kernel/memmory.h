@@ -194,7 +194,7 @@ typedef struct LMPOOL_DIRECTORY{
     uint64_t ObjectSize;
     uint64_t Flags;
     uint8_t* PoolBitMap;
-}LMPOOL_DIRECTORY, * PLMPOOL_DIRECTORY;
+}LMPOOL_DIRECTORY, * PLMPOOL_DIRECTORY, * POOL;
 
 typedef struct _BO{
     ListHeader Header;
@@ -359,5 +359,13 @@ KERNEL_EXPORT void* LouKeMallocFromPool(
     uint64_t* Offset
 );
 KERNEL_EXPORT void LouKeFreeFromPool(PLMPOOL_DIRECTORY Pool, void* Address, uint64_t size);
+
+KERNEL_EXPORT POOL LouKeCreateMemoryPool(
+    uint64_t NumberOfPoolMembers,
+    uint64_t ObjectSize,
+    string Tag,
+    uint64_t Flags,     //flags for alignment
+    uint64_t PageFlags  //flags for Page Directory
+);
 
 #endif

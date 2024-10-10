@@ -203,12 +203,15 @@ PLMPOOL_DIRECTORY LouKeCreateMemoryPool(
     uint64_t Flags,
     uint64_t PageFlags
 ){
+    if(Flags == 0){
+        Flags = 1;
+    }
 
     if(PageFlags & USER_PAGE){
 
     }
     else{
-        uint64_t PoolPAddress = (uint64_t)LouMalloc(ObjectSize * NumberOfPoolMembers);
+        uint64_t PoolPAddress = (uint64_t)LouMallocEx(ObjectSize * NumberOfPoolMembers, Flags);
         return LouKeMapPool(
             PoolPAddress,
             PoolPAddress,

@@ -90,6 +90,10 @@ KERNEL_IMPORT void GetPciConfiguration(ULONG SystemIoBusNumber,ULONG SlotNumber,
     }
 }
 
+KERNEL_IMPORT void LouKeHalGetPciConfiguration(P_PCI_DEVICE_OBJECT PDEV, PPCI_COMMON_CONFIG Config){
+    GetPciConfiguration(PDEV->bus, PDEV->slot, PDEV->func, Config);
+}
+
 void PciSetPowerModeD0(
     P_PCI_DEVICE_OBJECT PDEV
 ){

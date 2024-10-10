@@ -59,6 +59,13 @@ KERNEL_IMPORT LOUSTATUS LouKeRegisterDevice(
     void* DevicePrivateData
 );
 
+KERNEL_IMPORT
+void LouKeHalGetPciConfiguration(
+    P_PCI_DEVICE_OBJECT PDEV, 
+    PPCI_COMMON_CONFIG Config
+);
+
+
 #else 
 KERNEL_EXPORT uint64_t LouKeHalLinuxPciCheckForCompatibleConfiguration(
     PPCI_COMMON_CONFIG PciSearch, 
@@ -99,6 +106,12 @@ KERNEL_EXPORT LOUSTATUS LouKeRegisterDevice(
     string LRE, //optional
     void* KeyData, //optional
     void* DevicePrivateData
+);
+
+KERNEL_EXPORT 
+void LouKeGetPciConfiguration(
+    P_PCI_DEVICE_OBJECT PDEV, 
+    PPCI_COMMON_CONFIG Config
 );
 
 #endif

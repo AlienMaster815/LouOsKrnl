@@ -306,17 +306,17 @@ KERNEL_ENTRY Lou_kernel_start(
     LouPrint("Hello Im Lousine Getting Things Ready\n");
 
     //INITIALIZE IMPORTANT THINGS FOR US LATER
-    Lou_kernel_early_initialization();
+    //Lou_kernel_early_initialization();
     
-    InitializeGenericTables();
+    //InitializeGenericTables();
 
-    Advanced_Kernel_Initialization();
+    //Advanced_Kernel_Initialization();
 
 
-    InitPreLoadedModules();
+    //InitPreLoadedModules();
 
     //SETUP DEVICES AND DRIVERS
-    LookForStorageDevices();
+    //LookForStorageDevices();
     //UpdateDeviceInformationTable();
     //LouKeRunOnNewStack(FileSystemSetup, 0x00, 64 * KILOBYTE);
     //ScanTheRestOfHarware();

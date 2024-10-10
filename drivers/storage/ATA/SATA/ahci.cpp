@@ -574,6 +574,8 @@ bool AhciSb600Enable64Bit(P_PCI_DEVICE_OBJECT PDEV) {
 
     return false;
 }
+static POOL ClbPool;
+static POOL FbPool;
 
 LOUSTATUS AhciInitOne(
     P_PCI_DEVICE_OBJECT PDEV,
@@ -667,13 +669,84 @@ LOUSTATUS AhciInitOne(
     //allocate host for ports
     PATA_HOST AtaHost = LouMallocAtaHost(PDEV, PortInfo, NumPorts);
 
+    //allocate CLB
+    ClbPool = LouKeCreateMemoryPool(
+        32, 
+        1024,
+        "AHCI Kernel Driver Clb Pool",
+        1024,
+        KERNEL_PAGE_WRITE_PRESENT
+    );
+    //allocate Fb
+    FbPool = LouKeCreateMemoryPool(
+        32,
+        256,
+        "AHCI Kernel Driver Fb Pool",
+        256,
+        KERNEL_PAGE_WRITE_PRESENT
+    );
+    
+
     for (uint8_t i = 0; i < NumPorts; i++) {
         PATA_PORT Ap = &AtaHost->Ports[i];
         if (Ext->Host->PortImplementation & (1 << i)) {
             LouPrint("Setting up Port:%d\n", i);
             Ap->PortMmio = (void*)((uint64_t)Ext->Host + (0x100 + (i * 0x80)));
+            PAHCI_PORT Port = (PAHCI_PORT)Ap->PortMmio;            
+            void* Clb; void* Fb;
+            //check that PxCMD ST, CR, FRE, and FR are cleared
+            //if not place ports into idle state by clearing ST 
+            //and waiting for CR to clear and then clear FRE and 
+            //wait for FR to be 0 if this dosent work a port or
+            //full hba reset is required
+            if (Port->CommandnStatus & PORT_CMD_ST) {
+                Port->CommandnStatus &= ~(PORT_CMD_ST);
+                if (LouKeWaitForMmioState(&Port->CommandnStatus, 0x00, PORT_CMD_CR, 1000)) { 
+                    //wait for 1 second before setting off the fire alarm
+                    LouPrint("WARNING : Port Could Not Halt Port, Reseting Port\n");
+                }
+            }
+            if (Port->CommandnStatus & PORT_CMD_FR) {
+                Port->CommandnStatus &= ~(PORT_CMD_FR);
+                if (LouKeWaitForMmioState(&Port->CommandnStatus, 0x00, PORT_CMD_FR, 1000)) {
+                    LouPrint("WARNING : Port Could Not Stop Fis Reception, Reseting Port\n");
+                }
+            }
+            //Find Out the number of command slots for each port 
+            //by Reading Host Capabilities NCS and allocate memory 
+            //for each ports CLB and FB with the equations : TODO
+            //Then Zero out the memory
+            //NOTICE:we do this out of the loop with
+            Clb = LouKeMallocFromPool(ClbPool, 1024, 0x00);
+            Fb = LouKeMallocFromPool(FbPool, 1024, 0x00);
+            memset(Clb, 0, 1024);
+            memset(Fb, 0, 256);
+            //make sure that the address is compatible
+            if (Ext->Host->Capabilities & HOST_CAP_64) {
+                Port->CommandListBaseHigh = (uint32_t)((uint64_t)Clb >> 32);
+                Port->FisBaseHigh = (uint32_t)((uint64_t)Fb >> 32);
+            }
+            else {
+                if ((uint64_t)Clb > (0xFFFFFFFF - 1024)) {
+                    LouPrint("Allocated Clb Exceeds Addressing Limit\n");
+                    return STATUS_UNSUCCESSFUL;
+                }
+                if ((uint64_t)Fb > (0xFFFFFFFF - 256)) {
+                    LouPrint("Allocated Fb Exceeds Addressing Limit\n");
+                    return STATUS_UNSUCCESSFUL;
+                }
+            }
+            Port->CommandListBase = (uint32_t)((uint64_t)Clb & 0xFFFFFFFF);
+            Port->FisBase = (uint32_t)((uint64_t)Clb & 0xFFFFFFFF);
 
-
+            //Port Is Now In a Minimaly initialized State Register Device
+            LouKeRegisterDevice(
+                PDEV,
+                ATA_DEVICE_T,
+                "HKEY_LOCAL_MACHINE/Annya/System64/Drivers/Ahci/",
+                Ap,
+                Ap
+            );
         }
         else {
             Ap->Operations = 0x00;//Null Operations
