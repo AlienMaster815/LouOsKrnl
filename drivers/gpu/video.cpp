@@ -65,19 +65,4 @@ void InitializeVgaDevice(P_PCI_DEVICE_OBJECT PDEV) {
 	
 	while(1);
 
-	//else if(VendorID == 0x8086){
-	//	if(IsWESTMERE(DeviceID)){
-	//		InitializeWestmere(PDEV);
-	//	}
-	//	else if(IsSANDYBRIDGEGT1(DeviceID)){
-	//		InitializeSandyBridgeGt1(PDEV);
-	//	}
-	//	else if(IsSANDYBRIDGEGT2(DeviceID)){
-	//		InitializeSandyBridgeGt2(PDEV);
-	//	}
-	//}
-	//else{
-	//	//here for a known compiler bug with if statements
-	//}
-
 }

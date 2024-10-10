@@ -25,10 +25,7 @@ LOUSTATUS InitializeStandardVga(
 ){
     LouPrint("Initializing VGA Standard Inteface\n");
 
-    for(uint8_t i = 0 ; i < 6;i++){
-        LouPrint("Map:%d:%h\n", i, PciConfig->Header.u.type0.BaseAddresses[i]);
-    }
-
+    
 
     return STATUS_SUCCESS;
 }
