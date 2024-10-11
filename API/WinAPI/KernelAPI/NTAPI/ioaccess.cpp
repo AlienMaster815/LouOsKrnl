@@ -3,33 +3,27 @@
 #include <NtAPI.h>
 
 VOID WRITE_PORT_UCHAR(PVOID Port, UCHAR Value){
-    volatile UCHAR* P = (volatile UCHAR*)Port;
-    *P = Value;
+    outb((uint64_t)Port, (uint8_t)Value);
 }
 
 VOID WRITE_PORT_USHORT(PVOID Port, USHORT Value){
-    volatile USHORT* P = (volatile USHORT*)Port;
-    *P = Value;
+    outw((uint64_t)Port, (uint16_t)Value);
 }
 
 VOID WRITE_PORT_ULONG(PVOID Port, ULONG Value){
-    volatile ULONG* P = (volatile ULONG*)Port;
-    *P = Value;
+    outl((uint64_t)Port, (uint32_t)Value);
 }
 
 UCHAR READ_PORT_UCHAR(PVOID Port){
-    volatile UCHAR* P = (volatile UCHAR*)Port;
-    return *P;
+    return inb((uint64_t)Port);
 }
 
 USHORT READ_PORT_USHORT(PVOID Port){
-    volatile USHORT* P = (volatile USHORT*)Port;
-    return *P;
+    return inw((uint64_t)Port);
 }
 
 ULONG READ_PORT_ULONG(PVOID Port){
-    volatile ULONG* P = (volatile ULONG*)Port;
-    return *P;
+    return inl((uint64_t)Port);
 }
 
 UCHAR READ_REGISTER_UCHAR(PUCHAR Register){

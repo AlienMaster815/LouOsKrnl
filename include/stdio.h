@@ -48,7 +48,15 @@ KERNEL_IMPORT bool LouKeIsLittleEndianBufferEqualTo(
 #include <LouAPI.h>
 
 #ifndef _KERNEL_MODULE_
-void VgaPutPixelRgb(int x, int y, uint8_t r, uint8_t g, uint8_t b);
+void LouKeDrsdPutPixelMirroredEx(
+    uint16_t x, uint16_t y, 
+    uint8_t r, uint8_t g, uint8_t b, uint8_t a
+);
+
+void LouKeDrsdPutPixelMirrored(
+    uint16_t x, uint16_t y, 
+    uint8_t r, uint8_t g, uint8_t b
+);
 
 int LouPrint(char *format, ...);
 int putchar(int ic);

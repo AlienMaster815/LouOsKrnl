@@ -20,7 +20,7 @@ bool DrawRectangle(
     ){
     for(uint16_t yz = y; yz <= y+height; yz++){
         for(uint16_t xz = x;xz <= x+width; xz++){
-            VgaPutPixelRgb(xz,yz,r,g,b);
+            LouKeDrsdPutPixelMirrored(xz,yz,r,g,b);
         }
     }
 }
@@ -356,7 +356,7 @@ bool LouUpdateTextWindow(PWINDHANDLE WindowHandle,TEXT_WINDOW_EVENT Update){
             FrameHandle.width = WindowHandle->Charecteristics.Dimentions.width - 10;
             FrameHandle.height = WindowHandle->Charecteristics.Dimentions.height - 27;
 
-            FrameBufferMemMov(
+            LouKeDsrdMirrorFrameBufferMemMov(
                 &FrameHandle,
                 WindowHandle,
                 WindowHandle->Charecteristics.Dimentions.x,

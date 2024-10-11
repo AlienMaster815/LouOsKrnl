@@ -154,6 +154,9 @@ typedef struct  _AHCI_DEVICE{
 }AHCI_DEVICE, * PAHCI_DEVICE;
 
 SYSTEM_DEVICE_IDENTIFIER LouKeGetStorageDeviceSystemIdentifier(uint8_t DriveNumber);
+uint8_t LouKeDeviceManagerGetGpuCount();
+void LouKeDrsdPciResetScreen(P_PCI_DEVICE_OBJECT PDEV);
+
 
 void 
 WriteDrive(

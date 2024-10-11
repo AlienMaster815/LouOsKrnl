@@ -19,6 +19,11 @@ typedef struct _DrsdFramebuffer{
     uint64_t FramebufferBase;
     uint64_t FramebufferSize;
     PDrsdFormat Format;
+    uint16_t Width;
+    uint16_t Height;
+    uint8_t Bpp;
+    uint32_t Pitch;
+    uint8_t FrameBufferType;
 }DrsdFramebuffer, * PDrsdFramebuffer;
 
 typedef struct  _DrsdDisplayMode{
@@ -39,14 +44,31 @@ typedef struct  _DrsdBufferObjects{
     uint64_t Size;
 }DrsdBufferObjects, * PDrsdBufferObjects;
 
+typedef struct _FrameBufferModeDefinition{  
+    uint16_t Width;
+    uint16_t Height;
+    uint32_t Pitch;
+    uint8_t Bpp;
+    uint8_t FrameBufferType;
+}FrameBufferModeDefinition, * PFrameBufferModeDefinition;
+
+
+
 typedef struct _DrsdVRamObject{
     ListHeader Header;
     uint64_t Base;
     uint64_t Height;
     DrsdFramebuffer FrameBuffer;
     void* DeviceObject;
+    PFrameBufferModeDefinition SupportedModes;
+    struct _DrsdStandardFrameworkObject* FrameWorkReference;
 }DrsdVRamObject, * PDrsdVRamObject;
-#pragma pack(pop)
+
+typedef struct _DrsdStandardFrameworkObject{
+    void (*RgbPutPixel)(struct _DrsdVRamObject* FBDEV, uint16_t x, uint16_t y, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+    void (*DeviceSetFramebufferMode)(struct _DrsdVRamObject* FBDEV, uint16_t Width, uint16_t Height);
+}DrsdStandardFrameworkObject, * PDrsdStandardFrameworkObject;
+
 typedef struct _DrsdEncoder{
 
 }DrsdEncoder, * PDrsdEncoder;
@@ -59,12 +81,37 @@ typedef struct _DrsdDevice{
     void* dev;
 }DrsdDevice, * PDrsdDevice;
 
-#ifndef _KERNEL_MODULE_
+
+#pragma pack(pop)
+
+#define RGB_DRSD_FRAMEBUFFER 1
+
+LOUSTATUS LouKeRegisterFrameBufferDevice(
+    void* Device, 
+    uint64_t VRamBase, 
+    uint64_t VRamSize,
+    uint16_t Width,
+    uint16_t Height,
+    uint8_t Bpp,
+    uint8_t FramebufferType,
+    PFrameBufferModeDefinition SupportedModes,
+    PDrsdStandardFrameworkObject FrameWorkReference
+);
+
+void LouKeDrsdResetScreen(uint8_t Gpu);
+
 void DirectAccessDrsdHotplugEvent(PDrsdDevice Device);
-#endif
+
+void* GetFrameBufferAddress(
+    PDrsdVRamObject FBDEV,
+    uint16_t x, uint16_t y
+);
 
 #ifdef __cplusplus
 }
-#endif
 
+#ifndef _KERNEL_MODULE_
+//KERNEL_EXPORT
+#endif
+#endif
 #endif 

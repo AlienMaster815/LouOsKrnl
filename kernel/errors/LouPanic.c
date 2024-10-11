@@ -29,7 +29,7 @@ void LouPanic(char* error_message,STATUS recoverable) {
 		if(LOUSTATUS_GOOD == SilentPanic()) return;
 	}
 
-	VgaRgbModeFillBackgroundEx(0,120,215,0);
+	//VgaRgbModeFillBackgroundEx(0,120,215,0);
 	//PanicPrint(error_message);
     asm volatile("cli");
     asm volatile("hlt");

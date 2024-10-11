@@ -46,10 +46,10 @@ plot8points (int cx, int cy, int x, int y, uint8_t r,uint8_t g, uint8_t b)
 void
 plot4points (int cx, int cy, int x, int y, uint8_t r, uint8_t g, uint8_t b)
 {
-  VgaPutPixelRgb(cx + x, cy + y,r,g,b);
-  if (x != 0) VgaPutPixelRgb (cx - x, cy + y,r,g,b);
-  if (y != 0) VgaPutPixelRgb (cx + x, cy - y ,r,g,b);
-  if (x != 0 && y != 0) VgaPutPixelRgb (cx - x, cy - y,r,g,b);
+  LouKeDrsdPutPixelMirrored(cx + x, cy + y,r,g,b);
+  if (x != 0) LouKeDrsdPutPixelMirrored (cx - x, cy + y,r,g,b);
+  if (y != 0) LouKeDrsdPutPixelMirrored (cx + x, cy - y ,r,g,b);
+  if (x != 0 && y != 0) LouKeDrsdPutPixelMirrored (cx - x, cy - y,r,g,b);
 }
 
 void
@@ -95,7 +95,7 @@ plot_basic_bezier (int x0, int y0, int x1, int y1, int x2, int y2,uint8_t r,uint
   dy -= xy; /* error of 1.step */
   for (;;)
   { /* plot curve */
-    VgaPutPixelRgb(x0, y0,r,g,b);
+    LouKeDrsdPutPixelMirrored(x0, y0,r,g,b);
     ey = 2 * ex - dy; /* save value for test of y step */
     if (2 * ex >= dx)
     { /* x step */
@@ -119,10 +119,10 @@ plot_circle (int xm, int ym, int r,uint8_t R,uint8_t g,uint8_t b)
 {
    int x = -r, y = 0, err = 2-2*r; /* II. Quadrant */ 
    do {
-      VgaPutPixelRgb (xm-x, ym+y,R,g,b); /*   I. Quadrant */
-      VgaPutPixelRgb (xm-y, ym-x,R,g,b); /*  II. Quadrant */
-      VgaPutPixelRgb (xm+x, ym-y,R,g,b); /* III. Quadrant */
-      VgaPutPixelRgb (xm+y, ym+x,R,g,b); /*  IV. Quadrant */
+      LouKeDrsdPutPixelMirrored (xm-x, ym+y,R,g,b); /*   I. Quadrant */
+      LouKeDrsdPutPixelMirrored (xm-y, ym-x,R,g,b); /*  II. Quadrant */
+      LouKeDrsdPutPixelMirrored (xm+x, ym-y,R,g,b); /* III. Quadrant */
+      LouKeDrsdPutPixelMirrored (xm+y, ym+x,R,g,b); /*  IV. Quadrant */
       r = err;
       if (r >  x) err += ++x*2+1; /* e_xy+e_x > 0 */
       if (r <= y) err += ++y*2+1; /* e_xy+e_y < 0 */
@@ -137,7 +137,7 @@ plot_Line (int x0, int y0, int x1, int y1,uint8_t r,uint8_t g,uint8_t b)
   int err = dx + dy, e2; /* error value e_xy */
  
   for (;;){  /* loop */
-    VgaPutPixelRgb(x0,y0,r,g,b);
+    LouKeDrsdPutPixelMirrored(x0,y0,r,g,b);
     if (x0 == x1 && y0 == y1) break;
     e2 = 2 * err;
     if (e2 >= dy) { err += dy; x0 += sx; } /* e_xy+e_x > 0 */
@@ -154,10 +154,10 @@ raster_circle (int x0, int y0, int radius,uint8_t r,uint8_t g,uint8_t b)
   int x = 0;
   int y = radius;
  
-  VgaPutPixelRgb (x0, y0 + radius,r,g,b);
-  VgaPutPixelRgb (x0, y0 - radius,r,g,b);
-  VgaPutPixelRgb (x0 + radius, y0,r,g,b);
-  VgaPutPixelRgb (x0 - radius, y0,r,g,b);
+  LouKeDrsdPutPixelMirrored (x0, y0 + radius,r,g,b);
+  LouKeDrsdPutPixelMirrored (x0, y0 - radius,r,g,b);
+  LouKeDrsdPutPixelMirrored (x0 + radius, y0,r,g,b);
+  LouKeDrsdPutPixelMirrored (x0 - radius, y0,r,g,b);
   while (x < y)
   {
     // ddF_x == 2 * x + 1;
@@ -172,14 +172,14 @@ raster_circle (int x0, int y0, int radius,uint8_t r,uint8_t g,uint8_t b)
     x++;
     ddF_x += 2;
     f += ddF_x;    
-    VgaPutPixelRgb (x0 + x, y0 + y,r,g,b);
-    VgaPutPixelRgb (x0 - x, y0 + y,r,g,b);
-    VgaPutPixelRgb (x0 + x, y0 - y,r,g,b);
-    VgaPutPixelRgb (x0 - x, y0 - y,r,g,b);
-    VgaPutPixelRgb (x0 + y, y0 + x,r,g,b);
-    VgaPutPixelRgb (x0 - y, y0 + x,r,g,b);
-    VgaPutPixelRgb (x0 + y, y0 - x,r,g,b);
-    VgaPutPixelRgb (x0 - y, y0 - x,r,g,b);
+    LouKeDrsdPutPixelMirrored (x0 + x, y0 + y,r,g,b);
+    LouKeDrsdPutPixelMirrored (x0 - x, y0 + y,r,g,b);
+    LouKeDrsdPutPixelMirrored (x0 + x, y0 - y,r,g,b);
+    LouKeDrsdPutPixelMirrored (x0 - x, y0 - y,r,g,b);
+    LouKeDrsdPutPixelMirrored (x0 + y, y0 + x,r,g,b);
+    LouKeDrsdPutPixelMirrored (x0 - y, y0 + x,r,g,b);
+    LouKeDrsdPutPixelMirrored (x0 + y, y0 - x,r,g,b);
+    LouKeDrsdPutPixelMirrored (x0 - y, y0 - x,r,g,b);
   }
 }
 
@@ -187,10 +187,12 @@ uint16_t VgaGetBufferHeight();
 uint16_t VgaGetBufferWidth();
 
 uint16_t GetScreenBufferWidth(){
-  return VgaGetBufferWidth();
+  //return VgaGetBufferWidth();
+  return 0;
 }
 
 uint16_t GetScreenBufferHeight(){
-  return VgaGetBufferHeight();
+  //return VgaGetBufferHeight();
+  return 0;
 }
 

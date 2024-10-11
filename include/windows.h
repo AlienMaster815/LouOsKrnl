@@ -151,11 +151,9 @@ typedef struct  _FramebufferHandle{
     uint16_t height;
 }FRAME_BUFFER_HANDLE, * PFRAME_BUFFER_HANDLE;
 #ifndef _KERNEL_MODULE_
-void* GetFrameBufferAddress(
-    uint16_t x, uint16_t y
-);
 
-void FrameBufferMemMov(
+
+void LouKeDsrdMirrorFrameBufferMemMov(
     PFRAME_BUFFER_HANDLE FrameHandle, 
     PWINDHANDLE WindowOfCopy,
     uint64_t xDest, 

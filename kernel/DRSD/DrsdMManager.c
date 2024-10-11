@@ -1,5 +1,13 @@
 #include <LouAPI.h>
 
+LOUSTATUS LouKeRegisterDevice(
+    P_PCI_DEVICE_OBJECT PDEV, 
+    SYSTEM_DEVICE_IDENTIFIER Sdi,
+    string LRE, //optional
+    void* KeyData, //optional
+    void* DevicePrivateData
+);
+
 //manager for the object
 static PDrsdBufferObjects DrsdObjectanager;
 static uint16_t NumberOfActiveObjectManagers = 0;
@@ -11,38 +19,68 @@ static inline void InitializeVRamManagerObject(
     PDrsdVRamObject Obj,
     PListHeader LastHeader,
     uint64_t Base, uint64_t Height,
+    uint16_t x,
+    uint16_t y,
+    uint8_t Bpp,
+    uint8_t FramebufferType,
+    PFrameBufferModeDefinition SupportedModes,
+    PDrsdStandardFrameworkObject FrameWorkReference,
     void* DeviceObject
 ){
     Obj->Header.LastHeader = LastHeader;
     Obj->Header.NextHeader = 0x00;
     Obj->Base = Base;
     Obj->Height = Height;
-    Obj->FrameBuffer.FramebufferBase = 0;
-    Obj->FrameBuffer.FramebufferSize = 0;
-    Obj->DeviceObject = DeviceObject;   
+    Obj->FrameBuffer.FramebufferBase = Base;
+    Obj->FrameBuffer.FramebufferSize = Height;   
+    Obj->FrameBuffer.Width = x;
+    Obj->FrameBuffer.Height = y;
+    Obj->FrameBuffer.Pitch = (x * (Bpp/8));
+    Obj->FrameBuffer.Bpp = Bpp;
+    Obj->DeviceObject = DeviceObject; 
+    Obj->SupportedModes = SupportedModes;     
+    Obj->FrameWorkReference = FrameWorkReference;     
 }
 
 static inline void ReuseVRamManagerObject(
     PDrsdVRamObject Obj,
     PListHeader LastHeader,
     uint64_t Base, uint64_t Height,
+    uint8_t x,
+    uint8_t y,
+    uint8_t Bpp,
+    uint8_t FramebufferType,
+    PFrameBufferModeDefinition SupportedModes,
+    PDrsdStandardFrameworkObject FrameWorkReference,
     void* DeviceObject
 ){
     //Obj->Header.LastHeader = LastHeader; headers are not changed
     //Obj->Header.NextHeader = 0x00;
     Obj->Base = Base;
     Obj->Height = Height;
-    Obj->FrameBuffer.FramebufferBase = 0;
-    Obj->FrameBuffer.FramebufferSize = 0;
-    Obj->DeviceObject = DeviceObject;   
+    Obj->FrameBuffer.FramebufferBase = Base;
+    Obj->FrameBuffer.FramebufferSize = Height;
+    Obj->FrameBuffer.Width = x;
+    Obj->FrameBuffer.Height = y;
+    Obj->FrameBuffer.Pitch = (x * (Bpp/8));
+    Obj->FrameBuffer.Bpp = Bpp;
+    Obj->DeviceObject = DeviceObject;
+    Obj->SupportedModes = SupportedModes;  
+    Obj->FrameWorkReference = FrameWorkReference;     
 }
 
 static spinlock_t VRamRegistrationLock;
 //Registers a VRam Object To Tables
-LOUSTATUS LouKeRegisterVRam(
+LOUSTATUS LouKeRegisterFrameBufferDevice(
     void* Device, 
     uint64_t VRamBase, 
-    uint64_t VRamSize
+    uint64_t VRamSize,
+    uint16_t Width,
+    uint16_t Height,
+    uint8_t Bpp,
+    uint8_t FramebufferType,
+    PFrameBufferModeDefinition SupportedModes,
+    PDrsdStandardFrameworkObject FrameWorkReference
 ){
     LouKIRQL OldIrql;
     //LouKeAcquireSpinLock(&VRamRegistrationLock, &OldIrql);
@@ -57,13 +95,25 @@ LOUSTATUS LouKeRegisterVRam(
             0x00, 
             VRamBase, 
             VRamSize, 
+            Width,
+            Height,
+            Bpp,
+            FramebufferType,
+            SupportedModes,
+            FrameWorkReference, 
             Device
         );
         NumberOfActiveVRamManagers++;
+        LouKeRegisterDevice(
+            (P_PCI_DEVICE_OBJECT)Device, 
+            GRAPHICS_DEVICE_T, 
+            "HKEY:Annya/System64/Drivers/Gpu", 
+            (void*)DrsdVramManager, 
+            (void*)DrsdVramManager
+        );
         LouKeReleaseSpinLock(&VRamRegistrationLock, &OldIrql);
         return STATUS_SUCCESS;
     }
-    //else Do More Complicated Bullshit
 
     PDrsdVRamObject tmp = DrsdVramManager;
 
@@ -81,7 +131,20 @@ LOUSTATUS LouKeRegisterVRam(
             (PListHeader)tmp, 
             VRamBase, 
             VRamSize, 
+            Width,
+            Height,
+            Bpp,
+            FramebufferType,
+            SupportedModes,
+            FrameWorkReference,
             Device
+            );
+            LouKeRegisterDevice(
+                (P_PCI_DEVICE_OBJECT)Device, 
+                GRAPHICS_DEVICE_T, 
+                "HKEY:Annya/System64/Drivers/Gpu", 
+                (void*)tmp, 
+                (void*)tmp
             );
             LouKeReleaseSpinLock(&VRamRegistrationLock, &OldIrql);
             return STATUS_SUCCESS;   
@@ -96,8 +159,21 @@ LOUSTATUS LouKeRegisterVRam(
         (PListHeader)tmp, 
         VRamBase, 
         VRamSize, 
+        Width,
+        Height,
+        Bpp,
+        FramebufferType,
+        SupportedModes,
+        FrameWorkReference,
         Device
     );   
+    LouKeRegisterDevice(
+        (P_PCI_DEVICE_OBJECT)Device, 
+        GRAPHICS_DEVICE_T, 
+        "HKEY:Annya/System64/Drivers/Gpu", 
+        (void*)tmp, 
+        (void*)tmp
+    );
     NumberOfActiveVRamManagers++;
     LouKeReleaseSpinLock(&VRamRegistrationLock, &OldIrql);
     return STATUS_SUCCESS;

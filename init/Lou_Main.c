@@ -28,7 +28,7 @@ uintptr_t RBP_Current;
 -- with allocation functions
 */
 
-string KERNEL_VERSION = "0.1.08 RSC-3 Multiboot 3 With EFI & Moudle Support";
+string KERNEL_VERSION = "0.2.01 RSC-3 Multiboot 2 With EFI & Moudle Support";
 
 
 #ifdef __x86_64__
@@ -243,7 +243,8 @@ void StartDebugger(){
 
     HWind = LouCreateWindow(
         0, 0,
-        GetScreenBufferWidth(),GetScreenBufferHeight(),
+        640,480,
+        //GetScreenBufferWidth(),GetScreenBufferHeight(),
         0x00, 
         &Charecteristics
     );
@@ -306,18 +307,17 @@ KERNEL_ENTRY Lou_kernel_start(
     LouPrint("Hello Im Lousine Getting Things Ready\n");
 
     //INITIALIZE IMPORTANT THINGS FOR US LATER
-    //Lou_kernel_early_initialization();
+    Lou_kernel_early_initialization();
     
-    //InitializeGenericTables();
+    InitializeGenericTables();
 
-    //Advanced_Kernel_Initialization();
+    Advanced_Kernel_Initialization();
 
 
-    //InitPreLoadedModules();
+    InitPreLoadedModules();
 
     //SETUP DEVICES AND DRIVERS
-    //LookForStorageDevices();
-    //UpdateDeviceInformationTable();
+    LookForStorageDevices();
     //LouKeRunOnNewStack(FileSystemSetup, 0x00, 64 * KILOBYTE);
     //ScanTheRestOfHarware();
 
