@@ -107,6 +107,8 @@ void* GetFrameBufferAddress(
     uint16_t x, uint16_t y
 );
 
+PDrsdVRamObject LouKeDeviceManagerGetFBDEV(uint8_t Gpu);
+
 #ifdef __cplusplus
 }
 

@@ -157,7 +157,6 @@ SYSTEM_DEVICE_IDENTIFIER LouKeGetStorageDeviceSystemIdentifier(uint8_t DriveNumb
 uint8_t LouKeDeviceManagerGetGpuCount();
 void LouKeDrsdPciResetScreen(P_PCI_DEVICE_OBJECT PDEV);
 
-
 void 
 WriteDrive(
 uint8_t Drive,

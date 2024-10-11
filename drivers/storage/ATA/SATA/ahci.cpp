@@ -739,14 +739,30 @@ LOUSTATUS AhciInitOne(
             Port->CommandListBase = (uint32_t)((uint64_t)Clb & 0xFFFFFFFF);
             Port->FisBase = (uint32_t)((uint64_t)Clb & 0xFFFFFFFF);
 
-            //Port Is Now In a Minimaly initialized State Register Device
-            LouKeRegisterDevice(
-                PDEV,
-                ATA_DEVICE_T,
-                "HKEY_LOCAL_MACHINE/Annya/System64/Drivers/Ahci/",
-                Ap,
-                Ap
-            );
+            if (Port->Signature == 0xEB140101) {
+                LouPrint("Device Is Atapi\n");
+                Ap->IsAtapi = true;
+                //Port Is Now In a Minimaly initialized State Register Device
+                LouKeRegisterDevice(
+                    PDEV,
+                    ATA_DEVICE_T,
+                    "HKEY_LOCAL_MACHINE/Annya/System64/Drivers/Ahci/",
+                    Ap,
+                    Ap
+                );
+            }
+            if (Port->Signature == 0x00000101) {
+                LouPrint("Device Is Atapi\n");
+                Ap->IsAtapi = true;
+                //Port Is Now In a Minimaly initialized State Register Device
+                LouKeRegisterDevice(
+                    PDEV,
+                    ATA_DEVICE_T,
+                    "HKEY_LOCAL_MACHINE/Annya/System64/Drivers/Ahci/",
+                    Ap,
+                    Ap
+                );
+            }
         }
         else {
             Ap->Operations = 0x00;//Null Operations

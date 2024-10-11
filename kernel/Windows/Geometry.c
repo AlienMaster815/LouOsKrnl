@@ -187,12 +187,20 @@ uint16_t VgaGetBufferHeight();
 uint16_t VgaGetBufferWidth();
 
 uint16_t GetScreenBufferWidth(){
-  //return VgaGetBufferWidth();
+  uint8_t GpuCount = LouKeDeviceManagerGetGpuCount();
+  if(GpuCount == 1){
+    PDrsdVRamObject FBDEV = LouKeDeviceManagerGetFBDEV(0);
+    return FBDEV->FrameBuffer.Width;
+  }
   return 0;
 }
 
 uint16_t GetScreenBufferHeight(){
-  //return VgaGetBufferHeight();
+  uint8_t GpuCount = LouKeDeviceManagerGetGpuCount();
+  if(GpuCount == 1){
+    PDrsdVRamObject FBDEV = LouKeDeviceManagerGetFBDEV(0);
+    return FBDEV->FrameBuffer.Height;
+  }
   return 0;
 }
 

@@ -42,6 +42,8 @@ LOUSTATUS LouKeRegisterDevice(
     TmpDevice =  &MasterDeviceTable;
     LOUSTATUS Status = STATUS_SUCCESS;
 
+    LouPrint("Registering Device With Key:%s\n", LRE);
+
     if(NumberOfDevices == 0) {//initialze the system
         TmpDevice->Sdi = MASTER_TABLE;
         TmpDevice->LOUSINE_REGISTRATION_ENTRY = "HostKeyDevice:Master";
