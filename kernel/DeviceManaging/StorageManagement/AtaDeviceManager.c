@@ -18,6 +18,38 @@ LOUSTATUS IdentifyAtaDevice(
     uint32_t BufferLength
 );
 
+bool InitializeSataDevice(
+    P_PCI_DEVICE_OBJECT PDEV,
+    PATA_PORT Ap 
+) {
+    if (Ap->IsAtapi) {
+        LouPrint("Initializeing Satapi Device\n");
+        PATA_QUEUED_COMMAND Qc = (PATA_QUEUED_COMMAND)LouMalloc(sizeof(ATA_QUEUED_COMMAND));
+        Qc->Port = Ap;
+        Qc->TaskFile.Command = ATA_IDENTIFY_PACKET_DEVICE;
+        Qc->TaskFile.Device = 0x00; // No LBA or DMA for this command, so use default values
+        Qc->TaskFile.Feature = 0x00; // No special features needed
+        Qc->TaskFile.NSect = 0x00; // Not used in Identify
+        Qc->TaskFile.Lbal = 0x00;
+        Qc->TaskFile.Lbam = 0x00;
+        Qc->TaskFile.Lbah = 0x00;
+
+        Ap->Operations->QcPrep(Qc);
+
+        LouPrint("Satapi Initialization Complete\n");
+        LouFree((RAMADD)Qc);
+        return true;
+    }
+    else {
+        LouPrint("Initializing Sata Device\n");
+        //PATA_QUEUED_COMMAND Qc = (PATA_QUEUED_COMMAND)LouMalloc(sizeof(ATA_QUEUED_COMMAND));
+
+
+
+        return true;
+    }
+}
+
 LOUSTATUS LouRegisterAtaDeviceToInformationTable(
     PDEVICE_DIRECTORY_TABLE Table,
     P_PCI_DEVICE_OBJECT PDEV, 
@@ -40,10 +72,13 @@ LOUSTATUS LouRegisterAtaDeviceToInformationTable(
     TmpDeviceData->RegisteredDeviceNumber = NumberOfAtaDevices;
 
     Table->DeviceSpecificData = (void*)TmpDeviceData;
+
+    InitializeSataDevice(PDEV, (PATA_PORT)KeyData);
+
     Status = LouRegisterStorageDevice(
         Table
     );
-
+    
     NumberOfAtaDevices++;
     return Status;
 }

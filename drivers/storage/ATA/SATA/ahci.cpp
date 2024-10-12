@@ -301,6 +301,8 @@ UNUSED static LINUX_PCI_DEVICE_ID AhciPciTable[] = {
     {0,0,0,0,0,0,0} // null terminator
 };
 
+void GetGenericAhciOperations(PATA_PORT_OPERATIONS_TABLE Ops);
+
 void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
     
     if (!PPortInfo)return;
@@ -312,21 +314,21 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->Flags = AHCI_FLAG_COMMON;
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
-        //GetGenericAhciOperations(PPortInfo->Operations);
+        GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhci43BitDma:
         PPortInfo->HFlags = AHCI_HFLAG_43BIT_ONLY;
         PPortInfo->Flags = AHCI_FLAG_COMMON;
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
-        //GetGenericAhciOperations(PPortInfo->Operations);
+        GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciIgnIferr:
         PPortInfo->HFlags = AHCI_HFLAG_IGN_IRQ_IF_ERR;
         PPortInfo->Flags = AHCI_FLAG_COMMON;
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
-        //GetGenericAhciOperations(PPortInfo->Operations);
+        GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciNoDebounceDelay:
         //PPortInfo->HFlags = AHCI_HFLAG_IGN_IRQ_IF_ERR;
@@ -334,7 +336,7 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        //GetGenericAhciOperations(PPortInfo->Operations);
+        GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciNoMsi:
         PPortInfo->HFlags = AHCI_HFLAG_MULTI_MSI;
@@ -342,7 +344,7 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        //GetGenericAhciOperations(PPortInfo->Operations);
+        GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciPcsQuirk:
         PPortInfo->HFlags = AHCI_HFLAG_INTEL_PCS_QUIRK;
@@ -350,7 +352,7 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        //GetGenericAhciOperations(PPortInfo->Operations);
+        GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciPcsQuirkNoDevslp:
         PPortInfo->HFlags = AHCI_HFLAG_INTEL_PCS_QUIRK | AHCI_HFLAG_NO_SNTF;
@@ -358,7 +360,7 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        //GetGenericAhciOperations(PPortInfo->Operations);
+        GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciYesFbs:
         PPortInfo->HFlags = AHCI_HFLAG_YES_FBS;
@@ -366,7 +368,7 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        //GetGenericAhciOperations(PPortInfo->Operations);
+        GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciAl:
         PPortInfo->HFlags = AHCI_HFLAG_NO_PMP | AHCI_HFLAG_NO_MSI;
@@ -374,7 +376,7 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        //GetGenericAhciOperations(PPortInfo->Operations);
+        GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciAvn:
         PPortInfo->HFlags = AHCI_HFLAG_INTEL_PCS_QUIRK;
@@ -382,7 +384,7 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        //GetGenericAhciOperations(PPortInfo->Operations);
+        GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciMcp65:
         PPortInfo->HFlags = AHCI_HFLAG_NO_FPDMA_AA | AHCI_HFLAG_NO_PMP | AHCI_HFLAG_YES_NCQ;
@@ -390,7 +392,7 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        //GetGenericAhciOperations(PPortInfo->Operations);
+        GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciMcp77:
         PPortInfo->HFlags = AHCI_HFLAG_NO_FPDMA_AA | AHCI_HFLAG_NO_PMP;
@@ -398,7 +400,7 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        //GetGenericAhciOperations(PPortInfo->Operations);
+        GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciMcp89:
         PPortInfo->HFlags = AHCI_HFLAG_NO_FPDMA_AA;
@@ -406,7 +408,7 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        //GetGenericAhciOperations(PPortInfo->Operations);
+        GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciMv:
         PPortInfo->HFlags = AHCI_HFLAG_NO_NCQ | AHCI_HFLAG_NO_MSI | AHCI_HFLAG_MV_PATA | AHCI_HFLAG_NO_PMP;
@@ -414,7 +416,7 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        //GetGenericAhciOperations(PPortInfo->Operations);
+        GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciSb600:
         PPortInfo->HFlags = AHCI_HFLAG_IGN_SERR_INTERNAL | AHCI_HFLAG_NO_MSI | AHCI_HFLAG_SECT255 | AHCI_HFLAG_32BIT_ONLY;
@@ -422,7 +424,7 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        //GetGenericAhciOperations(PPortInfo->Operations);
+        GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciSb700:
         PPortInfo->HFlags = AHCI_HFLAG_IGN_SERR_INTERNAL;
@@ -430,7 +432,7 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        //GetGenericAhciOperations(PPortInfo->Operations);
+        GetGenericAhciOperations(PPortInfo->Operations);
         return;
     case BoardAhciVt8251:
         PPortInfo->HFlags = AHCI_HFLAG_NO_NCQ | AHCI_HFLAG_NO_PMP;
@@ -438,7 +440,7 @@ void GetAhciDevicePortInfo(uint64_t BoardId, PATA_PORT PPortInfo) {
         PPortInfo->PIoMask = ATA_PIO4;
         PPortInfo->UDmaMask = ATA_UDMA6;
         //PPortInfo->JITFlags = ATA_LFLAG_NO_DEBOUNCE_DELAY;
-        //GetGenericAhciOperations(PPortInfo->Operations);
+        GetGenericAhciOperations(PPortInfo->Operations);
         return;
     }
 }
@@ -577,6 +579,10 @@ bool AhciSb600Enable64Bit(P_PCI_DEVICE_OBJECT PDEV) {
 static POOL ClbPool;
 static POOL FbPool;
 
+AtaCompletionErrors AhciQcPrep(PATA_QUEUED_COMMAND Qc);
+
+
+
 LOUSTATUS AhciInitOne(
     P_PCI_DEVICE_OBJECT PDEV,
     PDRIVER_OBJECT DriverObject,
@@ -692,7 +698,9 @@ LOUSTATUS AhciInitOne(
         if (Ext->Host->PortImplementation & (1 << i)) {
             LouPrint("Setting up Port:%d\n", i);
             Ap->PortMmio = (void*)((uint64_t)Ext->Host + (0x100 + (i * 0x80)));
-            PAHCI_PORT Port = (PAHCI_PORT)Ap->PortMmio;            
+            PAHCI_PORT Port = (PAHCI_PORT)Ap->PortMmio;
+            PAHCI_PORT_PRIVATE PrivateData = (PAHCI_PORT_PRIVATE)Ap->PrivateData;
+            
             void* Clb; void* Fb;
             //check that PxCMD ST, CR, FRE, and FR are cleared
             //if not place ports into idle state by clearing ST 
@@ -721,25 +729,32 @@ LOUSTATUS AhciInitOne(
             Fb = LouKeMallocFromPool(FbPool, 1024, 0x00);
             memset(Clb, 0, 1024);
             memset(Fb, 0, 256);
+
+            PrivateData->FisBase = (uintptr_t)Fb;
+            RequestPhysicalAddress((uint64_t)Fb, &PrivateData->FisBaseDma);
+            PrivateData->CommandTable = (uintptr_t)Clb;
+            RequestPhysicalAddress((uint64_t)Clb, &PrivateData->CommandTableDma);
+            PrivateData->CmdSlots = (PAHCI_COMMAND_HEADER)PrivateData->CommandTable;
             //make sure that the address is compatible
             if (Ext->Host->Capabilities & HOST_CAP_64) {
-                Port->CommandListBaseHigh = (uint32_t)((uint64_t)Clb >> 32);
-                Port->FisBaseHigh = (uint32_t)((uint64_t)Fb >> 32);
+                Port->CommandListBaseHigh = (uint32_t)((uint64_t)PrivateData->CommandTableDma >> 32);
+                Port->FisBaseHigh = (uint32_t)((uint64_t)PrivateData->FisBaseDma >> 32);
             }
             else {
-                if ((uint64_t)Clb > (0xFFFFFFFF - 1024)) {
+                if ((uint64_t)PrivateData->CommandTableDma > (0xFFFFFFFF - 1024)) {
                     LouPrint("Allocated Clb Exceeds Addressing Limit\n");
                     return STATUS_UNSUCCESSFUL;
                 }
-                if ((uint64_t)Fb > (0xFFFFFFFF - 256)) {
+                if ((uint64_t)PrivateData->FisBaseDma > (0xFFFFFFFF - 256)) {
                     LouPrint("Allocated Fb Exceeds Addressing Limit\n");
                     return STATUS_UNSUCCESSFUL;
                 }
             }
-            Port->CommandListBase = (uint32_t)((uint64_t)Clb & 0xFFFFFFFF);
-            Port->FisBase = (uint32_t)((uint64_t)Clb & 0xFFFFFFFF);
 
-            if (Port->Signature == 0xEB140101) {
+            Port->CommandListBase = (uint32_t)((uint64_t)PrivateData->CommandTableDma & 0xFFFFFFFF);
+            Port->FisBase = (uint32_t)((uint64_t)PrivateData->FisBaseDma & 0xFFFFFFFF);
+            
+            if (Port->Signature == SATA_SIG_ATAPI) {
                 LouPrint("Device Is Atapi\n");
                 Ap->IsAtapi = true;
                 //Port Is Now In a Minimaly initialized State Register Device
@@ -751,9 +766,9 @@ LOUSTATUS AhciInitOne(
                     Ap
                 );
             }
-            if (Port->Signature == 0x00000101) {
-                LouPrint("Device Is Atapi\n");
-                Ap->IsAtapi = true;
+            if (Port->Signature == SATA_SIG_ATA) {
+                LouPrint("Device Is Ata\n");
+                Ap->IsAtapi = false;
                 //Port Is Now In a Minimaly initialized State Register Device
                 LouKeRegisterDevice(
                     PDEV,

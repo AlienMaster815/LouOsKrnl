@@ -3,17 +3,17 @@
 #pragma pack(push, 1)
  
 typedef struct  _LOUQ{
-    void* QueData;
-    uint64_t QueDataSize;
+    void* QueueData;
+    uint64_t QueueDataSize;
     bool LOUQNext;
     bool LOUQBeingHandled;
     bool LOUQCompleted;
     uint64_t LOUQFlags;
 
-    uint64_t QueTimeout;
-    uint64_t QueDepth;
+    uint64_t QueueTimeout;
+    uint64_t QueueDepth;
 
-    uint64_t QuesInFront;
+    uint64_t QueuesInFront;
     uint64_t Priority;
     spinlock_t LOUQLock;
 }LOUQ, * PLOUQ;

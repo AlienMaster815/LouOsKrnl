@@ -314,6 +314,7 @@ void PrepareRead12Cdb(uint8_t* Cdb, uint64_t LBA, uint32_t SectorCount) {
 
 
 static inline void DirectDriveAccessReadInitQueueComand(PATA_PORT Ap, PATA_QUEUED_COMMAND Qc, uint64_t LBA, uint32_t SectorCount, void* DmaAddress){
+		/*
 		Qc->Port = Ap;
 
 		if(Ap->Dma){
@@ -364,11 +365,11 @@ static inline void DirectDriveAccessReadInitQueueComand(PATA_PORT Ap, PATA_QUEUE
 		LouPrint("Preparing ATAPI CDB for READ (12)\n");
 		Qc->Dev->CdbLength = 12;
 		PrepareRead12Cdb((uint8_t*)&Qc->Cdb, LBA, SectorCount);
-	}
+	}*/
 }
 
 static inline void DirectDriveAccessReadFreeQueueComand(PATA_QUEUED_COMMAND Qc){
-	LouFree((RAMADD)Qc->Dev);
+	//LouFree((RAMADD)Qc->Dev);
 }
 
 LOUDDK_API_ENTRY 

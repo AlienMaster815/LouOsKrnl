@@ -256,8 +256,7 @@ typedef struct  _IDENTIFY_DEVICE_DATA {
   USHORT CheckSum  :8;
 } IDENTIFY_DEVICE_DATA, *PIDENTIFY_DEVICE_DATA;
 
-typedef enum
-{
+typedef enum{
 	FIS_TYPE_REG_H2D	= 0x27,	// Register FIS - host to device
 	FIS_TYPE_REG_D2H	= 0x34,	// Register FIS - device to host
 	FIS_TYPE_DMA_ACT	= 0x39,	// DMA activate FIS - device to host
@@ -268,8 +267,7 @@ typedef enum
 	FIS_TYPE_DEV_BITS	= 0xA1,	// Set device bits FIS - device to host
 } FIS_TYPE;
 
-typedef struct tagFIS_REG_H2D
-{
+typedef struct tagFIS_REG_H2D{
 	// DWORD 0
 	uint8_t  fis_type;	// FIS_TYPE_REG_H2D
  
@@ -302,8 +300,7 @@ typedef struct tagFIS_REG_H2D
 	uint8_t  rsv1[4];	// Reserved
 } FIS_REG_H2D;
 
-typedef struct tagFIS_REG_D2H
-{
+typedef struct tagFIS_REG_D2H{
 	// DWORD 0
 	uint8_t  fis_type;    // FIS_TYPE_REG_D2H
  
@@ -351,8 +348,7 @@ typedef struct tagFIS_DATA
 	uint32_t data[1];	// Payload
 } FIS_DATA;
 
-typedef struct tagFIS_PIO_SETUP
-{
+typedef struct tagFIS_PIO_SETUP{
 	// DWORD 0
 	uint8_t  fis_type;	// FIS_TYPE_PIO_SETUP
  
@@ -388,8 +384,7 @@ typedef struct tagFIS_PIO_SETUP
 	uint8_t  rsv4[2];	// Reserved
 } FIS_PIO_SETUP;
 
-typedef struct tagFIS_DMA_SETUP
-{
+typedef struct tagFIS_DMA_SETUP{
 	// DWORD 0
 	uint8_t  fis_type;	// FIS_TYPE_DMA_SETUP
  
@@ -444,8 +439,7 @@ typedef volatile struct tagHBA_FIS
 	uint8_t   	rsv[0x100-0xA0];
 } HBA_FIS;
 
-typedef struct tagHBA_CMD_HEADER
-{
+typedef struct tagHBA_CMD_HEADER{
 	// DW0
 	uint8_t  cfl:5;		// Command FIS length in DWORDS, 2 ~ 16
 	uint8_t  a:1;		// ATAPI
@@ -473,8 +467,7 @@ typedef struct tagHBA_CMD_HEADER
 } HBA_CMD_HEADER;
 
 
-typedef struct tagHBA_PRDT_ENTRY
-{
+typedef struct tagHBA_PRDT_ENTRY{
 	uint32_t dba;		// Data base address
 	uint32_t dbau;		// Data base address upper 32 bits
 	uint32_t rsv0;		// Reserved
@@ -486,8 +479,7 @@ typedef struct tagHBA_PRDT_ENTRY
 } HBA_PRDT_ENTRY;
 
 
-typedef struct tagHBA_CMD_TBL
-{
+typedef struct tagHBA_CMD_TBL{
 	// 0x00
 	uint8_t  cfis[64];	// Command FIS
  
@@ -502,8 +494,7 @@ typedef struct tagHBA_CMD_TBL
 } HBA_CMD_TBL;
  
 
-typedef volatile struct tagHBA_PORT
-{
+typedef volatile struct tagHBA_PORT{
 	uint32_t clb;		// 0x00, command list base address, 1K-byte aligned
 	uint32_t clbu;		// 0x04, command list base address upper 32 bits
 	uint32_t fb;		// 0x08, FIS base address, 256-byte aligned
@@ -1085,9 +1076,10 @@ typedef struct  _AHCI_EM_PRIVATE{
 typedef struct  _AHCI_PORT_PRIVATE{
     uintptr_t AtaLink;
     PAHCI_COMMAND_HEADER CmdSlots;
-    uintptr_t DbaAddress;
-    void* CommandTable;
-    uintptr_t CmdTableDma;
+    uintptr_t FisBase;
+    uintptr_t FisBaseDma;
+    uintptr_t CommandTable;
+    uintptr_t CommandTableDma;
     void* RxFis;
     uintptr_t RxFisDma;
     uint32_t NcqSawD2h:1;
@@ -1095,7 +1087,7 @@ typedef struct  _AHCI_PORT_PRIVATE{
     uint32_t NcqSawSdb:1;
     spinlock_t Lock;
     uint32_t IntMask;
-    bool FbsSupporr;
+    bool FbsSupporrt;
     bool FbsEnabled;
     int FbsLastDev;
     AHCI_EM_PRIVATE EmPrivate[EM_MAX_SLOTS];
@@ -1202,16 +1194,6 @@ static inline int AhciNrPorts(uint32_t cap){
 	return (cap & 0x1f) + 1;
 }
 
-void AhciSetEmMessage(PAHCI_DRIVER_EXTENDED_OBJECT HostPrivate, PATA_PORT AtaPortInfo);
-LOUSTATUS AhciResetEm(PATA_HOST Host);
-LOUSTATUS ResetAhciController(PATA_HOST Host);
-PULONG AhciGetPortBase(
-    PAHCI_DRIVER_EXTENDED_OBJECT Ext,
-    uint8_t PortNumber
-);
-
-void AhciIntitializeController(PATA_HOST Host);
-
 // Define the Physical Region Descriptor (PRD) entry
 typedef struct {
     uint32_t DataBaseAddress;       // Physical base address of data buffer (low 32 bits)
@@ -1255,6 +1237,8 @@ typedef struct {
 
 // Port IRQ Status (PxIS) Register
 #define PORT_IRQ_STATUS     0x10      // Offset for the PxIS register
+
+#define ATA_PROT_FLAG_ATAPI (1 << 3)
 
 #pragma pack(pop)
 #endif//_AHCI_H_

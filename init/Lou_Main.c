@@ -28,7 +28,7 @@ uintptr_t RBP_Current;
 -- with allocation functions
 */
 
-string KERNEL_VERSION = "0.2.01 RSC-4 Multiboot 2 With EFI & Moudle Support";
+string KERNEL_VERSION = "0.2.02 RSC-1 Multiboot 2 With EFI & Moudle Support";
 
 
 #ifdef __x86_64__

@@ -135,6 +135,12 @@ KERNEL_EXPORT bool LouKeWaitForMmioState(uint32_t* Register, uint32_t State, uin
 #include <Kernel/exec.h>
 #include <Random.h>
 
+#define CPU_TO_LE32(x) ((uint32_t)(             \
+    (((uint32_t)(x) & 0x000000FFU) << 24) |     \
+    (((uint32_t)(x) & 0x0000FF00U) << 8)  |     \
+    (((uint32_t)(x) & 0x00FF0000U) >> 8)  |     \
+    (((uint32_t)(x) & 0xFF000000U) >> 24)))
+
 
 #ifndef _KERNEL_MODULE_
 #define KERNEL_EXPORT extern "C"

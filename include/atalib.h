@@ -303,35 +303,6 @@ typedef struct _ATA_QC_CB{
     void* Foo;
 }ATA_QC_CB, * PATA_QC_CB;
 
-typedef struct _ATA_QUEUED_COMMAND{
-    struct _ATA_PORT* Port;
-    struct _ATA_DEVICE* Dev;
-    struct _SCSI_COMMAND* ScsiCommand;
-    void (*ScsiDone)(struct _SCSI_COMMAND* ScsiCommand);
-    struct _ATA_TASKFILE TaskFile;
-    uint8_t Cdb[ATAPI_CDB_LEN]; 
-    uint32_t Flags;
-    uint32_t Tag;
-    uint32_t HwTag;
-    uint32_t NumElements;
-    uint32_t OriginalElementNumber;
-    int32_t DmaDirectory;
-    uint32_t SectorSize;
-    uint32_t ByteNum;
-    uint32_t ExByte;
-    uint32_t CurBytes;
-    struct _SCATTER_GATHER SgEntry;
-    struct _SCATTER_GATHER* Sg;
-    struct _SCATTER_GATHER* CurSg;
-    uint32_t CurSgOffset;
-    uint32_t ErrorMask;
-    struct _ATA_TASKFILE ReultTaskFile;
-    struct _ATA_QC_CB CompleteFn;
-    void* PrivateData;
-    void* LLDTask;
-    void* DataBuffer;
-    uint64_t BufferSize;
-}ATA_QUEUED_COMMAND, * PATA_QUEUED_COMMAND;
 
 typedef struct _ATA_DEVICE{
     struct _ATA_LINK* Link;
@@ -390,6 +361,39 @@ typedef struct _ATA_LINK{
     struct _ATA_DEVICE Device[ATA_MAX_DEVICES];
     uint32_t LastLpmChange;
 }ATA_LINK, * PATA_LINK;
+
+typedef struct _ATA_QUEUED_COMMAND{
+    struct _ATA_PORT* Port;
+    //struct _ATA_DEVICE* Dev;
+    ATA_LINK Link;
+    struct _SCSI_COMMAND* ScsiCommand;
+    void (*ScsiDone)(struct _SCSI_COMMAND* ScsiCommand);
+    struct _ATA_TASKFILE TaskFile;
+    uint8_t Cdb[ATAPI_CDB_LEN];
+    uint8_t CdbLength; 
+    uint32_t Flags;
+    uint32_t Tag;
+    uint32_t HwTag;
+    uint32_t NumElements;
+    uint32_t OriginalElementNumber;
+    int32_t DmaDirectory;
+    uint32_t SectorSize;
+    uint32_t ByteNum;
+    uint32_t ExByte;
+    uint32_t CurBytes;
+    struct _SCATTER_GATHER SgEntry;
+    struct _SCATTER_GATHER* Sg;
+    struct _SCATTER_GATHER* CurSg;
+    uint32_t CurSgOffset;
+    uint32_t ErrorMask;
+    struct _ATA_TASKFILE ReultTaskFile;
+    struct _ATA_QC_CB CompleteFn;
+    void* PrivateData;
+    void* LLDTask;
+    void* DataBuffer;
+    uint64_t BufferSize;
+}ATA_QUEUED_COMMAND, * PATA_QUEUED_COMMAND;
+
 
 typedef struct _ATA_PORT{
     void* PortMmio;
@@ -716,7 +720,6 @@ size_t Offset
 
 KERNEL_EXPORT
 LOUSTATUS AtaStdQcDefer(PATA_QUEUED_COMMAND Wc);
-
 
 #endif
 #pragma pack(pop)
