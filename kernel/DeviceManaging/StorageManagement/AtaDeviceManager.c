@@ -18,7 +18,7 @@ LOUSTATUS IdentifyAtaDevice(
     uint32_t BufferLength
 );
 
-bool InitializeSataDevice(
+bool InitializeAtaDevice(
     P_PCI_DEVICE_OBJECT PDEV,
     PATA_PORT Ap 
 ) {
@@ -34,9 +34,40 @@ bool InitializeSataDevice(
         Qc->TaskFile.Lbam = 0x00;
         Qc->TaskFile.Lbah = 0x00;
 
+        //size_t DataAmount = ((BufferSize + 4095) / 4096) * 4096;
+        LouPrint("Calculating Buffer Size For Transfer\n");
+        size_t IdentifyAmmount = ((512 + 4095) / 4096) * 4096;
+        LouPrint("Allocating Buffer For Transfer\n");
+        void* IdentifyBuffer = LouMallocEx(IdentifyAmmount , 4096);
+        LouPrint("Allocated Buffer Address:%h\n", IdentifyBuffer);
+
+        if(Ap->Dma){
+            LouPrint("Allocating Scatter Gather List For Transfer\n");
+            Qc->Sg = (PSCATTER_GATHER)LouMalloc(sizeof(SCATTER_GATHER));
+            LouPrint("Filling Scatter Gather List For Transfer\n");
+            Qc->Sg->Offset = 0;
+            Qc->Sg->Length = 512;
+            RequestPhysicalAddress((uint64_t)IdentifyBuffer ,&Qc->Sg->DmaAddress);
+            Qc->Sg->DmaLength = 512;
+            Qc->Sg->DmaFlags = ATA_SG_COMMAND_READ;
+            Qc->NumSgElements = 1;
+            LouPrint("Setting DMA Map Flag\n");
+            Qc->Flags |= ATA_QCFLAG_DMAMAP;
+        }
+
+        Qc->Cdb[0]    = ATA_IDENTIFY_PACKET_DEVICE;
+        Qc->CdbLength = 1;
+
         Ap->Operations->QcPrep(Qc);
+        Ap->Operations->QcIssue(Qc);
 
         LouPrint("Satapi Initialization Complete\n");
+        uint8_t* foo = (uint8_t*)IdentifyBuffer;
+        for(uint16_t i = 0 ; i < 512; i++){
+            LouPrint("%h", foo[i]);
+        }
+
+        while(1);
         LouFree((RAMADD)Qc);
         return true;
     }
@@ -73,7 +104,7 @@ LOUSTATUS LouRegisterAtaDeviceToInformationTable(
 
     Table->DeviceSpecificData = (void*)TmpDeviceData;
 
-    InitializeSataDevice(PDEV, (PATA_PORT)KeyData);
+    InitializeAtaDevice(PDEV, (PATA_PORT)KeyData);
 
     Status = LouRegisterStorageDevice(
         Table

@@ -1240,5 +1240,18 @@ typedef struct {
 
 #define ATA_PROT_FLAG_ATAPI (1 << 3)
 
+#define PORT_TFD 0x20
+#define ATA_STATUS_ERR 0x01
+
+
+typedef struct _PRDT_ENTRY {
+    uint32_t Dba;    // Data Base Address (lower 32 bits)
+    uint32_t Dbau;   // Data Base Address Upper (upper 32 bits)
+    uint32_t Dbc;    // Data Byte Count - 1 (up to 4 MB - 1)
+    uint32_t I : 1;  // Interrupt on Completion (IOC) flag
+    uint32_t Rsvd : 31; // Reserved bits, set to 0
+} PRDT_ENTRY, * PPRDT_ENTRY;
+
+
 #pragma pack(pop)
 #endif//_AHCI_H_

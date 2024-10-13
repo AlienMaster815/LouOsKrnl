@@ -62,20 +62,13 @@ LOUSTATUS RequestPhysicalAddress(
             LouKeReleaseSpinLock(&RPALock, &Old);
             return STATUS_SUCCESS;
         }       
-        Tmp = GetAddressFromPage(Tmp, L2Entry, &IsDirectory); //get L2 value
+        Tmp = GetAddressFromPage(Tmp, L1Entry, &IsDirectory); //get L1 value
         if(!Tmp){
             LouKeReleaseSpinLock(&RPALock, &Old);
             return STATUS_UNSUCCESSFUL;
         }
-        else if((IsDirectory)) {
-            *PAddress = (Tmp & 0x000FFFFFFFFFF000) + Offset;
-            LouKeReleaseSpinLock(&RPALock, &Old);
-            return STATUS_SUCCESS;
-        }
-
-        LouPrint("Tmp:%d\n", Tmp);
+        *PAddress = (Tmp & 0x000FFFFFFFFFF000) + Offset;
         LouKeReleaseSpinLock(&RPALock, &Old);
-        while(1);
         return STATUS_SUCCESS;
     }
     else{

@@ -296,7 +296,11 @@ typedef struct _SCSI_COMMAND{
 }SCSI_COMMAND, PSCSI_COMMAND;
 
 typedef struct _SCATTER_GATHER{
-    void* Foo;
+	uint64_t    	Offset;
+	uint64_t    	Length;
+	uintptr_t	    DmaAddress;
+	uint64_t    	DmaLength;
+	uint64_t        DmaFlags;
 }SCATTER_GATHER, * PSCATTER_GATHER;
 
 typedef struct _ATA_QC_CB{
@@ -381,6 +385,7 @@ typedef struct _ATA_QUEUED_COMMAND{
     uint32_t ByteNum;
     uint32_t ExByte;
     uint32_t CurBytes;
+    uint8_t NumSgElements;
     struct _SCATTER_GATHER SgEntry;
     struct _SCATTER_GATHER* Sg;
     struct _SCATTER_GATHER* CurSg;
@@ -456,6 +461,7 @@ typedef struct _ATA_PORT{
     bool Ncq;
     bool Dma48;
     bool IsAtapi;
+    bool Support64Bit;
 }ATA_PORT, * PATA_PORT;
 
 typedef struct _ATA_HOST{
@@ -688,6 +694,7 @@ PATA_PORT LouKeGetAtaStoragePortObject(uint8_t DriveNumber);
 #define ATA_MEDIA_EJECT                         0xED
 #define ATA_IDENTIFY_DEVICE_DMA                 0xEE
 #define ATA_SET_FEATURES                        0xEF
+#define ATA_SG_COMMAND_READ                     0x01
 
 #define NCQ_PROT_FLAG 1
 #define ATA_TAG_INTERNAL 1
