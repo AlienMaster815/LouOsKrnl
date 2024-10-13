@@ -40,6 +40,7 @@
 */
 
 #include <LouDDK.h>
+#include <Hal.h>
 
 uint8_t pata[4];
 
@@ -68,7 +69,7 @@ PATA::~PATA(){
 
 
 
-void PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int BufferSize){
+void PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num,void* Buffer ,int BufferSize){
     
 
 
@@ -153,7 +154,7 @@ void PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int Buffe
                 pata[3] = 2;
             }
 
-            Read28PATAPI(drive,Master,0, 0x1FF);            
+            Read28PATAPI(drive,Master,Sector_Num, Buffer, BufferSize);            
 
             return;
         }
@@ -205,7 +206,7 @@ void PATA::Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int Buffe
 
 }
 
-void PATA::Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, int BufferSize){
+void PATA::Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, void* Buffer, int BufferSize){
 
 
     // This Is A Poor Translation For OSDEV.WIKI Because I Cant
@@ -320,7 +321,7 @@ void PATA::Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, int Buf
                 pata[3] = 2;
             }
 
-            Read28PATAPI(drive,Master,Sector_Num, BufferSize);
+            Read28PATAPI(drive,Master,Sector_Num, Buffer, BufferSize);
             return;
         }
 
@@ -348,7 +349,7 @@ void PATA::Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, int Buf
         }
         int size = lbaHiPort.Read() << 8;
         
-        insw(drive, (uint16_t *) ((uint8_t *) &atabuffer + i * 0x800), size / 2);
+        insw(drive, (uint16_t *)((uint8_t *)((uintptr_t)Buffer + i * 0x800)), size / 2);
 
         
     }
@@ -356,14 +357,10 @@ void PATA::Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, int Buf
 
 
     if(init == true){
-        for (int i = 0; i < 0x200/2; ++i) {
-            //LouPrint(" %h ", atabuffer[i]);
-            if(atabuffer[i] == 0xAA55){
-                LouPrint("Bootable CD ROM\n");
-                return;
-            }    
-        }
-  
+        if     ((drive == 0x1F0) && (Master))  LouKeRegisterDevice(0x00, ATA_LEGACY_DEVICE_T, "HKEY/Annya/System64/Drivers/AtaLegacy:1", (void*)1,0);
+        else if((drive == 0x1F0) && (!Master)) LouKeRegisterDevice(0x00, ATA_LEGACY_DEVICE_T, "HKEY/Annya/System64/Drivers/AtaLegacy:2", (void*)2,0);
+        else if((drive == 0x170) && (Master))  LouKeRegisterDevice(0x00, ATA_LEGACY_DEVICE_T, "HKEY/Annya/System64/Drivers/AtaLegacy:3", (void*)3,0);
+        else if((drive == 0x170) && (!Master)) LouKeRegisterDevice(0x00, ATA_LEGACY_DEVICE_T, "HKEY/Annya/System64/Drivers/AtaLegacy:4", (void*)4,0);
     }
 
 
@@ -428,7 +425,7 @@ void PATA::Write28PATAPI(uint16_t device,bool Master, uint32_t Sector_Num ,uint8
 }
     
 
-void PATA::pata_Read(uint8_t device,uint32_t Sector_Num, int BufferSize){
+void PATA::pata_Read(uint8_t device,uint32_t Sector_Num,void* Buffer, int BufferSize){
     
     if(Sector_Num > 0x0FFFFFFF){
         return; //"ERROR";
@@ -440,8 +437,8 @@ void PATA::pata_Read(uint8_t device,uint32_t Sector_Num, int BufferSize){
     //har* BuffAdd = 0x00;
     
     if(device == 1){
-        if     (pata[0] == 1) Read28PATA(0x1F0,true,Sector_Num,BufferSize);
-        else if(pata[0] == 2) Read28PATAPI(0x1F0,true, Sector_Num,BufferSize);
+        if     (pata[0] == 1) Read28PATA(0x1F0,true,Sector_Num,Buffer,BufferSize);
+        else if(pata[0] == 2) Read28PATAPI(0x1F0,true, Sector_Num,Buffer, BufferSize);
         else {
             //LouPrint("No Drive Present\n");
             for(uint16_t i = 0 ; i < 2351 ; i++){
@@ -450,8 +447,8 @@ void PATA::pata_Read(uint8_t device,uint32_t Sector_Num, int BufferSize){
         }
     }
     else if(device == 2){
-        if     (pata[1] == 1) Read28PATA(0x1F0,false, Sector_Num, BufferSize);
-        else if(pata[1] == 2) Read28PATAPI(0x1F0,false,Sector_Num, BufferSize);
+        if     (pata[1] == 1) Read28PATA(0x1F0,false, Sector_Num, Buffer , BufferSize);
+        else if(pata[1] == 2) Read28PATAPI(0x1F0,false,Sector_Num, Buffer, BufferSize);
         else {
             //LouPrint("No Drive Present\n");
             for(uint16_t i = 0 ; i < 2351 ; i++){
@@ -460,8 +457,8 @@ void PATA::pata_Read(uint8_t device,uint32_t Sector_Num, int BufferSize){
         }
     }
     else if(device == 3){
-        if     (pata[2] == 1) Read28PATA(0x170,true, Sector_Num, BufferSize);
-        else if(pata[2] == 2) Read28PATAPI(0x170,true, Sector_Num, BufferSize);
+        if     (pata[2] == 1) Read28PATA(0x170,true, Sector_Num, Buffer, BufferSize);
+        else if(pata[2] == 2) Read28PATAPI(0x170,true, Sector_Num, Buffer, BufferSize);
         else {
             //LouPrint("No Drive Present\n");
             for(uint16_t i = 0 ; i < 2351 ; i++){
@@ -470,8 +467,8 @@ void PATA::pata_Read(uint8_t device,uint32_t Sector_Num, int BufferSize){
         }
     }
     else if(device == 4){
-        if     (pata[3] == 1) Read28PATA(0x170,false, Sector_Num, BufferSize);
-        else if(pata[3] == 2) Read28PATAPI(0x170,false, Sector_Num, BufferSize);
+        if     (pata[3] == 1) Read28PATA(0x170,false, Sector_Num, Buffer, BufferSize);
+        else if(pata[3] == 2) Read28PATAPI(0x170,false, Sector_Num, Buffer, BufferSize);
         else { 
             //LouPrint("No Drive Present\n");
             for(uint16_t i = 0 ; i < 2351 ; i++){
@@ -566,14 +563,15 @@ void PATA::initialize_pata(uint16_t drive,bool Master){
     //bool WriteAble = false;
     //bool FileSystemExist = false;
 
-
+    void* Foo = LouMalloc(512);
 
     if((drive == 0x1F0) && (Master)){
         pata[0] = 1;
         //char* atabuff = "Hello World!!!";
         //pata_Write(1, 0, (uint8_t*)atabuff, 14);
         //Flush(1);
-        pata_Read(1, 0, 512);
+        pata_Read(1, 0, Foo ,512);
+        LouFree((RAMADD)Foo);
         return;
     }
     else if((drive == 0x1F0) && (!Master)){
@@ -582,9 +580,8 @@ void PATA::initialize_pata(uint16_t drive,bool Master){
         //char* atabuff = "Hello World!!!";
         //pata_Write28(2, 0,(uint8_t*)atabuff, 14);
         //Flush(2);
-        pata_Read(2, 0, 512);
-        
-
+        pata_Read(2, 0, Foo, 512);
+        LouFree((RAMADD)Foo);
         return;
     }
     else if((drive == 0x170) &&  (Master)){
@@ -592,8 +589,8 @@ void PATA::initialize_pata(uint16_t drive,bool Master){
         //char* atabuff = "Hello World!!!";
         //pata_Write28(3, 0,(uint8_t*)atabuff, 14);
         //Flush(3);
-        pata_Read(3, 0, 512);
-
+        pata_Read(3, 0, Foo, 512);
+        LouFree((RAMADD)Foo);
         return;
     }
     else if((drive == 0x170) && (!Master)){
@@ -601,8 +598,8 @@ void PATA::initialize_pata(uint16_t drive,bool Master){
         //char* atabuff = "Hello World!!!";
         //pata_Write28(4, 0,(uint8_t*)atabuff, 14);
         //Flush(4);
-        pata_Read(4, 0, 512);
-
+        pata_Read(4, 0, Foo, 512);
+        LouFree((RAMADD)Foo);
         return;
         
     }
@@ -846,3 +843,29 @@ LOUSTATUS AtaStdQcDefer(PATA_QUEUED_COMMAND Qc) {
 	return STATUS_UNSUCCESSFUL;
 }
 
+
+bool IsAtaController(P_PCI_DEVICE_OBJECT PDEV){
+    PCI_COMMON_CONFIG PciConfig;
+    GetPciConfiguration(PDEV->bus, PDEV->slot, PDEV->func, &PciConfig);
+
+    if((PciConfig.Header.BaseClass == 0x01) && PciConfig.Header.SubClass == 0x01){
+        LouPrint("Found ATA Controller\n");
+        return true;
+    }
+    return false;
+}
+
+static PATA* PataHost;
+
+void InitializeAtaDevice(){
+    PataHost = (PATA*)LouMalloc(sizeof(PATA));
+    PataHost->pata_device_scan();
+}
+
+void* ReadPata(uint8_t DriveNum, uint64_t LBA, uint64_t* BufferSize){
+    void* Buffer = LouMalloc(*BufferSize);
+
+    PataHost->pata_Read((uint8_t)(DriveNum), (uint32_t)LBA, (void*)(Buffer), (int)(*BufferSize));
+
+    return Buffer;
+}

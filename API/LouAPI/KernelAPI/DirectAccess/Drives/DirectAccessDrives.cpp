@@ -372,6 +372,10 @@ static inline void DirectDriveAccessReadFreeQueueComand(PATA_QUEUED_COMMAND Qc){
 	//LouFree((RAMADD)Qc->Dev);
 }
 
+void* ReadPata(uint8_t DriveNum, uint64_t LBA, uint64_t* BufferSize);
+KERNEL_IMPORT 
+uint8_t LouKeGetLegacyAtaPort(uint8_t DriveNumber);
+
 LOUDDK_API_ENTRY 
 void* 
 ReadDrive(
@@ -386,6 +390,10 @@ LOUSTATUS* State
 	if(DevID == ATA_DEVICE_T){
 		//PATA_PORT Ap = LouKeGetAtaStoragePortObject(Drive);
 		LouPrint("Device Detection Success\n");
+	}
+	if(DevID == ATA_LEGACY_DEVICE_T){
+		uint8_t DriveNum = LouKeGetLegacyAtaPort(Drive);
+		return ReadPata(DriveNum, LBA, BufferSize);
 	}
 	
 	return Result;

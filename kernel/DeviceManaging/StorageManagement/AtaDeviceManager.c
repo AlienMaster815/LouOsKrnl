@@ -113,3 +113,4 @@ LOUSTATUS LouRegisterAtaDeviceToInformationTable(
     NumberOfAtaDevices++;
     return Status;
 }
+

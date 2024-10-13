@@ -37,17 +37,7 @@ extern "C" LOUSTATUS IO_Manager_Init(){
 
 
 
-void Register_Storage_DeviceA(uint8_t DriveType,uint8_t DriveNum){
-    DriveSystem->RegisterStorageDeviceA(DriveType,DriveNum);
-}
 
-extern "C" void WriteStorageDrive(char Drive, uint8_t* Data, uint32_t Location,uint32_t BufferSize){
-    DriveSystem->WriteDrive(Drive, Data,Location , BufferSize);
-}
-
-extern "C" void ReadStorageDrive(char Drive, uint32_t Location , uint32_t BufferSize){
-    DriveSystem->ReadDrive(Drive,Location ,BufferSize);
-}
 
 #include <drivers/Lou_drivers/hardrive.h>
 
@@ -64,24 +54,6 @@ extern "C" void ReadStorageDrive(char Drive, uint32_t Location , uint32_t Buffer
 */
 
 #include <WDKSubsystem/WDKSubsystem.h>
-
-
-
-static PATA* pataobj = 0x00;
-
-LOUDDK_API_ENTRY void pata_device_scanc(){
-    pataobj = (PATA*)LouMalloc(sizeof(PATA));
-    pataobj->pata_device_scan();
-
-}
-
-LOUDDK_API_ENTRY void PCI_Setup() {
-    PCI_Scan_Bus();
-}
-
-PATA* RetrievePATAP(){
-    return pataobj;
-}
 
 
 LOUDDK_API_ENTRY void SetVideoMode(uint64_t Height,uint64_t Widthe, uint8_t  ColorDepth){
@@ -103,18 +75,18 @@ static ISO9660 iso;
 static FAT Fat;
 static FSStruct Fss;
 
-LOUDDK_API_ENTRY void FileSystemSetup(){
+KERNEL_IMPORT
+uint8_t LouKeGetNumberOfStorageDevices();
 
-    //iso.ISOFileSystemScan(3, PATADEV);
-        
+LOUDDK_API_ENTRY void FileSystemSetup(){        
 
-    //for(uint8_t i = 0; i < GetNumberOfStorageDevices(); i++){ 
-    //    Fss = iso.ISOFileSystemScan(i);
-        //if(Fss.FSType == ISO)continue; 
+    for(uint8_t i = 0; i < LouKeGetNumberOfStorageDevices(); i++){ 
+        Fss = iso.ISOFileSystemScan(i);
+        if(Fss.FSType == ISO)continue; 
         //Fss = Fat.InitializeFatSystem(0);
             
-    //    LouPrint("Drive:%d: Has No Filesystem\n",i);
-    //}
+        LouPrint("Drive:%d: Has No Filesystem\n",i);
+    }
 }
 
 

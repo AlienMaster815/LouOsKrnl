@@ -98,7 +98,7 @@ typedef uint16_t* PATABUFF;
 class PATA{
     public:
     
-    void pata_Read(uint8_t device,uint32_t Sector_Num, int BufferSize = 512);
+    void pata_Read(uint8_t device,uint32_t Sector_Num, void* Buffer,int BufferSize = 512);
     void pata_Write(uint8_t device, uint32_t Sector_Num ,uint8_t* Data, uint32_t BufferSize);
     
     void pata_device_scan();
@@ -112,8 +112,8 @@ class PATA{
     
     bool UsingSystemDriver = false;
 
-    void Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num, int BufferSize);
-    void Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, int BufferSize);
+    void Read28PATA(uint16_t drive,bool Master, uint32_t Sector_Num,void* Buffer,int BufferSize);
+    void Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num,void* Buffer, int BufferSize);
     
     void Write28PATA(uint16_t device,bool Master, uint32_t Sector_Num ,uint8_t* Data, uint32_t BufferSize);
     void Write28PATAPI(uint16_t device,bool Master, uint32_t Sector_Num ,uint8_t* Data, uint32_t BufferSize);

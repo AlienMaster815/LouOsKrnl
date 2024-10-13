@@ -41,6 +41,7 @@ typedef enum{
     INPUT_DEVICE_T                = 18,
     NVME_DEVICE_T                 = 20,
     WIFI_DEVICE_T                 = 21,
+	ATA_LEGACY_DEVICE_T			  = 22,	
 }SYSTEM_DEVICE_IDENTIFIER;
 
 typedef struct _DEVICE_DIRECTORY_TABLE{

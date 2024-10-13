@@ -30,6 +30,10 @@ LOUSTATUS LouRegisterDrsdGraphicsDevice(
     void* DevicePrivateData
 );
 
+LOUSTATUS LouRegisterStorageDevice(
+    PDEVICE_DIRECTORY_TABLE Table
+);
+
 LOUSTATUS LouKeRegisterDevice(
     P_PCI_DEVICE_OBJECT PDEV, 
     SYSTEM_DEVICE_IDENTIFIER Sdi,
@@ -147,6 +151,15 @@ LOUSTATUS LouKeRegisterDevice(
         }
         case WIFI_DEVICE_T:{
 
+            break;
+        }
+        case ATA_LEGACY_DEVICE_T:{
+            TmpDevice->PDEV = PDEV;
+            TmpDevice->Sdi = Sdi;
+            TmpDevice->LOUSINE_REGISTRATION_ENTRY = LRE;
+            TmpDevice->KeyData = KeyData;
+            TmpDevice->DevicePrivateData = DevicePrivateData;
+            LouRegisterStorageDevice(TmpDevice);
             break;
         }    
         default:

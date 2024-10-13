@@ -313,6 +313,9 @@ void ScanTheRestOfHarware(){
 KERNEL_IMPORT
 bool LouKeSeachPreLoadedSystemModules(P_PCI_DEVICE_OBJECT PDEV);
 
+bool IsAtaController(P_PCI_DEVICE_OBJECT PDEV);
+void InitializeAtaDevice();
+
 bool PciExternalModuleScan(uint8_t bus, uint8_t slot, uint8_t func){
 
     P_PCI_DEVICE_OBJECT PDEV = (P_PCI_DEVICE_OBJECT)LouMalloc(sizeof(PCI_DEVICE_OBJECT));
@@ -320,5 +323,10 @@ bool PciExternalModuleScan(uint8_t bus, uint8_t slot, uint8_t func){
     PDEV->slot = slot;
     PDEV->func = func;
 
-    return LouKeSeachPreLoadedSystemModules(PDEV);
+    if(IsAtaController(PDEV)){
+        InitializeAtaDevice();
+        return true;
+    }
+
+    return false;
 }

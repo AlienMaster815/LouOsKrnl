@@ -312,22 +312,17 @@ KERNEL_ENTRY Lou_kernel_start(
 
     Advanced_Kernel_Initialization();
 
-
-    InitPreLoadedModules();
+    //no modules currently loaded
+    //InitPreLoadedModules();
 
     //SETUP DEVICES AND DRIVERS
     LookForStorageDevices();
-    //LouKeRunOnNewStack(FileSystemSetup, 0x00, 64 * KILOBYTE);
+    FileSystemSetup();
     //ScanTheRestOfHarware();
 
+
+
     //User_Mode_Initialization();
-
-    //uint64_t BufferSize = 512;
-    //LOUSTATUS Status = STATUS_SUCCESS;
-    //uint8_t* Foo = (uint8_t*)ReadDrive(0,0, 1, &BufferSize, &Status);
-
-    
-    //LouPrint("Type Code:%h\n", Foo[0]);    
 
     LouPrint("Lousine Kernel Video Mode:%dx%d\n", GetScreenBufferWidth(), GetScreenBufferHeight());
     LouPrint("Hello World\n");

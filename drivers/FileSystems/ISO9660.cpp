@@ -23,8 +23,6 @@ uint16_t convert_endian(uint16_t data) {
 FSStruct ISO9660::ISOFileSystemScan(uint8_t DrvNum){
     //Allocate Memory For Our Structures   
 
-
-
     FSStruct FSS = DetectFileSystems(DrvNum);
     
     //Return The Pointer To Our Defined FS MAP
@@ -112,8 +110,8 @@ VolumeDescriptor ISO9660::ReadVolumeDescriptor(uint8_t DrvNum,uint32_t sector, u
     
     VolumeDescriptor VD;
 
-    LOUSTATUS Status = LOUSTATUS_GOOD;
-    uint64_t BufferSize = 0x00;
+    LOUSTATUS Status = STATUS_SUCCESS;
+    uint64_t BufferSize = 2048;
 
     uint16_t* Test = (uint16_t*)ReadDrive(
         DrvNum,
@@ -161,8 +159,6 @@ VolumeDescriptor ISO9660::ReadVolumeDescriptor(uint8_t DrvNum,uint32_t sector, u
         LouPrint("Type is: %d\n", VD.Type);
         LouPrint("Identifier is: %s \n",VD.Identifier);
         LouPrint("Version is: %d\n", VD.Version);
-
-        while(1);
 
 
         if ((VD.Type != 1) || (strcmp(VD.Identifier, "CD001") != 0) || (VD.Version != 1)) {
@@ -261,7 +257,7 @@ FILE* ISO9660::ISOLouKeFindDirectory(
     ){
 
     LOUSTATUS Status = LOUSTATUS_GOOD;
-    uint64_t BufferSize = 0x00;
+    uint64_t BufferSize = 2048;
 
     uint16_t* Test = (uint16_t*)ReadDrive(
         DrvNum,
@@ -283,7 +279,7 @@ FILE* ISO9660::ISOLouKeFindDirectory(
 
                 SearchDirectory = GetNextDirectoryName(SearchDirectory);
 
-                LouPrint("%s\n", SearchDirectory);
+                //LouPrint("%s\n", SearchDirectory);
 
                 RootLBA = ISOGetLBA(FOO);
                 RootSize = ISOGetDirecotrySize(FOO);
@@ -303,6 +299,7 @@ FILE* ISO9660::ISOLouKeFindDirectory(
                     memcpy(Handle + sizeof(uint64_t), FOO,RootSize);
                     memcpy(Handle, &RootSize,sizeof(uint64_t));
                     LouPrint("Done With Recursion: Found File\n");
+                    LouFree((RAMADD)Test); // Free before exiting
                     return Handle;
                 }
 
@@ -317,7 +314,7 @@ FILE* ISO9660::ISOLouKeFindDirectory(
     }
 
     LouPrint("Done With Recursion: Could Not Find File\n");
-
+    LouFree((RAMADD)Test); // Free before exiting
     return 0;
 }
 

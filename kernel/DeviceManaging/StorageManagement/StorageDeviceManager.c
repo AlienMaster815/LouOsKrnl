@@ -58,3 +58,12 @@ SYSTEM_DEVICE_IDENTIFIER LouKeGetStorageDeviceSystemIdentifier(uint8_t DriveNumb
 PATA_PORT LouKeGetAtaStoragePortObject(uint8_t DriveNumber){
     return (PATA_PORT)StorageManagerDataPointers[DriveNumber]->Table->DevicePrivateData;
 }
+
+
+uint8_t LouKeGetLegacyAtaPort(uint8_t DriveNumber){
+    return (uint8_t)(uintptr_t)StorageManagerDataPointers[DriveNumber]->Table->KeyData;
+}
+
+uint8_t LouKeGetNumberOfStorageDevices(){
+    return NumberOfStorageDevice;
+}

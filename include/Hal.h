@@ -55,7 +55,8 @@ int LouKeHalMallocPciIrqVectors(
 KERNEL_IMPORT LOUSTATUS LouKeRegisterDevice(
     P_PCI_DEVICE_OBJECT PDEV, 
     SYSTEM_DEVICE_IDENTIFIER Sdi,
-    string LRE,
+    string LRE, //optional
+    void* KeyData, //optional
     void* DevicePrivateData
 );
 
@@ -65,6 +66,10 @@ void LouKeHalGetPciConfiguration(
     PPCI_COMMON_CONFIG Config
 );
 
+KERNEL_IMPORT void LouKeGetPciConfiguration(
+    P_PCI_DEVICE_OBJECT PDEV, 
+    PPCI_COMMON_CONFIG Config
+);
 
 #else 
 KERNEL_EXPORT uint64_t LouKeHalLinuxPciCheckForCompatibleConfiguration(
