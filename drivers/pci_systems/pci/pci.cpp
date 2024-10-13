@@ -315,16 +315,22 @@ bool LouKeSeachPreLoadedSystemModules(P_PCI_DEVICE_OBJECT PDEV);
 
 bool IsAtaController(P_PCI_DEVICE_OBJECT PDEV);
 void InitializeAtaDevice();
+bool IsAhciController(P_PCI_DEVICE_OBJECT PDEV);
+void InitializeAhciDevice(P_PCI_DEVICE_OBJECT PDEV);
 
 bool PciExternalModuleScan(uint8_t bus, uint8_t slot, uint8_t func){
 
-    P_PCI_DEVICE_OBJECT PDEV = (P_PCI_DEVICE_OBJECT)LouMalloc(sizeof(PCI_DEVICE_OBJECT));
-    PDEV->bus = bus;
-    PDEV->slot = slot;
-    PDEV->func = func;
+    PCI_DEVICE_OBJECT PDEV;// = (P_PCI_DEVICE_OBJECT)LouMalloc(sizeof(PCI_DEVICE_OBJECT));
+    PDEV.bus = bus;
+    PDEV.slot = slot;
+    PDEV.func = func;
 
-    if(IsAtaController(PDEV)){
+    if(IsAtaController(&PDEV)){
         InitializeAtaDevice();
+        return true;
+    }
+    else if(IsAhciController(&PDEV)){
+        InitializeAhciDevice(&PDEV);
         return true;
     }
 

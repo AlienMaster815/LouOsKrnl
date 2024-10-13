@@ -317,7 +317,7 @@ KERNEL_ENTRY Lou_kernel_start(
 
     //SETUP DEVICES AND DRIVERS
     LookForStorageDevices();
-    FileSystemSetup();
+    //FileSystemSetup();
     //ScanTheRestOfHarware();
 
 

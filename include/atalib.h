@@ -401,7 +401,8 @@ typedef struct _ATA_QUEUED_COMMAND{
 
 
 typedef struct _ATA_PORT{
-    void* PortMmio;
+    void* HostMmio;//PAHCI_HOST_PRIVATE HostIo;
+    void* PortMmio;//PAHCI_PORT PortIo;
     struct _SCSI_HOST* ScsiHost;
     struct _ATA_PORT_OPERATION_TABLE* Operations;
     spinlock_t* Lock;
