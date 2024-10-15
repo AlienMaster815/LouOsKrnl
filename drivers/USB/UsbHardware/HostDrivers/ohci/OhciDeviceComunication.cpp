@@ -6,30 +6,23 @@
 #define OHCI_TD_STACK_DATA   1
 #define OHCI_TD_STACK_STATUS 2
 
+
+
 LOUSTATUS OhciControlTransfer(
     POHCI_MEM OhciMem,
     int PortNumber,  // Specific port number
     POHCI_SETUP_PACKET Packet,
     void* PacketBuffer,
-    int PacketLength
+    int PacketLength,
+    POHCI_TRANSFER_FLAG_DIRECTORY TFlags
 ){
     LOUSTATUS Status = STATUS_SUCCESS;
-    
-    //skip check 1 i know this device is attatched
 
-    // Step 2: Reset the port to ensure it's ready for communication
-    OhciMem->HcRhPortStatus[PortNumber] = 0x00000100;  // Set the 'Port Reset' bit
-
-    // Wait for reset to complete (100ms delay)
-    sleep(100);
-
-    // Clear the reset bit after the reset is complete
-    OhciMem->HcRhPortStatus[PortNumber] = 0x00000010;  // Clear the 'Port Reset' bit
-
+    LouPrint("Sending Control Trnasfer To Port:%d\n", PortNumber);
     // Step 3: Create and Configure Endpoint Descriptor
     POHCI_ED ControlEd = (POHCI_ED)LouMallocEx(sizeof(OHCI_ED), 16); // Allocation aligned by 16 bytes
 
-    ControlEd->Flags  = 0;  // You may need to set device address, direction, etc., here
+    ControlEd->Flags  = TFlags->EdFlags;  // You may need to set device address, direction, etc., here
     ControlEd->TailTD = 0;
     ControlEd->HeadTD = 0;
     ControlEd->NextED = 0;
@@ -40,48 +33,54 @@ LOUSTATUS OhciControlTransfer(
     // Setup TD
     OhciTdStack[OHCI_TD_STACK_SETUP].CBP = (uint32_t)(uintptr_t)Packet;
     OhciTdStack[OHCI_TD_STACK_SETUP].BE = (uint32_t)(uintptr_t)((uint8_t*)Packet + sizeof(OHCI_SETUP_PACKET) - 1);
-    OhciTdStack[OHCI_TD_STACK_SETUP].Flags = 0;  // Setup stage flags (set PID to Setup)
+    OhciTdStack[OHCI_TD_STACK_SETUP].Flags = TFlags->TdStackSetupFlags;  // Setup stage flags (set PID to Setup)
     OhciTdStack[OHCI_TD_STACK_SETUP].NextTD = (uint32_t)(uintptr_t)&OhciTdStack[OHCI_TD_STACK_DATA];
     
     // Data TD (optional, only if PacketBuffer and PacketLength are valid)
     if ((PacketBuffer) && (PacketLength)) {
         OhciTdStack[OHCI_TD_STACK_DATA].CBP = (uint32_t)(uintptr_t)PacketBuffer; 
         OhciTdStack[OHCI_TD_STACK_DATA].BE = (uint32_t)(uintptr_t)((uint8_t*)PacketBuffer + PacketLength - 1);  // Use PacketLength
-        OhciTdStack[OHCI_TD_STACK_DATA].Flags = 0x00;  // Direction (OUT for host-to-device, IN for device-to-host)
+        OhciTdStack[OHCI_TD_STACK_DATA].Flags = TFlags->TdStackDataFlags;  // Direction (OUT for host-to-device, IN for device-to-host)
         OhciTdStack[OHCI_TD_STACK_DATA].NextTD = (uint32_t)(uintptr_t)&OhciTdStack[OHCI_TD_STACK_STATUS];  // Correctly link to Status TD
     }
 
     // Status TD
     OhciTdStack[OHCI_TD_STACK_STATUS].CBP = 0;
     OhciTdStack[OHCI_TD_STACK_STATUS].BE = 0;
-    OhciTdStack[OHCI_TD_STACK_STATUS].Flags = 0x02;  // Status stage flags (set PID to IN or OUT)
+    OhciTdStack[OHCI_TD_STACK_STATUS].Flags = TFlags->TdStackStatusFlags;  // Status stage flags (set PID to IN or OUT)
     OhciTdStack[OHCI_TD_STACK_STATUS].NextTD = 0;  
 
     // Step 5: Add ED to control list and notify OHCI controller
     OhciMem->HcControlHeadED = (uint32_t)(uintptr_t)ControlEd;
     OhciMem->HcControl |= 0x00000002;  // Enable ControlListEnable
-    OhciMem->HcCommandStatus = 0x00000002;  // Set ControlListFilled
+    OhciMem->HcCommandStatus |= 0x00000002;  // Indicate that the control list is filled
 
-    // Step 6: Ensure the controller is running
-    if (!(OhciMem->HcControl & 0x00000080)) {  // If the controller is not running
-        OhciMem->HcControl |= 0x00000080;  // Set bit 7 (HC Operational) to start the controller
+    uint16_t TimeOut = 1000;
+
+    while ((!(OhciMem->HcControl & 0x00000080)) && (TimeOut > 0)) {
+        OhciMem->HcControl |= 0x00000080;  // Set HC Operational
+        sleep(1);  // Wait for 1 ms
+        TimeOut--;
     }
 
     // Step 7: Poll for completion by checking the condition code in the Status TD
-    uint16_t TimeOut = 1000;
-    while ((OhciTdStack[OHCI_TD_STACK_STATUS].Flags & 0xF000) == 0xF000) {  // Wait for the Status TD to be accessed
-        sleep(1);  // Sleep for 1ms
+    if(TimeOut){
+        TimeOut = 1000;
+    }else Status = STATUS_UNSUCCESSFUL;
+    while ((OhciTdStack[OHCI_TD_STACK_STATUS].Flags & 0xF000) == 0xF000) {
+        sleep(1);  // Wait for 1 ms
         TimeOut--;
-        if (TimeOut == 0) {
-            Status = STATUS_UNSUCCESSFUL;  // Timed out
+        if (TimeOut == 0 || (OhciTdStack[OHCI_TD_STACK_STATUS].Flags & 0xC000) != 0x4000) {
+            Status = STATUS_UNSUCCESSFUL;
             break;
         }
     }
 
-    // Step 8: Check if the transfer succeeded
-    if (OhciTdStack[OHCI_TD_STACK_STATUS].Flags & 0xF000) {  // Check condition code in the flags (bits 12-15)
-        Status = STATUS_UNSUCCESSFUL;  // Transfer failed
+    if (Status == (LOUSTATUS)STATUS_UNSUCCESSFUL) { //casting for a weired warning
+        OhciMem->HcControl &= ~0x00000002;  // Clear ControlListEnable
+        OhciMem->HcCommandStatus &= ~0x00000002;  // Clear ControlListFilled
     }
+
 
     // Step 9: Free allocated resources
     LouFree((RAMADD)ControlEd);

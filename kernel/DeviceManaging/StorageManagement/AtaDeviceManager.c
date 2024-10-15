@@ -58,6 +58,8 @@ bool InitializeAtaDevice(
         Qc->Cdb[0]    = ATA_IDENTIFY_PACKET_DEVICE;
         Qc->CdbLength = 1;
 
+        while(1);
+
         Ap->Operations->QcPrep(Qc);
         Ap->Operations->QcIssue(Qc);
 

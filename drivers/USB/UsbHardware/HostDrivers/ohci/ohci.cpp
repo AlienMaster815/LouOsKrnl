@@ -187,10 +187,17 @@ PPCI_COMMON_CONFIG PciConfig
 
     LouPrint("Number Of Supported Ports:%d\n",numPorts);
     for (int i = 0; i < numPorts; i++) {
+        //step one detect connected devices
         if (OHCIMem->HcRhPortStatus[i] & OHCI_RHPS_CCS) {
             // Device is connected to port i
             LOUSTATUS ReadStatus = STATUS_SUCCESS;
             LouPrint("Device On Port:%d\n",i);
+            if (!(OHCIMem->HcRhPortStatus[i] & 0x00000100)) {
+                // If port power is not enabled, enable it
+                LouPrint("Resseting Port:%d\n",i);
+                OHCIMem->HcRhPortStatus[i] |= 0x00000100;
+                sleep(10); // Small delay to ensure power stabilizes
+            }
             UNUSED OHCI_SETUP_PACKET Setup;
             Setup.BmRequestType = 0x80;
             Setup.BRequest = 0x06;
@@ -198,7 +205,13 @@ PPCI_COMMON_CONFIG PciConfig
             Setup.WIndex = 0x0000;
             Setup.WLength = 64;
             POHCI_DEVICE_DESCRIPTOR Descriptor = (POHCI_DEVICE_DESCRIPTOR)LouMallocEx(64,16);
-            ReadStatus = OhciControlTransfer(OHCIMem, i, &Setup, (void*)Descriptor, 64);
+            POHCI_TRANSFER_FLAG_DIRECTORY TFlags = (POHCI_TRANSFER_FLAG_DIRECTORY)LouMalloc(sizeof(OHCI_TRANSFER_FLAG_DIRECTORY));
+            TFlags->EdFlags = 0x0200;
+            TFlags->TdStackSetupFlags  = 0x2D;
+            TFlags->TdStackDataFlags   = 0xE1;
+            TFlags->TdStackStatusFlags = 0x69;
+
+            ReadStatus = OhciControlTransfer(OHCIMem, i, &Setup, (void*)Descriptor, 64, TFlags);
             
             if(!NT_SUCCESS(ReadStatus)){
                 LouPrint("Unable To Read Device\n");
@@ -206,18 +219,19 @@ PPCI_COMMON_CONFIG PciConfig
 
             LouPrint("Device Class:%h\n", Descriptor->BDeviceClass);
 
-            if(Descriptor->BDeviceClass == 0x09){
+            //if(Descriptor->BDeviceClass == 0x09){
                 //hub
-                IsOHCIHub(PDEV, PciConfig,(void*)OHCIMem, true, i);
-            }
-            else if(Descriptor->BDeviceClass == 0x00){
+            //    IsOHCIHub(PDEV, PciConfig,(void*)OHCIMem, true, i);
+            //}
+            //else if(Descriptor->BDeviceClass == 0x00){
                 //
-            }
-            else{
-                IsOHCIFunction(PDEV, PciConfig,(void*)OHCIMem, true, i);
-            }
+            //}
+            //else{
+            //    IsOHCIFunction(PDEV, PciConfig,(void*)OHCIMem, true, i);
+            //}
 
             LouFree((RAMADD)Descriptor);
+            LouFree((RAMADD)TFlags);
         }else{
             //else here for a compiler bug
         }

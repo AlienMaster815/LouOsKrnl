@@ -60,7 +60,8 @@ enum BoarIds{
 #define PCI_CLASS_STORAGE_SATA_AHCI	0x010601
 #define PCI_CLASS_STORAGE_RAID		0x0104
 
-
+//hard coding this into the cpp file for now
+LOUDDK_API_ENTRY PATA_HOST LouMallocAtaHost(P_PCI_DEVICE_OBJECT PDEV, PATA_PORT Port, int NPorts);
 
 UNUSED static LINUX_PCI_DEVICE_ID AhciPciTable[] = {
     //Intel Devices
@@ -578,6 +579,67 @@ bool CheckValidIntelDevice(P_PCI_DEVICE_OBJECT PDEV, PPCI_COMMON_CONFIG Config) 
     return true;
 }
 
+// Start command engine
+void AhciStartCommandEngine(PAHCI_PORT port){
+	// Wait until CR (bit15) is cleared
+	while (port->CommandIssue & HBA_PxCMD_CR){
+        sleep(100);
+    }
+
+	// Set FRE (bit4) and ST (bit0)
+	port->CommandIssue |= HBA_PxCMD_FRE;
+	port->CommandIssue |= HBA_PxCMD_ST; 
+}
+
+// Stop command engine
+void AhciStopCommandEngine(PAHCI_PORT port){
+	// Clear ST (bit0)
+	port->CommandnStatus &= ~HBA_PxCMD_ST;
+
+	// Clear FRE (bit4)
+	port->CommandnStatus &= ~HBA_PxCMD_FRE;
+
+	// Wait until FR (bit14), CR (bit15) are cleared
+	while(1)
+	{
+		if (port->CommandnStatus & HBA_PxCMD_FR)
+			continue;
+		if (port->CommandnStatus & HBA_PxCMD_CR)
+			continue;
+		break;
+	}
+
+}
+
+static POOL FbPool  = 0x00;
+static POOL ClbPool = 0x00;
+static POOL CtbPool  = 0x00;
+
+static inline bool AhciPortRebase(PAHCI_MEMORY_REGISTERS Host,PAHCI_PORT Port){
+
+    if(!(Host->Capabilities & HOST_CAP_64)){
+        return false; //this driver currently does not support 32 bit only devices
+    }
+
+    uint64_t Fb  = (uint64_t)LouKeMallocFromPool(FbPool, 1 * KILOBYTE, 0);
+    uint64_t Clb = (uint64_t)LouKeMallocFromPool(ClbPool, 256, 0);
+
+    Port->CommandListBase = (Clb & 0xFFFFFFFF);
+    Port->CommandListBaseHigh = (Clb >> 32);
+
+    Port->FisBase       = (Fb & 0xFFFFFFFF);
+    Port->FisBaseHigh   = (Fb >> 32);
+    //fill command Headers
+    HBA_CMD_HEADER* CmdHeader = (HBA_CMD_HEADER*)Clb;
+    for(uint8_t i = 0 ; i < 32; i++){
+        uint64_t Ctb = (uint64_t)LouKeMallocFromPool(CtbPool, 256, 0);
+        CmdHeader[i].prdtl = 8;
+        CmdHeader[i].ctba = (Ctb & 0xFFFFFFFF);
+        CmdHeader[i].ctbau = (Ctb >> 32);
+    }
+
+    return true;
+}
 
 void InitializeAhciDevice(P_PCI_DEVICE_OBJECT PDEV){
     PCI_COMMON_CONFIG Config;
@@ -597,6 +659,7 @@ void InitializeAhciDevice(P_PCI_DEVICE_OBJECT PDEV){
 
     ABAR = GetABAR(&Config);
     LouKeHalEnablePciDevice(PDEV);
+    LouKeHalPciSetMaster(PDEV);
     if(!CheckValidIntelDevice(PDEV, &Config)){
         return;
     }
@@ -638,10 +701,52 @@ void InitializeAhciDevice(P_PCI_DEVICE_OBJECT PDEV){
         PortInfo->Flags |= ATA_HOST_NO_DEVSLP;
     }
 
-    for(uint8_t i = 0 ; i < 32; i++){
+    PATA_HOST AtaHost = LouMallocAtaHost(PDEV, PortInfo, 32);
+    PATA_PORT Ap;
+    PAHCI_PORT Port;    
+    uint8_t NumPorts = (Host->Capabilities & 0xF) + 1; 
+
+    uint64_t DataSlab = (uint64_t)LouMallocEx(NumPorts * (12 * KILOBYTE), KILOBYTE_PAGE);
+    LouKeMapContinuousMemmoryBlock(DataSlab,DataSlab, NumPorts * (1 * KILOBYTE), KERNEL_PAGE_WRITE_UNCAHEABLE_PRESENT);
+    ClbPool = LouKeMapPool(DataSlab,DataSlab, KILOBYTE * NumPorts, KILOBYTE, "CLB_HEAP", 0);
+    DataSlab += NumPorts * (1 * KILOBYTE);
+    FbPool = LouKeMapPool(DataSlab,DataSlab, 256 * NumPorts, 256, "FB_HEAP", 0);
+    DataSlab += 256 * NumPorts;
+    CtbPool = LouKeMapPool(DataSlab,DataSlab, (8 * KILOBYTE) * NumPorts, 256, "CT_HEAP", 0);
 
 
+    for(uint8_t i = 0 ; i < NumPorts; i++){
+        Ap = &AtaHost->Ports[i];
+        Ap->PortMmio = (void*)((uint64_t)Host + 0x100 + (0x80 * i));
+        Port = (PAHCI_PORT)Ap->PortMmio;
+        if(Host->PortImplementation & (1 << i)){   
+            //port Implemented
+            LouPrint("Checking Port:%d\n", i);
+            //check if the device is atapi
+            if(Port->Signature == SATA_SIG_ATAPI){
+                LouPrint("Device Is Atapi\n");
+                Ap->IsAtapi = true;
+            }else{
+                LouPrint("Device Is Ata\n");
+            }
+            AhciStopCommandEngine(Port);
+            if(!AhciPortRebase(Host, Port)){
+                return;// (LOUSTATUS)STATUS_UNSUCCESSFUL;
+            }
+            AhciStartCommandEngine(Port);
+            Ap->Dma = true;
 
+            LouKeRegisterDevice(
+                PDEV, 
+                ATA_DEVICE_T,
+                "HKEY_LOCAL_MACHINE/Annya/System64/Drivers/AHCI",
+                Ap,
+                Ap    
+            );
+
+        }else{
+            Ap->Operations = 0x00;//operations Null
+        }
     }
 
     LouPrint("Done Initializing Ahci Controller\n");

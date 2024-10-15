@@ -600,7 +600,7 @@ typedef struct  _AHCI_PORT{
 	uint32_t SataControl;
 	uint32_t SataError;
 	uint32_t SataActive;
-	uint32_t CoomandIssue;
+	uint32_t CommandIssue;
 	uint32_t SataNotification;
 	uint32_t FisBasedSwitch;
 	uint32_t Reserved2[11];

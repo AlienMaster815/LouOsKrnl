@@ -325,6 +325,10 @@ bool PciExternalModuleScan(uint8_t bus, uint8_t slot, uint8_t func){
     PDEV.slot = slot;
     PDEV.func = func;
 
+    //if(isUsb(bus,slot,func)){
+    //    return true;
+    //}
+
     if(IsAtaController(&PDEV)){
         InitializeAtaDevice();
         return true;

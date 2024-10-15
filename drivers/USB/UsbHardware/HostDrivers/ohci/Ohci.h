@@ -149,12 +149,21 @@ typedef struct  _OHCI_SETUP_PACKET{
     uint8_t BNumConfigurations;
  }OHCI_DEVICE_DESCRIPTOR, * POHCI_DEVICE_DESCRIPTOR;
 
+typedef struct __attribute__((packed)) _OHCI_TRANSFER_FLAG_DIRECTORY{
+    uint32_t EdFlags;
+    uint32_t TdStackSetupFlags;
+    uint32_t TdStackStatusFlags;
+    uint32_t TdStackDataFlags;
+}OHCI_TRANSFER_FLAG_DIRECTORY, * POHCI_TRANSFER_FLAG_DIRECTORY;
+
+
 LOUSTATUS OhciControlTransfer(
     POHCI_MEM OhciMem,
     int PortNumber,
     POHCI_SETUP_PACKET Packet,
     void* PacketBuffer,
-    int PacketLength
+    int PacketLength,
+    POHCI_TRANSFER_FLAG_DIRECTORY TFlags
 );
 
 typedef struct  _OHCI_ED{
