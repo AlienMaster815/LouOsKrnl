@@ -28,8 +28,7 @@ uintptr_t RBP_Current;
 -- with allocation functions
 */
 
-string KERNEL_VERSION = "0.2.02 RSC-1 Multiboot 2 With EFI & Moudle Support";
-
+string KERNEL_VERSION = "0.2.03 RSC-1 Multiboot 2 With EFI & Moudle Support";
 
 #ifdef __x86_64__
 string KERNEL_ARCH = "64-BIT";
@@ -242,8 +241,9 @@ void StartDebugger(){
     Charecteristics.WindowName = "louoskrnl.exe";
 
     HWind = LouCreateWindow(
-        0, 0,
-        GetScreenBufferWidth(),GetScreenBufferHeight(),
+        10, 10,
+        640, 480,
+        //GetScreenBufferWidth(),GetScreenBufferHeight(),
         0x00, 
         &Charecteristics
     );
@@ -265,8 +265,9 @@ uint64_t GetThreadContext(
     int Thread
 );
 
-void User_Mode_Initialization(){
-    
+void UserModeInitialization(){
+
+    DllModuleEntry Entry = LouKeLoadUserModule("C:/ANNYA/USER32.DLL");
 
 
 }
@@ -312,17 +313,13 @@ KERNEL_ENTRY Lou_kernel_start(
 
     Advanced_Kernel_Initialization();
 
-    //no modules currently loaded
-    //InitPreLoadedModules();
-
     //SETUP DEVICES AND DRIVERS
     LookForStorageDevices();
     //FileSystemSetup();
     //ScanTheRestOfHarware();
 
-
-
-    //User_Mode_Initialization();
+    //Now We Start the Process Tail Of Explorer.exe
+    //UserModeInitialization();
 
     LouPrint("Lousine Kernel Video Mode:%dx%d\n", GetScreenBufferWidth(), GetScreenBufferHeight());
     LouPrint("Hello World\n");

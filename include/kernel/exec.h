@@ -216,6 +216,10 @@ typedef uint32_t DWORD;
 
 typedef bool(*DllModuleEntry)(HMODULE, DWORD, LPVOID);
 
+DllModuleEntry LouKeLoadUserModule(string ModuleNameAndPath);
+
+void* LouKeLoadPeExecutable(string ExecutablePath);
+
 #ifdef __cplusplus
 }
 #endif

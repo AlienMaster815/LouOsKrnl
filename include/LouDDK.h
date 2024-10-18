@@ -57,6 +57,7 @@ typedef void* PVOID;
 #include <SharedTypes.h>
 #include <Kernel/DRSD.h>
 #include <Kernel/LouQs.h>
+#include "NtOsKrnlLib.h"
 
 typedef void* FILE;
 

@@ -603,14 +603,6 @@ NTSYSAPI NTSTATUS RtlInitStringEx(
   _In_opt_  PCSZ SourceString
 );
 
-NTSYSAPI NTSTATUS RtlUnicodeToUTF8N(
-  _Out_ PCHAR  UTF8StringDestination,
-  _In_  ULONG  UTF8StringMaxByteCount,
-  _Out_ PULONG UTF8StringActualByteCount,
-  _In_  PCWCH  UnicodeStringSource,
-  _In_  ULONG  UnicodeStringByteCount
-);
-
 NTSYSAPI NTSTATUS RtlUTF8ToUnicodeN(
   _Out_ PWSTR  UnicodeStringDestination,
   _In_            ULONG  UnicodeStringMaxByteCount,

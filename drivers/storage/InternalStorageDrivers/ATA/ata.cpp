@@ -220,8 +220,8 @@ void PATA::Read28PATAPI(uint16_t drive,bool Master, uint32_t Sector_Num, void* B
     // But At Least I Have Some Fucking Documentation
 
 
-    uint8_t sectorCount = BufferSize/2352;
-    if((sectorCount * 2352) < BufferSize) sectorCount++;
+    uint8_t sectorCount = (BufferSize + 2047) / 2048;
+
 
         // The command
     uint8_t read_cmd[12] = {0xA8, 0,

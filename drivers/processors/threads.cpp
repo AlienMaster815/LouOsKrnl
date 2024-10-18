@@ -234,11 +234,11 @@ unsigned long long get_rsp() {
 
 LOUDDK_API_ENTRY void ManualContextSwitch(uint64_t Context_1, uint64_t Context_2){
 
-    current_thread[get_processor_id()] = Context_1;
+    //current_thread[get_processor_id()] = Context_1;
 
-    threads[Context_2].cpu_state = (CPUContext*)(get_rsp() + 120);
+    //threads[Context_2].cpu_state = (CPUContext*)(get_rsp() + 120);
 
-    LouKeRunThreadContext(GetThreadContext(Context_1), 0, 0);
+    //LouKeRunThreadContext(GetThreadContext(Context_1), 0, 0);
 
 }
 

@@ -1,6 +1,7 @@
 #include <LouDDK.h>
 #include <kernel/exports.h>
 #include <NtAPI.h>
+#include <Hal.h>
 Drives* DriveSystem;
 
 void PCI_Scan_Bus();
@@ -82,7 +83,16 @@ LOUDDK_API_ENTRY void FileSystemSetup(){
 
     for(uint8_t i = 0; i < LouKeGetNumberOfStorageDevices(); i++){ 
         Fss = iso.ISOFileSystemScan(i);
-        if(Fss.FSType == ISO)continue; 
+        if(Fss.FSType == ISO){
+
+            FSStruct* NewIsoSystem = (FSStruct*)LouMalloc(sizeof(FSStruct));
+            *NewIsoSystem = Fss; 
+            LouKeRegisterDevice(0, FILESYSTEM_DEVICE_T, 
+            "HKEY_LOCAL_MACHINE:Annya/System64/Drivers/Filesystem",
+            NewIsoSystem, (void*)(uintptr_t)i);
+            continue;
+        }
+
         //Fss = Fat.InitializeFatSystem(0);
             
         LouPrint("Drive:%d: Has No Filesystem\n",i);

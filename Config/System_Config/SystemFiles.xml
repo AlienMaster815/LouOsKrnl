@@ -9,7 +9,8 @@
     <64Targets>
         <FILETOCPY64>cp Registry/System64/Config/SYSTEM ISO/Annya/System64/Config/SYSTEM</FILETOCPY64>
         <FILETOCPY64>cp release/x86_64/LOUOSKRNL.exe ISO/Annya/System64/LOUOSKRNL.exe</FILETOCPY64>
-        <FILETOCPY64>cp DLL/LouDLLs/User32.dll ISO/Annya/System64/User32.dll</FILETOCPY64>
+        <FILETOCPY64>cp DLL/LouDLLs/User32.dll ISO/Annya/User32.dll</FILETOCPY64>
+        <FILETOCPY64>cp EXE/AnnyaExp/AnnyaExp.exe ISO/Annya/AnnyaExp.exe</FILETOCPY64>
         <FILETOCPY64>cp Registry/System32/Config/SYSTEM ISO/Annya/System32/Config/SYSTEM</FILETOCPY64>
         <FILETOCPY64>cp Registry/Profiles/Username ISO/Annya/Profiles/Username</FILETOCPY64>
     </64Targets>

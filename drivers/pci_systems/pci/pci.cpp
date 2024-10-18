@@ -333,10 +333,11 @@ bool PciExternalModuleScan(uint8_t bus, uint8_t slot, uint8_t func){
         InitializeAtaDevice();
         return true;
     }
-    else if(IsAhciController(&PDEV)){
-        InitializeAhciDevice(&PDEV);
-        return true;
-    }
+    //else 
+    //if(IsAhciController(&PDEV)){
+    //    InitializeAhciDevice(&PDEV);
+    //    return true;
+    //}
 
     return false;
 }

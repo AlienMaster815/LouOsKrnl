@@ -13,7 +13,7 @@ typedef struct _TABLE_ENTRY{
 #pragma pack(pop)
 
 #define PRE_LOADED_MODULES 5
-#define PRE_LOADED_NTOSKRNL_FUNCTIONS 66
+#define PRE_LOADED_NTOSKRNL_FUNCTIONS 16
 #define PRE_LOADED_UNKOWN_FUNCTIONS 12
 #define PRE_LOADED_WDFLDR_FUNCTIONS 5
 #define PRE_LOADED_STORPORT_FUNCTIONS 9
@@ -35,14 +35,8 @@ static PTABLE_ENTRY ImportTables = GenericTable;
 
 typedef void* PEXCEPTION_RECORD;
 
-wchar_t* wcsncpy(wchar_t* dest, const wchar_t* src, size_t n);
-int wcscmp(const wchar_t* s1, const wchar_t* s2);
-size_t wcslen(const wchar_t *s);
-KERNEL_IMPORT int swprintf(wchar_t *buffer, size_t buffer_size, const wchar_t *format, ...);
-KERNEL_IMPORT int _snprintf(char *buffer, size_t buffer_size, const char *format, ...);
 ULONG KeNumberProcessors();
 
-KERNEL_IMPORT int _snwprintf(wchar_t *buffer, size_t buffer_size, const wchar_t *format, ...);
 LOUDDK_API_ENTRY PATA_HOST LouMallocAtaHost(P_PCI_DEVICE_OBJECT PDEV, PATA_PORT Port, int NPorts);
 LOUDDK_API_ENTRY LOUSTATUS AtaStdQcDefer(PATA_QUEUED_COMMAND Wc);
 
@@ -54,7 +48,9 @@ RtlUnwind(
     _In_ PVOID ReturnValue
 );
 
-
+KERNEL_IMPORT int64_t wcslen(int16_t* WString);
+KERNEL_IMPORT int64_t wcscmp(int16_t* arg1, int16_t* arg2);
+KERNEL_IMPORT uint64_t wcstoul(int16_t* arg1, int64_t* arg2, int32_t arg3);
 
 static inline 
 void InitializeLousineKernelTables(){
@@ -292,68 +288,15 @@ void InitializeNtKernelTable(){
     ImportTables[0].FunctionName[6] = "WRITE_REGISTER_USHORT";
     ImportTables[0].FunctionName[7] = "READ_REGISTER_ULONG";
     ImportTables[0].FunctionName[8] = "WRITE_REGISTER_ULONG";
-    //iointex
-    ImportTables[0].FunctionName[9] = "WdmlibIoConnectInterruptEx";
-    ImportTables[0].FunctionName[10] = "WdmlibIoDisconnectInterruptEx";
-    ImportTables[0].FunctionName[11] = "WdmlibIoGetAffinityInterrupt";
-    //NTDDK
-    ImportTables[0].FunctionName[12] = "ExRaiseAccessViolation";
-    ImportTables[0].FunctionName[13] = "ExRaiseDatatypeMisalignment";
-    ImportTables[0].FunctionName[14] = "ExUuidCreate";
-    ImportTables[0].FunctionName[15] = "IoAllocateController";
-    ImportTables[0].FunctionName[16] = "IoCreateController";
-    ImportTables[0].FunctionName[17] = "IoDecrementKeepAliveCount";
-    ImportTables[0].FunctionName[18] = "IoDeleteController";
-    ImportTables[0].FunctionName[19] = "IoFreeController";
-    ImportTables[0].FunctionName[20] = "IoGetActivityIdIrp";
-    ImportTables[0].FunctionName[21] = "IoGetActivityIdThread";
-    ImportTables[0].FunctionName[22] = "IoGetConfigurationInformation";
-    ImportTables[0].FunctionName[23] = "IoGetFileObjectGenericMapping";
-    ImportTables[0].FunctionName[24] = "IoGetInitiatorProcess";
-    ImportTables[0].FunctionName[25] = "IoGetPagingIoPriority";
-    ImportTables[0].FunctionName[26] = "IoIncrementKeepAliveCount";
-    ImportTables[0].FunctionName[27] = "IoIsValidIrpStatus";
-
-    ImportTables[0].FunctionName[28] = "wcsncpy";
-    ImportTables[0].FunctionName[29] = "wcscmp";
-    ImportTables[0].FunctionName[30] = "MmAllocateContiguousMemory";
-    ImportTables[0].FunctionName[31] = "MmFreeContiguousMemory";
-    ImportTables[0].FunctionName[32] = "MmGetPhysicalAddress";
-
-    ImportTables[0].FunctionName[33] = "_vsnprintf";
-    ImportTables[0].FunctionName[34] = "wcslen";
-    ImportTables[0].FunctionName[35] = "RtlAppendUnicodeToString";
-    ImportTables[0].FunctionName[36] = "swprintf";
-    ImportTables[0].FunctionName[37] = "KeNumberProcessors";
-    ImportTables[0].FunctionName[38] = "strncpy";
-    //ImportTables[0].FunctionName[39] = "_aullrem";
-    ImportTables[0].FunctionName[40] = "InterlockedIncrement";
-    ImportTables[0].FunctionName[41] = "InterlockedDecrement";
-    //ImportTables[0].FunctionName[42] = "_aulldiv";
-    //ImportTables[0].FunctionName[43] = "_strnicmp";
-    ImportTables[0].FunctionName[44] = "InterlockedExchange";
-    //ImportTables[0].FunctionName[45] = "_allmul";
-    //ImportTables[0].FunctionName[46] = (uint64_t)_alldiv;
-    ImportTables[0].FunctionName[47] = "KeQuerySystemTime";
-    ImportTables[0].FunctionName[48] = "RtlQueryRegistryValues";
-    ImportTables[0].FunctionName[49] = "IoDisconnectInterrupt";
-    ImportTables[0].FunctionName[50] = "_snwprintf";
-    ImportTables[0].FunctionName[51] = "IoConnectInterrupt";
-    ImportTables[0].FunctionName[52] = "RtlInitUnicodeString";
-    ImportTables[0].FunctionName[53] = "IoCreateDevice";
-    ImportTables[0].FunctionName[54] = "IoDeleteDevice";
-    ImportTables[0].FunctionName[55] = "RtlCompareUnicodeString";
-    //ImportTables[0].FunctionName[56] = "NtBuildNumber";
-    ImportTables[0].FunctionName[57] = "KefReleaseSpinLockFromDpcLevel";
-    //ImportTables[0].FunctionName[58] = "KefAcquireSpinLockAtDpcLeve"l;
-    ImportTables[0].FunctionName[59] = "KeGetCurrentThread";
-    ImportTables[0].FunctionName[60] = "RtlUnwind";
-    ImportTables[0].FunctionName[61] = "_snprintf";
-    ImportTables[0].FunctionName[62] = "IoGetConfigurationInformation";
-    ImportTables[0].FunctionName[63] = "ExAllocatePoolWithTag";
-    //ImportTables[0].FunctionName[64] = "sprintf";
-    ImportTables[0].FunctionName[65] = "ExFreePool";
-
+ 
+    ImportTables[0].FunctionName[9] = "wcslen";
+    ImportTables[0].FunctionName[10] = "wcscmp";
+    ImportTables[0].FunctionName[11] = "wcstoul";
+    ImportTables[0].FunctionName[12] = "wcstombs";
+    ImportTables[0].FunctionName[13] = "wcsstr";
+    ImportTables[0].FunctionName[14] = "wcsspn";
+    ImportTables[0].FunctionName[15] = "wcsrchr";
+    
     ImportTables[0].VirtualAddress = NTFunctionAddresses;
 
     ImportTables[0].VirtualAddress[0] = (uint64_t)RtlCopyUnicodeString;
@@ -367,66 +310,13 @@ void InitializeNtKernelTable(){
     ImportTables[0].VirtualAddress[7] = (uint64_t)READ_REGISTER_ULONG;
     ImportTables[0].VirtualAddress[8] = (uint64_t)WRITE_REGISTER_ULONG;
 
-    ImportTables[0].VirtualAddress[9] = (uint64_t)WdmlibIoConnectInterruptEx;
-    ImportTables[0].VirtualAddress[10] = (uint64_t)WdmlibIoDisconnectInterruptEx;
-    ImportTables[0].VirtualAddress[11] = (uint64_t)WdmlibIoGetAffinityInterrupt;
-
-    ImportTables[0].VirtualAddress[12] = (uint64_t)ExRaiseAccessViolation;
-    ImportTables[0].VirtualAddress[13] = (uint64_t)ExRaiseDatatypeMisalignment;
-    ImportTables[0].VirtualAddress[14] = (uint64_t)ExUuidCreate;
-    ImportTables[0].VirtualAddress[15] = (uint64_t)IoAllocateController;
-    ImportTables[0].VirtualAddress[16] = (uint64_t)IoCreateController;
-    ImportTables[0].VirtualAddress[17] = (uint64_t)IoDecrementKeepAliveCount;
-    ImportTables[0].VirtualAddress[18] = (uint64_t)IoDeleteController;
-    ImportTables[0].VirtualAddress[19] = (uint64_t)IoFreeController;
-    ImportTables[0].VirtualAddress[20] = (uint64_t)IoGetActivityIdIrp;
-    ImportTables[0].VirtualAddress[21] = (uint64_t)IoGetActivityIdThread;
-    ImportTables[0].VirtualAddress[22] = (uint64_t)IoGetConfigurationInformation;
-    ImportTables[0].VirtualAddress[23] = (uint64_t)IoGetFileObjectGenericMapping;
-    ImportTables[0].VirtualAddress[24] = (uint64_t)IoGetInitiatorProcess;
-    ImportTables[0].VirtualAddress[25] = (uint64_t)IoGetPagingIoPriority;
-    ImportTables[0].VirtualAddress[26] = (uint64_t)IoIncrementKeepAliveCount;
-    ImportTables[0].VirtualAddress[27] = (uint64_t)IoIsValidIrpStatus;
-
-    ImportTables[0].VirtualAddress[28] = (uint64_t)wcsncpy;
-    ImportTables[0].VirtualAddress[29] = (uint64_t)wcscmp;
-    ImportTables[0].VirtualAddress[30] = (uint64_t)MmAllocateContiguousMemory;     
-    ImportTables[0].VirtualAddress[31] = (uint64_t)MmFreeContiguousMemory;
-    ImportTables[0].VirtualAddress[32] = (uint64_t)MmGetPhysicalAddress;
-    
-    ImportTables[0].VirtualAddress[33] = (uint64_t)_vsnprintf;
-    ImportTables[0].VirtualAddress[34] = (uint64_t)wcslen;
-    ImportTables[0].VirtualAddress[35] = (uint64_t)RtlAppendUnicodeToString;
-    ImportTables[0].VirtualAddress[36] = (uint64_t)swprintf;
-    ImportTables[0].VirtualAddress[37] = (uint64_t)KeNumberProcessors;
-    ImportTables[0].VirtualAddress[38] = (uint64_t)strncpy;
-    //ImportTables[0].VirtualAddress[39] = (uint64_t)_aullrem;
-    ImportTables[0].VirtualAddress[40] = (uint64_t)InterlockedIncrement;
-    ImportTables[0].VirtualAddress[41] = (uint64_t)InterlockedDecrement;
-    //ImportTables[0].VirtualAddress[42] = (uint64_t)_aulldiv;
-    //ImportTables[0].VirtualAddress[43] = (uint64_t)_strnicmp;
-    ImportTables[0].VirtualAddress[44] = (uint64_t)InterlockedExchange;
-    //ImportTables[0].VirtualAddress[45] = (uint64_t)_allmul;
-    //ImportTables[0].VirtualAddress[46] = (uint64_t)_alldiv;
-    ImportTables[0].VirtualAddress[47] = (uint64_t)KeQuerySystemTime;
-    ImportTables[0].VirtualAddress[48] = (uint64_t)RtlQueryRegistryValues;
-    ImportTables[0].VirtualAddress[49] = (uint64_t)IoDisconnectInterrupt;
-    ImportTables[0].VirtualAddress[50] = (uint64_t)_snwprintf;
-    ImportTables[0].VirtualAddress[51] = (uint64_t)IoConnectInterrupt;
-    ImportTables[0].VirtualAddress[52] = (uint64_t)RtlInitUnicodeString;
-    ImportTables[0].VirtualAddress[53] = (uint64_t)IoCreateDevice;
-    ImportTables[0].VirtualAddress[54] = (uint64_t)IoDeleteDevice;
-    ImportTables[0].VirtualAddress[55] = (uint64_t)RtlCompareUnicodeString;
-    //ImportTables[0].VirtualAddress[56] = (uint64_t)NtBuildNumber;
-    ImportTables[0].VirtualAddress[57] = (uint64_t)KefReleaseSpinLockFromDpcLevel;
-    //ImportTables[0].VirtualAddress[58] = (uint64_t)KefAcquireSpinLockAtDpcLevel;
-    ImportTables[0].VirtualAddress[59] = (uint64_t)KeGetCurrentThread;
-    ImportTables[0].VirtualAddress[60] = (uint64_t)RtlUnwind;
-    ImportTables[0].VirtualAddress[61] = (uint64_t)_snprintf;
-    ImportTables[0].VirtualAddress[62] = (uint64_t)IoGetConfigurationInformation;
-    ImportTables[0].VirtualAddress[63] = (uint64_t)ExAllocatePoolWithTag;
-    //ImportTables[0].VirtualAddress[64] = (uint64_t)sprintf;
-    ImportTables[0].VirtualAddress[65] = (uint64_t)ExFreePool;
+    ImportTables[0].VirtualAddress[9] = (uint64_t)wcslen;
+    ImportTables[0].VirtualAddress[10] = (uint64_t)wcscmp;
+    ImportTables[0].VirtualAddress[11] = (uint64_t)wcstoul;
+    ImportTables[0].VirtualAddress[12] = (uint64_t)wcstombs;
+    ImportTables[0].VirtualAddress[13] = (uint64_t)wcsstr;
+    ImportTables[0].VirtualAddress[14] = (uint64_t)wcsspn;
+    ImportTables[0].VirtualAddress[15] = (uint64_t)wcsrchr;
 
 }
 

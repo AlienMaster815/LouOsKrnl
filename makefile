@@ -12,6 +12,9 @@
 #lib compile line
 #x86_64-w64-mingw32-dlltool --input-def KernelDefs.def --output-lib louoskrnl.lib
 
+#AnnyaExp Compile Line
+#x86_64-w64-mingw32-gcc -ffreestanding -nostdlib -nostartfiles -o AnnyaExp.exe AnnyaExp.c 
+
 TARGET_ARCH = x86_64
 HOST_ARCH = x86_64
 FIRMWARE_TARGET = BIOS

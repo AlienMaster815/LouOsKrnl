@@ -155,7 +155,7 @@ PPCI_COMMON_CONFIG PciConfig
     //request OHCI Memory Virtual Address
     POHCI_MEM OHCIMem = (POHCI_MEM)LouKeHalGetPciVirtualBaseAddress(PciConfig, 0);
     //LouPrint("OhciMem Address:%d\n", OHCIMem);
-
+    LouKeHalPciSetMaster(PDEV);
     if(!ResetOhciDevice(OHCIMem)){
         LouPrint("Could Not Reset Controller\n");
         LouFree((RAMADD)OHCIMem);

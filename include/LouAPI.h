@@ -25,6 +25,8 @@
 #include <windows.h>
 #include <geometry.h>
 #include <SharedTypes.h>
+#include "NtOsKrnlLib.h"
+
 
 //#include <Hal.h>
 
