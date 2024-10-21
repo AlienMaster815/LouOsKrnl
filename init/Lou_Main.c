@@ -290,9 +290,9 @@ LOUSTATUS InitilaizeUserMode(){
     return STATUS_SUCCESS;
 }
 
-void UsrJmp();
+void UsrJmp(uint64_t Stack, uint64_t Entry);
 
-bool LouMapAddressEx(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize);
+bool LouMapAddressEx(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, bool LargePage);
 
 static bool SystemIsEfi = false;
 KERNEL_ENTRY Lou_kernel_start(
@@ -327,18 +327,10 @@ KERNEL_ENTRY Lou_kernel_start(
     LouPrint("Lousine Kernel Video Mode:%dx%d\n", GetScreenBufferWidth(), GetScreenBufferHeight());
     LouPrint("Hello World\n");
     
-    //LouKeMapContinuousMemmoryBlock((uintptr_t)UsrJmp, (uintptr_t)UsrJmp, 2 * MEGABYTE ,PRESENT_PAGE | PAGE_USER | PAGE_WRITE);
+    uint64_t UserStackP = (uint64_t)LouMalloc(MEGABYTE_PAGE);
+    LouKeMapContinuousMemmoryBlock(UserStackP, UserStackP, MEGABYTE_PAGE, PAGE_USER | PAGE_PRESENT | WRITEABLE_PAGE);
 
-    //LouPrint("UsrJmp At:%h\n", UsrJmp);
-    //UsrJmp();
-
-    
-    LouMapAddress(GIGABYTE, GIGABYTE, KERNEL_PAGE_WRITE_PRESENT, KILOBYTE_PAGE);
-    //LouMapAddress(GIGABYTE, GIGABYTE, KERNEL_PAGE_WRITE_PRESENT, MEGABYTE_PAGE);
-
-    uint8_t* Foo = (uint8_t*)GIGABYTE;
-    uint8_t Bar = *Foo;
-    LouPrint("BAR IS:%h\n", Bar);
+    UsrJmp(UserStackP + MEGABYTE_PAGE, InitEntry);
 
     while(1){
         asm("hlt"); //spin the cpus until we set up user mode

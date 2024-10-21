@@ -1,27 +1,20 @@
 section .User
 global UsrJmp
+
+[bits 64]
+
 UsrJmp:
-    ;stop interrupts
-    cli
-    push 0x23
-    push UsrStackTop
-    pushfq
-    push 0x1B
-    push UsrCode
-    iretq
+    mov rbp, rcx
+    mov rsp, rcx
     
+    push 0x1B
+    pop cs
+
+    push rdx
+    ret
+    
+
 .Hang:
     hlt
     jmp .Hang
 
-UsrCode:
- 
-
-    hlt
-    jmp $
-
-
-align 4096
-UsrStackBottom:
-    resb 1024; Allocate 1KB for the stack
-UsrStackTop:

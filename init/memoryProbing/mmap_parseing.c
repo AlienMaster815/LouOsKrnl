@@ -11,7 +11,6 @@ uint64_t GetRamSize() {
 
 
 void RegisterRamMap(struct multiboot_mmap_entry* mmap_entry) {
-
     //LouKeMapContinuousMemmoryBlock(mmap_entry->addr, mmap_entry->addr,mmap_entry->len, KERNEL_PAGE_WRITE_PRESENT);
     if((mmap_entry->addr + mmap_entry->len) > mlimit)mlimit = mmap_entry->addr + mmap_entry->len;
 }
