@@ -21,6 +21,6 @@
 ;	push rax
 ;	popfq
 ;	
-;	; Use sysretq to switch to user mode
-;	sysretq
+;	; Use iretq to switch to user mode
+;	iretq
 

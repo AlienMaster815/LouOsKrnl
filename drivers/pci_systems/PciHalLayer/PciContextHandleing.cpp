@@ -114,3 +114,10 @@ LOUDDK_API_ENTRY void LouKeHalPciSetMaster(P_PCI_DEVICE_OBJECT PDEV){
     // Write the modified value back to the PCI Command Register
     pciConfigWriteWord(PDEV->bus, PDEV->slot, PDEV->func, 0x04, command_reg);   
 }
+
+LOUDDK_API_ENTRY void LouKeHalPciEnableInterrupts(P_PCI_DEVICE_OBJECT PDEV){
+    LouKeWritePciCommandRegister(PDEV,LouKeReadPciCommandRegister(PDEV) & ~(1 << 10));
+}
+LOUDDK_API_ENTRY void LouKeHalPciDisableInterrupts(P_PCI_DEVICE_OBJECT PDEV){
+    LouKeWritePciCommandRegister(PDEV,LouKeReadPciCommandRegister(PDEV) | (1 << 10));
+}

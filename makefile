@@ -1,8 +1,4 @@
-# G++ Gcc make NASM grub xorriso
-
-
-# Change These Compiler Values To Your Correct Values if you Are on an x64 machine Use GCC Else You need a cross compiler \n
-# (e.g x86_64-elf-gcc)
+# G++ Gcc make NASM grub xorriso gnu-efi
 
 # Target Architecture Supported x86_64 ARM 
 

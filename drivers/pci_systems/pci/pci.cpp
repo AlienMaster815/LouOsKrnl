@@ -316,7 +316,7 @@ bool LouKeSeachPreLoadedSystemModules(P_PCI_DEVICE_OBJECT PDEV);
 bool IsAtaController(P_PCI_DEVICE_OBJECT PDEV);
 void InitializeAtaDevice();
 bool IsAhciController(P_PCI_DEVICE_OBJECT PDEV);
-void InitializeAhciDevice(P_PCI_DEVICE_OBJECT PDEV);
+LOUSTATUS InitializeStartupAhciImplementation(P_PCI_DEVICE_OBJECT PDEV);
 
 bool PciExternalModuleScan(uint8_t bus, uint8_t slot, uint8_t func){
 
@@ -335,7 +335,7 @@ bool PciExternalModuleScan(uint8_t bus, uint8_t slot, uint8_t func){
     }
     //else 
     //if(IsAhciController(&PDEV)){
-    //    InitializeAhciDevice(&PDEV);
+    //    InitializeStartupAhciImplementation(&PDEV);
     //    return true;
     //}
 

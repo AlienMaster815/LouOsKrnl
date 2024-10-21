@@ -76,6 +76,7 @@ extern local_apic_send_eoi
 
 %macro Handle 0
 	mov rcx, [InterruptNum]
+	mov rdx, rsp
 	call InterruptRouter
 	mov rcx, [InterruptNum]
 %endmacro

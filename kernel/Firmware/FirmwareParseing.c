@@ -480,3 +480,6 @@ void LouKeHandleSystemIsBios(){
 
 }
 
+void* GetEfiTable(){
+	return (void*)EFI_TABLE;
+}

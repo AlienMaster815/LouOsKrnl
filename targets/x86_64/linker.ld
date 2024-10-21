@@ -26,4 +26,11 @@ SECTIONS
     .bss : {
         *(.bss)/* Your uninitialized data sections go here */
     }
+
+    . = 60M;
+
+    .User : 
+    {
+        *(.User)  /* User-mode stub code */
+    }
 }

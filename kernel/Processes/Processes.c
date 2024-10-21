@@ -43,3 +43,8 @@ void* PsGetCurrentServerSiloGlobals() {
     return &PspHostSiloGlobals;
 }
 
+uint32_t LouKeCreateUserProcess(void (*Function)(), PVOID FunctionParameters, uint32_t StackSize){
+
+    
+
+}

@@ -6,7 +6,3 @@ void* LouKeLoadPeExecutable(string ExecutablePath){
     FILE* ExeHandle = fopen(ExecutablePath);
     return LoadPeExecutable((uintptr_t)ExeHandle); 
 }
-
-void LouKeLoadInit(){
-    
-}

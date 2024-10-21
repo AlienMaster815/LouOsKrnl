@@ -118,7 +118,6 @@ LOUDDK_API_ENTRY uint64_t UpdateThreadManager(uint64_t CpuCurrentState) {
     MutexLock(&FOO);
     int Next = find_next_thread(current_thread[get_processor_id()]); 
     threads[current_thread[get_processor_id()]].cpu_state = (CPUContext*)CpuCurrentState;
-    threads[Next].cpu_state->rflags = threads[current_thread[get_processor_id()]].cpu_state->rflags;
     if(thread_count == 0){
         local_apic_send_eoi();
         MutexUnlock(&FOO);
@@ -178,7 +177,7 @@ LOUDDK_API_ENTRY LOUSTATUS LouKeCreateThread(void (*Function)(), PVOID FunctionP
         UNUSED uint64_t StackTop = (uint64_t)NewStack + StackSize;
         StackTop &= ~(15);
 
-        memset((void*)StackTop, 0, StackSize);
+        memset((void*)NewStack, 0, StackSize);
 
         CPUContext* NewContext = (CPUContext*)(StackTop - sizeof(CPUContext));
 
@@ -242,7 +241,7 @@ LOUDDK_API_ENTRY void ManualContextSwitch(uint64_t Context_1, uint64_t Context_2
 
 }
 
-mutex_t BAR;
+static mutex_t BAR;
 void ThreadStub(int(*Thread)(PVOID), PVOID FunctionParam){
 
     int Result = Thread(FunctionParam);
@@ -253,3 +252,4 @@ void ThreadStub(int(*Thread)(PVOID), PVOID FunctionParam){
     LouFree((uint8_t*)(threads[current_thread[get_processor_id()]].cpu_state));
     while(1);
 }
+

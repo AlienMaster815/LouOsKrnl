@@ -112,3 +112,10 @@ void UserModeTestFunction() {
     FillRectangle(0,0, UserData.Width, UserData.Height,0,128,128,0);
 
 }
+
+USER32_API
+void* AnyaStartUserMode(){
+
+
+    return 0x00;
+}

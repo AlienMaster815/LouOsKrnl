@@ -35,6 +35,9 @@ LOUDDK_API_ENTRY void LouKeHalPciClearMaster(
     P_PCI_DEVICE_OBJECT PDEV
 );
 
+LOUDDK_API_ENTRY
+LOUSTATUS LouKeHalPciSetMmio(P_PCI_DEVICE_OBJECT PDEV);
+
 LOUDDK_API_ENTRY void LouKeHalPciSetMaster(P_PCI_DEVICE_OBJECT PDEV);
 
 
@@ -70,6 +73,9 @@ KERNEL_IMPORT void LouKeGetPciConfiguration(
     P_PCI_DEVICE_OBJECT PDEV, 
     PPCI_COMMON_CONFIG Config
 );
+
+LOUDDK_API_ENTRY void LouKeHalPciEnableInterrupts(P_PCI_DEVICE_OBJECT PDEV);
+LOUDDK_API_ENTRY void LouKeHalPciDisableInterrupts(P_PCI_DEVICE_OBJECT PDEV);
 
 #else 
 KERNEL_EXPORT uint64_t LouKeHalLinuxPciCheckForCompatibleConfiguration(

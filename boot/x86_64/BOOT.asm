@@ -44,8 +44,11 @@ global gdt64.code_segment
 global gdt64.data_segment
 
 start:
-
     mov [multiboot_info_ptr], ebx
+
+    mov eax , 0x1F
+    mov [0x40000000], eax
+
 
     mov esp, stack_top
 
@@ -127,20 +130,6 @@ gdt64:
     dq 0x00AFFA000000FFFF ; 64-bit User mode Code segment (CS)
 .user_data_segment: equ $ - gdt64 ; 20
     dq 0x00AFF20000000FFFF ; 64-bit User mode Data segment (DS)
-.system_code_segment: equ $ - gdt64 ; 28
-    dq 0x00AF92000000FFFF ; 64-bit System mode Code segment (CS)
-.system_data_segment: equ $ - gdt64 ; 30
-    dq 0x00AF92000000FFFF ; 64-bit System mode Data segment (DS)
-.interrupt_code_segment: equ $ - gdt64 ; 38
-    dq 0x00AF9A000000FFFF ; 64-bit Interrupt Code segment (CS)
-.interrupt_data_segment: equ $ - gdt64 ; 40
-    dq 0x00AF92000000FFFF ; 64-bit Interrupt Data segment (DS)
-.syscall_code_segment: equ $ - gdt64 ; 48
-    dq 0x00AF9A000000FFFF ; 64-bit Syscall Code segment (CS)
-.syscall_data_segment: equ $ - gdt64 ; 50
-    dq 0x00AF92000000FFFF ; 64-bit Syscall Data segment (DS)
-
-
 .pointer:
     dw $ - gdt64 - 1 ; length
     dq gdt64 ; address

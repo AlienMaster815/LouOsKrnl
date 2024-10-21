@@ -143,3 +143,4 @@ uint32_t LouKeReadBarValue(P_PCI_DEVICE_OBJECT PDEV, uint8_t BarNumber){
 void LouKeWriteBarValue(P_PCI_DEVICE_OBJECT PDEV, uint8_t BarNumber, uint32_t Value){
     LouKeWritePciUint32(PDEV, BAR0_OFFSET + (4 * BarNumber), Value); 
 }
+

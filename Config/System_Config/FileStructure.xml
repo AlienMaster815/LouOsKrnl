@@ -4,6 +4,8 @@
 <MainDirectoryStructure>mkdir ISO/boot/grub</MainDirectoryStructure>
 <MainDirectoryStructure>mkdir ISO/Annya</MainDirectoryStructure>
 <MainDirectoryStructure>mkdir ISO/Annya/Profiles</MainDirectoryStructure>
+<MainDirectoryStructure>mkdir ISO/Annya/Profiles/Default</MainDirectoryStructure>
+<MainDirectoryStructure>mkdir ISO/Annya/Profiles/Default/Background</MainDirectoryStructure>
 <MainDirectoryStructure>mkdir ISO/Annya/System32</MainDirectoryStructure>
 <MainDirectoryStructure>mkdir ISO/Annya/System32/Drivers</MainDirectoryStructure>
 <MainDirectoryStructure>mkdir ISO/Annya/System32/Config</MainDirectoryStructure>

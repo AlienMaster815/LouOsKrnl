@@ -8,6 +8,8 @@ typedef void* PTHREAD_DATA;
 #include <LouDDK.h>
 #ifndef _KERNEL_MODULE_
 LOUDDK_API_ENTRY LOUSTATUS LouKeCreateThread(void (*Function)(), PVOID FunctionParameters, uint32_t StackSize);
+LOUDDK_API_ENTRY uint32_t LouKeCreateUserThread(void (*Function)(), PVOID FunctionParameters, uint32_t StackSize);
+KERNEL_IMPORT uint32_t LouKeCreateUserProcess(void (*Function)(), PVOID FunctionParameters, uint32_t StackSize);
 #else
 KERNEL_EXPORT LOUSTATUS LouKeCreateThread(void (*Function)(), PVOID FunctionParameters, uint32_t StackSize);
 
@@ -17,6 +19,8 @@ extern "C" {
 #include <LouAPI.h>
 typedef void* PVOID; 
 LOUSTATUS LouKeCreateThread(void (*Function)(), PVOID FunctionParameters, uint32_t StackSize);
+uint32_t LouKeCreateUserProcess(void (*Function)(), PVOID FunctionParameters, uint32_t StackSize);
+uint32_t LouKeCreateUserThread(void (*Function)(), PVOID FunctionParameters, uint32_t StackSize);
 #endif
 
 #define MUTEX_FREE 0

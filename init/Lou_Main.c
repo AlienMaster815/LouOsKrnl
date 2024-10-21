@@ -28,7 +28,7 @@ uintptr_t RBP_Current;
 -- with allocation functions
 */
 
-string KERNEL_VERSION = "0.2.03 RSC-1 Multiboot 2 With EFI & Moudle Support";
+string KERNEL_VERSION = "0.3.01 RSC-1 Multiboot 2 With EFI Support, Moudle Support & User Mode";
 
 #ifdef __x86_64__
 string KERNEL_ARCH = "64-BIT";
@@ -265,12 +265,6 @@ uint64_t GetThreadContext(
     int Thread
 );
 
-void UserModeInitialization(){
-
-    DllModuleEntry Entry = LouKeLoadUserModule("C:/ANNYA/USER32.DLL");
-
-
-}
 
 
 void read_rtc();
@@ -290,10 +284,21 @@ KERNEL_ENTRY LouKernelSmpStart(){
     }
 }
 
+LOUSTATUS InitilaizeUserMode(){
 
+
+    return STATUS_SUCCESS;
+}
+
+void UsrJmp();
+
+bool LouMapAddressEx(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize);
+
+static bool SystemIsEfi = false;
 KERNEL_ENTRY Lou_kernel_start(
     uint32_t MBOOT
 ){
+
     struct multiboot_tag* mboot = (struct multiboot_tag*)(uintptr_t)(MBOOT + 8);
     ParseMBootTags(mboot);
     //vga set for debug
@@ -315,14 +320,25 @@ KERNEL_ENTRY Lou_kernel_start(
 
     //SETUP DEVICES AND DRIVERS
     LookForStorageDevices();
-    //FileSystemSetup();
+    FileSystemSetup();
     //ScanTheRestOfHarware();
-
-    //Now We Start the Process Tail Of Explorer.exe
-    //UserModeInitialization();
+    uint64_t InitEntry = (uint64_t)LouKeLoadPeExecutable("C:/ANNYA/ANNYAEXP.EXE");
 
     LouPrint("Lousine Kernel Video Mode:%dx%d\n", GetScreenBufferWidth(), GetScreenBufferHeight());
     LouPrint("Hello World\n");
+    
+    //LouKeMapContinuousMemmoryBlock((uintptr_t)UsrJmp, (uintptr_t)UsrJmp, 2 * MEGABYTE ,PRESENT_PAGE | PAGE_USER | PAGE_WRITE);
+
+    //LouPrint("UsrJmp At:%h\n", UsrJmp);
+    //UsrJmp();
+
+    
+    LouMapAddress(GIGABYTE, GIGABYTE, KERNEL_PAGE_WRITE_PRESENT, KILOBYTE_PAGE);
+    //LouMapAddress(GIGABYTE, GIGABYTE, KERNEL_PAGE_WRITE_PRESENT, MEGABYTE_PAGE);
+
+    uint8_t* Foo = (uint8_t*)GIGABYTE;
+    uint8_t Bar = *Foo;
+    LouPrint("BAR IS:%h\n", Bar);
 
     while(1){
         asm("hlt"); //spin the cpus until we set up user mode
