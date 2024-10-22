@@ -13,7 +13,7 @@
         <FILETOCPY64>cp EXE/AnnyaExp/x64/Debug/Annyaexp.exe ISO/Annya/AnnyaExp.exe</FILETOCPY64>
         <FILETOCPY64>cp Registry/System32/Config/SYSTEM ISO/Annya/System32/Config/SYSTEM</FILETOCPY64>
         <FILETOCPY64>cp Registry/Profiles/Username ISO/Annya/Profiles/Username</FILETOCPY64>
-        <FILETOCPY64>cp BackgroundImages/Annya.bmp ISO/Annya/Profiles/Default/BackGround/Annya.bmp</FILETOCPY64>
+        <FILETOCPY64>cp BackgroundImages/Annya.bmp ISO/Annya/Profiles/Default/BG/Annya.bmp</FILETOCPY64>
     </64Targets>
 </FILESBEFORECOPY>
     

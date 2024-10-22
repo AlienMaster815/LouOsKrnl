@@ -493,4 +493,17 @@
 #define LouWriteVirtualMemory 0x003a
 #define LouYieldExecution 0x0046
 
+static inline void LouCALL(
+    uint64_t Call,
+    uint64_t Data,
+    uint64_t SystemEmulation
+){
+    asm("INT $0x80");
+}
+
+#define LOUVMALLOC          0
+#define LOUCREATETHREAD     1
+#define LOURESETMONITOR     2
+#define LOULOADFILE         3
+
 #endif

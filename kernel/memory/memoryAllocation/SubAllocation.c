@@ -1,89 +1,49 @@
 #include <LouAPI.h>
 
-typedef struct __attribute__((packed)) _SUB_ALLOCATION_BLOCK{
-    ListHeader  BlockLists;
-    uint64_t    Address;
-    size_t      size;
-}SUB_ALLOCATION_BLOCK, * PSUB_ALLOCATION_BLOCK;
+typedef struct _USER_MODE_VMEM_TRACK{
+    ListHeader TrackLink;
+    uint64_t PAddress;
+    uint64_t VAddress;
+    uint64_t size;
+}USER_MODE_VMEM_TRACK, * PUSER_MODE_VMEM_TRACK;
 
-typedef struct __attribute__((packed)) _SUB_ALLOCATION_DIRECTORY{
-    ListHeader DirectoryList;
-    uint64_t PhysicalAllocatedPagePointer;
-    uint64_t VirtualAllocatedPagePointer;
-    uint32_t AllocationsMade;
-    SUB_ALLOCATION_BLOCK AllocationBlock;
-    uint64_t PageFLags;
-}SUB_ALLOCATION_DIRECTORY, * PSUB_ALLOCATION_DIRECTORY;
+//static spinlock_t UserAllocLock;
 
-static PSUB_ALLOCATION_DIRECTORY SubDir = 0x00;
-
-static spinlock_t SubMallocationLock;
-
-static uint32_t SubBlocksAllocated = 0;
-
-static inline uint64_t SubAllocateGetFreeAddress(size_t size, size_t Alignment,uint64_t PagePointer){
-
-    return 0;
-}
-
-void* LouMallocSpecialAttributesEx(
-    size_t size, 
-    size_t Alignment, 
-    uint64_t PageFlags, 
-    bool IdentityMaped
+uint64_t LouKeMallocFromMap(
+    uint64_t BytesNeeded,
+    uint64_t MapStart,
+    uint64_t MapEnd,
+    uint64_t MappedTrack,
+    PUSER_MODE_VMEM_TRACK MappedAddresses
 ){
-    //since we are doing a critical task using a static variable on the heap
-    //we are going to use a spinlock
-    LouKIRQL LouIrql;
-    LouKeAcquireSpinLock(&SubMallocationLock, &LouIrql);
-    uint64_t TmpAddr;
-    if(!SubDir){
-        //alocate the sub directory if not already done
-        SubDir = (PSUB_ALLOCATION_DIRECTORY)LouMalloc(sizeof(SUB_ALLOCATION_DIRECTORY));
-    }
-   
-    if(!SubBlocksAllocated){
-        if(IdentityMaped){
-            //allocate the first page
-            TmpAddr = (uint64_t)LouMalloc(MEGABYTE_PAGE);
-            SubDir->PhysicalAllocatedPagePointer = TmpAddr;
-            SubDir->VirtualAllocatedPagePointer = TmpAddr;
-            LouMapAddress(TmpAddr, TmpAddr, PageFlags, MEGABYTE_PAGE);
-        }
-        else {
-            //allocate the first page
-            TmpAddr = (uint64_t)LouMalloc(MEGABYTE_PAGE);
-            SubDir->PhysicalAllocatedPagePointer = TmpAddr;
-            TmpAddr = (uint64_t)LouVMalloc(MEGABYTE_PAGE);
-            SubDir->VirtualAllocatedPagePointer = TmpAddr;
-            LouMapAddress(
-                SubDir->PhysicalAllocatedPagePointer, 
-                TmpAddr, PageFlags, MEGABYTE_PAGE
+
+    uint64_t AlignedAddress = MapStart & ~(BytesNeeded - 1);
+    AlignedAddress += BytesNeeded;
+    bool AddressValid = false;
+
+    while((AlignedAddress + BytesNeeded) <= MapEnd){
+        PUSER_MODE_VMEM_TRACK Tmp = MappedAddresses;
+
+        for(uint64_t i = 0 ; i <= MappedTrack; i++){
+            AddressValid = RangeDoesNotInterfere(
+                AlignedAddress, 
+                BytesNeeded,
+                Tmp->VAddress,
+                Tmp->size
             );
-
+            if(!AddressValid){
+                break;
+            }
+            if(Tmp->TrackLink.NextHeader){
+                Tmp = (PUSER_MODE_VMEM_TRACK)Tmp->TrackLink.NextHeader; 
+            }
         }
-        SubBlocksAllocated++;
+
+        if(AddressValid){
+            //found a new allocation
+            return AlignedAddress; 
+        }
+        AlignedAddress += BytesNeeded;
     }
-
-    TmpAddr = SubAllocateGetFreeAddress(
-        size, Alignment, 
-        SubDir->VirtualAllocatedPagePointer
-    );
-
-    //release the lock
-    LouKeReleaseSpinLock(&SubMallocationLock, &LouIrql);
-    return (void*)TmpAddr;
-}
-
-void* LouMallocSpecialAttributes(
-    size_t size, 
-    uint64_t PageFlags, 
-    bool IdentityMaped
-){
-    return LouMallocSpecialAttributesEx(
-        size, 
-        size, 
-        PageFlags, 
-        IdentityMaped
-    );
+    return 0x00;
 }

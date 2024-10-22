@@ -290,7 +290,26 @@ void* LouKeMallocFromPool(
     uint64_t size, 
     uint64_t* Offset
 );
+
 void LouKeFreeFromPool(PLMPOOL_DIRECTORY Pool, void* Address, uint64_t size);
+
+static inline
+bool RangeDoesNotInterfere(
+    uint64_t AddressForCheck, 
+    uint64_t SizeOfCheck,
+    uint64_t AddressOfBlock, 
+    uint64_t SizeOfBlock
+){   
+    uint64_t end = AddressOfBlock + SizeOfBlock;
+
+    if ((AddressForCheck >= AddressOfBlock && AddressForCheck < end) ||  
+       ((AddressForCheck + SizeOfCheck) > AddressOfBlock && (AddressForCheck + SizeOfCheck) <= end) ||
+       (AddressForCheck <= AddressOfBlock && (AddressForCheck + SizeOfCheck) >= end)) { 
+        return false;
+    }
+    return true;
+}
+
 #endif
 #ifdef __cplusplus
 }

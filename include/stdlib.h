@@ -25,11 +25,16 @@ static inline unsigned int ROUND_UP(unsigned int value, unsigned int multiple) {
     return (value + multiple - 1) / multiple * multiple;
 }
 
+static inline uint64_t ROUND_UP64(uint64_t value, uint64_t multiple) {
+    return (value + multiple - 1) / multiple * multiple;
+}
+
 int abs(int x);
 #else 
 static inline unsigned int ROUND_UP(unsigned int value, unsigned int multiple) {
     return (value + multiple - 1) / multiple * multiple;
 }
+
 
 #endif
 

@@ -16,6 +16,15 @@ void LouKeDrsdResetScreen(uint8_t Gpu){
     }
 }
 
+void LouKeDrsdResetFBDEV(uint64_t* FBDEV){
+    uint64_t NumFBDEV = (uint64_t)LouKeDeviceManagerGetGpuCount();
+    if(*FBDEV > NumFBDEV){
+        *FBDEV = STATUS_NO_SUCH_DEVICE;
+    }
+    LouKeDrsdResetScreen((uint8_t)*FBDEV);
+    *FBDEV = STATUS_SUCCESS;
+}
+
 void LouKeDrsdPciResetScreen(P_PCI_DEVICE_OBJECT PDEV){
     uint8_t GpuCount = LouKeDeviceManagerGetGpuCount();
     PDrsdVRamObject FBDEV;

@@ -1,5 +1,6 @@
 #include <LouAPI.h>
 
+void* LouKeForkToUserModeSection(uint64_t OriginalLocation);
 
 string GetNextDirectoryName(string PATH){
 
@@ -24,4 +25,12 @@ uint8_t CurrenDirectoryStringLength(string Dir){
         else if(Dir[i] == '\0')return i;
     }
     return 0x00;
+}
+
+void LouKeFOpenCall(uint64_t* Data){
+    string PathToFile = (string)*Data;
+    *Data = (uint64_t)fopen(PathToFile);   
+    uint64_t KData = *Data;
+    *Data = (uint64_t)LouKeForkToUserModeSection(KData);
+    LouFree((RAMADD)KData);
 }

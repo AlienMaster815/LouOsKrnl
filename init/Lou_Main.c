@@ -293,6 +293,14 @@ void UsrJmp(uint64_t Stack, uint64_t Entry);
 
 bool LouMapAddressEx(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, bool LargePage);
 
+void SYSCALLS(uint64_t Call, uint64_t Data, uint64_t SystemEmulation);
+
+void PrintTest(){
+    while(1){
+        LouPrint("FOO ");
+    }
+}
+
 static bool SystemIsEfi = false;
 KERNEL_ENTRY Lou_kernel_start(
     uint32_t MBOOT
@@ -329,7 +337,13 @@ KERNEL_ENTRY Lou_kernel_start(
     LouPrint("Lousine Kernel Video Mode:%dx%d\n", GetScreenBufferWidth(), GetScreenBufferHeight());
     LouPrint("Hello World\n");
 
+    string Wallpaper = "C:/ANNYA/PROFILES/DEFAULT/BG/ANNYA.BMP";
 
+    uint64_t Data = (uint64_t)Wallpaper;
+
+    LouCALL(LOULOADFILE, (uint64_t)&Data, 0);
+
+    LouPrint("Data Is:%h\n", Data);
     while(1);
 
     uint64_t UserStackP = (uint64_t)LouMalloc(MEGABYTE_PAGE);

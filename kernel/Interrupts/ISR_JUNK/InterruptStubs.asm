@@ -1191,15 +1191,13 @@ ISR127:
 	Handle
 	hlt
 
+extern SYSCALLS
+
 ISR128:
 	cli
-	mov [SYSTEMCALL], rax;
 	pusha
-	mov ah, 128
-	mov [InterruptNum], ah
-	Handle
+	call SYSCALLS
 	popa
-	sti
 	iretq
 
 ISR129:
