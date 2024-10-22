@@ -180,7 +180,6 @@ void Advanced_Kernel_Initialization(){
     RegisterHardwareInterruptHandler(PS2MouseHandler, 12);
     LouKeMallocAdvancedKernelInterruptHandleing();
 
-
     for(uint8_t i = GetTotalHardwareInterrupts() + 0x20; i < 0x50; i++){
         RegisterInterruptHandler(AdvancedInterruptRouter,i);
     }
@@ -242,8 +241,7 @@ void StartDebugger(){
 
     HWind = LouCreateWindow(
         10, 10,
-        640, 480,
-        //GetScreenBufferWidth(),GetScreenBufferHeight(),
+        GetScreenBufferWidth() - 10,GetScreenBufferHeight() - 10,
         0x00, 
         &Charecteristics
     );

@@ -17,4 +17,3 @@ UsrJmp:
 .Hang:
     hlt
     jmp .Hang
-
