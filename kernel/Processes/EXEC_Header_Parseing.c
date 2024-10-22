@@ -297,7 +297,7 @@ void ParseExportTables(
     PEXPORT_DIRECTORY_ENTRY ExportTable
 ){
 
-    //LouPrint("NameRva:%h\n", ExportTable->nameRva);   
+    LouPrint("NameRva:%h\n", ExportTable->nameRva);   
 
 }
 
@@ -321,21 +321,23 @@ DllModuleEntry LoadUserDllModule(uintptr_t Start){
             0x00
         );
 
-        uint64_t allocatedModuleVirtualAddress =
+        uint64_t allocatedModulePhysicalAddress =
         (uint64_t)LouMallocEx(
             TotalNeededVM,
             KILOBYTE_PAGE
         );
+        uint64_t allocatedModuleVirtualAddress = 
+        (uint64_t)LouVMallocEx(
+            TotalNeededVM,
+            KILOBYTE_PAGE
+        );
 
-        for (uint32_t i = 0; i < TotalNeededVM; i += KILOBYTE_PAGE) {
-            LouMapAddress(
-                allocatedModuleVirtualAddress + i,
-                allocatedModuleVirtualAddress + i,
-                USER_PAGE | WRITEABLE_PAGE | PAGE_PRESENT,
-                KILOBYTE_PAGE
-            );
-        }
-
+        LouKeMapContinuousMemmoryBlock(
+            allocatedModulePhysicalAddress,
+            allocatedModuleVirtualAddress,
+            TotalNeededVM,
+            USER_PAGE | WRITEABLE_PAGE | PAGE_PRESENT
+        );
 
         // Align section addresses
         uint64_t sectionAlignment = PE64Header->sectionAlignment;
@@ -352,7 +354,6 @@ DllModuleEntry LoadUserDllModule(uintptr_t Start){
 
             //LouPrint("Copied section %s to address %h\n", SectionHeader[i].name, alignedVirtualAddress);
         }
-
 
         PIMPORT_DIRECTORY_ENTRY ImportTable = (PIMPORT_DIRECTORY_ENTRY)(allocatedModuleVirtualAddress + (uint64_t)PE64Header->PE_Data_Directory_Entries[1].VirtualAddress);
         PEXPORT_DIRECTORY_ENTRY ExportTable = (PEXPORT_DIRECTORY_ENTRY)(allocatedModuleVirtualAddress + (uint64_t)PE64Header->PE_Data_Directory_Entries[0].VirtualAddress);
@@ -389,7 +390,7 @@ DllModuleEntry LoadUserDllModule(uintptr_t Start){
         // Print function address debug info
         LouPrint("Entry Point Address:%h\n", (uint64_t)PE64Header->addressOfEntryPoint + allocatedModuleVirtualAddress);
         LouKeReleaseSpinLock(&UserModuleLock, &Irql);
-        return (DllModuleEntry)((uint64_t)PE64Header->addressOfEntryPoint + allocatedModuleVirtualAddress);
+        return (void*)((uint64_t)PE64Header->addressOfEntryPoint + allocatedModuleVirtualAddress);
     } else {
         LouKeReleaseSpinLock(&UserModuleLock, &Irql);
         return 0x00;

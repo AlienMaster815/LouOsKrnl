@@ -241,7 +241,7 @@ void StartDebugger(){
 
     HWind = LouCreateWindow(
         10, 10,
-        GetScreenBufferWidth() - 10,GetScreenBufferHeight() - 10,
+        GetScreenBufferWidth() - 20,GetScreenBufferHeight() - 20,
         0x00, 
         &Charecteristics
     );
@@ -284,6 +284,7 @@ KERNEL_ENTRY LouKernelSmpStart(){
 
 LOUSTATUS InitilaizeUserMode(){
 
+    LouKeLoadPeExecutable("C:/ANNYA/USER32.DLL");
 
     return STATUS_SUCCESS;
 }
@@ -320,11 +321,17 @@ KERNEL_ENTRY Lou_kernel_start(
     LookForStorageDevices();
     FileSystemSetup();
     //ScanTheRestOfHarware();
+
+    InitilaizeUserMode();
     uint64_t InitEntry = (uint64_t)LouKeLoadPeExecutable("C:/ANNYA/ANNYAEXP.EXE");
+
 
     LouPrint("Lousine Kernel Video Mode:%dx%d\n", GetScreenBufferWidth(), GetScreenBufferHeight());
     LouPrint("Hello World\n");
-    
+
+
+    while(1);
+
     uint64_t UserStackP = (uint64_t)LouMalloc(MEGABYTE_PAGE);
     LouKeMapContinuousMemmoryBlock(UserStackP, UserStackP, MEGABYTE_PAGE, PAGE_USER | PAGE_PRESENT | WRITEABLE_PAGE);
 

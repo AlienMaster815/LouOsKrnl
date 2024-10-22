@@ -21,6 +21,7 @@ uint8_t CurrenDirectoryStringLength(string Dir){
     for(uint8_t i = 0; i < 255; i++){
         if(Dir[i] == '/')return i;
         else if(Dir[i] == '.')return i;
+        else if(Dir[i] == '\0')return i;
     }
     return 0x00;
 }

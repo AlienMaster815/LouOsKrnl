@@ -114,7 +114,7 @@ void UserModeTestFunction() {
 }
 
 USER32_API
-void* AnyaStartUserMode(){
+void* AnnyaStartUserMode(){
 
 
     return 0x00;

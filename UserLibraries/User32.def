@@ -1,4 +1,4 @@
 LIBRARY User32.dll
 
 EXPORTS	
-    AnyaStartUserMode
+    AnnyaStartUserMode

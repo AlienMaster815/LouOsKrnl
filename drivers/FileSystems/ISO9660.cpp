@@ -269,6 +269,7 @@ FILE* ISO9660::ISOLouKeFindDirectory(
 
     UNUSED uint8_t* FOO = (uint8_t*)(uint64_t)Test;
     
+    //Dir = GetNextDirectoryName(Dir);
     string NewDir = GetNextDirectoryName(Dir);
 
     string SearchDirectory = NewDir;
@@ -276,20 +277,16 @@ FILE* ISO9660::ISOLouKeFindDirectory(
     bool FinalRecurse = false;
 
     while(1){
-        if ((FOO[32] == CurrenDirectoryStringLength(SearchDirectory)) || FinalRecurse){
+        if (FOO[32] == CurrenDirectoryStringLength(SearchDirectory) || FinalRecurse){
             if(strncmp((const char*)SearchDirectory, (const char*)&FOO[33], CurrenDirectoryStringLength(SearchDirectory)) == 0){
 
                 SearchDirectory = GetNextDirectoryName(SearchDirectory);
-
-                //LouPrint("%s\n", SearchDirectory);
-            
+                            
                 RootLBA = ISOGetLBA(FOO);
                 RootSize = ISOGetDirecotrySize(FOO);
 
-                if(FinalRecurse){
-                    if(RootSize){
-                        BufferSize = ((RootSize + + 2047) / 2048) * 2048;
-                    }
+                if(RootSize){
+                    BufferSize = ((RootSize + 2047) / 2048) * 2048;
                 }
 
                 LouFree((RAMADD)Test);
