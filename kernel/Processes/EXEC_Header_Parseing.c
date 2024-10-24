@@ -4,6 +4,52 @@
 
 uint64_t FindWdkFunctionAddress(string ModuleName, string FunctionName);
 
+void LouKeInitializeLibraryLookup(
+    string    ModuleName,
+    uint32_t  NumberOfFunctions,
+    string*   FunctionNames,
+    uint64_t* FunctionAddresses
+);
+
+void ParseExportTables(
+    uint64_t ModuleStart,
+    PEXPORT_DIRECTORY_ENTRY ExportTable
+){
+
+    string ModuleName = (string)(ModuleStart + ExportTable->nameRva);
+    uint64_t* FunctionPointers = LouMalloc(ExportTable->numberOfNamePointers * sizeof(uint64_t));
+    string* FunctionNames = LouMalloc(sizeof(string*) * ExportTable->numberOfNamePointers);
+
+    LouPrint("ATR:%h\n",ExportTable->exportAddressTableRva);
+    LouPrint("NPR:%h\n",ExportTable->namePointerRva);
+    LouPrint("OTR:%h\n",ExportTable->ordinalTableRva);
+
+    uint16_t* OTR = (uint16_t*)(ModuleStart + ExportTable->ordinalTableRva);
+    uint32_t* NPR = (uint32_t*)(ModuleStart + ExportTable->namePointerRva);
+    uint32_t* ATR = (uint32_t*)(ModuleStart + ExportTable->exportAddressTableRva);
+
+    for (uint32_t i = 0; i < ExportTable->numberOfNamePointers; i++) {
+
+        uint16_t OTRIndex = OTR[i];
+
+        FunctionNames[i]    = (string) (NPR[i] + ModuleStart);
+        FunctionPointers[i] = (uint64_t)(ATR[OTRIndex] + ModuleStart);
+
+        //LouPrint("Function Name:%s\n", FunctionNames[i]);
+        //LouPrint("Function Pointer:%h\n", FunctionPointers[i]);
+
+    }
+
+    LouKeInitializeLibraryLookup(
+        ModuleName,
+        ExportTable->numberOfNamePointers,
+        FunctionNames,
+        FunctionPointers
+    );
+
+}
+
+
 bool CheckDosHeaderValidity(PDOS_HEADER PHeader) {
     LouPrint("PHEADER:%h\n", PHeader);
     LouPrint("Magic Value:%c%c\n", PHeader->e_magic[0], PHeader->e_magic[1]);
@@ -78,6 +124,8 @@ void ParseImportTables(
             TableOffset = (i + ImportTable[j].ImportAddressTableRva + ModuleStart);
             FunctionName = (string)(TableEntry + ModuleStart + sizeof(uint16_t));
             SYSName = (string)(ModuleStart + ImportTable[j].NameRva);
+
+            LouPrint("Function Requested:%s\n", FunctionName);
 
             *(uint64_t*)TableOffset = FindWdkFunctionAddress(SYSName, FunctionName);
 
@@ -258,10 +306,16 @@ PHANDLE LoadKernelModule(uintptr_t Start) {
         }
 
         PIMPORT_DIRECTORY_ENTRY ImportTable = (PIMPORT_DIRECTORY_ENTRY)(allocatedModuleVirtualAddress + (uint64_t)PE64Header->PE_Data_Directory_Entries[1].VirtualAddress);
+        PEXPORT_DIRECTORY_ENTRY ExportTable = (PEXPORT_DIRECTORY_ENTRY)(allocatedModuleVirtualAddress + (uint64_t)PE64Header->PE_Data_Directory_Entries[0].VirtualAddress);
 
         ParseImportTables(
             allocatedModuleVirtualAddress,
             ImportTable
+        );
+
+        ParseExportTables(
+            allocatedModuleVirtualAddress,  
+            ExportTable
         );
 
         // Locate the relocation table
@@ -292,14 +346,6 @@ PHANDLE LoadKernelModule(uintptr_t Start) {
     }
 }
 
-void ParseExportTables(
-    uint64_t ModuleStart,
-    PEXPORT_DIRECTORY_ENTRY ExportTable
-){
-
-    LouPrint("NameRva:%h\n", ExportTable->nameRva);   
-
-}
 
 static spinlock_t UserModuleLock;
 
@@ -452,17 +498,16 @@ void* LoadPeExecutable(uintptr_t Start){
         }
 
         PIMPORT_DIRECTORY_ENTRY ImportTable = (PIMPORT_DIRECTORY_ENTRY)(allocatedModuleVirtualAddress + (uint64_t)PE64Header->PE_Data_Directory_Entries[1].VirtualAddress);
-        PEXPORT_DIRECTORY_ENTRY ExportTable = (PEXPORT_DIRECTORY_ENTRY)(allocatedModuleVirtualAddress + (uint64_t)PE64Header->PE_Data_Directory_Entries[0].VirtualAddress);
 
         ParseImportTables(
             allocatedModuleVirtualAddress,
             ImportTable
         );
 
-        ParseExportTables(
-            allocatedModuleVirtualAddress,  
-            ExportTable
-        );
+        //ParseExportTables(
+        //    allocatedModuleVirtualAddress,  
+        //    ExportTable
+        //);
 
         // Locate the relocation table
         uint64_t relocationTable = (uint64_t)((uint64_t)allocatedModuleVirtualAddress + (uint64_t)PE64Header->PE_Data_Directory_Entries[5].VirtualAddress);

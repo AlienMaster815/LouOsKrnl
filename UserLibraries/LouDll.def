@@ -1,0 +1,4 @@
+LIBRARY LouDll.dll
+
+EXPORTS	
+    LouPrint

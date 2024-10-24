@@ -24,6 +24,10 @@ void CheckLouCallTables(uint64_t Call, uint64_t Data){
             LouKeFOpenCall((uint64_t*)Data);
             break;
         }
+        case LOUPRINTCALL:{ 
+            *(uint64_t*)Data = LouPrint((string)*(uint64_t*)Data);\
+            break;
+        }
         default:
         LouPrint("Unkown Call\n");
     }

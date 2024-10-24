@@ -110,14 +110,14 @@ void InitializeVirtualBoxVgaAdapter(P_PCI_DEVICE_OBJECT PDEV){
 
     GetPciConfiguration(PDEV->bus, PDEV->slot, PDEV->func, PciConfig);
 
-    VirtualBoxChangeResolution(1920, 1080);
+    VirtualBoxChangeResolution(1024, 768);
 
     PFrameBufferModeDefinition SupportedModes = (PFrameBufferModeDefinition)LouMalloc(sizeof(FrameBufferModeDefinition));
 
-    SupportedModes->Width = 1920;
-    SupportedModes->Height = 1080;
+    SupportedModes->Width = 1024;
+    SupportedModes->Height = 768;
     SupportedModes->Bpp = 32;
-    SupportedModes->Pitch = (1920 * (32 / 8));
+    SupportedModes->Pitch = (1024 * (32 / 8));
     SupportedModes->FrameBufferType = RGB_DRSD_FRAMEBUFFER;
 
     PDrsdStandardFrameworkObject DrsdFrameWork = (PDrsdStandardFrameworkObject)LouMalloc(sizeof(DrsdStandardFrameworkObject));
@@ -128,7 +128,7 @@ void InitializeVirtualBoxVgaAdapter(P_PCI_DEVICE_OBJECT PDEV){
         (void*)PDEV, 
         (uint64_t)LouKeHalGetPciVirtualBaseAddress(PciConfig, 0), 
         VirtualboxVGAC->VRamTotalSize, 
-        1920, 1080,
+        1024, 768,
         32, 
         RGB_DRSD_FRAMEBUFFER,
         SupportedModes,

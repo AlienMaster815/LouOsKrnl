@@ -48,9 +48,7 @@ LOUSTATUS InitSLIT();
 LOUSTATUS InitMCFG();
 LOUSTATUS InitThreadManager();
 LOUSTATUS SetUpTimers();
-
 void LastSataRun();
-
 void PS2KeyboardHandler();
 void PS2MouseHandler();
 void PageFault();
@@ -66,7 +64,7 @@ void BoundRange();
 void Debug();
 void InvalidOpcode();
 void FloatDeviceNotAvailable();
-void TSS();
+//void TSS();
 void CpOverun();
 void SegmentNotPresent();
 void StackSegmentFault();
@@ -77,7 +75,6 @@ void SIMDFloatPointException();
 void VirtualizationException();
 void ControlProtectionException();
 void CookieCheckFail();
-
 void InitPreLoadedModules();
 void ParseMBootTags(struct multiboot_tag* MBOOT);
 void CreateNewPageSystem();
@@ -86,30 +83,77 @@ void InitializeSystemCalls();
 void SYSCALLS();
 void InitializePs2Mouse();
 void initialize_ps2_keyboard();
-
 LOUSTATUS InitializeDirecAccess();
 LOUSTATUS InitializeDynamicHardwareInterruptHandleing();
 void RegisterHardwareInterruptHandler(void(*InterruptHandler)(), uint8_t PIN);
 void initializeInterruptRouter();
-
 void HardwareInterruptManager();
-
 void InitializeGenericTables();
-
 void InitializeVesaSystem();
-
 void ListUsedAddresses();
-
 uint64_t getTrampolineAddress();
-
 PWINDHANDLE HWind;
-
 void AdvancedInterruptRouter(uint64_t InterruptNumber);
 uint8_t GetTotalHardwareInterrupts();
+uint64_t GetGdtBase();
+void FlushTss();
+
+
+/*
+
+typedef struct {
+    uint16_t limit_low;      // The lower 16 bits of the limit
+    uint16_t base_low;       // The lower 16 bits of the base address
+    uint8_t base_middle;     // The next 8 bits of the base address
+    uint8_t access;          // Access flags and type
+    uint8_t granularity;     // Granularity flags and the upper 4 bits of the limit
+    uint8_t base_high;       // The upper 8 bits of the base address
+}GDT_ENTRY;
+
+typedef struct {
+    GDT_ENTRY NULL_DATA;
+    GDT_ENTRY KERNEL_CODE;
+    GDT_ENTRY KERNEL_DATA;
+    GDT_ENTRY USER_CODE;
+    GDT_ENTRY USER_DATA;
+    GDT_ENTRY TSS;
+}GDT;
+*/
+
+typedef struct __attribute__((packed)) _TSS{
+    uint32_t RESVD;
+    uint32_t RSP0L;
+    uint32_t RSP0H;
+    uint32_t RSP1L;
+    uint32_t RSP1H;
+    uint32_t RSP2L;
+    uint32_t RSP2H;
+    uint32_t RSV2;
+    uint32_t RSV3;
+    uint32_t IST1L;
+    uint32_t IST1H;
+    uint32_t IST2L;
+    uint32_t IST2H;
+    uint32_t IST3L;
+    uint32_t IST3H;
+    uint32_t IST4L;
+    uint32_t IST4H;
+    uint32_t IST5L;
+    uint32_t IST5H;
+    uint32_t IST6L;
+    uint32_t IST6H;
+    uint32_t IST7L;
+    uint32_t IST7H;
+    uint32_t RSV4;
+    uint32_t RSV5;
+    uint16_t RSV6;
+    uint16_t IOPB;
+}TSS, * PTSS;
 
 LOUSTATUS Lou_kernel_early_initialization(){
 
     //basic kernel initialization for IR Exceptions to keep the guru away
+
     InitializeStartupInterruptHandleing();
     initializeInterruptRouter();
     RegisterInterruptHandler(DivideByZero, INTERRUPT_SERVICE_ROUTINE_0);
@@ -122,7 +166,7 @@ LOUSTATUS Lou_kernel_early_initialization(){
     RegisterInterruptHandler(FloatDeviceNotAvailable, INTERRUPT_SERVICE_ROUTINE_7);
     RegisterInterruptHandler(DoubleFault, INTERRUPT_SERVICE_ROUTINE_8);
     RegisterInterruptHandler(CpOverun, INTERRUPT_SERVICE_ROUTINE_9);
-    RegisterInterruptHandler(TSS, INTERRUPT_SERVICE_ROUTINE_10);
+    //RegisterInterruptHandler(TSS, INTERRUPT_SERVICE_ROUTINE_10);
     RegisterInterruptHandler(SegmentNotPresent, INTERRUPT_SERVICE_ROUTINE_11);
     RegisterInterruptHandler(StackSegmentFault, INTERRUPT_SERVICE_ROUTINE_12);
     RegisterInterruptHandler(GPF, INTERRUPT_SERVICE_ROUTINE_13);
@@ -165,7 +209,7 @@ LOUSTATUS LouKeMallocAdvancedKernelInterruptHandleing();
 
 void Advanced_Kernel_Initialization(){
     LOUSTATUS Status = LOUSTATUS_GOOD;
-    //if(LOUSTATUS_GOOD != InitFADT())LouPrint("Unable To Start FADT Handleing\n");
+    if(LOUSTATUS_GOOD != InitFADT())LouPrint("Unable To Start FADT Handleing\n");
     //if(LOUSTATUS_GOOD != InitDSDT())LouPrint("Unable To Start DSDT Handleing\n");
     //if(LOUSTATUS_GOOD != InitSSDT())LouPrint("Unable To Start SSDT Handleing\n");
     //if(LOUSTATUS_GOOD != InitSBST())LouPrint("Unable To Start SBST Handleing\n");
@@ -185,8 +229,9 @@ void Advanced_Kernel_Initialization(){
     }
 
     if (LOUSTATUS_GOOD != InitThreadManager())LouPrint("SHIT!!!:I Hope You Hate Efficency: No Thread Management\n");
-    LouKeSetIrql(PASSIVE_LEVEL, 0x00);
-    SetInterruptFlags();
+    //LouKeSetIrql(PASSIVE_LEVEL, 0x00);
+    LouKeSetIrql(HIGH_LEVEL, 0x00);
+    //SetInterruptFlags();
 }
 
 bool LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize);
@@ -240,8 +285,8 @@ void StartDebugger(){
     Charecteristics.WindowName = "louoskrnl.exe";
 
     HWind = LouCreateWindow(
-        10, 10,
-        GetScreenBufferWidth() - 20,GetScreenBufferHeight() - 20,
+        0, 0,
+        GetScreenBufferWidth() ,GetScreenBufferHeight() ,
         0x00, 
         &Charecteristics
     );
@@ -284,7 +329,8 @@ KERNEL_ENTRY LouKernelSmpStart(){
 
 LOUSTATUS InitilaizeUserMode(){
 
-    LouKeLoadPeExecutable("C:/ANNYA/USER32.DLL");
+    LouKeLoadUserModule("C:/ANNYA/SYSTEM64/LOUDLL.DLL");
+    LouKeLoadUserModule("C:/ANNYA/USER32.DLL");
 
     return STATUS_SUCCESS;
 }
@@ -301,12 +347,26 @@ void PrintTest(){
     }
 }
 
+void SetContext(uint64_t Context, uint64_t Function);
+
+
+typedef struct  __attribute__((packed)) _CPUContext{
+
+    uint64_t rip;       // Instruction Pointer (user-mode entry point)
+    uint64_t cs;        // Code Segment (should be set to user mode, typically 0x1B for x86_64)
+    uint64_t rflags;    // Flags Register (set the interrupt flag, clear privileged bits)
+    
+    uint64_t rsp;       // Stack Pointer (points to user-mode stack)
+    uint64_t ss;        // Stack Segment (should be user mode, typically 0x23 for x86_64)
+
+} CPUContext;
+
 static bool SystemIsEfi = false;
 KERNEL_ENTRY Lou_kernel_start(
     uint32_t MBOOT
 ){
-
     struct multiboot_tag* mboot = (struct multiboot_tag*)(uintptr_t)(MBOOT + 8);
+
     ParseMBootTags(mboot);
     //vga set for debug
     if(!LouKeMapEfiMemory()){
@@ -325,31 +385,33 @@ KERNEL_ENTRY Lou_kernel_start(
 
     Advanced_Kernel_Initialization();
 
+    //FlushTss();
+
     //SETUP DEVICES AND DRIVERS
     LookForStorageDevices();
-    FileSystemSetup();
+    //FileSystemSetup();
     //ScanTheRestOfHarware();
 
-    InitilaizeUserMode();
-    uint64_t InitEntry = (uint64_t)LouKeLoadPeExecutable("C:/ANNYA/ANNYAEXP.EXE");
+    //InitilaizeUserMode();
+    //uint64_t InitEntry = (uint64_t)LouKeLoadPeExecutable("C:/ANNYA/ANNYAEXP.EXE");
 
+    //LouPrint("Lousine Kernel Video Mode:%dx%d\n", GetScreenBufferWidth(), GetScreenBufferHeight());
+    //LouPrint("Hello World\n");
 
-    LouPrint("Lousine Kernel Video Mode:%dx%d\n", GetScreenBufferWidth(), GetScreenBufferHeight());
-    LouPrint("Hello World\n");
+    //string Wallpaper = "C:/ANNYA/PROFILES/DEFAULT/BG/ANNYA.BMP";
 
-    string Wallpaper = "C:/ANNYA/PROFILES/DEFAULT/BG/ANNYA.BMP";
+    //uint64_t Data = (uint64_t)Wallpaper;
 
-    uint64_t Data = (uint64_t)Wallpaper;
+    //LouCALL(LOULOADFILE, (uint64_t)&Data, 0);
 
-    LouCALL(LOULOADFILE, (uint64_t)&Data, 0);
-
-    LouPrint("Data Is:%h\n", Data);
-    while(1);
+    //LouPrint("Data Is:%h\n", Data);
+    //while(1);
 
     uint64_t UserStackP = (uint64_t)LouMalloc(MEGABYTE_PAGE);
-    LouKeMapContinuousMemmoryBlock(UserStackP, UserStackP, MEGABYTE_PAGE, PAGE_USER | PAGE_PRESENT | WRITEABLE_PAGE);
+    uint64_t UserStackV = (uint64_t)LouVMalloc(MEGABYTE_PAGE);
+        
+    LouKeMapContinuousMemmoryBlock(UserStackP, UserStackV, MEGABYTE_PAGE, PAGE_USER | PAGE_PRESENT | WRITEABLE_PAGE);
 
-    UsrJmp(UserStackP + MEGABYTE_PAGE, InitEntry);
 
     while(1){
         asm("hlt"); //spin the cpus until we set up user mode

@@ -32,13 +32,28 @@
 #pragma pack(push, 1)
 
 typedef struct {
-    uint16_t limit_low;      // The lower 16 bits of the limit
-    uint16_t base_low;       // The lower 16 bits of the base address
-    uint8_t base_middle;     // The next 8 bits of the base address
-    uint8_t access;          // Access flags and type
-    uint8_t granularity;     // Granularity flags and the upper 4 bits of the limit
-    uint8_t base_high;       // The upper 8 bits of the base address
-}GDT_ENTRY;
+    unsigned int limit_low              : 16;
+    unsigned int base_low               : 24;
+    unsigned int accessed               :  1;
+    unsigned int read_write             :  1; // Readable for code, writable for data
+    unsigned int conforming_expand_down :  1; // Conforming for code, expand down for data
+    unsigned int code                   :  1; // 1 for code, 0 for data
+    unsigned int code_data_segment      :  1; // Should be 1 for everything but TSS and LDT
+    unsigned int DPL                    :  2; // Privilege level
+    unsigned int present                :  1;
+    unsigned int limit_high             :  4;
+    unsigned int available              :  1; // Only used in software; has no effect on hardware
+    unsigned int long_mode              :  1;
+    unsigned int big                    :  1; // 32-bit opcodes for code, uint32_t stack for data
+    unsigned int gran                   :  1; // 1 to use 4k page addressing, 0 for byte addressing
+    unsigned int base_high              :  8;
+} GDT_ENTRY;
+
+// Additional high 32 bits for TSS
+typedef struct {
+    uint32_t base_upper;
+    uint32_t reserved;
+} TSS_EXTRA_ENTRY;
 
 typedef struct {
     GDT_ENTRY NULL_DATA;
@@ -46,27 +61,9 @@ typedef struct {
     GDT_ENTRY KERNEL_DATA;
     GDT_ENTRY USER_CODE;
     GDT_ENTRY USER_DATA;
-    GDT_ENTRY SYSTEM_SECURITY_CODE;
-    GDT_ENTRY SYSTEM_SECURITY_DATA;
-    GDT_ENTRY USER_SECURITY_CODE;
-    GDT_ENTRY USER_SECURITY_DATA;
-    GDT_ENTRY IDT_CODE;
-    GDT_ENTRY IDT_DATA;
-    GDT_ENTRY LDT_CODE;
-    GDT_ENTRY LDT_DATA;
-    GDT_ENTRY GDT_CODE;
-    GDT_ENTRY GDT_DATA;
-    GDT_ENTRY CALL_GATE_CODE;
-    GDT_ENTRY CALL_GATE_DATA;
-    GDT_ENTRY TASK_GATE_CODE;
-    GDT_ENTRY TASK_GATE_DATA;
-    GDT_ENTRY INTERRUPT_GATE_CODE;
-    GDT_ENTRY INTERRUPT_GATE_DATA;
-    GDT_ENTRY TRAP_GATE_CODE;
-    GDT_ENTRY TRAP_GATE_DATA;
-    GDT_ENTRY STACK_CODE;
-    GDT_ENTRY STACK_DATA;
-}GDT;
+    GDT_ENTRY TSS;              // First part of TSS descriptor
+    TSS_EXTRA_ENTRY TSS_EXTRA;   // Second part (upper 32 bits of the TSS base)
+} GDT;
 
 typedef struct {
     uint16_t limit;        // 16-bit limit

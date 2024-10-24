@@ -117,6 +117,8 @@ driver_cpp_source_files += $(shell find drivers/Serial -name *.cpp)
 driver_cpp_source_files += $(shell find drivers/storage/InternalStorageDrivers -name *.cpp)
 driver_cpp_source_files += $(shell find drivers/USB -name *.cpp)
 driver_cpp_source_files += $(shell find drivers/virtualization -name *.cpp)
+driver_cpp_source_files += $(shell find drivers/PowerManagement/InternalPowerManagement -name *.cpp)
+
 
 driver_cpp_object_files := $(patsubst drivers/%.cpp, build/drivers/%.o, $(driver_cpp_source_files))
 

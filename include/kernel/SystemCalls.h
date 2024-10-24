@@ -493,6 +493,11 @@
 #define LouWriteVirtualMemory 0x003a
 #define LouYieldExecution 0x0046
 
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned int uint32_t;
+typedef unsigned long long uint64_t;
+
 static inline void LouCALL(
     uint64_t Call,
     uint64_t Data,
@@ -505,5 +510,6 @@ static inline void LouCALL(
 #define LOUCREATETHREAD     1
 #define LOURESETMONITOR     2
 #define LOULOADFILE         3
+#define LOUPRINTCALL        4
 
 #endif

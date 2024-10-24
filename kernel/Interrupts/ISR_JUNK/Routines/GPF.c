@@ -36,12 +36,6 @@ void GPF(uint64_t FaultingStackP) {
 	CPUContext* FaultingStack = (CPUContext*)FaultingStackP;
 
 	LouPrint("GPF\nAt Stack Point:%h\n", FaultingStack);
-	LouPrint("RAX:%h ",FaultingStack->rax);LouPrint("RBX:%h ",FaultingStack->rbx); LouPrint("RCX:%h\n",FaultingStack->rcx);
-	LouPrint("RDX:%h ",FaultingStack->rdx);LouPrint("RBP:%h ",FaultingStack->rbp); LouPrint("RSI:%h\n",FaultingStack->rsi);
-	LouPrint("RDI:%h ",FaultingStack->rdi);LouPrint("R8 :%h ",FaultingStack->r8); LouPrint("R9 :%h\n",FaultingStack->r9);
-	LouPrint("R10:%h ",FaultingStack->r10);LouPrint("R11:%h ",FaultingStack->r11); LouPrint("R12:%h\n",FaultingStack->r12);
-	LouPrint("R13:%h ",FaultingStack->r13);LouPrint("R14:%h ",FaultingStack->r14); LouPrint("R15:%h\n",FaultingStack->r15);
-	LouPrint("RIP:%h ",FaultingStack->rip);LouPrint("CS :%h ",FaultingStack->cs); LouPrint("RF :%h\n",FaultingStack->rflags);
-	LouPrint("RSP:%h ",FaultingStack->rsp);LouPrint("SS :%h\n",FaultingStack->ss); //LouPrint("ERR:%h\n",FaultingStack->error);
+
 	while(1);
 }

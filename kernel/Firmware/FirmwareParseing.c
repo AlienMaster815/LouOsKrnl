@@ -243,9 +243,7 @@ LOUSTATUS LouKeGetSystemFirmwareTableId(
 
 				//LouPrint("Table At:%h\n", i);
 				//LouPrint("Table Name:%s\n\n",table->Signature);
-				if (strncmp((const string)table->Signature, (const string)MasterString, 4) == 0) {
-					
-					
+				if ((strncmp((const string)table->Signature, (const string)MasterString, 4) == 0) && (strlen((const string)table->Signature) != 0)) {
 					*TablePointer = (uintptr_t)table;
 					Status = LOUSTATUS_GOOD;
 					LouKeReleaseSpinLock(&FirmwareLock, &OldIrql);
@@ -258,7 +256,10 @@ LOUSTATUS LouKeGetSystemFirmwareTableId(
 			uint32_t foo = *(uint32_t*)((uintptr_t)GenericTable + (uintptr_t)i);
 			PACPI_STD_HEADER Fubar = (PACPI_STD_HEADER)(uintptr_t)foo;
 
-			if (strncmp((const string)Fubar->Signature, (const string)MasterString, 4) == 0) {
+			if ((strncmp((const string)Fubar->Signature, (const string)MasterString, 4) == 0) && (strlen((const string)Fubar->Signature) != 0)) {
+				LouPrint("Sign:%s\n", Fubar->Signature);
+				LouPrint("SignMaster:%s\n", MasterString);
+
 				*TablePointer = (uintptr_t)Fubar;
 				Status = LOUSTATUS_GOOD;
 				LouKeReleaseSpinLock(&FirmwareLock, &OldIrql);
