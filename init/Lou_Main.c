@@ -229,9 +229,9 @@ void Advanced_Kernel_Initialization(){
     }
 
     if (LOUSTATUS_GOOD != InitThreadManager())LouPrint("SHIT!!!:I Hope You Hate Efficency: No Thread Management\n");
-    //LouKeSetIrql(PASSIVE_LEVEL, 0x00);
-    LouKeSetIrql(HIGH_LEVEL, 0x00);
-    //SetInterruptFlags();
+    LouKeSetIrql(PASSIVE_LEVEL, 0x00);
+    //LouKeSetIrql(HIGH_LEVEL, 0x00);
+    SetInterruptFlags();
 }
 
 bool LouMapAddress(uint64_t PAddress, uint64_t VAddress, uint64_t FLAGS, uint64_t PageSize);
@@ -329,8 +329,8 @@ KERNEL_ENTRY LouKernelSmpStart(){
 
 LOUSTATUS InitilaizeUserMode(){
 
-    LouKeLoadUserModule("C:/ANNYA/SYSTEM64/LOUDLL.DLL");
-    LouKeLoadUserModule("C:/ANNYA/USER32.DLL");
+    //LouKeLoadUserModule("C:/ANNYA/SYSTEM64/LOUDLL.DLL");
+    //LouKeLoadUserModule("C:/ANNYA/USER32.DLL");
 
     return STATUS_SUCCESS;
 }
@@ -389,14 +389,14 @@ KERNEL_ENTRY Lou_kernel_start(
 
     //SETUP DEVICES AND DRIVERS
     LookForStorageDevices();
-    //FileSystemSetup();
-    //ScanTheRestOfHarware();
+    FileSystemSetup();
+    ScanTheRestOfHarware();
 
-    //InitilaizeUserMode();
+    InitilaizeUserMode();
     //uint64_t InitEntry = (uint64_t)LouKeLoadPeExecutable("C:/ANNYA/ANNYAEXP.EXE");
 
-    //LouPrint("Lousine Kernel Video Mode:%dx%d\n", GetScreenBufferWidth(), GetScreenBufferHeight());
-    //LouPrint("Hello World\n");
+    LouPrint("Lousine Kernel Video Mode:%dx%d\n", GetScreenBufferWidth(), GetScreenBufferHeight());
+    LouPrint("Hello World\n");
 
     //string Wallpaper = "C:/ANNYA/PROFILES/DEFAULT/BG/ANNYA.BMP";
 
@@ -407,10 +407,10 @@ KERNEL_ENTRY Lou_kernel_start(
     //LouPrint("Data Is:%h\n", Data);
     //while(1);
 
-    uint64_t UserStackP = (uint64_t)LouMalloc(MEGABYTE_PAGE);
-    uint64_t UserStackV = (uint64_t)LouVMalloc(MEGABYTE_PAGE);
+    //uint64_t UserStackP = (uint64_t)LouMalloc(MEGABYTE_PAGE);
+    //uint64_t UserStackV = (uint64_t)LouVMalloc(MEGABYTE_PAGE);
         
-    LouKeMapContinuousMemmoryBlock(UserStackP, UserStackV, MEGABYTE_PAGE, PAGE_USER | PAGE_PRESENT | WRITEABLE_PAGE);
+    //LouKeMapContinuousMemmoryBlock(UserStackP, UserStackV, MEGABYTE_PAGE, PAGE_USER | PAGE_PRESENT | WRITEABLE_PAGE);
 
 
     while(1){
