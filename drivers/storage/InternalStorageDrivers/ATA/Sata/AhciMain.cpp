@@ -59,7 +59,7 @@ bool Read(PAHCI_PORT Port, uint64_t Sector, uint16_t SectorCount, void* Buffer){
     Port->CommandIssue = 1;
 
     while(true){
-        
+        //BUGBUG: endless loops here
         LouPrint("Waiting\n");
         if(!(Port->CommandIssue & 1))break;
         if(Port->InterruptStat & HBA_PxIS_TFES){
@@ -131,7 +131,7 @@ void StartCmd(PAHCI_PORT Port){
     Port->CommandnStatus |= HBA_PxCMD_ST;
 }
 
-void IntitializeATADevice(PAHCI_PORT Port){
+void IntitializeATADevice(PAHCI_PORT Port, bool ATAPI){
 
     UNUSED uint8_t IPM = Port->SataStatus >> 8;
     UNUSED uint8_t DevDetect = Port->SataStatus & 0b111;
@@ -200,12 +200,12 @@ void InitializePorts(PAHCI_MEMORY_REGISTERS Hba){
             switch (Port->Signature){
                 case SATA_SIG_ATA:{
                     LouPrint("Device Is ATA Compliant\n");
-                    IntitializeATADevice(Port);
+                    IntitializeATADevice(Port, false);
                     continue;
                 }
                 case SATA_SIG_ATAPI:{
                     LouPrint("Device Is ATAPI Compliant\n");
-                    //IntitializeATAPIDevice(Port);
+                    IntitializeATADevice(Port, true);
                     continue;
                 }
                 case SATA_SIG_SEMB:{
